@@ -1,0 +1,18 @@
+Program = _{ SOI ~ ((Action | IntroRetro) ~ Newline?)* ~ EOI }
+
+Action = { ActionName ~ (":" ~ (NumValue | BookkeeperValue | ActionDiscriminator))? }
+
+ActionName = {('A'..'Z') ~ ('a'..'z' | "'")* ~ ('A'..'Z')? ~ ('a'..'z' | "'")*}
+
+NumValue = { ASCII_DIGIT+ }
+
+BookkeeperValue = {("v" | "-")+}
+
+ActionDiscriminator = { ('A'..'Z') ~ ('A'..'Z' | 'a'..'z' | "-")* ~ ('A'..'Z')? }
+
+IntroRetro = { "{" | "}" }
+
+WHITESPACE = _{ " " | "\t" }
+
+Newline = _{ ("\r\n" | "\n") }
+
