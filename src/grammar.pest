@@ -1,10 +1,10 @@
 Program = _{ SOI ~ ((Action | IntroRetro) ~ Newline?)* ~ EOI }
 
-Action = { ActionName ~ (":" ~ (NumValue | BookkeeperValue | ActionDiscriminator))? }
+Action = { ActionName ~ (":" ~ (Number | BookkeeperValue | ActionDiscriminator))? }
 
-ActionName = {('A'..'Z') ~ ('a'..'z' | "'")* ~ ('A'..'Z')? ~ ('a'..'z' | "'")*}
+ActionName = {('A'..'Z') ~ ('a'..'z' | "'")* ~ ('A'..'Z')? ~ ('a'..'z' | "'")* ~ (("+" | "-") ~ 'X'..'Z')?}
 
-NumValue = { ASCII_DIGIT+ }
+Number = { ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
 
 BookkeeperValue = {("v" | "-")+}
 
