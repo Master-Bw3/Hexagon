@@ -1,4 +1,4 @@
-File = { SOI ~ Hex ~ EOI }
+File = _{ SOI ~ Hex ~ EOI }
 
 Hex = _{ ((Keyword | Embed | Op | Var | Term | Action | IntroRetro) ~ Newline? | Newline)* }
 
@@ -14,7 +14,7 @@ BookkeeperValue = {("v" | "-")+}
 
 ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
-Iota = { Number | Vector | Entity | Influence | Bool | Pattern}
+Iota = _{ Number | Vector | Entity | Influence | Bool | Pattern}
 
 Vector = {"(" ~ Number ~ "," ~ Number ~ "," ~ Number ~ ")" }
 

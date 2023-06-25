@@ -1,3 +1,5 @@
+use::hexagon;
+
 fn main() {
-    println!("Hello, world!");
+   hexagon::run() 
 }
