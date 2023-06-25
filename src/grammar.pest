@@ -1,12 +1,12 @@
-Program = _{ SOI ~ ((Embed | Action | IntroRetro) ~ Newline?)* ~ EOI }
+Program = _{ SOI ~ ((Embed | Op | Var | Action | IntroRetro) ~ Newline?)* ~ EOI }
 
 Action = { ActionName ~ (":" ~ (Iota | BookkeeperValue | ActionDiscriminator))? }
 
-ActionName = {'A'..'Z' ~ (ASCII_ALPHA | "+" | "-" | "'")+}
+ActionName = {ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
 BookkeeperValue = {("v" | "-")+}
 
-ActionDiscriminator = { ('A'..'Z') ~ ('A'..'z' | "-")* ~ ('A'..'Z')? }
+ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
 Iota = { Number | Vector | Entity | Influence | Bool | Pattern}
 
@@ -18,13 +18,13 @@ Entity = {"{" ~ String ~ "," ~ EntityType ~ ("," ~ Uuid)? ~ "}" }
 
 Uuid = ${ UuidStart ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UUIDEnd }
 
-UuidStart = @{ (ASCII_DIGIT | 'a'..'z'){8} }
+UuidStart = @{ (ASCII_DIGIT | ASCII_ALPHA_LOWER){8} }
 
-UuidSlice = @{ (ASCII_DIGIT | 'a'..'z'){4} }
+UuidSlice = @{ (ASCII_DIGIT | ASCII_ALPHA_LOWER){4} }
 
-UUIDEnd = @{ (ASCII_DIGIT | 'a'..'z'){12} }
+UUIDEnd = @{ (ASCII_DIGIT | ASCII_ALPHA_LOWER){12} }
 
-EntityType = @{'a'..'z'+ ~ ":" ~ 'a'..'z'+}
+EntityType = @{ASCII_ALPHA_LOWER+ ~ ":" ~ ASCII_ALPHA_LOWER+}
 
 Influence = @{"Null" | "Garbage"}
 
@@ -44,13 +44,19 @@ IntroRetro = { "{" | "}" }
 
 Embed = ${ "<" ~ ( IntroEmbed | ConsiderEmbed | SmartEmbed | DirectEmbed ) ~ ">" }
 
-DirectEmbed = @{ Iota }
+DirectEmbed = ${ Iota }
 
-IntroEmbed = @{ "{" ~ Iota ~ "}" }
+IntroEmbed = ${ "{" ~ Iota ~ "}" }
 
-ConsiderEmbed = @{"\\" ~ Iota }
+ConsiderEmbed = ${"\\" ~ Iota }
 
-SmartEmbed = @{"<" ~ Iota ~ ">"}
+SmartEmbed = ${"<" ~ Iota ~ ">"}
+
+Var = ${"$" ~ ASCII_ALPHANUMERIC+}
+
+Op = ${OpName ~ "(" ~ (Iota | Var)? ~ ")"}
+
+OpName =  {ASCII_ALPHA_UPPER ~ ASCII_ALPHA_LOWER*}
 
 WHITESPACE = _{ " " | "\t" }
 
