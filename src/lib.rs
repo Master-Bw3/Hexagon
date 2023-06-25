@@ -8,13 +8,14 @@ pub struct HexParser;
 pub fn run() {
     let parse_result = parse(
         "
-        Bookkeeper's Gambit: 1 \n
+        Bookkeeper's Gambit: --v \n
         Gemini Decomposition \n
         Pace Purification \n
         Augur's Purification \n
         Jester's Gambit \n
         Nullary Reflection \n
         Augur's Exaltation \n
+        Numerical Reflection: 12
         ",
     );
 
@@ -45,8 +46,9 @@ pub fn parse_action(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>) -> AstN
     AstNode::Action {
         name: { left.as_str().to_string() },
         value: {
-            right.map(|value| match value.as_rule() {
-                Rule::Number => Iota::Number(value.as_str().parse::<f32>().unwrap()),
+            right.map(|pair| match pair.as_rule() {
+                Rule::Iota => ActionValue::Iota(parse_iota(pair.into_inner().next().unwrap())),
+                Rule::BookkeeperValue => ActionValue::Bookkeeper(parse_bookkeeper(pair)),
 
                 _ => unreachable!(),
             })
@@ -59,6 +61,10 @@ pub fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
         Rule::Number => Iota::Number(pair.as_str().parse().unwrap()),
         _ => unreachable!(),
     }
+}
+
+pub fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
+    pair.as_str().to_string()
 }
 
 pub fn build_ast(program: Pair<'_, Rule>) {
@@ -79,9 +85,19 @@ pub fn build_ast(program: Pair<'_, Rule>) {
 
 #[derive(Debug)]
 pub enum AstNode {
-    Action { name: String, value: Option<Iota> },
+    Action {
+        name: String,
+        value: Option<ActionValue>,
+    },
     Hex(Box<AstNode>),
     N,
+}
+
+#[derive(Debug)]
+
+pub enum ActionValue {
+    Iota(Iota),
+    Bookkeeper(String),
 }
 
 #[derive(Debug)]

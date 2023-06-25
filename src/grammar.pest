@@ -14,7 +14,7 @@ BookkeeperValue = {("v" | "-")+}
 
 ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
-Iota = _{ Number | Vector | Entity | Influence | Bool | Pattern}
+Iota = { Number | Vector | Entity | Influence | Bool | Pattern}
 
 Vector = {"(" ~ Number ~ "," ~ Number ~ "," ~ Number ~ ")" }
 
