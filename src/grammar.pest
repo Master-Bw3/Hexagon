@@ -1,16 +1,56 @@
-Program = _{ SOI ~ ((Action | IntroRetro) ~ Newline?)* ~ EOI }
+Program = _{ SOI ~ ((Embed | Action | IntroRetro) ~ Newline?)* ~ EOI }
 
-Action = { ActionName ~ (":" ~ (Number | BookkeeperValue | ActionDiscriminator))? }
+Action = { ActionName ~ (":" ~ (Iota | BookkeeperValue | ActionDiscriminator))? }
 
-ActionName = {('A'..'Z') ~ ('a'..'z' | "'")* ~ ('A'..'Z')? ~ ('a'..'z' | "'")* ~ (("+" | "-") ~ 'X'..'Z')?}
-
-Number = { ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
+ActionName = {'A'..'Z' ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
 BookkeeperValue = {("v" | "-")+}
 
-ActionDiscriminator = { ('A'..'Z') ~ ('A'..'Z' | 'a'..'z' | "-")* ~ ('A'..'Z')? }
+ActionDiscriminator = { ('A'..'Z') ~ ('A'..'z' | "-")* ~ ('A'..'Z')? }
+
+Iota = { Number | Vector | Entity | Influence | Bool | Pattern}
+
+Vector = {"(" ~ Number ~ "," ~ Number ~ "," ~ Number ~ ")" }
+
+Number = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
+
+Entity = {"{" ~ String ~ "," ~ EntityType ~ ("," ~ Uuid)? ~ "}" }
+
+Uuid = ${ UuidStart ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UUIDEnd }
+
+UuidStart = @{ (ASCII_DIGIT | 'a'..'z'){8} }
+
+UuidSlice = @{ (ASCII_DIGIT | 'a'..'z'){4} }
+
+UUIDEnd = @{ (ASCII_DIGIT | 'a'..'z'){12} }
+
+EntityType = @{'a'..'z'+ ~ ":" ~ 'a'..'z'+}
+
+Influence = @{"Null" | "Garbage"}
+
+Bool = @{"True" | "False"}
+
+Pattern = ${ PatternName | ActionName }
+
+String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))+ ~ "\"")}
+
+PatternName = ${ PatternDirection ~ " " ~ PatternSignature}
+
+PatternDirection = @{("NORTHEAST" | "EAST" | "SOUTHEAST" | "SOUTHWEST" | "WEST" | "NORTHWEST")}
+
+PatternSignature = @{("q" | "a" | "w" | "e" | "d")+}
 
 IntroRetro = { "{" | "}" }
+
+Embed = ${ "<" ~ ( IntroEmbed | ConsiderEmbed | SmartEmbed | DirectEmbed ) ~ ">" }
+
+DirectEmbed = @{ Iota }
+
+IntroEmbed = @{ "{" ~ Iota ~ "}" }
+
+ConsiderEmbed = @{"\\" ~ Iota }
+
+SmartEmbed = @{"<" ~ Iota ~ ">"}
 
 WHITESPACE = _{ " " | "\t" }
 
