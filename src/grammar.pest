@@ -1,4 +1,10 @@
-Program = _{ SOI ~ ((Embed | Op | Var | Action | IntroRetro) ~ Newline?)* ~ EOI }
+File = { SOI ~ Hex ~ EOI }
+
+Hex = _{ ((Keyword | Embed | Op | Var | Term | Action | IntroRetro) ~ Newline? | Newline)* }
+
+Keyword = { "if" | "then" | "else" } 
+
+Term = {"(" ~ Hex ~ ")"}
 
 Action = { ActionName ~ (":" ~ (Iota | BookkeeperValue | ActionDiscriminator))? }
 
