@@ -8,13 +8,16 @@ Term = {"(" ~ Hex ~ ")"}
 
 Action = { ActionName ~ (":" ~ (Iota | BookkeeperValue | ActionDiscriminator))? }
 
-ActionName = {ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
+ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
 BookkeeperValue = {("v" | "-")+}
 
 ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
-Iota = { Number | Vector | Entity | Influence | Bool | Pattern}
+Iota = { Number | Vector | Entity | Influence | Bool | Pattern | List}
+
+List = !{"[" ~ ((Iota ~ ",")* ~ Iota)? ~ "]" }
+
 
 Vector = {"(" ~ Number ~ "," ~ Number ~ "," ~ Number ~ ")" }
 
