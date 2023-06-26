@@ -117,10 +117,10 @@ fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
 }
 
 fn parse_embed(pair: Pair<'_, Rule>) -> AstNode {
-    let pair = pair.into_inner().next().unwrap();
+    let inner_pair = pair.into_inner().next().unwrap();
     AstNode::Op {
         name: {
-            match pair.as_rule() {
+            match inner_pair.as_rule() {
                 Rule::DirectEmbed => OpName::Embed,
                 Rule::SmartEmbed => OpName::SmartEmbed,
                 Rule::IntroEmbed => OpName::IntroEmbed,
@@ -128,7 +128,7 @@ fn parse_embed(pair: Pair<'_, Rule>) -> AstNode {
                 _ => unreachable!(),
             }
         },
-        arg: (pair
+        arg: (inner_pair
             .into_inner()
             .next()
             .map(|iota| OpValue::Iota(parse_iota(iota)))),
@@ -136,37 +136,37 @@ fn parse_embed(pair: Pair<'_, Rule>) -> AstNode {
 }
 
 fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
-    let pair = pair.into_inner().next().unwrap();
-    match dbg!(pair.as_rule()) {
-        Rule::Number => Iota::Number(pair.as_str().parse().unwrap()),
-        Rule::Pattern => Iota::Pattern(pair.as_str().to_string()),
+    let inner_pair = pair.into_inner().next().unwrap();
+    match dbg!(inner_pair.as_rule()) {
+        Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
+        Rule::Pattern => Iota::Pattern(inner_pair.as_str().to_string()),
         Rule::Vector => {
-            let mut inner = pair.into_inner();
+            let mut inner = inner_pair.into_inner();
             Iota::Vector(
                 inner.next().unwrap().as_str().parse().unwrap(),
                 inner.next().unwrap().as_str().parse().unwrap(),
                 inner.next().unwrap().as_str().parse().unwrap(),
             )
         }
-        Rule::Bool => match pair.as_str() {
+        Rule::Bool => match inner_pair.as_str() {
             "True" => Iota::Bool(true),
             "False" => Iota::Bool(false),
             _ => unreachable!(),
         },
-        Rule::Influence => match pair.as_str() {
+        Rule::Influence => match inner_pair.as_str() {
             "Garbage" => Iota::Garbage,
             "Null" => Iota::Null,
             _ => unreachable!(),
         },
         Rule::Entity => {
-            let mut inner = pair.into_inner();
+            let mut inner = inner_pair.into_inner();
             let name = parse_string(inner.next().unwrap());
             let entity_type = inner.next().unwrap().as_str().to_string();
 
             Iota::Entity { name, entity_type }
         }
         Rule::List => {
-            let inner = pair.into_inner();
+            let inner = inner_pair.into_inner();
             Iota::List(
                 inner
                     .map(|inner_pair| parse_iota(inner_pair))
