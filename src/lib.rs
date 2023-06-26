@@ -16,13 +16,17 @@ pub fn run() {
         Jester's Gambit \n
         Nullary Reflection \n
         Augur's Exaltation \n
-        Numerical Reflection: (1, 2, 3)
-        Store($hello)
-        }
-        Consideration: Huginn's Gambit
-        $hello
-        Push($hello)
-        ",
+        Numerical Reflection: (1, 2, 3) \n
+        Store($hello) \n
+        } \n
+        Consideration: Huginn's Gambit \n
+        $hello \n
+        Push($hello) \n
+        <True> \n
+        <<True>> \n
+        <\\True> \n
+        <{True}> \n
+        ", 
     );
 
     println!("{:?}", parse_result.unwrap())
@@ -50,7 +54,7 @@ fn parse(source: &str) -> Result<Vec<AstNode>, Error<Rule>> {
             }
             Rule::IntroRetro => ast.push(parse_intro_retro(pair)),
             Rule::Var => ast.push(parse_var(pair)),
-            
+            Rule::Embed => (ast.push(parse_embed(pair))),
             _ => {}
         }
     }
@@ -70,7 +74,7 @@ fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>) -> AstNode {
         },
         arg: {
             arg.map(|pair| match pair.as_rule() {
-                Rule::Iota => OpValue::Iota(parse_iota(pair.into_inner().next().unwrap())),
+                Rule::Iota => OpValue::Iota(parse_iota(pair)),
                 Rule::Var => OpValue::Var(pair.as_str().to_string()),
                 _ => unreachable!(),
             })
@@ -83,7 +87,7 @@ fn parse_action(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>) -> AstNode 
         name: { left.as_str().to_string() },
         value: {
             right.map(|pair| match pair.as_rule() {
-                Rule::Iota => ActionValue::Iota(parse_iota(pair.into_inner().next().unwrap())),
+                Rule::Iota => ActionValue::Iota(parse_iota(pair)),
                 Rule::BookkeeperValue => ActionValue::Bookkeeper(parse_bookkeeper(pair)),
 
                 _ => unreachable!(),
@@ -112,7 +116,27 @@ fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     }
 }
 
+fn parse_embed(pair: Pair<'_, Rule>) -> AstNode {
+    let pair = pair.into_inner().next().unwrap();
+    AstNode::Op {
+        name: {
+            match pair.as_rule() {
+                Rule::DirectEmbed => OpName::Embed,
+                Rule::SmartEmbed => OpName::SmartEmbed,
+                Rule::IntroEmbed => OpName::IntroEmbed,
+                Rule::ConsiderEmbed => OpName::ConsiderEmbed,
+                _ => unreachable!(),
+            }
+        },
+        arg: (pair
+            .into_inner()
+            .next()
+            .map(|iota| OpValue::Iota(parse_iota(iota)))),
+    }
+}
+
 fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
+    let pair = pair.into_inner().next().unwrap();
     match dbg!(pair.as_rule()) {
         Rule::Number => Iota::Number(pair.as_str().parse().unwrap()),
         Rule::Pattern => Iota::Pattern(pair.as_str().to_string()),
@@ -145,7 +169,7 @@ fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
             let inner = pair.into_inner();
             Iota::List(
                 inner
-                    .map(|inner_pair| parse_iota(inner_pair.into_inner().next().unwrap()))
+                    .map(|inner_pair| parse_iota(inner_pair))
                     .collect(),
             )
         }
@@ -197,6 +221,10 @@ enum OpName {
     Store,
     Copy,
     Push,
+    Embed,
+    SmartEmbed,
+    ConsiderEmbed,
+    IntroEmbed,
 }
 
 #[derive(Debug)]
