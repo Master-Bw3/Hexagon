@@ -5,10 +5,12 @@ use pest::{
 };
 use pest_derive::Parser;
 
+use crate::iota::Iota;
+
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
 struct HexParser;
-pub fn parse(source: &str) -> Result<Vec<AstNode>, Error<Rule>> {
+pub fn parse(source: &str) -> Result<AstNode, Error<Rule>> {
     let mut ast = vec![];
 
     let pairs = HexParser::parse(Rule::File, source)?;
@@ -18,7 +20,7 @@ pub fn parse(source: &str) -> Result<Vec<AstNode>, Error<Rule>> {
         }
     }
 
-    Ok(ast)
+    Ok(AstNode::Hex(ast))
 }
 
 fn construct_ast_node(pair: Pair<'_, Rule>) -> Option<AstNode> {
@@ -48,7 +50,7 @@ fn construct_ast_node(pair: Pair<'_, Rule>) -> Option<AstNode> {
     }
 }
 
-fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>) -> AstNode {
+fn parse_op<'a>(name: Pair<'a, Rule>, arg: Option<Pair<'a, Rule>>) -> AstNode<'a> {
     AstNode::Op {
         name: {
             match name.as_str() {
@@ -68,7 +70,7 @@ fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>) -> AstNode {
     }
 }
 
-fn parse_action(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>) -> AstNode {
+fn parse_action<'a>(left: Pair<'a, Rule>, right: Option<Pair<'a, Rule>>) -> AstNode<'a> {
     AstNode::Action {
         name: { left.as_str().to_string() },
         value: {
@@ -171,8 +173,8 @@ fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
         },
         Rule::Entity => {
             let mut inner = inner_pair.into_inner();
-            let name = parse_string(inner.next().unwrap());
-            let entity_type = inner.next().unwrap().as_str().to_string();
+            let name = inner.next().unwrap().as_str();
+            let entity_type = inner.next().unwrap().as_str();
 
             Iota::Entity { name, entity_type }
         }
@@ -196,20 +198,20 @@ fn parse_string(pair: Pair<'_, Rule>) -> String {
 }
 
 #[derive(Debug)]
-pub enum AstNode {
+pub enum AstNode<'a> {
     Action {
         name: String,
-        value: Option<ActionValue>,
+        value: Option<ActionValue<'a>>,
     },
-    Hex(Vec<AstNode>),
+    Hex(Vec<AstNode<'a>>),
     Op {
         name: OpName,
-        arg: Option<OpValue>,
+        arg: Option<OpValue<'a>>,
     },
     IfBlock {
-        condition: Box<AstNode>,
-        succeed: Box<AstNode>,
-        fail: Option<Box<AstNode>>,
+        condition: Box<AstNode<'a>>,
+        succeed: Box<AstNode<'a>>,
+        fail: Option<Box<AstNode<'a>>>,
     },
 }
 
@@ -225,28 +227,15 @@ pub enum OpName {
 }
 
 #[derive(Debug)]
-pub enum OpValue {
-    Iota(Iota),
+pub enum OpValue<'a> {
+    Iota(Iota<'a>),
     Var(String),
 }
 
 #[derive(Debug)]
-pub enum ActionValue {
-    Iota(Iota),
+pub enum ActionValue<'a> {
+    Iota(Iota<'a>),
     Bookkeeper(String),
-}
-
-#[derive(Debug)]
-
-pub enum Iota {
-    Number(f32),
-    Vector(f32, f32, f32),
-    Pattern(String),
-    Bool(bool),
-    Garbage,
-    Null,
-    Entity { name: String, entity_type: String },
-    List(std::vec::Vec<Iota>),
 }
 
 #[cfg(test)]

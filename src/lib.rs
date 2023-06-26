@@ -1,5 +1,7 @@
 use std::fs;
 pub mod parser;
+pub mod patterns;
+pub mod iota;
 
 pub fn run() {
     let source = fs::read_to_string("test.txt").expect("Should have been able to read the file");
