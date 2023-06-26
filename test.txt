@@ -1,0 +1,20 @@
+{
+    Mind's Reflection
+    Copy($self)
+    Compass' Purification
+    $self
+    Alidade's Purification
+    Scout's Distillation
+    Copy($scoutResult)
+    Nullary Reflection
+    Equality Distillation
+    Store($isNull)
+    if ($isNull) then (
+        $scoutResult
+        Compass' Purification
+    ) else if ($owo) then (
+        Gemini Decomposition
+    ) else (
+        Charon's Gambit
+    )
+}
