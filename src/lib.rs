@@ -16,6 +16,7 @@ pub fn run() {
         Nullary Reflection \n
         Augur's Exaltation \n
         Numerical Reflection: (1, 2, 3)
+        Store()
         ",
     );
 
@@ -37,10 +38,10 @@ fn parse(source: &str) -> Result<Vec<AstNode>, Error<Rule>> {
             }
             Rule::Op => {
                 let mut pair = pair.into_inner();
-                let left = pair.next().unwrap();
-                let right = pair.next();
+                let name = pair.next().unwrap();
+                let arg = pair.next();
 
-                ast.push(parse_action(left, right));
+                ast.push(parse_op(name, arg));
             }
             _ => {}
         }
@@ -49,18 +50,19 @@ fn parse(source: &str) -> Result<Vec<AstNode>, Error<Rule>> {
     Ok(ast)
 }
 
-fn parse_op(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>) -> AstNode {
+fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>) -> AstNode {
     AstNode::Op {
         name: {
-            match left.as_str() {
+            match name.as_str() {
                 "Store" => OpName::Store,
                 "Copy" => OpName::Copy,
                 _ => unreachable!()
             }
         },
-        value: {
-            right.map(|pair| match pair.as_rule() {
+        arg: {
+            arg.map(|pair| match pair.as_rule() {
                 Rule::Iota => OpValue::Iota(parse_iota(pair.into_inner().next().unwrap())),
+                Rule::Var => OpValue::Var(pair.as_str().to_string()),
                 _ => unreachable!(),
             })
         },
@@ -158,7 +160,7 @@ enum AstNode {
     Hex(Box<AstNode>),
     Op {
         name: OpName,
-        value: Option<OpValue>,
+        arg: Option<OpValue>,
     },
 }
 
