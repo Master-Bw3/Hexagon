@@ -1,6 +1,3 @@
-use hexagon;
-
 fn main() {
-   hexagon::run() 
+    hexagon::run()
 }
-

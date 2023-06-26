@@ -2,15 +2,15 @@ File = _{ SOI ~ Hex ~ EOI }
 
 Hex = _{ ((IfBlock | Embed | Op | Var | Action | IntroRetro) ~ Newline? | Newline)* }
 
-IfBlock = {If ~ Then ~ (ElseIf ~ Then)* ~ Else?}
+IfBlock = {If ~ Then ~ (ElseIf ~ Then ~ Newline? )* ~ Else?}
 
-If =  {"if" ~ Term}
+If =  {"if" ~ Newline? ~ Term}
 
-Then = {"then"  ~ Term}
+Then = {"then" ~ Newline? ~ Term}
 
-Else = {"else" ~ Term}
+Else = {"else" ~ Newline? ~ Term}
 
-ElseIf = {"else if" ~ Term}
+ElseIf = {"else if" ~ Newline? ~ Term}
 
 Term = {"(" ~ Hex ~ ")"}
 
@@ -43,9 +43,9 @@ UUIDEnd = @{ (ASCII_DIGIT | ASCII_ALPHA_LOWER){12} }
 
 EntityType = @{ASCII_ALPHA_LOWER+ ~ ":" ~ ASCII_ALPHA_LOWER+}
 
-Influence = @{"Null" | "Garbage"}
+Influence = @{"Null" | "Garbage" ~ !(ASCII_ALPHA)}
 
-Bool = @{"True" | "False"}
+Bool = @{"True" | "False" ~ !(ASCII_ALPHA)}
 
 Pattern = ${ PatternName | ActionName }
 

@@ -1,4 +1,4 @@
-use pest::{error::Error, iterators::Pair, Parser};
+use pest::{error::Error, iterators::{Pair, Pairs}, Parser};
 use pest_derive::Parser;
 
 #[derive(Parser)]
@@ -26,7 +26,11 @@ pub fn run() {
         <<True>> \n
         <\\True> \n
         <{True}> \n
-        ", 
+        if () then ( \n
+            Reveal Reveal \n
+        )
+        <True>
+        ",
     );
 
     println!("{:?}", parse_result.unwrap())
@@ -37,29 +41,39 @@ fn parse(source: &str) -> Result<Vec<AstNode>, Error<Rule>> {
 
     let pairs = HexParser::parse(Rule::File, source)?;
     for pair in pairs {
-        match pair.as_rule() {
-            Rule::Action => {
-                let mut pair = pair.into_inner();
-                let left = pair.next().unwrap();
-                let right = pair.next();
-
-                ast.push(parse_action(left, right));
-            }
-            Rule::Op => {
-                let mut pair = pair.into_inner();
-                let name = pair.next().unwrap();
-                let arg = pair.next();
-
-                ast.push(parse_op(name, arg));
-            }
-            Rule::IntroRetro => ast.push(parse_intro_retro(pair)),
-            Rule::Var => ast.push(parse_var(pair)),
-            Rule::Embed => (ast.push(parse_embed(pair))),
-            _ => {}
+        if let Some(node) = construct_ast_node(pair) {
+            ast.push(node);
         }
     }
 
     Ok(ast)
+}
+
+fn construct_ast_node(pair: Pair<'_, Rule>) -> Option<AstNode> {
+    match dbg!(pair.as_rule()) {
+        Rule::Action => {
+            let mut pair = pair.into_inner();
+            let left = pair.next().unwrap();
+            let right = pair.next();
+
+            Some(parse_action(left, right))
+        }
+        Rule::Op => {
+            let mut pair = pair.into_inner();
+            let name = pair.next().unwrap();
+            let arg = pair.next();
+
+            Some(parse_op(name, arg))
+        }
+        Rule::IntroRetro => Some(parse_intro_retro(pair)),
+        Rule::Var => Some(parse_var(pair)),
+        Rule::Embed => Some(parse_embed(pair)),
+        Rule::IfBlock => Some(parse_if_block(pair)),
+        Rule::Term => Some(AstNode::Hex(
+            pair.into_inner().filter_map(construct_ast_node).collect(),
+        )),
+        _ => None,
+    }
 }
 
 fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>) -> AstNode {
@@ -135,6 +149,31 @@ fn parse_embed(pair: Pair<'_, Rule>) -> AstNode {
     }
 }
 
+fn parse_if_block(pair: Pair<'_, Rule>) -> AstNode {
+    fn parse_inner(mut inner: Pairs<'_, Rule>) -> AstNode {
+        AstNode::IfBlock {
+            condition: {
+                let mut condition = inner.next().unwrap().into_inner();
+                Box::new(construct_ast_node(condition.next().unwrap()).unwrap())
+            },
+            succeed: {
+                let mut succeed = inner.next().unwrap().into_inner();
+                Box::new(construct_ast_node(succeed.next().unwrap()).unwrap())
+            },
+            fail: {
+                inner.next().map(|branch| match branch.as_rule() {
+                    Rule::Else => {
+                        Box::new(construct_ast_node(branch.into_inner().next().unwrap()).unwrap())
+                    }
+                    Rule::ElseIf => Box::new(parse_inner(inner)),
+                    _ => unreachable!(),
+                })
+            },
+        }
+    }
+    parse_inner(pair.into_inner())
+}
+
 fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
     let inner_pair = pair.into_inner().next().unwrap();
     match dbg!(inner_pair.as_rule()) {
@@ -167,11 +206,7 @@ fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
-            Iota::List(
-                inner
-                    .map(|inner_pair| parse_iota(inner_pair))
-                    .collect(),
-            )
+            Iota::List(inner.map(parse_iota).collect())
         }
         _ => unreachable!(),
     }
@@ -183,8 +218,8 @@ fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
 
 fn parse_string(pair: Pair<'_, Rule>) -> String {
     pair.as_str()
-        .trim_start_matches("\"")
-        .trim_end_matches("\"")
+        .trim_start_matches('\"')
+        .trim_end_matches('\"')
         .to_string()
 }
 
@@ -209,10 +244,15 @@ enum AstNode {
         name: String,
         value: Option<ActionValue>,
     },
-    Hex(Box<AstNode>),
+    Hex(Vec<AstNode>),
     Op {
         name: OpName,
         arg: Option<OpValue>,
+    },
+    IfBlock {
+        condition: Box<AstNode>,
+        succeed: Box<AstNode>,
+        fail: Option<Box<AstNode>>,
     },
 }
 
