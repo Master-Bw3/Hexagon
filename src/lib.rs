@@ -8,6 +8,7 @@ struct HexParser;
 pub fn run() {
     let parse_result = parse(
         "
+        {
         Bookkeeper's Gambit: [{\"bob\", minecraft:cow}, 1] \n
         Gemini Decomposition \n
         Pace Purification \n
@@ -16,7 +17,11 @@ pub fn run() {
         Nullary Reflection \n
         Augur's Exaltation \n
         Numerical Reflection: (1, 2, 3)
-        Store()
+        Store($hello)
+        }
+        Consideration: Huginn's Gambit
+        $hello
+        Push($hello)
         ",
     );
 
@@ -43,6 +48,9 @@ fn parse(source: &str) -> Result<Vec<AstNode>, Error<Rule>> {
 
                 ast.push(parse_op(name, arg));
             }
+            Rule::IntroRetro => ast.push(parse_intro_retro(pair)),
+            Rule::Var => ast.push(parse_var(pair)),
+            
             _ => {}
         }
     }
@@ -56,7 +64,8 @@ fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>) -> AstNode {
             match name.as_str() {
                 "Store" => OpName::Store,
                 "Copy" => OpName::Copy,
-                _ => unreachable!()
+                "Push" => OpName::Push,
+                _ => unreachable!(),
             }
         },
         arg: {
@@ -80,6 +89,26 @@ fn parse_action(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>) -> AstNode 
                 _ => unreachable!(),
             })
         },
+    }
+}
+
+fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
+    AstNode::Action {
+        name: {
+            match pair.as_str() {
+                "{" => "Introspection".to_string(),
+                "}" => "Retrospection".to_string(),
+                _ => unreachable!(),
+            }
+        },
+        value: None,
+    }
+}
+
+fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
+    AstNode::Op {
+        name: OpName::Push,
+        arg: { Some(OpValue::Var(pair.as_str().to_string())) },
     }
 }
 
@@ -137,9 +166,8 @@ fn parse_string(pair: Pair<'_, Rule>) -> String {
 
 fn build_ast(program: Pair<'_, Rule>) {
     for token in program.into_inner() {
-        //valid tokens inside Hex token: Keyword | Embed | Op | Var | Term | Action | IntroRetro
+        //valid tokens inside Hex token: IfBlock | Embed | Op | Var | Term | Action | IntroRetro
         match token.as_rule() {
-            Rule::Keyword => todo!(),
             Rule::Embed => todo!(),
             Rule::Op => todo!(),
             Rule::Var => todo!(),
@@ -168,6 +196,7 @@ enum AstNode {
 enum OpName {
     Store,
     Copy,
+    Push,
 }
 
 #[derive(Debug)]
@@ -193,4 +222,30 @@ enum Iota {
     Null,
     Entity { name: String, entity_type: String },
     List(std::vec::Vec<Iota>),
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::*;
+
+    #[test]
+    fn hex() {
+        parse(
+            "
+            {
+            Bookkeeper's Gambit: [{\"bob\", minecraft:cow}, 1] \n
+            Gemini Decomposition \n
+            Pace Purification \n
+            Augur's Purification \n
+            Jester's Gambit \n
+            Nullary Reflection \n
+            Augur's Exaltation \n
+            Numerical Reflection: (1, 2, 3)
+            Store()
+            }
+            Consideration: Huginn's Gambit
+            ",
+        )
+        .unwrap();
+    }
 }
