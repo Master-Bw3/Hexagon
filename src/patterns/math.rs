@@ -6,12 +6,15 @@ use crate::{
     iota::Iota,
 };
 
-pub fn add(state: State, value: Option<Iota>) -> Result<State, Mishap> {
+pub fn add(state: State) -> Result<State, Mishap> {
+    let mut new_stack = state.stack.clone();
+
+
     let arg_count = 2;
 
     let iotas = (
-        state.stack.get_num_or_vec(0, arg_count)?,
-        state.stack.get_num_or_vec(1, arg_count)?,
+        new_stack.get_num_or_vec(0, arg_count)?,
+        new_stack.get_num_or_vec(1, arg_count)?,
     );
 
     let operation_result = match iotas {
@@ -21,7 +24,6 @@ pub fn add(state: State, value: Option<Iota>) -> Result<State, Mishap> {
         (Either::B(vec1), Either::B(vec2)) => Iota::Vector(vec1 + vec2),
     };
 
-    let mut new_stack = state.stack.clone();
     new_stack.push(operation_result);
 
     Ok(State {

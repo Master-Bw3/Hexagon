@@ -5,12 +5,11 @@ use crate::{
 };
 
 #[derive(Clone)]
-
 pub struct Pattern {
     pub display_name: String,
     pub internal_name: String,
     pub signature: String,
-    pub action: fn(state: State, value: Option<Iota>) -> Result<State, Mishap>,
+    pub action: fn(state: State) -> Result<State, Mishap>,
 }
 
 impl Pattern {
@@ -18,7 +17,7 @@ impl Pattern {
         display_name: &str,
         internal_name: &str,
         signature: &str,
-        action: fn(state: State, value: Option<Iota>) -> Result<State, Mishap>,
+        action: fn(state: State) -> Result<State, Mishap>,
     ) -> Pattern {
         Pattern {
             display_name: display_name.to_string(),
@@ -37,6 +36,6 @@ impl Pattern {
             None => None,
         };
 
-        (self.action)(state, value)
+        (self.action)(state)
     }
 }
