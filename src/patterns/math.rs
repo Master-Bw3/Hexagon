@@ -1,15 +1,17 @@
 use crate::{
     interpreter::{
         mishap::Mishap,
-        stack::{Either, StackExt, State},
+        state::{Either, StackExt, State},
     },
     iota::Iota,
 };
 
-pub fn add(state: State) -> Result<State, Mishap> {
+pub fn add(state: State, value: Option<Iota>) -> Result<State, Mishap> {
+    let arg_count = 2;
+
     let iotas = (
-        state.stack.get_num_or_vec(1)?,
-        state.stack.get_num_or_vec(0)?,
+        state.stack.get_num_or_vec(0, arg_count)?,
+        state.stack.get_num_or_vec(1, arg_count)?,
     );
 
     let operation_result = match iotas {

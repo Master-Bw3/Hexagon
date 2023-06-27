@@ -1,13 +1,30 @@
-use crate::patterns::{pattern::Pattern, selectors::get_caster};
+use crate::patterns::{math, pattern::Pattern, selectors};
 
-pub struct PatternRegistry (Vec<Pattern>);
+pub type PatternRegistry = Vec<Pattern>;
 
+pub trait PatternRegistryExt {
+    fn construct() -> PatternRegistry;
+    fn find(self, query: String) -> Option<Pattern>;
+}
 
-impl PatternRegistry {
-pub fn construct() -> PatternRegistry {
-    let mut registry: Vec<Pattern> = vec![];
-    // registry.push(Pattern { display_name: "Mind's Reflection".to_string(), internal_name: "get_caster".to_string(), signature: "qaq".to_string(), action: get_caster });
+impl PatternRegistryExt for PatternRegistry {
+    fn construct() -> PatternRegistry {
+        let mut registry: PatternRegistry = vec![];
+        registry.push(Pattern::new("Mind's Reflection", "get_caster", "qaq", selectors::get_caster));
+        registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
 
+        registry
+    }
 
-    PatternRegistry(registry)
-}}
+    fn find(self, query: String) -> Option<Pattern> {
+        self.into_iter()
+            .filter(|entry| {
+                entry.display_name == query
+                    || entry.internal_name == query
+                    || entry.signature == query
+            })
+            .collect::<Vec<Pattern>>()
+            .get(0).map(|x| x.clone())
+            
+    }
+}

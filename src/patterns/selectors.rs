@@ -1,9 +1,9 @@
 use crate::{
-    interpreter::{mishap::Mishap, stack::State},
+    interpreter::{mishap::Mishap, state::State},
     iota::{EntityIota, Iota},
 };
 
-pub fn get_caster(state: State) -> Result<State, Mishap> {
+pub fn get_caster(state: State, value: Option<Iota>) -> Result<State, Mishap> {
     let caster = Iota::Entity(EntityIota {
         name: "caster".to_string(),
         entity_type: "minecraft:player".to_string(),

@@ -1,5 +1,7 @@
-use crate::{interpreter::stack::Stack, iota::{Iota}};
 use crate::iota::GarbageIota::Garbage;
+use crate::{interpreter::state::Stack, iota::Iota};
+
+#[derive(Debug)]
 pub enum Mishap {
     NotEnoughIotas(usize),
     IncorrectIota(usize),
@@ -8,7 +10,6 @@ pub enum Mishap {
 
 impl Mishap {
     pub fn apply_to_stack(self, stack: Stack) -> Stack {
-
         match self {
             Mishap::NotEnoughIotas(num) => {
                 let mut new_stack = stack.clone();

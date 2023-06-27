@@ -1,31 +1,33 @@
 pub mod mishap;
-pub mod stack;
+pub mod state;
 
 use std::collections::HashMap;
 
 use crate::{
-    parser::AstNode, iota::Iota,
+    parser::AstNode,
+    pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-use self::stack::{State};
+use self::state::State;
 
-
-
-
-fn interpret(node: AstNode) -> Vec<Iota> {
+pub fn interpret(node: AstNode) -> Result<State, String> {
     let mut state = State {
         stack: vec![],
         ravenmind: None,
     };
     let mut heap: HashMap<String, i32> = HashMap::new();
+    let pattern_registry = PatternRegistry::construct();
 
     match node {
         AstNode::Action { name, value } => {
-            let new_stack = vec![]; //find action -> operate()
-
-            state.stack = new_stack;
+            let pattern = pattern_registry.find(name).ok_or("Invalid Action")?;
+            state = pattern.operate(state, value).map_err(|err| format!("{:?}", err))?;
         }
-        AstNode::Hex(_) => todo!(),
+        AstNode::Hex(nodes) => {
+            for node in nodes {
+                interpret(node)?;
+            }
+        }
         AstNode::Op { name, arg } => todo!(),
         AstNode::IfBlock {
             condition,
@@ -33,5 +35,6 @@ fn interpret(node: AstNode) -> Vec<Iota> {
             fail,
         } => todo!(),
     }
-    state.stack
+
+    Ok(state)
 }
