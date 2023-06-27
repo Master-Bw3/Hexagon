@@ -1,7 +1,7 @@
 use crate::{
     interpreter::{
         mishap::Mishap,
-        stack::{NumOrVec, StackExt, State},
+        stack::{Either, StackExt, State},
     },
     iota::Iota,
 };
@@ -13,11 +13,10 @@ pub fn add(state: State) -> Result<State, Mishap> {
     );
 
     let operation_result = match iotas {
-        (NumOrVec::Num(num1), NumOrVec::Num(num2)) => Iota::Number(num1 + num2),
-        (NumOrVec::Num(num), NumOrVec::Vec(vec)) => Iota::Vector(vec.add_scalar(num)),
-        (NumOrVec::Vec(vec), NumOrVec::Num(num)) => Iota::Vector(vec.add_scalar(num)),
-        (NumOrVec::Vec(vec1), NumOrVec::Vec(vec2)) => 
-        Iota::Vector(vec1 + vec2),
+        (Either::A(num1), Either::A(num2)) => Iota::Number(num1 + num2),
+        (Either::A(num), Either::B(vec)) => Iota::Vector(vec.add_scalar(num)),
+        (Either::B(vec), Either::A(num)) => Iota::Vector(vec.add_scalar(num)),
+        (Either::B(vec1), Either::B(vec2)) => Iota::Vector(vec1 + vec2),
     };
 
     let mut new_stack = state.stack.clone();

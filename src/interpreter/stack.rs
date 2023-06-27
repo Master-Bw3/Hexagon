@@ -12,9 +12,9 @@ pub struct State {
     pub ravenmind: Option<Iota>,
 }
 
-pub enum NumOrVec {
-    Num(NumberIota),
-    Vec(VectorIota),
+pub enum Either<A, B> {
+    A(A),
+    B(B),
 }
 
 pub trait StackExt {
@@ -27,7 +27,7 @@ pub trait StackExt {
     fn get_entity(&self, index: usize) -> Result<EntityIota, Mishap>;
     fn get_list(&self, index: usize) -> Result<ListIota, Mishap>;
 
-    fn get_num_or_vec(&self, index: usize) -> Result<NumOrVec, Mishap>;
+    fn get_num_or_vec(&self, index: usize) -> Result<Either<NumberIota, VectorIota>, Mishap>;
 }
 
 impl StackExt for Stack {
@@ -111,13 +111,14 @@ impl StackExt for Stack {
         }
     }
 
-    fn get_num_or_vec(&self, index: usize) -> Result<NumOrVec, Mishap> {
+    fn get_num_or_vec(&self, index: usize) -> Result<Either<NumberIota, VectorIota>, Mishap> {
         let iota = self
             .get(self.len() - 1 - index)
             .ok_or(Mishap::NotEnoughIotas(1))?;
         match iota {
-            Iota::Vector(x) => Ok(NumOrVec::Vec(*x)),
-            Iota::Number(x) => Ok(NumOrVec::Num(*x)),
+            Iota::Number(x) => Ok(Either::A(*x)),
+            Iota::Vector(x) => Ok(Either::B(*x)),
+
             _ => Err(Mishap::IncorrectIota(index)),
         }
     }

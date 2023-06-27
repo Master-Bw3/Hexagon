@@ -12,7 +12,6 @@ pub enum Mishap {
 impl Mishap {
     fn apply_mishap(state: State) -> State {
         let t = Stack::new();
-        let e: Result<bool, Mishap> = t.get_bool_iota(1);
         todo!()
 
     }
