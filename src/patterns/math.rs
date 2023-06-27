@@ -8,7 +8,7 @@ use crate::{
 
 pub fn add(state: State) -> Result<State, Mishap> {
     let iotas = (
-        state.stack.get_num_or_vec(0)?,
+        state.stack.get_num_or_vec(1)?,
         state.stack.get_num_or_vec(0)?,
     );
 
