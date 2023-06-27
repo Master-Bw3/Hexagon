@@ -18,7 +18,7 @@ pub fn interpret(node: AstNode) -> Result<State, String> {
     let mut heap: HashMap<String, i32> = HashMap::new();
     let pattern_registry = PatternRegistry::construct();
 
-    interpret_node(node, &mut state, &mut heap, &pattern_registry).map(|x| x.clone())
+    (interpret_node(node, &mut state, &mut heap, &pattern_registry)).cloned()
 }
 
 fn interpret_node<'a>(

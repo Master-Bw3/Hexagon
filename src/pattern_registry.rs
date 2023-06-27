@@ -4,7 +4,7 @@ pub type PatternRegistry = Vec<Pattern>;
 
 pub trait PatternRegistryExt {
     fn construct() -> PatternRegistry;
-    fn find(&self, query: String) -> Option<Pattern>;
+    fn find(&self, query: String) -> Option<&Pattern>;
 }
 
 impl PatternRegistryExt for PatternRegistry {
@@ -16,7 +16,7 @@ impl PatternRegistryExt for PatternRegistry {
         registry
     }
 
-    fn find(&self, query: String) -> Option<Pattern> {
+    fn find(&self, query: String) -> Option<&Pattern> {
         self.into_iter()
             .filter(|entry| {
                 entry.display_name == query
@@ -24,7 +24,7 @@ impl PatternRegistryExt for PatternRegistry {
                     || entry.signature == query
             })
             .collect::<Vec<&Pattern>>()
-            .get(0).map(|x| (*x).clone())
+            .get(0).map(|x| *x)
             
     }
 }
