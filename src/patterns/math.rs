@@ -7,7 +7,6 @@ use crate::{
 };
 
 pub fn add(state: &mut State) -> Result<&mut State, Mishap> {
-    state.stack.clone();
     let arg_count = 2;
     let iotas = (
         state.stack.get_num_or_vec(0, arg_count)?,
