@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Iota {
     Number(NumberIota),
     Vector(VectorIota),
@@ -10,23 +10,26 @@ pub enum Iota {
     List(ListIota),
 }
 
+
+
+
 pub type NumberIota = f32;
 pub type PatternIota = String;
 pub type BoolIota = bool;
 pub type ListIota = std::vec::Vec<Iota>;
 pub type VectorIota = nalgebra::Matrix1x3<NumberIota>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum GarbageIota {
     Garbage,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum NullIota {
     Null,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EntityIota {
     pub name: String,
     pub entity_type: String,

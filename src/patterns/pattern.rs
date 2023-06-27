@@ -1,10 +1,11 @@
 pub struct Pattern {
-    display_name: String,
-    internal_name: String,
-    signature: String,
-    action: fn() -> ()
+    pub display_name: String,
+    pub internal_name: String,
+    pub signature: String,
+    pub action: fn() -> ()
 }
 
 pub trait Operate {
     fn operate(&self) {}
 }
+
