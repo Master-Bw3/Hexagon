@@ -1,11 +1,11 @@
+use crate::iota::{EntityIota, GarbageIota, Iota, NullIota};
+use nalgebra::matrix;
 use pest::{
     error::Error,
     iterators::{Pair, Pairs},
     Parser,
 };
 use pest_derive::Parser;
-
-use crate::iota::Iota;
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
@@ -24,7 +24,7 @@ pub fn parse(source: &str) -> Result<AstNode, Error<Rule>> {
 }
 
 fn construct_ast_node(pair: Pair<'_, Rule>) -> Option<AstNode> {
-    match dbg!(pair.as_rule()) {
+    match pair.as_rule() {
         Rule::Action => {
             let mut pair = pair.into_inner();
             let left = pair.next().unwrap();
@@ -50,7 +50,7 @@ fn construct_ast_node(pair: Pair<'_, Rule>) -> Option<AstNode> {
     }
 }
 
-fn parse_op<'a>(name: Pair<'a, Rule>, arg: Option<Pair<'a, Rule>>) -> AstNode<'a> {
+fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>) -> AstNode {
     AstNode::Op {
         name: {
             match name.as_str() {
@@ -70,7 +70,7 @@ fn parse_op<'a>(name: Pair<'a, Rule>, arg: Option<Pair<'a, Rule>>) -> AstNode<'a
     }
 }
 
-fn parse_action<'a>(left: Pair<'a, Rule>, right: Option<Pair<'a, Rule>>) -> AstNode<'a> {
+fn parse_action(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>) -> AstNode {
     AstNode::Action {
         name: { left.as_str().to_string() },
         value: {
@@ -150,16 +150,16 @@ fn parse_if_block(pair: Pair<'_, Rule>) -> AstNode {
 
 fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
     let inner_pair = pair.into_inner().next().unwrap();
-    match dbg!(inner_pair.as_rule()) {
+    match inner_pair.as_rule() {
         Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
         Rule::Pattern => Iota::Pattern(inner_pair.as_str().to_string()),
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();
-            Iota::Vector(
+            Iota::Vector(matrix![
                 inner.next().unwrap().as_str().parse().unwrap(),
                 inner.next().unwrap().as_str().parse().unwrap(),
-                inner.next().unwrap().as_str().parse().unwrap(),
-            )
+                inner.next().unwrap().as_str().parse().unwrap();
+            ])
         }
         Rule::Bool => match inner_pair.as_str() {
             "True" => Iota::Bool(true),
@@ -167,16 +167,16 @@ fn parse_iota(pair: Pair<'_, Rule>) -> Iota {
             _ => unreachable!(),
         },
         Rule::Influence => match inner_pair.as_str() {
-            "Garbage" => Iota::Garbage,
-            "Null" => Iota::Null,
+            "Garbage" => Iota::Garbage(GarbageIota::Garbage),
+            "Null" => Iota::Null(NullIota::Null),
             _ => unreachable!(),
         },
         Rule::Entity => {
             let mut inner = inner_pair.into_inner();
-            let name = inner.next().unwrap().as_str();
-            let entity_type = inner.next().unwrap().as_str();
+            let name = inner.next().unwrap().as_str().to_string();
+            let entity_type = inner.next().unwrap().as_str().to_string();
 
-            Iota::Entity { name, entity_type }
+            Iota::Entity(EntityIota { name, entity_type })
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
@@ -198,20 +198,20 @@ fn parse_string(pair: Pair<'_, Rule>) -> String {
 }
 
 #[derive(Debug)]
-pub enum AstNode<'a> {
+pub enum AstNode {
     Action {
         name: String,
-        value: Option<ActionValue<'a>>,
+        value: Option<ActionValue>,
     },
-    Hex(Vec<AstNode<'a>>),
+    Hex(Vec<AstNode>),
     Op {
         name: OpName,
-        arg: Option<OpValue<'a>>,
+        arg: Option<OpValue>,
     },
     IfBlock {
-        condition: Box<AstNode<'a>>,
-        succeed: Box<AstNode<'a>>,
-        fail: Option<Box<AstNode<'a>>>,
+        condition: Box<AstNode>,
+        succeed: Box<AstNode>,
+        fail: Option<Box<AstNode>>,
     },
 }
 
@@ -227,14 +227,14 @@ pub enum OpName {
 }
 
 #[derive(Debug)]
-pub enum OpValue<'a> {
-    Iota(Iota<'a>),
+pub enum OpValue {
+    Iota(Iota),
     Var(String),
 }
 
 #[derive(Debug)]
-pub enum ActionValue<'a> {
-    Iota(Iota<'a>),
+pub enum ActionValue {
+    Iota(Iota),
     Bookkeeper(String),
 }
 

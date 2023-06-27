@@ -2,7 +2,7 @@ pub struct Pattern {
     display_name: String,
     internal_name: String,
     signature: String,
-    action: Fn
+    action: fn() -> ()
 }
 
 pub trait Operate {

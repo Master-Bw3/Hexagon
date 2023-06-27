@@ -1,8 +1,8 @@
-use crate::iota::Iota;
+use crate::iota::{EntityIota, Iota};
 
 pub fn get_caster() -> Vec<Iota> {
-    vec![Iota::Entity {
-        name: "caster",
-        entity_type: "minecraft:player",
-    }]
+    vec![Iota::Entity(EntityIota {
+        name: "caster".to_string(),
+        entity_type: "minecraft:player".to_string(),
+    })]
 }

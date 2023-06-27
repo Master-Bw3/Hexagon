@@ -10,11 +10,10 @@
     Equality Distillation
     Store($isNull)
     if ($isNull) then (
+        Charon's Gambit
+
+    ) else (
         $scoutResult
         Compass' Purification
-    ) else if ($owo) then (
-        Gemini Decomposition
-    ) else (
-        Charon's Gambit
     )
 }
