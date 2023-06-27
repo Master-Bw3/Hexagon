@@ -8,14 +8,12 @@ use crate::{
 
 pub fn add(state: State) -> Result<State, Mishap> {
     let mut new_stack = state.stack.clone();
-
-
     let arg_count = 2;
-
     let iotas = (
         new_stack.get_num_or_vec(0, arg_count)?,
         new_stack.get_num_or_vec(1, arg_count)?,
     );
+    new_stack.drain((new_stack.len() - arg_count)..);
 
     let operation_result = match iotas {
         (Either::A(num1), Either::A(num2)) => Iota::Number(num1 + num2),
