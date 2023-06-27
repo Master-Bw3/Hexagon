@@ -11,22 +11,22 @@ use crate::{
 use self::state::State;
 
 pub fn interpret(node: AstNode) -> Result<State, String> {
-    let state = State {
+    let mut state = State {
         stack: vec![],
         ravenmind: None,
     };
-    let heap: HashMap<String, i32> = HashMap::new();
+    let mut heap: HashMap<String, i32> = HashMap::new();
     let pattern_registry = PatternRegistry::construct();
 
-    inerpret_node(node, state, heap, &pattern_registry)
+    interpret_node(node, &mut state, &mut heap, &pattern_registry).map(|x| x.clone())
 }
 
-fn inerpret_node(
+fn interpret_node<'a>(
     node: AstNode,
-    state: State,
-    heap: HashMap<String, i32>,
-    pattern_registry: &PatternRegistry,
-) -> Result<State, String> {
+    mut state: &'a mut State,
+    mut heap: &mut HashMap<String, i32>,
+    pattern_registry: &'a PatternRegistry,
+) -> Result<&'a mut State, String> {
     println!("{:?}", state);
     match node {
         AstNode::Action { name, value } => {
@@ -34,9 +34,8 @@ fn inerpret_node(
             match value {
                 Some(val) => match val {
                     ActionValue::Iota(iota) => {
-                        let mut temp_state = state.clone();
-                        temp_state.stack.push(iota);
-                        Ok(temp_state)
+                        state.stack.push(iota);
+                        Ok(state)
                     }
                     ActionValue::Bookkeeper(_) => todo!(),
                 },
@@ -45,18 +44,17 @@ fn inerpret_node(
 
                     pattern
                         .operate(state, value)
-                        .map_err(|err| format!("{:?}", err))
+                        .map_err(|err: mishap::Mishap| format!("{:?}", err))
 
                 }
             }
         }
         AstNode::Hex(nodes) => {
-            let mut temp_state = state.clone();
 
             for node in nodes {
-                temp_state = inerpret_node(node, temp_state, heap.clone(), pattern_registry)?;
+                state = interpret_node(node, state, heap, pattern_registry)?;
             };
-            Ok(temp_state)
+            Ok(state)
 
 
         }

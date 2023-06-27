@@ -10,7 +10,7 @@ pub trait PatternRegistryExt {
 impl PatternRegistryExt for PatternRegistry {
     fn construct() -> PatternRegistry {
         let mut registry: PatternRegistry = vec![];
-        registry.push(Pattern::new("Mind's Reflection", "get_caster", "qaq", selectors::get_caster));
+        // registry.push(Pattern::new("Mind's Reflection", "get_caster", "qaq", selectors::get_caster));
         registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
 
         registry

@@ -9,7 +9,7 @@ pub struct Pattern {
     pub display_name: String,
     pub internal_name: String,
     pub signature: String,
-    pub action: fn(state: State) -> Result<State, Mishap>,
+    pub action: fn(state: &mut State) -> Result<&mut State, Mishap>,
 }
 
 impl Pattern {
@@ -17,7 +17,7 @@ impl Pattern {
         display_name: &str,
         internal_name: &str,
         signature: &str,
-        action: fn(state: State) -> Result<State, Mishap>,
+        action: fn(state: &mut State) -> Result<&mut State, Mishap>,
     ) -> Pattern {
         Pattern {
             display_name: display_name.to_string(),
@@ -27,7 +27,7 @@ impl Pattern {
         }
     }
 
-    pub fn operate(&self, state: State, value: Option<ActionValue>) -> Result<State, Mishap> {
+    pub fn operate<'a>(&self, state: &'a mut State, value: Option<ActionValue>) -> Result<&'a mut State, Mishap> {
         let value = match value {
             Some(val) => match val {
                 ActionValue::Iota(iota) => Some(iota),
