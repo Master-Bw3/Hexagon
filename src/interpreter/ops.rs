@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{iota::Iota, parser::OpValue};
+use crate::{iota::{Iota, PatternIota}, parser::OpValue};
 
 use super::state::State;
 
@@ -111,6 +111,40 @@ pub fn push<'a>(
         },
         None => Err(format!("Expected 1 input, but recieved 0 inputs")),
     }
+}
+
+pub enum embedType {
+    Normal,
+    Smart,
+    Consider,
+    IntroRetro,
+}
+
+pub fn embed<'a>(
+    value: &'a Option<OpValue>,
+    mut state: &'a mut State,
+    heap: &'a mut HashMap<String, i32>,
+    embed_type: embedType,
+) -> Result<(), String> {
+    let val = match value {
+        Some(val) => val,
+        None => Err(format!("Expected 1 input, but recieved 0 inputs"))?,
+    };
+    match val {
+        OpValue::Iota(iota) => match embed_type {
+            embedType::Normal => {
+                state.stack.push(iota.clone());
+            }
+            embedType::Smart => todo!(),
+            embedType::Consider => todo!(),
+            embedType::IntroRetro => {
+                state.stack.push(Iota::Pattern(PatternIota("Introspection")));
+                state.stack.push(iota.clone());
+            },
+        },
+        OpValue::Var(var) => Err(format!("Expected Iota, recieved {:?}", var))?,
+    };
+    Ok(())
 }
 
 #[cfg(test)]

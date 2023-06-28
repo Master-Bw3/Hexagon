@@ -7,11 +7,12 @@ use super::mishap::Mishap;
 
 pub type Stack = Vec<Iota>;
 
+pub type Considered = bool;
 #[derive(Debug, Clone)]
-
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
+    pub buffer: Option<Vec<(Iota, Considered)>>
 }
 
 pub enum Either<L, R> {

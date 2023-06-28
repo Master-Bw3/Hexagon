@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use crate::{
     parser::{ActionValue, AstNode},
-    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::ops::{store, push},
+    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::ops::{store, push}, iota::Iota,
 };
 
 use self::state::State;
@@ -15,6 +15,7 @@ pub fn interpret(node: AstNode) -> Result<State, String> {
     let mut state = State {
         stack: vec![],
         ravenmind: None,
+        buffer: None
     };
     let mut heap: HashMap<String, i32> = HashMap::new();
     let pattern_registry = PatternRegistry::construct();
@@ -28,7 +29,7 @@ fn interpret_node<'a>(
     heap: &mut HashMap<String, i32>,
     pattern_registry: &'a PatternRegistry,
 ) -> Result<&'a mut State, String> {
-    println!("{:?}, {:?}", state, heap);
+    println!("{:?}", state.stack);
     match node {
         AstNode::Action { name, value } => {
             //Push value to stack if there is one. Otherwise, evaluate the pattern
