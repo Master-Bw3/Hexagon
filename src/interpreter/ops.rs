@@ -7,9 +7,9 @@ use super::state::State;
 fn store<'a>(
     value: &'a OpValue,
     mut state: &'a mut State,
-    mut heap: &'a mut HashMap<String, i32>,
+    heap: &'a mut HashMap<String, i32>,
     copy: bool,
-) -> Result<&'a mut State, String> {
+) -> Result<(), String> {
     match value {
         OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota)),
         OpValue::Var(var) => {
@@ -30,9 +30,9 @@ fn store<'a>(
 
             let (ravenmind, index) = insert_iota_into_ravenmind(state.ravenmind.clone(), iota);
             state.ravenmind = ravenmind;
-            
+
             heap.insert(var.to_string(), index);
-            Ok(state)
+            Ok(())
         }
     }
 }
@@ -61,7 +61,8 @@ mod tests {
         };
         let mut heap: HashMap<String, i32> = HashMap::new();
         let val = OpValue::Var("$hello".to_string());
-        let e = store(&val, &mut state, &mut heap, false).unwrap();
-        println!("{:?}", e)
+        store(&val, &mut state, &mut heap, false).unwrap();
+        println!("{:?}, {:?}", state, heap);
+
     }
 }
