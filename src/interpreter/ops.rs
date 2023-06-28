@@ -156,6 +156,7 @@ mod tests {
         let mut state = State {
             stack: vec![Iota::Number(1.0)],
             ravenmind: None,
+            buffer: None,
         };
         let mut heap: HashMap<String, i32> = HashMap::new();
         let val = Some(OpValue::Var("$hello".to_string()));
