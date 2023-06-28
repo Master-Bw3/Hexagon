@@ -14,9 +14,9 @@ pub struct State {
     pub ravenmind: Option<Iota>,
 }
 
-pub enum Either<A, B> {
-    A(A),
-    B(B),
+pub enum Either<L, R> {
+    L(L),
+    R(R),
 }
 
 pub trait StackExt {
@@ -102,8 +102,8 @@ impl StackExt for Stack {
     fn get_num_or_vec(&self, index: usize, arg_count: usize) -> Result<Either<NumberIota, VectorIota>, Mishap> {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
-            Iota::Number(x) => Ok(Either::A(*x)),
-            Iota::Vector(x) => Ok(Either::B(*x)),
+            Iota::Number(x) => Ok(Either::L(*x)),
+            Iota::Vector(x) => Ok(Either::R(*x)),
 
             _ => Err(Mishap::IncorrectIota(index)),
         }
