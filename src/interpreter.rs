@@ -39,7 +39,10 @@ fn interpret_node<'a>(
                 push_pattern(name, state, true);
                 state.consider_next = false;
                 Ok(state)
-            } else if state.buffer.is_some() {
+            } else if state.buffer.is_some()
+                && (PatternIota::from_name(&state.pattern_registry, &name)
+                    != PatternIota::from_name(&state.pattern_registry, "escape"))
+            {
                 push_pattern(name, state, false);
                 Ok(state)
             } else {

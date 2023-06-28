@@ -105,7 +105,7 @@ pub fn push<'a>(
                 let iota =
                     get_iota_from_ravenmind(state.ravenmind.clone(), index.try_into().unwrap())
                         .ok_or("no iota found at index")?;
-                push_iota(iota, state, false);
+                push_iota(iota, state, state.consider_next);
                 Ok(())
             }
         },
