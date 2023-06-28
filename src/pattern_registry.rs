@@ -13,8 +13,10 @@ impl PatternRegistryExt for PatternRegistry {
         // registry.push(Pattern::new("Mind's Reflection", "get_caster", "qaq", selectors::get_caster));
         registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
         registry.push(Pattern::new("Consideration", "escape", "qqqaw", misc::escape));
-        registry.push(Pattern::new("Introspection", "open_paren", "qqqaw", misc::introspect));
-        registry.push(Pattern::new("Retrospection", "close_paren", "qqqaw", misc::retrospect));
+        registry.push(Pattern::new("Introspection", "open_paren", "qqq", misc::introspect));
+        registry.push(Pattern::new("Retrospection", "close_paren", "eee", misc::retrospect));
+        registry.push(Pattern::new("Numerical Reflection", "close_paren", "aqaa", misc::retrospect));
+
 
         registry
     }

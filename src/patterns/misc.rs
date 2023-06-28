@@ -70,7 +70,7 @@ pub fn retrospect(state: &mut State) -> Result<&mut State, Mishap> {
         ));
         state.buffer = None
     } else {
-        push_pattern("open_paren".to_string(), state, false)
+        push_pattern("close_paren".to_string(), state, false)
     };
     Ok(state)
 }

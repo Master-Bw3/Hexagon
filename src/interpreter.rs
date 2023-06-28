@@ -32,7 +32,8 @@ fn interpret_node<'a>(
     mut state: &'a mut State,
     heap: &mut HashMap<String, i32>,
 ) -> Result<&'a mut State, String> {
-    println!("{:?}", state.stack);
+    println!("a: {:?}, {:?}", state.stack, state.buffer);
+
     match node {
         AstNode::Action { name, value } => interpret_action(name, value, state, heap),
         AstNode::Hex(nodes) => {
@@ -68,18 +69,18 @@ fn interpret_action<'a>(
     mut state: &'a mut State,
     heap: &mut HashMap<String, i32>,
 ) -> Result<&'a mut State, String> {
-    let not_escape = PatternIota::from_name(&state.pattern_registry, &name)
-        != PatternIota::from_name(&state.pattern_registry, "escape");
+    let is_escape = PatternIota::from_name(&state.pattern_registry, &name)
+        == PatternIota::from_name(&state.pattern_registry, "escape");
 
-    let not_retro = PatternIota::from_name(&state.pattern_registry, &name)
-        != PatternIota::from_name(&state.pattern_registry, "close_paren");
+    let is_retro = PatternIota::from_name(&state.pattern_registry, &name)
+        == PatternIota::from_name(&state.pattern_registry, "close_paren");
 
     {
         if state.consider_next {
             push_pattern(name, state, true);
             state.consider_next = false;
             Ok(state)
-        } else if state.buffer.is_some() && not_escape {
+        } else if state.buffer.is_some() && !(is_escape || is_retro) {
             push_pattern(name, state, false);
             Ok(state)
         } else {
