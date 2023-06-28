@@ -29,10 +29,22 @@ pub fn store<'a>(
                     }
                 };
 
-                let (ravenmind, index) = insert_iota_into_ravenmind(state.ravenmind.clone(), iota);
-                state.ravenmind = ravenmind;
+                match heap.get(var) {
+                    Some(index) => {
+                        state.ravenmind = insert_iota_into_ravenmind(
+                            state.ravenmind.clone(),
+                            iota,
+                            (*index).try_into().unwrap(),
+                        );
+                    }
+                    None => {
+                        let (ravenmind, index) =
+                            add_iota_to_ravenmind(state.ravenmind.clone(), iota);
+                        state.ravenmind = ravenmind;
+                        heap.insert(var.to_string(), index);
+                    }
+                };
 
-                heap.insert(var.to_string(), index);
                 Ok(())
             }
         },
@@ -40,7 +52,17 @@ pub fn store<'a>(
     }
 }
 
-fn insert_iota_into_ravenmind(ravenmind: Option<Iota>, iota: Iota) -> (Option<Iota>, i32) {
+fn insert_iota_into_ravenmind(ravenmind: Option<Iota>, iota: Iota, index: usize) -> Option<Iota> {
+    let mut unwrapped_ravenmind: Vec<Iota> = match ravenmind {
+        Some(Iota::List(list)) => list.clone(),
+        _ => Vec::new(),
+    };
+
+    unwrapped_ravenmind.insert(index, iota);
+    Some(Iota::List(unwrapped_ravenmind.clone()))
+}
+
+fn add_iota_to_ravenmind(ravenmind: Option<Iota>, iota: Iota) -> (Option<Iota>, i32) {
     let unwrapped_ravenmind: &mut Vec<Iota> = &mut match ravenmind {
         Some(Iota::List(list)) => list.clone(),
         _ => Vec::new(),
