@@ -1,5 +1,6 @@
 pub mod mishap;
 pub mod state;
+mod ops;
 
 use std::collections::HashMap;
 
