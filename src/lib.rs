@@ -14,5 +14,5 @@ pub fn run() {
 
     let interpreter_result = interpret(parse_result);
 
-    println!("{:?}", interpreter_result.unwrap())
+    println!("{:?}", interpreter_result.unwrap().stack)
 }

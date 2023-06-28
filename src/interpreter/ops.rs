@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{iota::{Iota, PatternIota}, parser::OpValue};
+use crate::{iota::{Iota, PatternIota, PatternIotaExt}, parser::OpValue};
 
 use super::state::State;
 
@@ -138,7 +138,7 @@ pub fn embed<'a>(
             embedType::Smart => todo!(),
             embedType::Consider => todo!(),
             embedType::IntroRetro => {
-                state.stack.push(Iota::Pattern(PatternIota("Introspection")));
+                state.stack.push(Iota::Pattern(PatternIota::from_name(&state.pattern_registry, "Introspection")));
                 state.stack.push(iota.clone());
             },
         },
@@ -149,6 +149,8 @@ pub fn embed<'a>(
 
 #[cfg(test)]
 mod tests {
+    use crate::pattern_registry::{PatternRegistry, PatternRegistryExt};
+
     use super::*;
 
     #[test]
@@ -157,10 +159,12 @@ mod tests {
             stack: vec![Iota::Number(1.0)],
             ravenmind: None,
             buffer: None,
+            consider_next: false,
+            pattern_registry: PatternRegistry::construct()
         };
         let mut heap: HashMap<String, i32> = HashMap::new();
         let val = Some(OpValue::Var("$hello".to_string()));
         store(&val, &mut state, &mut heap, false).unwrap();
-        println!("{:?}, {:?}", state, heap);
+        println!("{:?}, {:?}", state.stack, heap);
     }
 }

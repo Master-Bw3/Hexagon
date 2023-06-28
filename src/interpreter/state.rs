@@ -1,6 +1,9 @@
-use crate::iota::{
-    BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
-    VectorIota,
+use crate::{
+    iota::{
+        BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
+        VectorIota,
+    },
+    pattern_registry::PatternRegistry,
 };
 
 use super::mishap::Mishap;
@@ -8,11 +11,13 @@ use super::mishap::Mishap;
 pub type Stack = Vec<Iota>;
 
 pub type Considered = bool;
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
-    pub buffer: Option<Vec<(Iota, Considered)>>
+    pub buffer: Option<Vec<(Iota, Considered)>>,
+    pub pattern_registry: PatternRegistry,
+    pub consider_next: bool,
 }
 
 pub enum Either<L, R> {
@@ -30,9 +35,12 @@ pub trait StackExt {
     fn get_entity(&self, index: usize, arg_count: usize) -> Result<EntityIota, Mishap>;
     fn get_list(&self, index: usize, arg_count: usize) -> Result<ListIota, Mishap>;
 
-    fn get_num_or_vec(&self, index: usize, arg_count: usize) -> Result<Either<NumberIota, VectorIota>, Mishap>;
+    fn get_num_or_vec(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<NumberIota, VectorIota>, Mishap>;
     fn get_iota(&self, index: usize, arg_count: usize) -> Result<&Iota, Mishap>;
-
 }
 
 impl StackExt for Stack {
@@ -100,7 +108,11 @@ impl StackExt for Stack {
         }
     }
 
-    fn get_num_or_vec(&self, index: usize, arg_count: usize) -> Result<Either<NumberIota, VectorIota>, Mishap> {
+    fn get_num_or_vec(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<NumberIota, VectorIota>, Mishap> {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Number(x) => Ok(Either::L(*x)),
@@ -120,5 +132,4 @@ impl StackExt for Stack {
             }
         }
     }
-
 }

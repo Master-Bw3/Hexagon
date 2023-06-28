@@ -1,4 +1,5 @@
 use crate::iota::GarbageIota::Garbage;
+use crate::iota::{PatternIota, PatternIotaExt};
 use crate::{interpreter::state::Stack, iota::Iota};
 
 #[derive(Debug)]
@@ -6,6 +7,7 @@ pub enum Mishap {
     NotEnoughIotas(usize),
     IncorrectIota(usize),
     MathematicalError(),
+    HastyRetrospection,
 }
 
 impl Mishap {
@@ -22,6 +24,12 @@ impl Mishap {
                 new_stack
             }
             Mishap::MathematicalError() => todo!(),
+            Mishap::HastyRetrospection => {
+                let retro_sig = "eee";
+                let mut new_stack = stack.clone();
+                new_stack.push(Iota::Pattern(PatternIota::from_sig(retro_sig)));
+                new_stack
+            }
         }
     }
 }
