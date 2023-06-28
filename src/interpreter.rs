@@ -68,9 +68,11 @@ fn interpret_action<'a>(
     mut state: &'a mut State,
     heap: &mut HashMap<String, i32>,
 ) -> Result<&'a mut State, String> {
-
     let not_escape = PatternIota::from_name(&state.pattern_registry, &name)
         != PatternIota::from_name(&state.pattern_registry, "escape");
+
+    let not_retro = PatternIota::from_name(&state.pattern_registry, &name)
+        != PatternIota::from_name(&state.pattern_registry, "close_paren");
 
     {
         if state.consider_next {

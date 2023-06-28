@@ -1,6 +1,7 @@
 use crate::{
     interpreter::{
         mishap::Mishap,
+        push_pattern,
         state::{StackExt, State},
     },
     iota::{EntityIota, Iota, PatternIota, PatternIotaExt},
@@ -18,7 +19,7 @@ pub fn introspect(state: &mut State) -> Result<&mut State, Mishap> {
             new_buffer.push((
                 Iota::Pattern(PatternIota::from_name(
                     &state.pattern_registry,
-                    "Introspection",
+                    "open_paren",
                 )),
                 false,
             ));
@@ -37,15 +38,15 @@ pub fn retrospect(state: &mut State) -> Result<&mut State, Mishap> {
 
     let intro_pattern = Iota::Pattern(PatternIota::from_name(
         &state.pattern_registry,
-        "Introspection",
+        "open_paren",
     ));
     let retro_pattern = Iota::Pattern(PatternIota::from_name(
         &state.pattern_registry,
-        "Retrospection",
+        "close_paren",
     ));
 
     let intro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
-        if x.0 == retro_pattern && x.1 == false {
+        if x.0 == intro_pattern && x.1 == false {
             acc + 1
         } else {
             acc
@@ -60,5 +61,16 @@ pub fn retrospect(state: &mut State) -> Result<&mut State, Mishap> {
         }
     }) + 1;
 
-    
+    if intro_count == retro_count {
+        state.stack.push(Iota::List(
+            inner_buffer
+                .iter()
+                .map(|x| x.0.clone())
+                .collect::<Vec<Iota>>(),
+        ));
+        state.buffer = None
+    } else {
+        push_pattern("open_paren".to_string(), state, false)
+    };
+    Ok(state)
 }

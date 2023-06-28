@@ -94,8 +94,8 @@ fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
     AstNode::Action {
         name: {
             match pair.as_str() {
-                "{" => "Introspection".to_string(),
-                "}" => "Retrospection".to_string(),
+                "{" => "open_paren".to_string(),
+                "}" => "close_paren".to_string(),
                 _ => unreachable!(),
             }
         },

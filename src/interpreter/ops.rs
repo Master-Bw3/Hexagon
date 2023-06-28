@@ -138,7 +138,7 @@ pub fn embed<'a>(
             embedType::Smart => todo!(),
             embedType::Consider => todo!(),
             embedType::IntroRetro => {
-                state.stack.push(Iota::Pattern(PatternIota::from_name(&state.pattern_registry, "Introspection")));
+                state.stack.push(Iota::Pattern(PatternIota::from_name(&state.pattern_registry, "open_paren")));
                 state.stack.push(iota.clone());
             },
         },
