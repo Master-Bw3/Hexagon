@@ -1,3 +1,8 @@
 Numerical Reflection: 1
-Numerical Reflection: 1
+Store($hi)
+$hi
+$hi
+Additive Distillation
+Copy($result)
+$result
 Additive Distillation

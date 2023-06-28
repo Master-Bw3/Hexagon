@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use crate::{
     parser::{ActionValue, AstNode},
-    pattern_registry::{PatternRegistry, PatternRegistryExt},
+    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::ops::{store, push},
 };
 
 use self::state::State;
@@ -25,7 +25,7 @@ pub fn interpret(node: AstNode) -> Result<State, String> {
 fn interpret_node<'a>(
     node: AstNode,
     mut state: &'a mut State,
-    mut heap: &mut HashMap<String, i32>,
+    heap: &mut HashMap<String, i32>,
     pattern_registry: &'a PatternRegistry,
 ) -> Result<&'a mut State, String> {
     println!("{:?}", state);
@@ -59,7 +59,19 @@ fn interpret_node<'a>(
 
 
         }
-        AstNode::Op { name, arg } => todo!(),
+        AstNode::Op { name, arg } => {
+            match name {
+                crate::parser::OpName::Store => store(&arg, state, heap, false),
+                crate::parser::OpName::Copy => store(&arg, state, heap, true),
+                crate::parser::OpName::Push => push(&arg, state, heap),
+                crate::parser::OpName::Embed => todo!(),
+                crate::parser::OpName::SmartEmbed => todo!(),
+                crate::parser::OpName::ConsiderEmbed => todo!(),
+                crate::parser::OpName::IntroEmbed => todo!(),
+            }?;
+
+            Ok(state)
+        },
         AstNode::IfBlock {
             condition,
             succeed,
