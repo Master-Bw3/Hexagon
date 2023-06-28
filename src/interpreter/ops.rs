@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{iota::{Iota, PatternIota, PatternIotaExt}, parser::OpValue};
 
-use super::state::State;
+use super::{state::{State, Stack}, push_iota};
 
 pub fn store<'a>(
     value: &'a Option<OpValue>,
@@ -105,7 +105,7 @@ pub fn push<'a>(
                 let iota =
                     get_iota_from_ravenmind(state.ravenmind.clone(), index.try_into().unwrap())
                         .ok_or("no iota found at index")?;
-                state.stack.push(iota);
+                push_iota(iota, state, false);
                 Ok(())
             }
         },

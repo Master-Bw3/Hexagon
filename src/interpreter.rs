@@ -20,7 +20,7 @@ pub fn interpret(node: AstNode) -> Result<State, String> {
         ravenmind: None,
         buffer: None,
         consider_next: false,
-        pattern_registry: PatternRegistry::construct()
+        pattern_registry: PatternRegistry::construct(),
     };
     let mut heap: HashMap<String, i32> = HashMap::new();
 
@@ -37,6 +37,7 @@ fn interpret_node<'a>(
         AstNode::Action { name, value } => {
             if state.consider_next {
                 push_pattern(name, state, true);
+                state.consider_next = false;
                 Ok(state)
             } else if state.buffer.is_some() {
                 push_pattern(name, state, false);
@@ -51,7 +52,11 @@ fn interpret_node<'a>(
                         ActionValue::Bookkeeper(_) => todo!(),
                     },
                     None => {
-                        let pattern = state.pattern_registry.find(name).ok_or("Invalid Action")?.clone();
+                        let pattern = state
+                            .pattern_registry
+                            .find(name)
+                            .ok_or("Invalid Action")?
+                            .clone();
 
                         pattern
                             .operate(state, value)
@@ -87,9 +92,17 @@ fn interpret_node<'a>(
     }
 }
 
-fn push_pattern(pattern: String, state: &mut State, considered: bool) {
+pub fn push_pattern(pattern: String, state: &mut State, considered: bool) {
+    push_iota(
+        Iota::Pattern(PatternIota::from_name(&state.pattern_registry, &pattern)),
+        state,
+        considered,
+    )
+}
+
+pub fn push_iota(iota: Iota, state: &mut State, considered: bool) {
     match state.buffer {
-        Some(ref mut buffer) => buffer.push((Iota::Pattern(PatternIota::from_name(&state.pattern_registry, &pattern)), considered)),
-        None => state.stack.push(Iota::Pattern(PatternIota::from_name(&state.pattern_registry, &pattern))),
+        Some(ref mut buffer) => buffer.push((iota, considered)),
+        None => state.stack.push(iota),
     }
 }
