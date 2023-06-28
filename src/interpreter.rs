@@ -34,40 +34,7 @@ fn interpret_node<'a>(
 ) -> Result<&'a mut State, String> {
     println!("{:?}", state.stack);
     match node {
-        AstNode::Action { name, value } => {
-            if state.consider_next {
-                push_pattern(name, state, true);
-                state.consider_next = false;
-                Ok(state)
-            } else if state.buffer.is_some()
-                && (PatternIota::from_name(&state.pattern_registry, &name)
-                    != PatternIota::from_name(&state.pattern_registry, "escape"))
-            {
-                push_pattern(name, state, false);
-                Ok(state)
-            } else {
-                match value {
-                    Some(val) => match val {
-                        ActionValue::Iota(iota) => {
-                            state.stack.push(iota);
-                            Ok(state)
-                        }
-                        ActionValue::Bookkeeper(_) => todo!(),
-                    },
-                    None => {
-                        let pattern = state
-                            .pattern_registry
-                            .find(name)
-                            .ok_or("Invalid Action")?
-                            .clone();
-
-                        pattern
-                            .operate(state, value)
-                            .map_err(|err: mishap::Mishap| format!("{:?}", err))
-                    }
-                }
-            }
-        }
+        AstNode::Action { name, value } => interpret_action(name, value, state, heap),
         AstNode::Hex(nodes) => {
             for node in nodes {
                 state = interpret_node(node, state, heap)?;
@@ -92,6 +59,49 @@ fn interpret_node<'a>(
             succeed,
             fail,
         } => todo!(),
+    }
+}
+
+fn interpret_action<'a>(
+    name: String,
+    value: Option<ActionValue>,
+    mut state: &'a mut State,
+    heap: &mut HashMap<String, i32>,
+) -> Result<&'a mut State, String> {
+
+    let not_escape = PatternIota::from_name(&state.pattern_registry, &name)
+        != PatternIota::from_name(&state.pattern_registry, "escape");
+
+    {
+        if state.consider_next {
+            push_pattern(name, state, true);
+            state.consider_next = false;
+            Ok(state)
+        } else if state.buffer.is_some() && not_escape {
+            push_pattern(name, state, false);
+            Ok(state)
+        } else {
+            match value {
+                Some(val) => match val {
+                    ActionValue::Iota(iota) => {
+                        state.stack.push(iota);
+                        Ok(state)
+                    }
+                    ActionValue::Bookkeeper(_) => todo!(),
+                },
+                None => {
+                    let pattern = state
+                        .pattern_registry
+                        .find(name)
+                        .ok_or("Invalid Action")?
+                        .clone();
+
+                    pattern
+                        .operate(state, value)
+                        .map_err(|err: mishap::Mishap| format!("{:?}", err))
+                }
+            }
+        }
     }
 }
 
