@@ -10,56 +10,63 @@ pub fn store<'a>(
     heap: &'a mut HashMap<String, i32>,
     copy: bool,
 ) -> Result<(), String> {
-    match value {
-        Some(val) => match val {
-            OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota)),
-            OpValue::Var(var) => {
-                let iota = {
-                    if copy {
-                        state
-                            .stack
-                            .last()
-                            .ok_or("Cannot assign variable because stack is empty".to_string())?
-                            .clone()
-                    } else {
-                        state
-                            .stack
-                            .pop()
-                            .ok_or("Cannot assign variable because stack is empty".to_string())?
-                    }
-                };
+    let val = match value {
+        Some(val) => val,
+        None => Err(format!("Expected 1 input, but recieved 0 inputs"))?,
+    };
+    match val {
+        OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota)),
+        OpValue::Var(var) => {
+            let iota = {
+                if copy {
+                    state
+                        .stack
+                        .last()
+                        .ok_or("Cannot assign variable because stack is empty".to_string())?
+                        .clone()
+                } else {
+                    state
+                        .stack
+                        .pop()
+                        .ok_or("Cannot assign variable because stack is empty".to_string())?
+                }
+            };
 
-                match heap.get(var) {
-                    Some(index) => {
-                        state.ravenmind = insert_iota_into_ravenmind(
-                            state.ravenmind.clone(),
-                            iota,
-                            (*index).try_into().unwrap(),
-                        );
-                    }
-                    None => {
-                        let (ravenmind, index) =
-                            add_iota_to_ravenmind(state.ravenmind.clone(), iota);
-                        state.ravenmind = ravenmind;
-                        heap.insert(var.to_string(), index);
-                    }
-                };
-
-                Ok(())
-            }
-        },
-        None => Err(format!("Expected 1 input, but recieved 0 inputs")),
+            let (ravenmind, index) = match heap.get(var) {
+                Some(index) => insert_iota_into_ravenmind(
+                    state.ravenmind.clone(),
+                    iota,
+                    (*index).try_into().unwrap(),
+                ),
+                None => add_iota_to_ravenmind(state.ravenmind.clone(), iota),
+            };
+            state.ravenmind = ravenmind;
+            heap.insert(var.to_string(), index);
+            Ok(())
+        }
     }
 }
 
-fn insert_iota_into_ravenmind(ravenmind: Option<Iota>, iota: Iota, index: usize) -> Option<Iota> {
+fn insert_iota_into_ravenmind(
+    ravenmind: Option<Iota>,
+    iota: Iota,
+    index: usize,
+) -> (Option<Iota>, i32) {
     let mut unwrapped_ravenmind: Vec<Iota> = match ravenmind {
-        Some(Iota::List(list)) => list.clone(),
+        Some(Iota::List(ref list)) => list.clone(),
         _ => Vec::new(),
     };
 
-    unwrapped_ravenmind.insert(index, iota);
-    Some(Iota::List(unwrapped_ravenmind.clone()))
+    if unwrapped_ravenmind.len() > index {
+        unwrapped_ravenmind.remove(index);
+        unwrapped_ravenmind.insert(index, iota);
+        (
+            Some(Iota::List(unwrapped_ravenmind)),
+            index.try_into().unwrap(),
+        )
+    } else {
+        add_iota_to_ravenmind(ravenmind, iota)
+    }
 }
 
 fn add_iota_to_ravenmind(ravenmind: Option<Iota>, iota: Iota) -> (Option<Iota>, i32) {

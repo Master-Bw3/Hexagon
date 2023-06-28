@@ -28,7 +28,7 @@ fn interpret_node<'a>(
     heap: &mut HashMap<String, i32>,
     pattern_registry: &'a PatternRegistry,
 ) -> Result<&'a mut State, String> {
-    println!("{:?}", state);
+    println!("{:?}, {:?}", state, heap);
     match node {
         AstNode::Action { name, value } => {
             //Push value to stack if there is one. Otherwise, evaluate the pattern

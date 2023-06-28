@@ -1,8 +1,9 @@
 Numerical Reflection: 1
-Store($hi)
-$hi
-$hi
+Copy($one)
+Copy($two)
+Copy($three)
+$two
 Additive Distillation
-Copy($result)
-$result
+Copy($three)
+$three
 Additive Distillation
