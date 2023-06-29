@@ -158,7 +158,7 @@ fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota 
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
         Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
-        Rule::Pattern => Iota::Pattern(PatternIota::from_name(pattern_registry, inner_pair.as_str())),
+        Rule::Pattern => Iota::Pattern(PatternIota::from_name(pattern_registry, inner_pair.as_str(), None)),
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();
             Iota::Vector(matrix![

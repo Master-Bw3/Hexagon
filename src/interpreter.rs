@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use crate::{
     interpreter::ops::{push, store},
-    iota::{Iota, PatternIota, PatternIotaExt},
+    iota::{Iota, PatternIota, PatternIotaExt, Signature},
     parser::{ActionValue, AstNode},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
     patterns::pattern::{self, Pattern},
@@ -64,22 +64,27 @@ fn interpret_action<'a>(
     value: Option<ActionValue>,
     mut state: &'a mut State,
 ) -> Result<&'a mut State, String> {
-    let is_escape = PatternIota::from_name(&state.pattern_registry, &name)
-        == PatternIota::from_name(&state.pattern_registry, "escape");
+    let is_escape = Signature::from_name(&state.pattern_registry, &name)
+        == Signature::from_name(&state.pattern_registry, "escape");
 
-    let is_retro = PatternIota::from_name(&state.pattern_registry, &name)
-        == PatternIota::from_name(&state.pattern_registry, "close_paren");
+    let is_retro = Signature::from_name(&state.pattern_registry, &name)
+        == Signature::from_name(&state.pattern_registry, "close_paren");
 
-    let is_eval = PatternIota::from_name(&state.pattern_registry, &name)
-        == PatternIota::from_name(&state.pattern_registry, "eval");
+    let is_eval = Signature::from_name(&state.pattern_registry, &name)
+        == Signature::from_name(&state.pattern_registry, "eval");
+
+    let get_value_iota = || match &value {
+        Some(ActionValue::Iota(iota)) => Some(iota),
+        _ => None,
+    };
 
     {
         if state.consider_next {
-            push_pattern(name, state, true);
+            push_pattern(name, get_value_iota().cloned(), state, true);
             state.consider_next = false;
             Ok(state)
         } else if state.buffer.is_some() && !(is_escape || is_retro) {
-            push_pattern(name, state, false);
+            push_pattern(name, get_value_iota().cloned(), state, false);
             Ok(state)
         } else if is_eval {
             todo!()
@@ -108,9 +113,13 @@ fn interpret_action<'a>(
     }
 }
 
-pub fn push_pattern(pattern: String, state: &mut State, considered: bool) {
+pub fn push_pattern(pattern: String, value: Option<Iota>, state: &mut State, considered: bool) {
     push_iota(
-        Iota::Pattern(PatternIota::from_name(&state.pattern_registry, &pattern)),
+        Iota::Pattern(PatternIota::from_name(
+            &state.pattern_registry,
+            &pattern,
+            value,
+        )),
         state,
         considered,
     )

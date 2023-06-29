@@ -33,7 +33,24 @@ pub struct EntityIota {
     pub entity_type: String,
 }
 
-pub type PatternIota = Vec<PatternSigDir>;
+#[derive(Debug, Clone, PartialEq)]
+pub struct  PatternIota {
+    signature: Signature,
+    value: Box<Option<Iota>>
+}
+
+
+impl PatternIota {
+    pub fn from_name(registry: &PatternRegistry, name: &str, value: Option<Iota>) -> PatternIota {
+        PatternIota { signature: Signature::from_name(&registry, &name), value: Box::new(value) }
+    }
+
+    pub fn from_sig(name: &str, value: Option<Iota>) -> PatternIota {
+        PatternIota { signature: Signature::from_sig(name), value: Box::new(value) }
+    }
+}
+
+pub type Signature = Vec<PatternSigDir>;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PatternSigDir {
@@ -46,12 +63,12 @@ pub enum PatternSigDir {
 }
 
 pub trait PatternIotaExt {
-    fn from_sig(string: &str) -> PatternIota;
-    fn from_name(registry: &PatternRegistry, string: &str) -> PatternIota;
+    fn from_sig(string: &str) -> Signature;
+    fn from_name(registry: &PatternRegistry, string: &str) -> Signature;
 }
 
-impl PatternIotaExt for PatternIota {
-    fn from_sig(string: &str) -> PatternIota {
+impl PatternIotaExt for Signature {
+    fn from_sig(string: &str) -> Signature {
         string
             .chars()
             .map(|char| match char {
@@ -66,7 +83,7 @@ impl PatternIotaExt for PatternIota {
             .collect()
     }
 
-    fn from_name(registry: &PatternRegistry, string: &str) -> PatternIota {
-        PatternIota::from_sig(&registry.find(string.to_string()).unwrap().signature)
+    fn from_name(registry: &PatternRegistry, string: &str) -> Signature {
+        Signature::from_sig(&registry.find(string.to_string()).unwrap().signature)
     }
 }

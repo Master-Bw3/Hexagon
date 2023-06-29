@@ -25,9 +25,9 @@ impl Mishap {
             }
             Mishap::MathematicalError() => todo!(),
             Mishap::HastyRetrospection => {
-                let retro_sig = "eee";
+                let retro_sig: &str = "eee";
                 let mut new_stack = stack.clone();
-                new_stack.push(Iota::Pattern(PatternIota::from_sig(retro_sig)));
+                new_stack.push(Iota::Pattern(PatternIota::from_sig(&retro_sig, None)));
                 new_stack
             }
         }

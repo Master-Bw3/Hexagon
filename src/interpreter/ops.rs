@@ -142,6 +142,7 @@ pub fn embed<'a>(
                 state.stack.push(Iota::Pattern(PatternIota::from_name(
                     &state.pattern_registry,
                     "open_paren",
+                    None
                 )));
                 state.stack.push(iota.clone());
             }

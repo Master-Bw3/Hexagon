@@ -1,6 +1,5 @@
 use crate::{
     interpreter::{mishap::Mishap, state::State},
-    iota::Iota,
     parser::ActionValue,
 };
 
