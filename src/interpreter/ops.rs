@@ -1,13 +1,18 @@
 use std::collections::HashMap;
 
-use crate::{iota::{Iota, PatternIota, PatternIotaExt}, parser::OpValue};
+use crate::{
+    iota::{Iota, PatternIota, PatternIotaExt},
+    parser::OpValue,
+};
 
-use super::{state::{State, Stack}, push_iota};
+use super::{
+    push_iota,
+    state::{Stack, State},
+};
 
 pub fn store<'a>(
     value: &'a Option<OpValue>,
     mut state: &'a mut State,
-    heap: &'a mut HashMap<String, i32>,
     copy: bool,
 ) -> Result<(), String> {
     let val = match value {
@@ -32,7 +37,7 @@ pub fn store<'a>(
                 }
             };
 
-            let (ravenmind, index) = match heap.get(var) {
+            let (ravenmind, index) = match state.heap.get(var) {
                 Some(index) => insert_iota_into_ravenmind(
                     state.ravenmind.clone(),
                     iota,
@@ -41,7 +46,7 @@ pub fn store<'a>(
                 None => add_iota_to_ravenmind(state.ravenmind.clone(), iota),
             };
             state.ravenmind = ravenmind;
-            heap.insert(var.to_string(), index);
+            state.heap.insert(var.to_string(), index);
             Ok(())
         }
     }
@@ -92,16 +97,12 @@ fn get_iota_from_ravenmind(ravenmind: Option<Iota>, index: usize) -> Option<Iota
     unwrapped_ravenmind.get(index).cloned()
 }
 
-pub fn push<'a>(
-    value: &'a Option<OpValue>,
-    state: &'a mut State,
-    heap: &'a mut HashMap<String, i32>,
-) -> Result<(), String> {
+pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), String> {
     match value {
         Some(val) => match val {
             OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota)),
             OpValue::Var(var) => {
-                let index = *heap.get(var).ok_or("variable not assigned")?;
+                let index = *state.heap.get(var).ok_or("variable not assigned")?;
                 let iota =
                     get_iota_from_ravenmind(state.ravenmind.clone(), index.try_into().unwrap())
                         .ok_or("no iota found at index")?;
@@ -124,7 +125,6 @@ pub enum embedType {
 pub fn embed<'a>(
     value: &'a Option<OpValue>,
     mut state: &'a mut State,
-    heap: &'a mut HashMap<String, i32>,
     embed_type: embedType,
 ) -> Result<(), String> {
     let val = match value {
@@ -139,9 +139,12 @@ pub fn embed<'a>(
             embedType::Smart => todo!(),
             embedType::Consider => todo!(),
             embedType::IntroRetro => {
-                state.stack.push(Iota::Pattern(PatternIota::from_name(&state.pattern_registry, "open_paren")));
+                state.stack.push(Iota::Pattern(PatternIota::from_name(
+                    &state.pattern_registry,
+                    "open_paren",
+                )));
                 state.stack.push(iota.clone());
-            },
+            }
         },
         OpValue::Var(var) => Err(format!("Expected Iota, recieved {:?}", var))?,
     };
@@ -161,11 +164,12 @@ mod tests {
             ravenmind: None,
             buffer: None,
             consider_next: false,
-            pattern_registry: PatternRegistry::construct()
+            pattern_registry: PatternRegistry::construct(),
+            heap: HashMap::new(),
         };
         let mut heap: HashMap<String, i32> = HashMap::new();
         let val = Some(OpValue::Var("$hello".to_string()));
-        store(&val, &mut state, &mut heap, false).unwrap();
+        store(&val, &mut state, false).unwrap();
         println!("{:?}, {:?}", state.stack, heap);
     }
 }

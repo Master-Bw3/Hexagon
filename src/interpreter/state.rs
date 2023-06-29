@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     iota::{
         BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
@@ -16,6 +18,7 @@ pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
     pub buffer: Option<Vec<(Iota, Considered)>>,
+    pub heap: HashMap<String, i32>,
     pub pattern_registry: PatternRegistry,
     pub consider_next: bool,
 }

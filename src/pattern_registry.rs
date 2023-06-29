@@ -1,4 +1,4 @@
-use crate::patterns::{math, pattern::Pattern, selectors, misc};
+use crate::patterns::{math, pattern::Pattern, selectors, misc, special};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -12,10 +12,12 @@ impl PatternRegistryExt for PatternRegistry {
         let mut registry: PatternRegistry = vec![];
         // registry.push(Pattern::new("Mind's Reflection", "get_caster", "qaq", selectors::get_caster));
         registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
-        registry.push(Pattern::new("Consideration", "escape", "qqqaw", misc::escape));
-        registry.push(Pattern::new("Introspection", "open_paren", "qqq", misc::introspect));
-        registry.push(Pattern::new("Retrospection", "close_paren", "eee", misc::retrospect));
-        registry.push(Pattern::new("Numerical Reflection", "close_paren", "aqaa", misc::retrospect));
+        registry.push(Pattern::new("Consideration", "escape", "qqqaw", special::escape));
+        registry.push(Pattern::new("Introspection", "open_paren", "qqq", special::introspect));
+        registry.push(Pattern::new("Retrospection", "close_paren", "eee", special::retrospect));
+        registry.push(Pattern::new("Hermes' Gambit", "eval", "deaqq", special::retrospect));
+
+        registry.push(Pattern::new("Numerical Reflection", "close_paren", "aqaa", special::no_action));
 
 
         registry
