@@ -69,9 +69,6 @@ pub fn interpret_action<'a>(
     let is_retro = Signature::from_name(&state.pattern_registry, &name)
         == Signature::from_name(&state.pattern_registry, "close_paren");
 
-    let is_eval = Signature::from_name(&state.pattern_registry, &name)
-        == Signature::from_name(&state.pattern_registry, "eval");
-
     let get_value_iota = || match &value {
         Some(ActionValue::Iota(iota)) => Some(iota),
         _ => None,
@@ -85,8 +82,6 @@ pub fn interpret_action<'a>(
         } else if state.buffer.is_some() && !(is_escape || is_retro) {
             push_pattern(name, get_value_iota().cloned(), state, false);
             Ok(state)
-        } else if is_eval {
-            todo!()
         } else {
             match value {
                 Some(val) => match val {
