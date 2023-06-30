@@ -20,7 +20,7 @@ pub fn introspect(state: &mut State) -> Result<&mut State, Mishap> {
                 Iota::Pattern(PatternIota::from_name(
                     &state.pattern_registry,
                     "open_paren",
-                    None
+                    None,
                 )),
                 false,
             ));
@@ -40,12 +40,12 @@ pub fn retrospect(state: &mut State) -> Result<&mut State, Mishap> {
     let intro_pattern = Iota::Pattern(PatternIota::from_name(
         &state.pattern_registry,
         "open_paren",
-        None
+        None,
     ));
     let retro_pattern = Iota::Pattern(PatternIota::from_name(
         &state.pattern_registry,
         "close_paren",
-        None
+        None,
     ));
 
     let intro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
@@ -80,4 +80,13 @@ pub fn retrospect(state: &mut State) -> Result<&mut State, Mishap> {
 
 pub fn no_action(state: &mut State) -> Result<&mut State, Mishap> {
     Ok(state)
+}
+
+pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_list(0, arg_count);
+    state.stack.pop();
+
+    todo!()
+
 }

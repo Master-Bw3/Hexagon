@@ -15,7 +15,7 @@ pub fn add(state: &mut State) -> Result<&mut State, Mishap> {
     state.stack.drain((state.stack.len() - arg_count)..);
 
     let operation_result = match iotas {
-        (Either::L(num1), Either::L(num2)) => Iota::Number(num1 + num2),
+        (Either::L(num1), Either::L(num2)) => Iota::Number(num1 - num2),
         (Either::L(num), Either::R(vec)) => Iota::Vector(vec.add_scalar(num)),
         (Either::R(vec), Either::L(num)) => Iota::Vector(vec.add_scalar(num)),
         (Either::R(vec1), Either::R(vec2)) => Iota::Vector(vec1 + vec2),

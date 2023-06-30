@@ -9,7 +9,6 @@ use crate::{
     iota::{Iota, PatternIota, PatternIotaExt, Signature},
     parser::{ActionValue, AstNode},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
-    patterns::pattern::{self, Pattern},
 };
 
 use self::state::State;
