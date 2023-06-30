@@ -9,6 +9,7 @@ pub enum Mishap {
     MathematicalError(),
     HastyRetrospection,
     InvalidPattern,
+    ExpectedPattern(Iota),
 }
 
 impl Mishap {
@@ -36,6 +37,7 @@ impl Mishap {
                 new_stack.push(Iota::Garbage(Garbage));
                 new_stack
             }
+            Mishap::ExpectedPattern(iota) => todo!(),
         }
     }
 }

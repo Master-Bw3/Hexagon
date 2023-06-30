@@ -2,7 +2,7 @@ use crate::{
     interpreter::{
         interpret_action,
         mishap::Mishap,
-        push_pattern,
+        push_iota, push_pattern,
         state::{StackExt, State},
     },
     iota::{EntityIota, Iota, PatternIota, PatternIotaExt},
@@ -86,18 +86,29 @@ pub fn no_action(state: &mut State) -> Result<&mut State, Mishap> {
 
 pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
     let arg_count = 1;
-    let eval_list = state.stack.get_list(0, arg_count)?;
+    let eval_list = match state.stack.get_list_or_pattern(0, arg_count)? {
+        crate::interpreter::state::Either::L(list) => list,
+        crate::interpreter::state::Either::R(pattern) => vec![Iota::Pattern(pattern)],
+    };
     state.stack.remove_args(arg_count);
 
     for iota in eval_list {
         match iota {
             Iota::Pattern(pattern) => {
-                interpret_action(pattern.signature.as_str(), 
-                pattern.value.map(|iota| ActionValue::Iota(iota)), 
-                state)?;
+                interpret_action(
+                    pattern.signature.as_str(),
+                    pattern.value.map(|iota| ActionValue::Iota(iota)),
+                    state,
+                )?;
             }
 
-            iota => todo!(),
+            iota => {
+                if state.consider_next || state.buffer.is_some() {
+                    push_iota(iota, state, state.consider_next)
+                } else {
+                    Err(Mishap::ExpectedPattern(iota))?
+                }
+            }
         }
     }
 

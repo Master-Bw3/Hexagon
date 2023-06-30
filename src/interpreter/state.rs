@@ -43,6 +43,12 @@ pub trait StackExt {
         index: usize,
         arg_count: usize,
     ) -> Result<Either<NumberIota, VectorIota>, Mishap>;
+    fn get_list_or_pattern(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<ListIota, PatternIota>, Mishap>;
+
     fn get_iota(&self, index: usize, arg_count: usize) -> Result<&Iota, Mishap>;
 
     fn remove_args(&mut self, arg_count: usize);
@@ -127,6 +133,20 @@ impl StackExt for Stack {
         }
     }
 
+    fn get_list_or_pattern(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<ListIota, PatternIota>, Mishap> {
+        let iota = self.get_iota(index, arg_count)?;
+        match iota {
+            Iota::List(x) => Ok(Either::L(x.clone())),
+            Iota::Pattern(x) => Ok(Either::R(x.clone())),
+
+            _ => Err(Mishap::IncorrectIota(index)),
+        }
+    }
+
     fn get_iota(&self, index: usize, arg_count: usize) -> Result<&Iota, Mishap> {
         {
             if self.len() < arg_count {
@@ -140,5 +160,4 @@ impl StackExt for Stack {
     fn remove_args(&mut self, arg_count: usize) {
         self.drain((self.len() - arg_count)..);
     }
-
 }
