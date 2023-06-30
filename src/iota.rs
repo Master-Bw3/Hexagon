@@ -34,19 +34,24 @@ pub struct EntityIota {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct  PatternIota {
-    signature: Signature,
-    value: Box<Option<Iota>>
+pub struct PatternIota {
+    pub signature: Signature,
+    pub value: Box<Option<Iota>>,
 }
-
 
 impl PatternIota {
     pub fn from_name(registry: &PatternRegistry, name: &str, value: Option<Iota>) -> PatternIota {
-        PatternIota { signature: Signature::from_name(&registry, &name), value: Box::new(value) }
+        PatternIota {
+            signature: Signature::from_name(&registry, &name),
+            value: Box::new(value),
+        }
     }
 
     pub fn from_sig(name: &str, value: Option<Iota>) -> PatternIota {
-        PatternIota { signature: Signature::from_sig(name), value: Box::new(value) }
+        PatternIota {
+            signature: Signature::from_sig(name),
+            value: Box::new(value),
+        }
     }
 }
 
@@ -65,6 +70,7 @@ pub enum PatternSigDir {
 pub trait PatternIotaExt {
     fn from_sig(string: &str) -> Signature;
     fn from_name(registry: &PatternRegistry, string: &str) -> Signature;
+    fn as_str(&self) -> String;
 }
 
 impl PatternIotaExt for Signature {
@@ -85,5 +91,19 @@ impl PatternIotaExt for Signature {
 
     fn from_name(registry: &PatternRegistry, string: &str) -> Signature {
         Signature::from_sig(&registry.find(string.to_string()).unwrap().signature)
+    }
+
+    fn as_str(&self) -> String {
+        self
+            .iter()
+            .map(|char| match char {
+                PatternSigDir::Q => 'q',
+                PatternSigDir::A => 'a',
+                PatternSigDir::S => 's',
+                PatternSigDir::D => 'd',
+                PatternSigDir::E => 'e',
+                PatternSigDir::W => 'w',
+            })
+            .collect()
     }
 }

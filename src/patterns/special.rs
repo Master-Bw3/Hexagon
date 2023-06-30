@@ -1,10 +1,12 @@
 use crate::{
     interpreter::{
+        interpret_action,
         mishap::Mishap,
         push_pattern,
         state::{StackExt, State},
     },
     iota::{EntityIota, Iota, PatternIota, PatternIotaExt},
+    parser::ActionValue,
 };
 
 pub fn escape(state: &mut State) -> Result<&mut State, Mishap> {
@@ -84,9 +86,20 @@ pub fn no_action(state: &mut State) -> Result<&mut State, Mishap> {
 
 pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_list(0, arg_count);
-    state.stack.pop();
+    let eval_list = state.stack.get_list(0, arg_count)?;
+    state.stack.remove_args(arg_count);
 
-    todo!()
+    for iota in eval_list {
+        match iota {
+            Iota::Pattern(pattern) => {
+                interpret_action(pattern.signature.as_str(), 
+                pattern.value.map(|iota| ActionValue::Iota(iota)), 
+                state)?;
+            }
 
+            iota => todo!(),
+        }
+    }
+
+    Ok(state)
 }

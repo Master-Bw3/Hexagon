@@ -8,6 +8,7 @@ pub enum Mishap {
     IncorrectIota(usize),
     MathematicalError(),
     HastyRetrospection,
+    InvalidPattern,
 }
 
 impl Mishap {
@@ -28,6 +29,11 @@ impl Mishap {
                 let retro_sig: &str = "eee";
                 let mut new_stack = stack.clone();
                 new_stack.push(Iota::Pattern(PatternIota::from_sig(&retro_sig, None)));
+                new_stack
+            }
+            Mishap::InvalidPattern => {
+                let mut new_stack = stack.clone();
+                new_stack.push(Iota::Garbage(Garbage));
                 new_stack
             }
         }

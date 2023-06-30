@@ -11,7 +11,7 @@ use crate::{
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-use self::state::State;
+use self::{state::State, mishap::Mishap};
 
 pub fn interpret(node: AstNode) -> Result<State, String> {
     let mut state = State {
@@ -30,7 +30,7 @@ fn interpret_node<'a>(node: AstNode, mut state: &'a mut State) -> Result<&'a mut
     println!("a: {:?}, {:?}", state.stack, state.buffer);
 
     match node {
-        AstNode::Action { name, value } => interpret_action(name, value, state),
+        AstNode::Action { name, value } => interpret_action(name, value, state).map_err(|err| format!("{:?}", err)),
         AstNode::Hex(nodes) => {
             for node in nodes {
                 interpret_node(node, state)?;
@@ -58,11 +58,11 @@ fn interpret_node<'a>(node: AstNode, mut state: &'a mut State) -> Result<&'a mut
     }
 }
 
-fn interpret_action<'a>(
+pub fn interpret_action<'a>(
     name: String,
     value: Option<ActionValue>,
     mut state: &'a mut State,
-) -> Result<&'a mut State, String> {
+) -> Result<&'a mut State, Mishap> {
     let is_escape = Signature::from_name(&state.pattern_registry, &name)
         == Signature::from_name(&state.pattern_registry, "escape");
 
@@ -100,12 +100,11 @@ fn interpret_action<'a>(
                     let pattern = state
                         .pattern_registry
                         .find(name)
-                        .ok_or("Invalid Action")?
+                        .ok_or(Mishap::InvalidPattern)?
                         .clone();
 
                     pattern
                         .operate(state, value)
-                        .map_err(|err: mishap::Mishap| format!("{:?}", err))
                 }
             }
         }
