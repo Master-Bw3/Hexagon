@@ -112,5 +112,7 @@ pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
         }
     }
 
+    state.buffer = None;
+
     Ok(state)
 }
