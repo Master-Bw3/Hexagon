@@ -9,7 +9,10 @@ use crate::{
     pattern_registry::PatternRegistry,
 };
 
-pub fn eval<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) -> Result<&'a mut State, Mishap> {
+pub fn eval<'a>(
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
     let arg = state.stack.get_list_or_pattern(0, arg_count)?;
     state.stack.remove_args(&arg_count);
@@ -28,7 +31,12 @@ pub fn eval<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) -> Res
 
 type Halted = bool;
 
-fn eval_list(state: &mut State, pattern_registry: &PatternRegistry, list: &Vec<Iota>) -> Result<Halted, Mishap> {
+fn eval_list(
+    state: &mut State,
+    pattern_registry: &PatternRegistry,
+    list: &Vec<Iota>,
+) -> Result<Halted, Mishap> {
+    
     let mut halted = false;
     for iota in list {
         match iota {
@@ -54,17 +62,25 @@ fn eval_list(state: &mut State, pattern_registry: &PatternRegistry, list: &Vec<I
     Ok(halted)
 }
 
-fn eval_pattern(state: &mut State, pattern_registry: &PatternRegistry, pattern: &PatternIota) -> Result<(), Mishap> {
+fn eval_pattern(
+    state: &mut State,
+    pattern_registry: &PatternRegistry,
+    pattern: &PatternIota,
+) -> Result<(), Mishap> {
     interpreter::interpret_action(
         pattern.signature.as_str(),
         pattern.value.clone().map(|iota| ActionValue::Iota(iota)),
         state,
-        pattern_registry
+        pattern_registry,
     )?;
     Ok(())
 }
 
-pub fn for_each<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) -> Result<&'a mut State, Mishap> {
+pub fn for_each<'a>(
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    
     let arg_count = 2;
     let pattern_list = state.stack.get_list(0, 2)?;
     let iota_list = state.stack.get_list(1, 2)?;
