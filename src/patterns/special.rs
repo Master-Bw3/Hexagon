@@ -1,12 +1,10 @@
 use crate::{
     interpreter::{
-        interpret_action,
         mishap::Mishap,
-        push_iota, push_pattern,
-        state::{Either, StackExt, State},
+        push_pattern,
+        state::{State},
     },
-    iota::{EntityIota, Iota, PatternIota, SignatureExt, Signature},
-    parser::ActionValue,
+    iota::{Iota, PatternIota},
 };
 
 pub fn escape(state: &mut State) -> Result<&mut State, Mishap> {
