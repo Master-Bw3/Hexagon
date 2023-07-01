@@ -115,7 +115,7 @@ pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), 
     }
 }
 
-pub enum embedType {
+pub enum EmbedType {
     Normal,
     Smart,
     Consider,
@@ -125,7 +125,7 @@ pub enum embedType {
 pub fn embed<'a>(
     value: &'a Option<OpValue>,
     mut state: &'a mut State,
-    embed_type: embedType,
+    embed_type: EmbedType,
 ) -> Result<(), String> {
     let val = match value {
         Some(val) => val,
@@ -133,12 +133,12 @@ pub fn embed<'a>(
     };
     match val {
         OpValue::Iota(iota) => match embed_type {
-            embedType::Normal => {
+            EmbedType::Normal => {
                 state.stack.push(iota.clone());
             }
-            embedType::Smart => todo!(),
-            embedType::Consider => todo!(),
-            embedType::IntroRetro => {
+            EmbedType::Smart => todo!(),
+            EmbedType::Consider => todo!(),
+            EmbedType::IntroRetro => {
                 state.stack.push(Iota::Pattern(PatternIota::from_name(
                     &state.pattern_registry,
                     "open_paren",

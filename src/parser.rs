@@ -24,7 +24,7 @@ pub fn parse(source: &str) -> Result<AstNode, Error<Rule>> {
         }
     }
 
-    Ok(AstNode::Hex(ast))
+    Ok(AstNode::File(ast))
 }
 
 fn construct_ast_node(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Option<AstNode> {
@@ -43,7 +43,7 @@ fn construct_ast_node(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) 
 
             Some(parse_op(name, arg, pattern_registry))
         }
-        Rule::IntroRetro => Some(parse_intro_retro(pair)),
+        Rule::EscapedIntroRetro => Some(parse_intro_retro(pair)),
         Rule::Var => Some(parse_var(pair)),
         Rule::Embed => Some(parse_embed(pair, pattern_registry)),
         Rule::IfBlock => Some(parse_if_block(pair, pattern_registry)),
@@ -56,7 +56,11 @@ fn construct_ast_node(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) 
     }
 }
 
-fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>, pattern_registry: &PatternRegistry) -> AstNode {
+fn parse_op(
+    name: Pair<'_, Rule>,
+    arg: Option<Pair<'_, Rule>>,
+    pattern_registry: &PatternRegistry,
+) -> AstNode {
     AstNode::Op {
         name: {
             match name.as_str() {
@@ -76,13 +80,18 @@ fn parse_op(name: Pair<'_, Rule>, arg: Option<Pair<'_, Rule>>, pattern_registry:
     }
 }
 
-fn parse_action(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>, pattern_registry: &PatternRegistry) -> AstNode {
+fn parse_action(
+    left: Pair<'_, Rule>,
+    right: Option<Pair<'_, Rule>>,
+    pattern_registry: &PatternRegistry,
+) -> AstNode {
     AstNode::Action {
         name: { left.as_str().to_string() },
         value: {
             right.map(|pair| match pair.as_rule() {
                 Rule::Iota => ActionValue::Iota(parse_iota(pair, pattern_registry)),
                 Rule::BookkeeperValue => ActionValue::Bookkeeper(parse_bookkeeper(pair)),
+                
 
                 _ => unreachable!(),
             })
@@ -91,9 +100,10 @@ fn parse_action(left: Pair<'_, Rule>, right: Option<Pair<'_, Rule>>, pattern_reg
 }
 
 fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
+    let inner = pair.into_inner().next().unwrap();
     AstNode::Action {
         name: {
-            match pair.as_str() {
+            match inner.as_str() {
                 "{" => "open_paren".to_string(),
                 "}" => "close_paren".to_string(),
                 _ => unreachable!(),
@@ -142,9 +152,10 @@ fn parse_if_block(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> A
             },
             fail: {
                 inner.clone().next().map(|branch| match branch.as_rule() {
-                    Rule::Else => {
-                        Box::new(construct_ast_node(branch.into_inner().next().unwrap(), pattern_registry).unwrap())
-                    }
+                    Rule::Else => Box::new(
+                        construct_ast_node(branch.into_inner().next().unwrap(), pattern_registry)
+                            .unwrap(),
+                    ),
                     Rule::ElseIf => Box::new(parse_inner(inner, pattern_registry)),
                     _ => unreachable!(),
                 })
@@ -158,7 +169,18 @@ fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota 
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
         Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
-        Rule::Pattern => Iota::Pattern(PatternIota::from_name(pattern_registry, inner_pair.as_str(), None)),
+        Rule::Pattern => {match inner_pair.clone().into_inner().next() {
+            Some(inner_inner_pair) => match inner_inner_pair.as_str() {
+                "{" => Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None)),
+                "}" => Iota::Pattern(PatternIota::from_name(pattern_registry, "close_paren", None)),
+                _ => unreachable!()
+            },
+            None => Iota::Pattern(PatternIota::from_name(
+                pattern_registry,
+                inner_pair.as_str(),
+                None,
+            )),
+        }},
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();
             Iota::Vector(matrix![
@@ -205,6 +227,7 @@ fn parse_string(pair: Pair<'_, Rule>) -> String {
 
 #[derive(Debug)]
 pub enum AstNode {
+    File(Vec<AstNode>),
     Action {
         name: String,
         value: Option<ActionValue>,

@@ -5,13 +5,16 @@ pub mod state;
 use std::collections::HashMap;
 
 use crate::{
-    interpreter::ops::{push, store},
+    interpreter::{
+        ops::{embed, push, store, EmbedType},
+        state::StackExt,
+    },
     iota::{Iota, PatternIota, PatternIotaExt, Signature},
     parser::{ActionValue, AstNode},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-use self::{state::State, mishap::Mishap};
+use self::{mishap::Mishap, state::State};
 
 pub fn interpret(node: AstNode) -> Result<State, String> {
     let mut state = State {
@@ -26,15 +29,27 @@ pub fn interpret(node: AstNode) -> Result<State, String> {
     (interpret_node(node, &mut state)).cloned()
 }
 
-fn interpret_node<'a>(node: AstNode, mut state: &'a mut State) -> Result<&'a mut State, String> {
+fn interpret_node<'a>(node: AstNode, state: &'a mut State) -> Result<&'a mut State, String> {
     println!("a: {:?}, {:?}", state.stack, state.buffer);
 
     match node {
-        AstNode::Action { name, value } => interpret_action(name, value, state).map_err(|err| format!("{:?}", err)),
-        AstNode::Hex(nodes) => {
+        AstNode::File(nodes) => {
             for node in nodes {
                 interpret_node(node, state)?;
             }
+            Ok(state)
+        },
+
+        AstNode::Action { name, value } => {
+            interpret_action(name, value, state).map_err(|err| format!("{:?}", err))
+        }
+        AstNode::Hex(nodes) => {
+            interpret_action("open_paren".to_string(), None, state).map_err(|err| format!("{:?}", err))?;
+            for node in nodes {
+                interpret_node(node, state)?;
+            }
+            interpret_action("close_paren".to_string(), None, state).map_err(|err| format!("{:?}", err))?;
+
             Ok(state)
         }
         AstNode::Op { name, arg } => {
@@ -42,7 +57,7 @@ fn interpret_node<'a>(node: AstNode, mut state: &'a mut State) -> Result<&'a mut
                 crate::parser::OpName::Store => store(&arg, state, false),
                 crate::parser::OpName::Copy => store(&arg, state, true),
                 crate::parser::OpName::Push => push(&arg, state),
-                crate::parser::OpName::Embed => todo!(),
+                crate::parser::OpName::Embed => embed(&arg, state, EmbedType::Normal),
                 crate::parser::OpName::SmartEmbed => todo!(),
                 crate::parser::OpName::ConsiderEmbed => todo!(),
                 crate::parser::OpName::IntroEmbed => todo!(),
@@ -54,7 +69,24 @@ fn interpret_node<'a>(node: AstNode, mut state: &'a mut State) -> Result<&'a mut
             condition,
             succeed,
             fail,
-        } => todo!(),
+        } => {
+            interpret_node(*condition, state)?;
+
+            let condition = state
+                .stack
+                .get_bool(0, 1)
+                .map_err(|err| format!("{:?}", err))?;
+            state.stack.remove_args(1);
+
+            if condition {
+                interpret_node(*succeed, state)?;
+            } else {
+                if let Some(node) = fail {
+                    interpret_node(*node, state)?;
+                }
+            }
+            Ok(state)
+        }
     }
 }
 
@@ -98,8 +130,7 @@ pub fn interpret_action<'a>(
                         .ok_or(Mishap::InvalidPattern)?
                         .clone();
 
-                    pattern
-                        .operate(state, value)
+                    pattern.operate(state, value)
                 }
             }
         }

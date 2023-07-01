@@ -1,6 +1,6 @@
 File = _{ SOI ~ Hex ~ EOI }
 
-Hex = _{ ((IfBlock | Embed | Op | Var | Action | IntroRetro) ~ Newline? | Newline)* }
+Hex = _{ ((EscapedIntroRetro | IfBlock | Embed | Op | Var | Action | Term ) ~ Newline? | Newline)* }
 
 IfBlock = {If ~ Then ~ (ElseIf ~ Then ~ Newline? )* ~ Else?}
 
@@ -12,9 +12,9 @@ Else = {"else" ~ Newline? ~ Term}
 
 ElseIf = {"else if" ~ Newline? ~ Term}
 
-Term = {"(" ~ Hex ~ ")"}
+Term = {"{" ~ Hex ~ "}"}
 
-Action = { ActionName ~ (":" ~ (Iota | BookkeeperValue | ActionDiscriminator))? }
+Action = { ActionName ~ (":" ~ (Iota | BookkeeperValue | ActionDiscriminator | IntroRetro))? }
 
 ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
@@ -25,7 +25,6 @@ ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_U
 Iota = { Number | Vector | Entity | Influence | Bool | Pattern | List}
 
 List = !{"[" ~ ((Iota ~ ",")* ~ Iota)? ~ "]" }
-
 
 Vector = {"(" ~ Number ~ "," ~ Number ~ "," ~ Number ~ ")" }
 
@@ -47,7 +46,7 @@ Influence = @{"Null" | "Garbage" ~ !(ASCII_ALPHA)}
 
 Bool = @{"True" | "False" ~ !(ASCII_ALPHA)}
 
-Pattern = ${ PatternName | ActionName }
+Pattern = ${ IntroRetro | PatternName | ActionName }
 
 String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))+ ~ "\"")}
 
@@ -56,6 +55,8 @@ PatternName = ${ PatternDirection ~ " " ~ PatternSignature}
 PatternDirection = @{("NORTHEAST" | "EAST" | "SOUTHEAST" | "SOUTHWEST" | "WEST" | "NORTHWEST")}
 
 PatternSignature = @{("q" | "a" | "w" | "e" | "d")+}
+
+EscapedIntroRetro = {"Consideration" ~ Newline? ~ IntroRetro}
 
 IntroRetro = { "{" | "}" }
 
