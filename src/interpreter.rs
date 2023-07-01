@@ -24,6 +24,7 @@ pub fn interpret(node: AstNode) -> Result<State, String> {
         heap: HashMap::new(),
         consider_next: false,
         pattern_registry: PatternRegistry::construct(),
+        halt: false,
     };
 
     (interpret_node(node, &mut state)).cloned()
@@ -36,6 +37,7 @@ fn interpret_node<'a>(node: AstNode, state: &'a mut State) -> Result<&'a mut Sta
         AstNode::File(nodes) => {
             for node in nodes {
                 interpret_node(node, state)?;
+                if state.halt {break;}
             }
             Ok(state)
         },
@@ -47,6 +49,7 @@ fn interpret_node<'a>(node: AstNode, state: &'a mut State) -> Result<&'a mut Sta
             interpret_action("open_paren".to_string(), None, state).map_err(|err| format!("{:?}", err))?;
             for node in nodes {
                 interpret_node(node, state)?;
+                if state.halt {break;}
             }
             interpret_action("close_paren".to_string(), None, state).map_err(|err| format!("{:?}", err))?;
 
@@ -95,6 +98,7 @@ pub fn interpret_action<'a>(
     value: Option<ActionValue>,
     mut state: &'a mut State,
 ) -> Result<&'a mut State, Mishap> {
+    
     let is_escape = Signature::from_name(&state.pattern_registry, &name)
         == Signature::from_name(&state.pattern_registry, "escape");
 
@@ -106,7 +110,7 @@ pub fn interpret_action<'a>(
         _ => None,
     };
 
-    {
+    {   
         if state.consider_next {
             push_pattern(name, get_value_iota().cloned(), state, true);
             state.consider_next = false;

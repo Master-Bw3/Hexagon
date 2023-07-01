@@ -21,6 +21,7 @@ pub struct State {
     pub heap: HashMap<String, i32>,
     pub pattern_registry: PatternRegistry,
     pub consider_next: bool,
+    pub halt: bool,
 }
 
 pub enum Either<L, R> {

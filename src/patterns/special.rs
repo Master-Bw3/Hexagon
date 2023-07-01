@@ -5,7 +5,7 @@ use crate::{
         push_iota, push_pattern,
         state::{Either, StackExt, State},
     },
-    iota::{EntityIota, Iota, PatternIota, PatternIotaExt},
+    iota::{EntityIota, Iota, PatternIota, PatternIotaExt, Signature},
     parser::ActionValue,
 };
 
@@ -90,11 +90,15 @@ pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
     state.stack.remove_args(1);
     match arg {
         Either::L(eval_list) => {
-            
             //evaluate list
             for iota in eval_list {
                 match iota {
                     Iota::Pattern(pattern) => {
+                        if pattern.signature
+                            == Signature::from_name(&state.pattern_registry, "break")
+                        {
+                            break;
+                        }
                         interpret_action(
                             pattern.signature.as_str(),
                             pattern.value.map(|iota| ActionValue::Iota(iota)),
@@ -124,5 +128,10 @@ pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
         }
     };
 
+    Ok(state)
+}
+
+pub fn halt(state: &mut State) -> Result<&mut State, Mishap> {
+    state.halt = true;
     Ok(state)
 }

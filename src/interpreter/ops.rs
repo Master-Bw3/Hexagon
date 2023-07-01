@@ -167,6 +167,7 @@ mod tests {
             consider_next: false,
             pattern_registry: PatternRegistry::construct(),
             heap: HashMap::new(),
+            halt: false
         };
         let mut heap: HashMap<String, i32> = HashMap::new();
         let val = Some(OpValue::Var("$hello".to_string()));

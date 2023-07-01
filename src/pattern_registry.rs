@@ -11,14 +11,17 @@ impl PatternRegistryExt for PatternRegistry {
     fn construct() -> PatternRegistry {
         let mut registry: PatternRegistry = vec![];
         // registry.push(Pattern::new("Mind's Reflection", "get_caster", "qaq", selectors::get_caster));
-        registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
+
+        //special patterns
         registry.push(Pattern::new("Consideration", "escape", "qqqaw", special::escape));
         registry.push(Pattern::new("Introspection", "open_paren", "qqq", special::introspect));
         registry.push(Pattern::new("Retrospection", "close_paren", "eee", special::retrospect));
         registry.push(Pattern::new("Hermes' Gambit", "eval", "deaqq", special::eval));
+        registry.push(Pattern::new("Charon's Gambit", "halt", "aqdee", special::halt));
 
+
+        registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
         registry.push(Pattern::new("Numerical Reflection", "close_paren", "aqaa", special::no_action));
-
 
         registry
     }
