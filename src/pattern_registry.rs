@@ -17,6 +17,11 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Hermes' Gambit", "eval", "deaqq", &eval::eval),
             Pattern::new("Thoth's Gambit", "for_each", "dadad", &eval::for_each),
             Pattern::new("Charon's Gambit", "halt", "aqdee", &special::halt),
+
+            //math
+            Pattern::new("Additive Distillation", "add", "waaw", &math::add),
+            Pattern::new("Subtractive Distillation", "sub", "wddw", &math::subtract),
+
         ];
 
         registry.push(Pattern::new(
