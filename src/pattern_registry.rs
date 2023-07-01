@@ -1,4 +1,4 @@
-use crate::patterns::{math, pattern::Pattern, selectors, misc, special, eval};
+use crate::patterns::{eval, math, misc, pattern::Pattern, selectors, special};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -7,6 +7,7 @@ pub trait PatternRegistryExt {
     fn find(&self, query: &String) -> Option<&Pattern>;
 }
 
+#[rustfmt::skip]
 impl PatternRegistryExt for PatternRegistry {
     fn construct() -> PatternRegistry {
         let mut registry: PatternRegistry = vec![];
@@ -17,6 +18,7 @@ impl PatternRegistryExt for PatternRegistry {
         registry.push(Pattern::new("Introspection", "open_paren", "qqq", special::introspect));
         registry.push(Pattern::new("Retrospection", "close_paren", "eee", special::retrospect));
         registry.push(Pattern::new("Hermes' Gambit", "eval", "deaqq", eval::eval));
+        registry.push(Pattern::new("Thoth's Gambit", "for_each", "dadad", special::halt));
         registry.push(Pattern::new("Charon's Gambit", "halt", "aqdee", special::halt));
 
 

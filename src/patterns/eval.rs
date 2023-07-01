@@ -4,10 +4,9 @@ use crate::{
         mishap::Mishap,
         state::{Either, StackExt, State},
     },
-    iota::{Iota, PatternIota, SignatureExt, Signature},
+    iota::{Iota, PatternIota, Signature, SignatureExt},
     parser::ActionValue,
 };
-
 
 pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
     let arg_count = 1;
@@ -16,22 +15,25 @@ pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
 
     match arg {
         Either::L(list) => {
-            eval_list(state, list)?;
+            eval_list(state, &list)?;
         }
         Either::R(pattern) => {
-            eval_pattern(state, pattern)?;
+            eval_pattern(state, &pattern)?;
         }
     };
 
     Ok(state)
 }
 
+type Halted = bool;
 
-fn eval_list(state: &mut State, list: Vec<Iota>) -> Result<(), Mishap> {
+fn eval_list(state: &mut State, list: &Vec<Iota>) -> Result<Halted, Mishap> {
+    let mut halted = false;
     for iota in list {
         match iota {
             Iota::Pattern(pattern) => {
                 if pattern.signature == Signature::from_name(&state.pattern_registry, "halt") {
+                    halted = true;
                     break;
                 }
                 eval_pattern(state, pattern)?;
@@ -39,24 +41,47 @@ fn eval_list(state: &mut State, list: Vec<Iota>) -> Result<(), Mishap> {
 
             iota => {
                 if state.consider_next || state.buffer.is_some() {
-                    interpreter::push_iota(iota, state, state.consider_next)
+                    interpreter::push_iota(iota.clone(), state, state.consider_next)
                 } else {
-                    Err(Mishap::ExpectedPattern(iota))?
+                    Err(Mishap::ExpectedPattern(iota.clone()))?
                 }
             }
         }
     }
 
     state.buffer = None;
-    Ok(())
+    Ok(halted)
 }
 
-
-fn eval_pattern(state: &mut State, pattern: PatternIota) -> Result<(), Mishap> {
+fn eval_pattern(state: &mut State, pattern: &PatternIota) -> Result<(), Mishap> {
     interpreter::interpret_action(
         pattern.signature.as_str(),
-        pattern.value.map(|iota| ActionValue::Iota(iota)),
+        pattern.value.clone().map(|iota| ActionValue::Iota(iota)),
         state,
     )?;
     Ok(())
+}
+
+pub fn for_each(state: &mut State) -> Result<&mut State, Mishap> {
+    let arg_count = 2;
+    let pattern_list = state.stack.get_list(0, 2)?;
+    let iota_list = state.stack.get_list(1, 2)?;
+    state.stack.remove_args(arg_count);
+
+    for iota in iota_list {
+        let mut temp_state = state.clone();
+        temp_state.stack.push(iota);
+
+        let halted = eval_list(&mut temp_state, &pattern_list)?;
+
+        if halted {
+            break;
+        }
+
+        //update state
+        temp_state.stack = state.stack.clone();
+        std::mem::swap(state, &mut temp_state);
+    }
+
+    Ok(state)
 }
