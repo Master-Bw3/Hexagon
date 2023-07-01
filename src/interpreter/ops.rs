@@ -1,13 +1,12 @@
-use std::collections::HashMap;
 
 use crate::{
-    iota::{Iota, PatternIota, SignatureExt},
+    iota::{Iota, PatternIota},
     parser::OpValue, pattern_registry::PatternRegistry,
 };
 
 use super::{
     push_iota,
-    state::{Stack, State},
+    state::{State},
 };
 
 pub fn store<'a>(
@@ -157,9 +156,9 @@ pub fn embed<'a>(
 
 #[cfg(test)]
 mod tests {
-    use crate::pattern_registry::{PatternRegistry, PatternRegistryExt};
-
     use super::*;
+    use std::collections::HashMap;
+
 
     #[test]
     fn test() {
@@ -171,7 +170,7 @@ mod tests {
             heap: HashMap::new(),
             halt: false
         };
-        let mut heap: HashMap<String, i32> = HashMap::new();
+        let heap: HashMap<String, i32> = HashMap::new();
         let val = Some(OpValue::Var("$hello".to_string()));
         store(&val, &mut state, false).unwrap();
         println!("{:?}, {:?}", state.stack, heap);

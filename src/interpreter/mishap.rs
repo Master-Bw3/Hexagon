@@ -1,5 +1,5 @@
 use crate::iota::GarbageIota::Garbage;
-use crate::iota::{PatternIota, SignatureExt};
+use crate::iota::{PatternIota};
 use crate::{interpreter::state::Stack, iota::Iota};
 
 #[derive(Debug)]
@@ -37,7 +37,7 @@ impl Mishap {
                 new_stack.push(Iota::Garbage(Garbage));
                 new_stack
             }
-            Mishap::ExpectedPattern(iota) => todo!(),
+            Mishap::ExpectedPattern(_) => todo!(),
         }
     }
 }

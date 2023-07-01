@@ -1,9 +1,8 @@
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{Either, StackExt, State, Stack},
+        state::{StackExt, State},
     },
-    iota::Iota,
 };
 
 

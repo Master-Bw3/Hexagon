@@ -25,14 +25,14 @@ impl Pattern {
         }
     }
 
-    pub fn operate<'a>(&self, state: &'a mut State, pattern_registry: &PatternRegistry, value: Option<ActionValue>) -> Result<&'a mut State, Mishap> {
-        let value = match value {
-            Some(val) => match val {
-                ActionValue::Iota(iota) => Some(iota),
-                ActionValue::Bookkeeper(_) => None,
-            },
-            None => None,
-        };
+    pub fn operate<'a>(&self, state: &'a mut State, pattern_registry: &PatternRegistry, _value: Option<ActionValue>) -> Result<&'a mut State, Mishap> {
+        // let value = match value {
+        //     Some(val) => match val {
+        //         ActionValue::Iota(iota) => Some(iota),
+        //         ActionValue::Bookkeeper(_) => None,
+        //     },
+        //     None => None,
+        // };
 
         (self.action)(state, pattern_registry)
     }
