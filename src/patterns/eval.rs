@@ -34,11 +34,7 @@ fn eval_list(state: &mut State, list: Vec<Iota>) -> Result<(), Mishap> {
                 if pattern.signature == Signature::from_name(&state.pattern_registry, "halt") {
                     break;
                 }
-                interpreter::interpret_action(
-                    pattern.signature.as_str(),
-                    pattern.value.map(|iota| ActionValue::Iota(iota)),
-                    state,
-                )?;
+                eval_pattern(state, pattern)?;
             }
 
             iota => {

@@ -1,4 +1,4 @@
-use crate::patterns::{math, pattern::Pattern, selectors, misc, special};
+use crate::patterns::{math, pattern::Pattern, selectors, misc, special, eval};
 
 pub type PatternRegistry = Vec<Pattern>;
 
