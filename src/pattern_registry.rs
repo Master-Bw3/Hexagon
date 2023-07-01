@@ -18,7 +18,7 @@ impl PatternRegistryExt for PatternRegistry {
         registry.push(Pattern::new("Introspection", "open_paren", "qqq", special::introspect));
         registry.push(Pattern::new("Retrospection", "close_paren", "eee", special::retrospect));
         registry.push(Pattern::new("Hermes' Gambit", "eval", "deaqq", eval::eval));
-        registry.push(Pattern::new("Thoth's Gambit", "for_each", "dadad", special::halt));
+        registry.push(Pattern::new("Thoth's Gambit", "for_each", "dadad", eval::for_each));
         registry.push(Pattern::new("Charon's Gambit", "halt", "aqdee", special::halt));
 
 
