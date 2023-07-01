@@ -49,7 +49,7 @@ pub fn retrospect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) 
     ));
 
     let intro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
-        if x.0 == intro_pattern && x.1 == false {
+        if x.0 == intro_pattern && !x.1 {
             acc + 1
         } else {
             acc
@@ -57,7 +57,7 @@ pub fn retrospect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) 
     }) + 1;
 
     let retro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
-        if x.0 == retro_pattern && x.1 == false {
+        if x.0 == retro_pattern && !x.1 {
             acc + 1
         } else {
             acc

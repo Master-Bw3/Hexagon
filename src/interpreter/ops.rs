@@ -16,7 +16,7 @@ pub fn store<'a>(
 ) -> Result<(), String> {
     let val = match value {
         Some(val) => val,
-        None => Err(format!("Expected 1 input, but recieved 0 inputs"))?,
+        None => Err("Expected 1 input, but recieved 0 inputs")?,
     };
     match val {
         OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota)),
@@ -75,7 +75,7 @@ fn insert_iota_into_ravenmind(
 
 fn add_iota_to_ravenmind(ravenmind: Option<Iota>, iota: Iota) -> (Option<Iota>, i32) {
     let unwrapped_ravenmind: &mut Vec<Iota> = &mut match ravenmind {
-        Some(Iota::List(list)) => list.clone(),
+        Some(Iota::List(list)) => list,
         _ => Vec::new(),
     };
     let index = unwrapped_ravenmind.len();
@@ -89,7 +89,7 @@ fn add_iota_to_ravenmind(ravenmind: Option<Iota>, iota: Iota) -> (Option<Iota>, 
 
 fn get_iota_from_ravenmind(ravenmind: Option<Iota>, index: usize) -> Option<Iota> {
     let unwrapped_ravenmind: &mut Vec<Iota> = &mut match ravenmind {
-        Some(Iota::List(list)) => list.clone(),
+        Some(Iota::List(list)) => list,
         _ => Vec::new(),
     };
 
@@ -110,7 +110,7 @@ pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), 
                 Ok(())
             }
         },
-        None => Err(format!("Expected 1 input, but recieved 0 inputs")),
+        None => Err("Expected 1 input, but recieved 0 inputs".to_string()),
     }
 }
 
@@ -130,7 +130,7 @@ pub fn embed<'a>(
     
     let val = match value {
         Some(val) => val,
-        None => Err(format!("Expected 1 input, but recieved 0 inputs"))?,
+        None => Err("Expected 1 input, but recieved 0 inputs".to_string())?,
     };
 
     match val {

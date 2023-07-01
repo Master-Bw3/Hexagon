@@ -13,7 +13,7 @@ use pest_derive::Parser;
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
 struct HexParser;
-pub fn parse(source: &str) -> Result<AstNode, Error<Rule>> {
+pub fn parse(source: &str) -> Result<AstNode, Box<Error<Rule>>> {
     let mut ast = vec![];
     let pattern_registry = PatternRegistry::construct();
 

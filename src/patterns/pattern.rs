@@ -3,11 +3,12 @@ use crate::{
     parser::ActionValue, pattern_registry::PatternRegistry,
 };
 
+pub type ActionType = dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>;
 pub struct Pattern {
     pub display_name: String,
     pub internal_name: String,
     pub signature: String,
-    pub action: Box<dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>>,
+    pub action: Box<ActionType>,
 }
 
 impl Pattern {

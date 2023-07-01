@@ -27,11 +27,14 @@ pub fn interpret(node: AstNode) -> Result<State, String> {
     };
     let pattern_registry = PatternRegistry::construct();
 
-
     (interpret_node(node, &mut state, &pattern_registry)).map(|state| state.clone())
 }
 
-fn interpret_node<'a>(node: AstNode, state: &'a mut State, pattern_registry: &PatternRegistry) -> Result<&'a mut State, String> {
+fn interpret_node<'a>(
+    node: AstNode,
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, String> {
     println!("a: {:?}, {:?}", state.stack, state.buffer);
 
     match node {
@@ -45,9 +48,8 @@ fn interpret_node<'a>(node: AstNode, state: &'a mut State, pattern_registry: &Pa
             Ok(state)
         }
 
-        AstNode::Action { name, value } => {
-            interpret_action(name, value, state, pattern_registry).map_err(|err| format!("{:?}", err))
-        }
+        AstNode::Action { name, value } => interpret_action(name, value, state, pattern_registry)
+            .map_err(|err| format!("{:?}", err)),
         AstNode::Hex(nodes) => {
             interpret_action("open_paren".to_string(), None, state, pattern_registry)
                 .map_err(|err| format!("{:?}", err))?;
@@ -64,7 +66,9 @@ fn interpret_node<'a>(node: AstNode, state: &'a mut State, pattern_registry: &Pa
                 crate::parser::OpName::Store => store(&arg, state, false),
                 crate::parser::OpName::Copy => store(&arg, state, true),
                 crate::parser::OpName::Push => push(&arg, state),
-                crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
+                crate::parser::OpName::Embed => {
+                    embed(&arg, state, pattern_registry, EmbedType::Normal)
+                }
                 crate::parser::OpName::SmartEmbed => todo!(),
                 crate::parser::OpName::ConsiderEmbed => todo!(),
                 crate::parser::OpName::IntroEmbed => todo!(),
@@ -88,11 +92,10 @@ fn interpret_node<'a>(node: AstNode, state: &'a mut State, pattern_registry: &Pa
 
             if condition {
                 interpret_node(*succeed, state, pattern_registry)?;
-            } else {
-                if let Some(node) = fail {
-                    interpret_node(*node, state, pattern_registry)?;
-                }
+            } else if let Some(node) = fail {
+                interpret_node(*node, state, pattern_registry)?;
             }
+
             Ok(state)
         }
     }
@@ -108,11 +111,11 @@ pub fn interpret_action<'a>(
         Err(Mishap::InvalidPattern)?
     };
 
-    let is_escape = Signature::from_name(&pattern_registry, &name)
-        == Signature::from_name(&pattern_registry, "escape");
+    let is_escape = Signature::from_name(pattern_registry, &name)
+        == Signature::from_name(pattern_registry, "escape");
 
-    let is_retro = Signature::from_name(&pattern_registry, &name)
-        == Signature::from_name(&pattern_registry, "close_paren");
+    let is_retro = Signature::from_name(pattern_registry, &name)
+        == Signature::from_name(pattern_registry, "close_paren");
 
     let get_value_iota = || match &value {
         Some(ActionValue::Iota(iota)) => Some(iota),
@@ -150,8 +153,7 @@ pub fn interpret_action<'a>(
             None => {
                 let pattern = pattern_registry
                     .find(&name)
-                    .ok_or(Mishap::InvalidPattern)?
-                    .clone();
+                    .ok_or(Mishap::InvalidPattern)?;
 
                 pattern.operate(state, pattern_registry, value)
             }
@@ -167,7 +169,7 @@ pub fn push_pattern(
     considered: bool,
 ) {
     push_iota(
-        Iota::Pattern(PatternIota::from_name(&pattern_registry, &pattern, value)),
+        Iota::Pattern(PatternIota::from_name(pattern_registry, &pattern, value)),
         state,
         considered,
     )

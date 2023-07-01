@@ -69,7 +69,7 @@ fn eval_pattern(
 ) -> Result<(), Mishap> {
     interpreter::interpret_action(
         pattern.signature.as_str(),
-        pattern.value.clone().map(|iota| ActionValue::Iota(iota)),
+        pattern.value.clone().map(ActionValue::Iota),
         state,
         pattern_registry,
     )?;

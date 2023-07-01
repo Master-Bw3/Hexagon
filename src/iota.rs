@@ -42,7 +42,7 @@ pub struct PatternIota {
 impl PatternIota {
     pub fn from_name(registry: &PatternRegistry, name: &str, value: Option<Iota>) -> PatternIota {
         PatternIota {
-            signature: Signature::from_name(&registry, &name),
+            signature: Signature::from_name(registry, name),
             value: Box::new(value),
         }
     }
@@ -90,7 +90,7 @@ impl SignatureExt for Signature {
     }
 
     fn from_name(registry: &PatternRegistry, string: &str) -> Signature {
-        Signature::from_sig(&registry.find(&string.to_string()).unwrap().signature)
+        Signature::from_sig(&registry.find(string).unwrap().signature)
     }
 
     fn as_str(&self) -> String {
