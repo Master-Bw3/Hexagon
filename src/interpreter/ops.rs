@@ -124,13 +124,15 @@ pub enum EmbedType {
 
 pub fn embed<'a>(
     value: &'a Option<OpValue>,
-    mut state: &'a mut State,
+    state: &'a mut State,
     embed_type: EmbedType,
 ) -> Result<(), String> {
+    
     let val = match value {
         Some(val) => val,
         None => Err(format!("Expected 1 input, but recieved 0 inputs"))?,
     };
+
     match val {
         OpValue::Iota(iota) => match embed_type {
             EmbedType::Normal => {
