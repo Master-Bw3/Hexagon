@@ -82,7 +82,8 @@ fn interpret_node<'a>(node: AstNode, state: &'a mut State) -> Result<&'a mut Sta
                 .stack
                 .get_bool(0, 1)
                 .map_err(|err| format!("{:?}", err))?;
-            state.stack.remove_args(1);
+            
+            state.stack.remove_args(&1);
 
             if condition {
                 interpret_node(*succeed, state)?;

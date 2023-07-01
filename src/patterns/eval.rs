@@ -11,7 +11,7 @@ use crate::{
 pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
     let arg_count = 1;
     let arg = state.stack.get_list_or_pattern(0, arg_count)?;
-    state.stack.remove_args(arg_count);
+    state.stack.remove_args(&arg_count);
 
     match arg {
         Either::L(list) => {
@@ -66,7 +66,7 @@ pub fn for_each(state: &mut State) -> Result<&mut State, Mishap> {
     let arg_count = 2;
     let pattern_list = state.stack.get_list(0, 2)?;
     let iota_list = state.stack.get_list(1, 2)?;
-    state.stack.remove_args(arg_count);
+    state.stack.remove_args(&arg_count);
 
     for iota in iota_list {
         let mut temp_state = state.clone();

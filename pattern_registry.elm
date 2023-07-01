@@ -27,7 +27,6 @@
     , { signature = "ddad", internalName = "fisherman", action = fisherman, displayName = "Fisherman's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aada", internalName = "fisherman/copy", action = fishermanCopy, displayName = "Fisherman's Gambit II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qaawdde", internalName = "swizzle", action = noAction, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East } -- do this
-    , { signature = "waaw", internalName = "add", action = add, displayName = "Additive Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "wddw", internalName = "sub", action = subtract, displayName = "Subtractive Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "waqaw", internalName = "mul_dot", action = mulDot, displayName = "Multiplicative Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "wdedw", internalName = "div_cross", action = divCross, displayName = "Division Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
@@ -153,10 +152,5 @@
     , { signature = "wqaeaqw", internalName = "modify_in_place", action = modifyinPlace, displayName = "Surgeon's Exaltation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "ddewedd", internalName = "construct", action = construct, displayName = "Speaker's Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aaqwqaa", internalName = "deconstruct", action = deconstruct, displayName = "Speaker's Decomposition", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qqqaw", internalName = "escape", action = noAction, displayName = "Consideration", outputOptions = [], selectedOutput = Nothing, startDirection = West }
-    , { signature = "qqq", internalName = "open_paren", action = makeConstant (OpenParenthesis Array.empty), displayName = "Introspection", outputOptions = [], selectedOutput = Nothing, startDirection = West }
-    , { signature = "eee", internalName = "close_paren", action = noAction, displayName = "Retrospection", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "deaqq", internalName = "eval", action = noAction, displayName = "Hermes' Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = Southeast }
-    , { signature = "dadad", internalName = "for_each", action = noAction, displayName = "Thoth's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = Northeast }
     , { signature = "awaawa", internalName = "save_macro", action = saveMacro, displayName = "Save Macro", outputOptions = [], selectedOutput = Nothing, startDirection = Southeast }
     ]

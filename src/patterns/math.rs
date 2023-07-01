@@ -12,7 +12,7 @@ pub fn add(state: &mut State) -> Result<&mut State, Mishap> {
         state.stack.get_num_or_vec(0, arg_count)?,
         state.stack.get_num_or_vec(1, arg_count)?,
     );
-    state.stack.remove_args(arg_count);
+    state.stack.remove_args(&arg_count);
 
     let operation_result = match iotas {
         (Either::L(num1), Either::L(num2)) => Iota::Number(num1 + num2),

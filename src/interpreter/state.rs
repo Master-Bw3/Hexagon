@@ -52,7 +52,7 @@ pub trait StackExt {
 
     fn get_iota(&self, index: usize, arg_count: usize) -> Result<&Iota, Mishap>;
 
-    fn remove_args(&mut self, arg_count: usize);
+    fn remove_args(&mut self, arg_count: &usize);
 }
 
 impl StackExt for Stack {
@@ -158,7 +158,7 @@ impl StackExt for Stack {
         }
     }
 
-    fn remove_args(&mut self, arg_count: usize) {
+    fn remove_args(&mut self, arg_count: &usize) {
         self.drain((self.len() - arg_count)..);
     }
 }
