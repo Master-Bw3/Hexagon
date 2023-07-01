@@ -84,53 +84,6 @@ pub fn no_action(state: &mut State) -> Result<&mut State, Mishap> {
     Ok(state)
 }
 
-pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
-    let arg_count = 1;
-    let arg = state.stack.get_list_or_pattern(0, arg_count)?;
-    state.stack.remove_args(1);
-    match arg {
-        Either::L(eval_list) => {
-            //evaluate list
-            for iota in eval_list {
-                match iota {
-                    Iota::Pattern(pattern) => {
-                        if pattern.signature
-                            == Signature::from_name(&state.pattern_registry, "halt")
-                        {
-                            break;
-                        }
-                        interpret_action(
-                            pattern.signature.as_str(),
-                            pattern.value.map(|iota| ActionValue::Iota(iota)),
-                            state,
-                        )?;
-                    }
-
-                    iota => {
-                        if state.consider_next || state.buffer.is_some() {
-                            push_iota(iota, state, state.consider_next)
-                        } else {
-                            Err(Mishap::ExpectedPattern(iota))?
-                        }
-                    }
-                }
-            }
-
-            state.buffer = None;
-        }
-        Either::R(pattern) => {
-            //evaluate pattern
-            interpret_action(
-                pattern.signature.as_str(),
-                pattern.value.map(|iota| ActionValue::Iota(iota)),
-                state,
-            )?;
-        }
-    };
-
-    Ok(state)
-}
-
 pub fn halt(state: &mut State) -> Result<&mut State, Mishap> {
     state.halt = true;
     Ok(state)
