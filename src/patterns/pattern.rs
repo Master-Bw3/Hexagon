@@ -1,14 +1,13 @@
 use crate::{
     interpreter::{mishap::Mishap, state::State},
-    parser::ActionValue,
+    parser::ActionValue, pattern_registry::PatternRegistry,
 };
 
-#[derive(Clone)]
 pub struct Pattern {
     pub display_name: String,
     pub internal_name: String,
     pub signature: String,
-    pub action: fn(state: &mut State) -> Result<&mut State, Mishap>,
+    pub action: Box<dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>>,
 }
 
 impl Pattern {
@@ -16,17 +15,17 @@ impl Pattern {
         display_name: &str,
         internal_name: &str,
         signature: &str,
-        action: fn(state: &mut State) -> Result<&mut State, Mishap>,
+        action: &'static dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>,
     ) -> Pattern {
         Pattern {
             display_name: display_name.to_string(),
             internal_name: internal_name.to_string(),
             signature: signature.to_string(),
-            action,
+            action: Box::new(action),
         }
     }
 
-    pub fn operate<'a>(&self, state: &'a mut State, value: Option<ActionValue>) -> Result<&'a mut State, Mishap> {
+    pub fn operate<'a>(&self, state: &'a mut State, pattern_registry: &PatternRegistry, value: Option<ActionValue>) -> Result<&'a mut State, Mishap> {
         let value = match value {
             Some(val) => match val {
                 ActionValue::Iota(iota) => Some(iota),
@@ -35,6 +34,6 @@ impl Pattern {
             None => None,
         };
 
-        (self.action)(state)
+        (self.action)(state, pattern_registry)
     }
 }

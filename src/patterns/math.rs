@@ -4,9 +4,13 @@ use crate::{
         state::{Either, StackExt, State},
     },
     iota::Iota,
+    pattern_registry::PatternRegistry,
 };
 
-pub fn add(state: &mut State) -> Result<&mut State, Mishap> {
+pub fn add<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
         state.stack.get_num_or_vec(0, arg_count)?,

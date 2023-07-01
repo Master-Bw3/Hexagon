@@ -14,16 +14,16 @@ impl PatternRegistryExt for PatternRegistry {
         // registry.push(Pattern::new("Mind's Reflection", "get_caster", "qaq", selectors::get_caster));
 
         //special patterns
-        registry.push(Pattern::new("Consideration", "escape", "qqqaw", special::escape));
-        registry.push(Pattern::new("Introspection", "open_paren", "qqq", special::introspect));
-        registry.push(Pattern::new("Retrospection", "close_paren", "eee", special::retrospect));
-        registry.push(Pattern::new("Hermes' Gambit", "eval", "deaqq", eval::eval));
-        registry.push(Pattern::new("Thoth's Gambit", "for_each", "dadad", eval::for_each));
-        registry.push(Pattern::new("Charon's Gambit", "halt", "aqdee", special::halt));
+        registry.push(Pattern::new("Consideration", "escape", "qqqaw", &special::escape));
+        registry.push(Pattern::new("Introspection", "open_paren", "qqq", &special::introspect));
+        registry.push(Pattern::new("Retrospection", "close_paren", "eee", &special::retrospect));
+        registry.push(Pattern::new("Hermes' Gambit", "eval", "deaqq", &eval::eval));
+        registry.push(Pattern::new("Thoth's Gambit", "for_each", "dadad", &eval::for_each));
+        registry.push(Pattern::new("Charon's Gambit", "halt", "aqdee", &special::halt));
 
 
-        registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
-        registry.push(Pattern::new("Numerical Reflection", "number", "aqaa", special::no_action));
+        registry.push(Pattern::new("Additive Distillation", "add", "waaw", &math::add));
+        registry.push(Pattern::new("Numerical Reflection", "number", "aqaa", &special::no_action));
 
         registry
     }

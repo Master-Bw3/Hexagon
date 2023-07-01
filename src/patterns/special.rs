@@ -2,23 +2,23 @@ use crate::{
     interpreter::{
         mishap::Mishap,
         push_pattern,
-        state::{State},
+        state::State,
     },
-    iota::{Iota, PatternIota},
+    iota::{Iota, PatternIota}, pattern_registry::PatternRegistry,
 };
 
-pub fn escape(state: &mut State) -> Result<&mut State, Mishap> {
+pub fn escape<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     state.consider_next = true;
     Ok(state)
 }
 
-pub fn introspect(state: &mut State) -> Result<&mut State, Mishap> {
+pub fn introspect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     let new_buffer = match &state.buffer {
         Some(buffer) => {
             let mut new_buffer = buffer.clone();
             new_buffer.push((
                 Iota::Pattern(PatternIota::from_name(
-                    &state.pattern_registry,
+                    pattern_registry,
                     "open_paren",
                     None,
                 )),
@@ -34,16 +34,16 @@ pub fn introspect(state: &mut State) -> Result<&mut State, Mishap> {
     Ok(state)
 }
 
-pub fn retrospect(state: &mut State) -> Result<&mut State, Mishap> {
+pub fn retrospect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     let inner_buffer = state.buffer.as_ref().ok_or(Mishap::HastyRetrospection)?;
 
     let intro_pattern = Iota::Pattern(PatternIota::from_name(
-        &state.pattern_registry,
+        pattern_registry,
         "open_paren",
         None,
     ));
     let retro_pattern = Iota::Pattern(PatternIota::from_name(
-        &state.pattern_registry,
+        pattern_registry,
         "close_paren",
         None,
     ));
@@ -73,16 +73,16 @@ pub fn retrospect(state: &mut State) -> Result<&mut State, Mishap> {
         ));
         state.buffer = None
     } else {
-        push_pattern("close_paren".to_string(), None, state, false)
+        push_pattern("close_paren".to_string(), None, state, pattern_registry, false)
     };
     Ok(state)
 }
 
-pub fn no_action(state: &mut State) -> Result<&mut State, Mishap> {
+pub fn no_action<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     Ok(state)
 }
 
-pub fn halt(state: &mut State) -> Result<&mut State, Mishap> {
+pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     state.halt = true;
     Ok(state)
 }

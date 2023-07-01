@@ -5,7 +5,6 @@ use crate::{
         BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
         VectorIota,
     },
-    pattern_registry::PatternRegistry,
 };
 
 use super::mishap::Mishap;
@@ -13,16 +12,17 @@ use super::mishap::Mishap;
 pub type Stack = Vec<Iota>;
 
 pub type Considered = bool;
+
 #[derive(Clone)]
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
     pub buffer: Option<Vec<(Iota, Considered)>>,
     pub heap: HashMap<String, i32>,
-    pub pattern_registry: PatternRegistry,
     pub consider_next: bool,
     pub halt: bool,
 }
+
 
 pub enum Either<L, R> {
     L(L),

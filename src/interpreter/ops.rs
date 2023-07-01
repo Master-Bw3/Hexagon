@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     iota::{Iota, PatternIota, SignatureExt},
-    parser::OpValue,
+    parser::OpValue, pattern_registry::PatternRegistry,
 };
 
 use super::{
@@ -125,6 +125,7 @@ pub enum EmbedType {
 pub fn embed<'a>(
     value: &'a Option<OpValue>,
     state: &'a mut State,
+    pattern_registry: &PatternRegistry,
     embed_type: EmbedType,
 ) -> Result<(), String> {
     
@@ -142,7 +143,7 @@ pub fn embed<'a>(
             EmbedType::Consider => todo!(),
             EmbedType::IntroRetro => {
                 state.stack.push(Iota::Pattern(PatternIota::from_name(
-                    &state.pattern_registry,
+                    pattern_registry,
                     "open_paren",
                     None
                 )));
@@ -167,7 +168,6 @@ mod tests {
             ravenmind: None,
             buffer: None,
             consider_next: false,
-            pattern_registry: PatternRegistry::construct(),
             heap: HashMap::new(),
             halt: false
         };
