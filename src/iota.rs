@@ -90,7 +90,7 @@ impl PatternIotaExt for Signature {
     }
 
     fn from_name(registry: &PatternRegistry, string: &str) -> Signature {
-        Signature::from_sig(&registry.find(string.to_string()).unwrap().signature)
+        Signature::from_sig(&registry.find(&string.to_string()).unwrap().signature)
     }
 
     fn as_str(&self) -> String {

@@ -4,7 +4,7 @@ pub type PatternRegistry = Vec<Pattern>;
 
 pub trait PatternRegistryExt {
     fn construct() -> PatternRegistry;
-    fn find(&self, query: String) -> Option<&Pattern>;
+    fn find(&self, query: &String) -> Option<&Pattern>;
 }
 
 impl PatternRegistryExt for PatternRegistry {
@@ -21,17 +21,17 @@ impl PatternRegistryExt for PatternRegistry {
 
 
         registry.push(Pattern::new("Additive Distillation", "add", "waaw", math::add));
-        registry.push(Pattern::new("Numerical Reflection", "close_paren", "aqaa", special::no_action));
+        registry.push(Pattern::new("Numerical Reflection", "number", "aqaa", special::no_action));
 
         registry
     }
 
-    fn find(&self, query: String) -> Option<&Pattern> {
+    fn find(&self, query: &String) -> Option<&Pattern> {
         self.into_iter()
             .filter(|entry| {
-                entry.display_name == query
-                    || entry.internal_name == query
-                    || entry.signature == query
+                entry.display_name == *query
+                    || entry.internal_name == *query
+                    || entry.signature == *query
             })
             .collect::<Vec<&Pattern>>()
             .get(0).map(|x| *x)

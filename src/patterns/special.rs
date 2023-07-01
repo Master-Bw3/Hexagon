@@ -95,7 +95,7 @@ pub fn eval(state: &mut State) -> Result<&mut State, Mishap> {
                 match iota {
                     Iota::Pattern(pattern) => {
                         if pattern.signature
-                            == Signature::from_name(&state.pattern_registry, "break")
+                            == Signature::from_name(&state.pattern_registry, "halt")
                         {
                             break;
                         }
