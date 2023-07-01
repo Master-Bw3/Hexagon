@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    iota::{Iota, PatternIota, PatternIotaExt},
+    iota::{Iota, PatternIota, SignatureExt},
     parser::OpValue,
 };
 

@@ -4,7 +4,7 @@ use crate::{
         mishap::Mishap,
         state::{Either, StackExt, State},
     },
-    iota::{Iota, PatternIota, PatternIotaExt, Signature},
+    iota::{Iota, PatternIota, SignatureExt, Signature},
     parser::ActionValue,
 };
 

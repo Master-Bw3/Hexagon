@@ -1,5 +1,5 @@
 use crate::{
-    iota::{EntityIota, GarbageIota, Iota, NullIota, PatternIota, PatternIotaExt},
+    iota::{EntityIota, GarbageIota, Iota, NullIota, PatternIota, SignatureExt},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 use nalgebra::matrix;

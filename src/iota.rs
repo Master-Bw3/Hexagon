@@ -67,13 +67,13 @@ pub enum PatternSigDir {
     W,
 }
 
-pub trait PatternIotaExt {
+pub trait SignatureExt {
     fn from_sig(string: &str) -> Signature;
     fn from_name(registry: &PatternRegistry, string: &str) -> Signature;
     fn as_str(&self) -> String;
 }
 
-impl PatternIotaExt for Signature {
+impl SignatureExt for Signature {
     fn from_sig(string: &str) -> Signature {
         string
             .chars()

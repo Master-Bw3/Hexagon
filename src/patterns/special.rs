@@ -5,7 +5,7 @@ use crate::{
         push_iota, push_pattern,
         state::{Either, StackExt, State},
     },
-    iota::{EntityIota, Iota, PatternIota, PatternIotaExt, Signature},
+    iota::{EntityIota, Iota, PatternIota, SignatureExt, Signature},
     parser::ActionValue,
 };
 

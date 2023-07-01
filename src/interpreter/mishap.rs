@@ -1,5 +1,5 @@
 use crate::iota::GarbageIota::Garbage;
-use crate::iota::{PatternIota, PatternIotaExt};
+use crate::iota::{PatternIota, SignatureExt};
 use crate::{interpreter::state::Stack, iota::Iota};
 
 #[derive(Debug)]
