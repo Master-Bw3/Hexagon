@@ -1,4 +1,4 @@
-{ signature = "wawawddew", internalName = "interop/gravity/get", action = gravityGet, displayName = "Gravitational Purification", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, -1, 0 ) ), startDirection = East }
+    { signature = "wawawddew", internalName = "interop/gravity/get", action = gravityGet, displayName = "Gravitational Purification", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, -1, 0 ) ), startDirection = East }
     , { signature = "wdwdwaaqw", internalName = "interop/gravity/set", action = gravitySet, displayName = "Alter Gravity", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aawawwawwa", internalName = "interop/pehkui/get", action = pekhuiGet, displayName = "Gulliver's Purification", outputOptions = [ NumberType ], selectedOutput = Just ( NumberType, Number 1 ), startDirection = East }
     , { signature = "ddwdwwdwwd", internalName = "interop/pehkui/set", action = pekhuiSet, displayName = "Alter Scale", outputOptions = [], selectedOutput = Nothing, startDirection = East }
@@ -62,7 +62,6 @@
     , { signature = "waeawaedwa", internalName = "sentinel/wayfind", action = sentinelWayfind, displayName = "Wayfind Sentinel", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qqqwqqqqqaq", internalName = "akashic/read", action = akashicRead, displayName = "Akasha's Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "eeeweeeeede", internalName = "akashic/write", action = akashicWrite, displayName = "Akasha's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aqdee", internalName = "halt", action = noAction, displayName = "Charon's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = Southwest }
     , { signature = "aqqqqq", internalName = "read", action = read, displayName = "Scribe's Reflection", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "wawqwqwqwqwqw", internalName = "read/entity", action = readChronical, displayName = "Chronicler's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "deeeee", internalName = "write", action = write, displayName = "Scribe's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
@@ -73,7 +72,4 @@
     , { signature = "wdwewewewewewqw", internalName = "writable/entity", action = makeConstant (Boolean False), displayName = "Assessor's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qeewdweddw", internalName = "read/local", action = readLocal, displayName = "Muninn's Reflection", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "eqqwawqaaw", internalName = "write/local", action = writeLocal, displayName = "Huginn's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "d", internalName = "const/null", action = makeConstant Null, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aqae", internalName = "const/true", action = makeConstant (Boolean True), displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "dedq", internalName = "const/false", action = makeConstant (Boolean False), displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "awaawa", internalName = "save_macro", action = saveMacro, displayName = "Save Macro", outputOptions = [], selectedOutput = Nothing, startDirection = Southeast }
