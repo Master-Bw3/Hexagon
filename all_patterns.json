@@ -1,0 +1,4700 @@
+{
+    "Introspection": {
+        "name": "open_paren",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "open_paren.png",
+            "height": 310,
+            "width": 262
+        },
+        "direction": "WEST",
+        "pattern": "qqq",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/patterns_as_iotas@hexcasting:open_paren"
+    },
+    "Retrospection": {
+        "name": "close_paren",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "close_paren.png",
+            "height": 310,
+            "width": 262
+        },
+        "direction": "EAST",
+        "pattern": "eee",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/patterns_as_iotas@hexcasting:close_paren"
+    },
+    "Consideration": {
+        "name": "escape",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "escape.png",
+            "height": 305,
+            "width": 262
+        },
+        "direction": "WEST",
+        "pattern": "qqqaw",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/patterns_as_iotas@hexcasting:escape"
+    },
+    "Numerical Reflection": {
+        "name": "number",
+        "modName": "Hex Casting",
+        "image": null,
+        "direction": null,
+        "pattern": null,
+        "args": "\u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/numbers@Numbers"
+    },
+    "Bookkeeper's Gambit": {
+        "name": "mask",
+        "modName": "Hex Casting",
+        "image": null,
+        "direction": null,
+        "pattern": null,
+        "args": "many \u2192 many",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:mask"
+    },
+    "Mind's Reflection": {
+        "name": "get_caster",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_caster.png",
+            "height": 272,
+            "width": 158
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaq",
+        "args": "\u2192 entity",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:get_caster"
+    },
+    "Compass' Purification": {
+        "name": "entity_pos/eye",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "entity_pos_eye.png",
+            "height": 129,
+            "width": 136
+        },
+        "direction": "EAST",
+        "pattern": "aa",
+        "args": "entity \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:entity_pos/eye"
+    },
+    "Compass' Purification II": {
+        "name": "entity_pos/foot",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "entity_pos_foot.png",
+            "height": 121,
+            "width": 136
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dd",
+        "args": "entity \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:entity_pos/foot"
+    },
+    "Alidade's Purification": {
+        "name": "get_entity_look",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_look.png",
+            "height": 129,
+            "width": 260
+        },
+        "direction": "EAST",
+        "pattern": "wa",
+        "args": "entity \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:get_entity_look"
+    },
+    "Stadiometer's Purification": {
+        "name": "get_entity_height",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_height.png",
+            "height": 99,
+            "width": 259
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "awq",
+        "args": "entity \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:get_entity_height"
+    },
+    "Pace Purification": {
+        "name": "get_entity_velocity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_velocity.png",
+            "height": 106,
+            "width": 262
+        },
+        "direction": "EAST",
+        "pattern": "wq",
+        "args": "entity \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:get_entity_velocity"
+    },
+    "Archer's Distillation": {
+        "name": "raycast",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "raycast.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "EAST",
+        "pattern": "wqaawdd",
+        "args": "vector, vector \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:raycast"
+    },
+    "Architect's Distillation": {
+        "name": "raycast/axis",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "raycast_axis.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "EAST",
+        "pattern": "weddwaa",
+        "args": "vector, vector \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:raycast/axis"
+    },
+    "Scout's Distillation": {
+        "name": "raycast/entity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "raycast_entity.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "EAST",
+        "pattern": "weaqa",
+        "args": "vector, vector \u2192 entity",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:raycast/entity"
+    },
+    "Waystone Reflection": {
+        "name": "circle/impetus_pos",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "circle_impetus_pos.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eaqwqae",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/circle@hexcasting:circle/impetus_pos"
+    },
+    "Lodestone Reflection": {
+        "name": "circle/impetus_dir",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "circle_impetus_dir.png",
+            "height": 327,
+            "width": 285
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eaqwqaewede",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/circle@hexcasting:circle/impetus_dir"
+    },
+    "Lesser Fold Reflection": {
+        "name": "circle/bounds/min",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "circle_bounds_min.png",
+            "height": 280,
+            "width": 322
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eaqwqaewdd",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/circle@hexcasting:circle/bounds/min"
+    },
+    "Greater Fold Reflection": {
+        "name": "circle/bounds/max",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "circle_bounds_max.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "aqwqawaaqa",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/circle@hexcasting:circle/bounds/max"
+    },
+    "Jester's Gambit": {
+        "name": "swap",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "swap.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "EAST",
+        "pattern": "aawdd",
+        "args": "any, any \u2192 any, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:swap"
+    },
+    "Rotation Gambit": {
+        "name": "rotate",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "rotate.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "EAST",
+        "pattern": "aaeaa",
+        "args": "any, any, any \u2192 any, any, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:rotate"
+    },
+    "Rotation Gambit II": {
+        "name": "rotate_reverse",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "rotate_reverse.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "ddqdd",
+        "args": "any, any, any \u2192 any, any, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:rotate_reverse"
+    },
+    "Gemini Decomposition": {
+        "name": "duplicate",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "duplicate.png",
+            "height": 125,
+            "width": 256
+        },
+        "direction": "EAST",
+        "pattern": "aadaa",
+        "args": "any \u2192 any, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:duplicate"
+    },
+    "Prospector's Gambit": {
+        "name": "over",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "over.png",
+            "height": 125,
+            "width": 256
+        },
+        "direction": "EAST",
+        "pattern": "aaedd",
+        "args": "any, any \u2192 any, any, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:over"
+    },
+    "Undertaker's Gambit": {
+        "name": "tuck",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "tuck.png",
+            "height": 125,
+            "width": 256
+        },
+        "direction": "EAST",
+        "pattern": "ddqaa",
+        "args": "any, any \u2192 any, any, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:tuck"
+    },
+    "Dioscuri Gambit": {
+        "name": "2dup",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "2dup.png",
+            "height": 87,
+            "width": 254
+        },
+        "direction": "EAST",
+        "pattern": "aadadaaw",
+        "args": "any, any \u2192 any, any, any, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:2dup"
+    },
+    "Flock's Reflection": {
+        "name": "stack_len",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "stack_len.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qwaeawqaeaqa",
+        "args": "\u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:stack_len"
+    },
+    "Gemini Gambit": {
+        "name": "duplicate_n",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "duplicate_n.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "EAST",
+        "pattern": "aadaadaa",
+        "args": "any, number \u2192 many",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:duplicate_n"
+    },
+    "Fisherman's Gambit": {
+        "name": "fisherman",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "fisherman.png",
+            "height": 125,
+            "width": 260
+        },
+        "direction": "WEST",
+        "pattern": "ddad",
+        "args": "number \u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:fisherman"
+    },
+    "Fisherman's Gambit II": {
+        "name": "fisherman/copy",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "fisherman_copy.png",
+            "height": 125,
+            "width": 260
+        },
+        "direction": "EAST",
+        "pattern": "aada",
+        "args": "number \u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:fisherman/copy"
+    },
+    "Swindler's Gambit": {
+        "name": "swizzle",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "swizzle.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qaawdde",
+        "args": "many, number \u2192 many",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/stackmanip@hexcasting:swizzle"
+    },
+    "Additive Distillation": {
+        "name": "add",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "add.png",
+            "height": 272,
+            "width": 168
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "waaw",
+        "args": "num/vec, num/vec \u2192 num/vec",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:add"
+    },
+    "Subtractive Distillation": {
+        "name": "sub",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "sub.png",
+            "height": 272,
+            "width": 168
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "wddw",
+        "args": "num/vec, num/vec \u2192 num/vec",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:sub"
+    },
+    "Multiplicative Distillation": {
+        "name": "mul_dot",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "mul_dot.png",
+            "height": 305,
+            "width": 262
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "waqaw",
+        "args": "num/vec, num/vec \u2192 num/vec",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:mul_dot"
+    },
+    "Division Distillation": {
+        "name": "div_cross",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "div_cross.png",
+            "height": 305,
+            "width": 262
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wdedw",
+        "args": "num/vec, num/vec \u2192 num/vec",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:div_cross"
+    },
+    "Length Purification": {
+        "name": "abs_len",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "abs_len.png",
+            "height": 269,
+            "width": 115
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wqaqw",
+        "args": "num/vec \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:abs_len"
+    },
+    "Power Distillation": {
+        "name": "pow_proj",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "pow_proj.png",
+            "height": 269,
+            "width": 115
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "wedew",
+        "args": "num/vec, num/vec \u2192 num/vec",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:pow_proj"
+    },
+    "Floor Purification": {
+        "name": "floor",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "floor.png",
+            "height": 189,
+            "width": 310
+        },
+        "direction": "EAST",
+        "pattern": "ewq",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:floor"
+    },
+    "Ceiling Purification": {
+        "name": "ceil",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "ceil.png",
+            "height": 189,
+            "width": 310
+        },
+        "direction": "EAST",
+        "pattern": "qwe",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:ceil"
+    },
+    "Vector Exaltation": {
+        "name": "construct_vec",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "construct_vec.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "EAST",
+        "pattern": "eqqqqq",
+        "args": "num, num, num \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:construct_vec"
+    },
+    "Vector Disintegration": {
+        "name": "deconstruct_vec",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "deconstruct_vec.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "EAST",
+        "pattern": "qeeeee",
+        "args": "vector \u2192 num, num, num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:deconstruct_vec"
+    },
+    "Axial Purification": {
+        "name": "coerce_axial",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "coerce_axial.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqqaww",
+        "args": "vec \u2192 vec",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:coerce_axial"
+    },
+    "Conjunction Distillation": {
+        "name": "and",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "and.png",
+            "height": 240,
+            "width": 279
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wdw",
+        "args": "bool, bool \u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:and"
+    },
+    "Disjunction Distillation": {
+        "name": "or",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "or.png",
+            "height": 240,
+            "width": 279
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "waw",
+        "args": "bool, bool \u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:or"
+    },
+    "Exclusion Distillation": {
+        "name": "xor",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "xor.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "dwa",
+        "args": "bool, bool \u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:xor"
+    },
+    "Maximus Distillation": {
+        "name": "greater",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "greater.png",
+            "height": 219,
+            "width": 73
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "e",
+        "args": "number, number \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:greater"
+    },
+    "Minimus Distillation": {
+        "name": "less",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "less.png",
+            "height": 219,
+            "width": 73
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "q",
+        "args": "number, number \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:less"
+    },
+    "Maximus Distillation II": {
+        "name": "greater_eq",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "greater_eq.png",
+            "height": 305,
+            "width": 262
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "ee",
+        "args": "number, number \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:greater_eq"
+    },
+    "Minimus Distillation II": {
+        "name": "less_eq",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "less_eq.png",
+            "height": 305,
+            "width": 262
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "qq",
+        "args": "number, number \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:less_eq"
+    },
+    "Equality Distillation": {
+        "name": "equals",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "equals.png",
+            "height": 135,
+            "width": 207
+        },
+        "direction": "EAST",
+        "pattern": "ad",
+        "args": "any, any \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:equals"
+    },
+    "Inequality Distillation": {
+        "name": "not_equals",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "not_equals.png",
+            "height": 135,
+            "width": 207
+        },
+        "direction": "EAST",
+        "pattern": "da",
+        "args": "any, any \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:not_equals"
+    },
+    "Negation Purification": {
+        "name": "not",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "not.png",
+            "height": 125,
+            "width": 260
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "dw",
+        "args": "any \u2192 number",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:not"
+    },
+    "Augur's Purification": {
+        "name": "bool_coerce",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "bool_coerce.png",
+            "height": 125,
+            "width": 260
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "aw",
+        "args": "any \u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:bool_coerce"
+    },
+    "Augur's Exaltation": {
+        "name": "if",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "if.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "awdd",
+        "args": "bool, any, any \u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/logic@hexcasting:if"
+    },
+    "Entropy Reflection": {
+        "name": "random",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "random.png",
+            "height": 313,
+            "width": 249
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "eqqq",
+        "args": "\u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:random"
+    },
+    "Sine Purification": {
+        "name": "sin",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "sin.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqaa",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/advanced_math@hexcasting:sin"
+    },
+    "Cosine Purification": {
+        "name": "cos",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "cos.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqad",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/advanced_math@hexcasting:cos"
+    },
+    "Tangent Purification": {
+        "name": "tan",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "tan.png",
+            "height": 329,
+            "width": 312
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "wqqqqqadq",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/advanced_math@hexcasting:tan"
+    },
+    "Inverse Sine Purification": {
+        "name": "arcsin",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "arcsin.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "ddeeeee",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/advanced_math@hexcasting:arcsin"
+    },
+    "Inverse Cosine Purification": {
+        "name": "arccos",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "arccos.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "adeeeee",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/advanced_math@hexcasting:arccos"
+    },
+    "Inverse Tangent Purification": {
+        "name": "arctan",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "arctan.png",
+            "height": 329,
+            "width": 312
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eadeeeeew",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/advanced_math@hexcasting:arctan"
+    },
+    "Logarithmic Distillation": {
+        "name": "logarithm",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "logarithm.png",
+            "height": 269,
+            "width": 115
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "eqaqe",
+        "args": "num, num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/advanced_math@hexcasting:logarithm"
+    },
+    "Modulus Distillation": {
+        "name": "modulo",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "modulo.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "addwaad",
+        "args": "num, num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/math@hexcasting:modulo"
+    },
+    "Intersection Distillation": {
+        "name": "and_bit",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "and_bit.png",
+            "height": 280,
+            "width": 326
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wdweaqa",
+        "args": "num, num/list, list \u2192 num/list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/sets@hexcasting:and_bit"
+    },
+    "Unifying Distillation": {
+        "name": "or_bit",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "or_bit.png",
+            "height": 280,
+            "width": 326
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "waweaqa",
+        "args": "num, num/list, list \u2192 num/list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/sets@hexcasting:or_bit"
+    },
+    "Exclusionary Distillation": {
+        "name": "xor_bit",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "xor_bit.png",
+            "height": 313,
+            "width": 241
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "dwaeaqa",
+        "args": "num, num/list, list \u2192 num/list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/sets@hexcasting:xor_bit"
+    },
+    "Inversion Purification": {
+        "name": "not_bit",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "not_bit.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "dweaqa",
+        "args": "num \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/sets@hexcasting:not_bit"
+    },
+    "Uniqueness Purification": {
+        "name": "to_set",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "to_set.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "aweaqa",
+        "args": "list \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/sets@hexcasting:to_set"
+    },
+    "Reveal": {
+        "name": "print",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "print.png",
+            "height": 272,
+            "width": 163
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "de",
+        "args": "any \u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/basics@hexcasting:print"
+    },
+    "Explosion": {
+        "name": "explode",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "explode.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "EAST",
+        "pattern": "aawaawaa",
+        "args": "vector, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/basic@hexcasting:explode"
+    },
+    "Fireball": {
+        "name": "explode/fire",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "explode_fire.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "EAST",
+        "pattern": "ddwddwdd",
+        "args": "vector, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/basic@hexcasting:explode/fire"
+    },
+    "Impulse": {
+        "name": "add_motion",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "add_motion.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awqqqwaqw",
+        "args": "entity, vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/basic@hexcasting:add_motion"
+    },
+    "Blink": {
+        "name": "blink",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "blink.png",
+            "height": 214,
+            "width": 304
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awqqqwaq",
+        "args": "entity, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/basic@hexcasting:blink"
+    },
+    "Break Block": {
+        "name": "break_block",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "break_block.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "qaqqqqq",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:break_block"
+    },
+    "Place Block": {
+        "name": "place_block",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "place_block.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eeeeede",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:place_block"
+    },
+    "Internalize Pigment": {
+        "name": "colorize",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "colorize.png",
+            "height": 309,
+            "width": 182
+        },
+        "direction": "EAST",
+        "pattern": "awddwqawqwawq",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/colorize@hexcasting:colorize"
+    },
+    "Create Water": {
+        "name": "create_water",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "create_water.png",
+            "height": 309,
+            "width": 241
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aqawqadaq",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:create_water"
+    },
+    "Destroy Liquid": {
+        "name": "destroy_water",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "destroy_water.png",
+            "height": 309,
+            "width": 241
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "dedwedade",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:destroy_water"
+    },
+    "Ignite Block": {
+        "name": "ignite",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "ignite.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aaqawawa",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:ignite"
+    },
+    "Extinguish Area": {
+        "name": "extinguish",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "extinguish.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "ddedwdwd",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:extinguish"
+    },
+    "Conjure Block": {
+        "name": "conjure_block",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "conjure_block.png",
+            "height": 300,
+            "width": 257
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qqa",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:conjure_block"
+    },
+    "Conjure Light": {
+        "name": "conjure_light",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "conjure_light.png",
+            "height": 301,
+            "width": 173
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qqd",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:conjure_light"
+    },
+    "Overgrow": {
+        "name": "bonemeal",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "bonemeal.png",
+            "height": 313,
+            "width": 249
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wqaqwawqaqw",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:bonemeal"
+    },
+    "Recharge Item": {
+        "name": "recharge",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "recharge.png",
+            "height": 327,
+            "width": 285
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqqwaeaeaeaeaea",
+        "args": "entity \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/hexcasting@hexcasting:recharge"
+    },
+    "Erase Item": {
+        "name": "erase",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "erase.png",
+            "height": 287,
+            "width": 326
+        },
+        "direction": "EAST",
+        "pattern": "qdqawwaww",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/hexcasting@hexcasting:erase"
+    },
+    "Edify Sapling": {
+        "name": "edify",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "edify.png",
+            "height": 269,
+            "width": 111
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wqaqwd",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/blockworks@hexcasting:edify"
+    },
+    "Make Note": {
+        "name": "beep",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "beep.png",
+            "height": 305,
+            "width": 262
+        },
+        "direction": "WEST",
+        "pattern": "adaa",
+        "args": "vector, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/basic@hexcasting:beep"
+    },
+    "Craft Cypher": {
+        "name": "craft/cypher",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "craft_cypher.png",
+            "height": 236,
+            "width": 279
+        },
+        "direction": "EAST",
+        "pattern": "waqqqqq",
+        "args": "entity, list of patterns \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/hexcasting@hexcasting:craft/cypher"
+    },
+    "Craft Trinket": {
+        "name": "craft/trinket",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "craft_trinket.png",
+            "height": 290,
+            "width": 340
+        },
+        "direction": "EAST",
+        "pattern": "wwaqqqqqeaqeaeqqqeaeq",
+        "args": "entity, list of patterns \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/hexcasting@hexcasting:craft/trinket"
+    },
+    "Craft Artifact": {
+        "name": "craft/artifact",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "craft_artifact.png",
+            "height": 345,
+            "width": 332
+        },
+        "direction": "EAST",
+        "pattern": "wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq",
+        "args": "entity, list of patterns \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/hexcasting@hexcasting:craft/artifact"
+    },
+    "Craft Phial": {
+        "name": "craft/battery",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "craft_battery.png",
+            "height": 234,
+            "width": 333
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "aqqqaqwwaqqqqqeqaqqqawwqwqwqwqwqw",
+        "args": "entity \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/make_battery@hexcasting:craft/battery"
+    },
+    "White Sun's Nadir": {
+        "name": "potion/weakness",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_weakness.png",
+            "height": 309,
+            "width": 245
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqqaqwawaw",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/nadirs@hexcasting:potion/weakness"
+    },
+    "Blue Sun's Nadir": {
+        "name": "potion/levitation",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_levitation.png",
+            "height": 317,
+            "width": 245
+        },
+        "direction": "WEST",
+        "pattern": "qqqqqawwawawd",
+        "args": "entity, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/nadirs@hexcasting:potion/levitation"
+    },
+    "Black Sun's Nadir": {
+        "name": "potion/wither",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_wither.png",
+            "height": 313,
+            "width": 241
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "qqqqqaewawawe",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/nadirs@hexcasting:potion/wither"
+    },
+    "Red Sun's Nadir": {
+        "name": "potion/poison",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_poison.png",
+            "height": 313,
+            "width": 245
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqadwawaww",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/nadirs@hexcasting:potion/poison"
+    },
+    "Green Sun's Nadir": {
+        "name": "potion/slowness",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_slowness.png",
+            "height": 309,
+            "width": 245
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqadwawaw",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/nadirs@hexcasting:potion/slowness"
+    },
+    "White Sun's Zenith": {
+        "name": "potion/regeneration",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_regeneration.png",
+            "height": 321,
+            "width": 308
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqaawawaedd",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/zeniths@hexcasting:potion/regeneration"
+    },
+    "Blue Sun's Zenith": {
+        "name": "potion/night_vision",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_night_vision.png",
+            "height": 321,
+            "width": 308
+        },
+        "direction": "WEST",
+        "pattern": "qqqaawawaeqdd",
+        "args": "entity, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/zeniths@hexcasting:potion/night_vision"
+    },
+    "Black Sun's Zenith": {
+        "name": "potion/absorption",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_absorption.png",
+            "height": 309,
+            "width": 182
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "qqaawawaeqqdd",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/zeniths@hexcasting:potion/absorption"
+    },
+    "Red Sun's Zenith": {
+        "name": "potion/haste",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_haste.png",
+            "height": 321,
+            "width": 308
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qaawawaeqqqdd",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/zeniths@hexcasting:potion/haste"
+    },
+    "Green Sun's Zenith": {
+        "name": "potion/strength",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "potion_strength.png",
+            "height": 321,
+            "width": 308
+        },
+        "direction": "EAST",
+        "pattern": "aawawaeqqqqdd",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/zeniths@hexcasting:potion/strength"
+    },
+    "Summon Sentinel": {
+        "name": "sentinel/create",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "sentinel_create.png",
+            "height": 244,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "waeawae",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/sentinels@hexcasting:sentinel/create"
+    },
+    "Banish Sentinel": {
+        "name": "sentinel/destroy",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "sentinel_destroy.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qdwdqdw",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/sentinels@hexcasting:sentinel/destroy"
+    },
+    "Locate Sentinel": {
+        "name": "sentinel/get_pos",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "sentinel_get_pos.png",
+            "height": 224,
+            "width": 304
+        },
+        "direction": "EAST",
+        "pattern": "waeawaede",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/sentinels@hexcasting:sentinel/get_pos"
+    },
+    "Wayfind Sentinel": {
+        "name": "sentinel/wayfind",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "sentinel_wayfind.png",
+            "height": 160,
+            "width": 304
+        },
+        "direction": "EAST",
+        "pattern": "waeawaedwa",
+        "args": "vector \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/spells/sentinels@hexcasting:sentinel/wayfind"
+    },
+    "Summon Lightning": {
+        "name": "lightning",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "lightning.png",
+            "height": 339,
+            "width": 263
+        },
+        "direction": "EAST",
+        "pattern": "waadwawdaaweewq",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/weather_manip@hexcasting:lightning"
+    },
+    "Flight": {
+        "name": "flight",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "flight.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "eawwaeawawaa",
+        "args": "entity, number, number \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/flight@hexcasting:flight"
+    },
+    "Create Lava": {
+        "name": "create_lava",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "create_lava.png",
+            "height": 280,
+            "width": 322
+        },
+        "direction": "EAST",
+        "pattern": "eaqawqadaqd",
+        "args": "vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/create_lava@hexcasting:create_lava"
+    },
+    "Greater Teleport": {
+        "name": "teleport",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "teleport.png",
+            "height": 234,
+            "width": 333
+        },
+        "direction": "EAST",
+        "pattern": "wwwqqqwwwqqeqqwwwqqwqqdqqqqqdqq",
+        "args": "entity, vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/teleport@hexcasting:teleport"
+    },
+    "Summon Greater Sentinel": {
+        "name": "sentinel/create/great",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "sentinel_create_great.png",
+            "height": 327,
+            "width": 285
+        },
+        "direction": "EAST",
+        "pattern": "waeawaeqqqwqwqqwq",
+        "args": "vector \u2192",
+        "url": null
+    },
+    "Dispel Rain": {
+        "name": "dispel_rain",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "dispel_rain.png",
+            "height": 234,
+            "width": 333
+        },
+        "direction": "EAST",
+        "pattern": "eeewwweeewwaqqddqdqd",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/weather_manip@hexcasting:dispel_rain"
+    },
+    "Summon Rain": {
+        "name": "summon_rain",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "summon_rain.png",
+            "height": 234,
+            "width": 333
+        },
+        "direction": "WEST",
+        "pattern": "wwweeewwweewdawdwad",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/weather_manip@hexcasting:summon_rain"
+    },
+    "Flay Mind": {
+        "name": "brainsweep",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "brainsweep.png",
+            "height": 339,
+            "width": 313
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qeqwqwqwqwqeqaeqeaqeqaeqaqded",
+        "args": "entity, vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/great_spells/brainsweep@hexcasting:brainsweep"
+    },
+    "Akasha's Distillation": {
+        "name": "akashic/read",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "akashic_read.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "qqqwqqqqqaq",
+        "args": "vector, pattern \u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/akashic_patterns@hexcasting:akashic/read"
+    },
+    "Akasha's Gambit": {
+        "name": "akashic/write",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "akashic_write.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "EAST",
+        "pattern": "eeeweeeeede",
+        "args": "vector, pattern, any \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/akashic_patterns@hexcasting:akashic/write"
+    },
+    "Hermes' Gambit": {
+        "name": "eval",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "eval.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "deaqq",
+        "args": "[pattern] | pattern \u2192 many",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/meta@hexcasting:eval"
+    },
+    "Charon's Gambit": {
+        "name": "halt",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "halt.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "aqdee",
+        "args": null,
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/meta@hexcasting:halt"
+    },
+    "Scribe's Reflection": {
+        "name": "read",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "read.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "aqqqqq",
+        "args": "\u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:read"
+    },
+    "Chronicler's Purification": {
+        "name": "read/entity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "read_entity.png",
+            "height": 290,
+            "width": 337
+        },
+        "direction": "EAST",
+        "pattern": "wawqwqwqwqwqw",
+        "args": "entity \u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:read/entity"
+    },
+    "Scribe's Gambit": {
+        "name": "write",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "write.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "deeeee",
+        "args": "any \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:write"
+    },
+    "Chronicler's Gambit": {
+        "name": "write/entity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "write_entity.png",
+            "height": 290,
+            "width": 337
+        },
+        "direction": "EAST",
+        "pattern": "wdwewewewewew",
+        "args": "entity, any \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:write/entity"
+    },
+    "Auditor's Reflection": {
+        "name": "readable",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "readable.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "EAST",
+        "pattern": "aqqqqqe",
+        "args": "\u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:readable"
+    },
+    "Auditor's Purification": {
+        "name": "readable/entity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "readable_entity.png",
+            "height": 196,
+            "width": 337
+        },
+        "direction": "EAST",
+        "pattern": "wawqwqwqwqwqwew",
+        "args": "entity \u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:readable/entity"
+    },
+    "Assessor's Reflection": {
+        "name": "writable",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "writable.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "EAST",
+        "pattern": "deeeeeq",
+        "args": "\u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:writable"
+    },
+    "Assessor's Purification": {
+        "name": "writable/entity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "writable_entity.png",
+            "height": 196,
+            "width": 337
+        },
+        "direction": "EAST",
+        "pattern": "wdwewewewewewqw",
+        "args": "entity \u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:writable/entity"
+    },
+    "Muninn's Reflection": {
+        "name": "read/local",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "read_local.png",
+            "height": 325,
+            "width": 312
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qeewdweddw",
+        "args": "\u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:read/local"
+    },
+    "Huginn's Gambit": {
+        "name": "write/local",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "write_local.png",
+            "height": 325,
+            "width": 312
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "eqqwawqaaw",
+        "args": "any \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/readwrite@hexcasting:write/local"
+    },
+    "Nullary Reflection": {
+        "name": "const/null",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_null.png",
+            "height": 137,
+            "width": 136
+        },
+        "direction": "EAST",
+        "pattern": "d",
+        "args": "\u2192 influence",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/null"
+    },
+    "True Reflection": {
+        "name": "const/true",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_true.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aqae",
+        "args": "\u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/true"
+    },
+    "False Reflection": {
+        "name": "const/false",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_false.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dedq",
+        "args": "\u2192 bool",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/false"
+    },
+    "Vector Reflection +X": {
+        "name": "const/vec/px",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_vec_px.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqqea",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/vec/x"
+    },
+    "Vector Reflection +Y": {
+        "name": "const/vec/py",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_vec_py.png",
+            "height": 136,
+            "width": 305
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqqew",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/vec/y"
+    },
+    "Vector Reflection +Z": {
+        "name": "const/vec/pz",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_vec_pz.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqqed",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/vec/z"
+    },
+    "Vector Reflection -X": {
+        "name": "const/vec/nx",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_vec_nx.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eeeeeqa",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/vec/x"
+    },
+    "Vector Reflection -Y": {
+        "name": "const/vec/ny",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_vec_ny.png",
+            "height": 136,
+            "width": 305
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eeeeeqw",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/vec/y"
+    },
+    "Vector Reflection -Z": {
+        "name": "const/vec/nz",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_vec_nz.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eeeeeqd",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/vec/z"
+    },
+    "Vector Reflection Zero": {
+        "name": "const/vec/0",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_vec_0.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqq",
+        "args": "\u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/vec/0"
+    },
+    "Arc's Reflection": {
+        "name": "const/double/pi",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_double_pi.png",
+            "height": 240,
+            "width": 279
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qdwdq",
+        "args": "\u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/double/pi"
+    },
+    "Circle's Reflection": {
+        "name": "const/double/tau",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_double_tau.png",
+            "height": 240,
+            "width": 279
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "eawae",
+        "args": "\u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/double/tau"
+    },
+    "Euler's Reflection": {
+        "name": "const/double/e",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "const_double_e.png",
+            "height": 272,
+            "width": 163
+        },
+        "direction": "EAST",
+        "pattern": "aaq",
+        "args": "\u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/consts@hexcasting:const/double/e"
+    },
+    "Entity Purification": {
+        "name": "get_entity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdaqa",
+        "args": "vector \u2192 entity or null",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:get_entity"
+    },
+    "Entity Purification: Animal": {
+        "name": "get_entity/animal",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_animal.png",
+            "height": 139,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdaqaawa",
+        "args": "vector \u2192 entity or null",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:get_entity/animal"
+    },
+    "Entity Purification: Monster": {
+        "name": "get_entity/monster",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_monster.png",
+            "height": 124,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdaqaawq",
+        "args": "vector \u2192 entity or null",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:get_entity/monster"
+    },
+    "Entity Purification: Item": {
+        "name": "get_entity/item",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_item.png",
+            "height": 110,
+            "width": 304
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdaqaaww",
+        "args": "vector \u2192 entity or null",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:get_entity/item"
+    },
+    "Entity Purification: Player": {
+        "name": "get_entity/player",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_player.png",
+            "height": 124,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdaqaawe",
+        "args": "vector \u2192 entity or null",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:get_entity/player"
+    },
+    "Entity Purification: Living": {
+        "name": "get_entity/living",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "get_entity_living.png",
+            "height": 139,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdaqaawd",
+        "args": "vector \u2192 entity or null",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:get_entity/living"
+    },
+    "Zone Distillation: Any": {
+        "name": "zone_entity",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqwded",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity"
+    },
+    "Zone Distillation: Animal": {
+        "name": "zone_entity/animal",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_animal.png",
+            "height": 139,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqwdeddwa",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/animal"
+    },
+    "Zone Distillation: Non-Animal": {
+        "name": "zone_entity/not_animal",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_not_animal.png",
+            "height": 139,
+            "width": 302
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eeeeewaqaawa",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/not_animal"
+    },
+    "Zone Distillation: Monster": {
+        "name": "zone_entity/monster",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_monster.png",
+            "height": 124,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqwdeddwq",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/monster"
+    },
+    "Zone Distillation: Non-Monster": {
+        "name": "zone_entity/not_monster",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_not_monster.png",
+            "height": 124,
+            "width": 305
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eeeeewaqaawq",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/not_monster"
+    },
+    "Zone Distillation: Item": {
+        "name": "zone_entity/item",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_item.png",
+            "height": 110,
+            "width": 304
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqwdeddww",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/item"
+    },
+    "Zone Distillation: Non-Item": {
+        "name": "zone_entity/not_item",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_not_item.png",
+            "height": 110,
+            "width": 304
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eeeeewaqaaww",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/not_item"
+    },
+    "Zone Distillation: Player": {
+        "name": "zone_entity/player",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_player.png",
+            "height": 124,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqwdeddwe",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/player"
+    },
+    "Zone Distillation: Non-Player": {
+        "name": "zone_entity/not_player",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_not_player.png",
+            "height": 124,
+            "width": 305
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eeeeewaqaawe",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/not_player"
+    },
+    "Zone Distillation: Living": {
+        "name": "zone_entity/living",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_living.png",
+            "height": 139,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqwdeddwd",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/living"
+    },
+    "Zone Distillation: Non-Living": {
+        "name": "zone_entity/not_living",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "zone_entity_not_living.png",
+            "height": 139,
+            "width": 302
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eeeeewaqaawd",
+        "args": "vector, number \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/entities@hexcasting:zone_entity/not_living"
+    },
+    "Integration Distillation": {
+        "name": "append",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "append.png",
+            "height": 295,
+            "width": 262
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "edqde",
+        "args": "list, any \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:append"
+    },
+    "Combination Distillation": {
+        "name": "concat",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "concat.png",
+            "height": 295,
+            "width": 262
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qaeaq",
+        "args": "list, list \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:concat"
+    },
+    "Selection Distillation": {
+        "name": "index",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "index.png",
+            "height": 295,
+            "width": 257
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "deeed",
+        "args": "list, number \u2192 any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:index"
+    },
+    "Thoth's Gambit": {
+        "name": "for_each",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "for_each.png",
+            "height": 84,
+            "width": 262
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dadad",
+        "args": "list of patterns, list \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/meta@hexcasting:for_each"
+    },
+    "Abacus Purification": {
+        "name": "list_size",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "list_size.png",
+            "height": 295,
+            "width": 262
+        },
+        "direction": "EAST",
+        "pattern": "aqaeaq",
+        "args": "list \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:list_size"
+    },
+    "Single's Purification": {
+        "name": "singleton",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "singleton.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "adeeed",
+        "args": "any \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:singleton"
+    },
+    "Vacant Reflection": {
+        "name": "empty_list",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "empty_list.png",
+            "height": 305,
+            "width": 257
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qqaeaae",
+        "args": "\u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:empty_list"
+    },
+    "Retrograde Purification": {
+        "name": "reverse_list",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "reverse_list.png",
+            "height": 248,
+            "width": 271
+        },
+        "direction": "EAST",
+        "pattern": "qqqaede",
+        "args": "list \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:reverse_list"
+    },
+    "Flock's Gambit": {
+        "name": "last_n_list",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "last_n_list.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "ewdqdwe",
+        "args": "many, num \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:last_n_list"
+    },
+    "Flock's Disintegration": {
+        "name": "splat",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "splat.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qwaeawq",
+        "args": "list \u2192 many",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:splat"
+    },
+    "Locator's Distillation": {
+        "name": "index_of",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "index_of.png",
+            "height": 295,
+            "width": 262
+        },
+        "direction": "EAST",
+        "pattern": "dedqde",
+        "args": "list, any \u2192 num",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:index_of"
+    },
+    "Excisor's Distillation": {
+        "name": "list_remove",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "list_remove.png",
+            "height": 214,
+            "width": 304
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "edqdewaqa",
+        "args": "list, num \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:list_remove"
+    },
+    "Selection Exaltation": {
+        "name": "slice",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "slice.png",
+            "height": 214,
+            "width": 304
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qaeaqwded",
+        "args": "list, num, num \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:slice"
+    },
+    "Surgeon's Exaltation": {
+        "name": "modify_in_place",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "modify_in_place.png",
+            "height": 244,
+            "width": 275
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "wqaeaqw",
+        "args": "list, num, any \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:modify_in_place"
+    },
+    "Speaker's Distillation": {
+        "name": "construct",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "construct.png",
+            "height": 84,
+            "width": 254
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "ddewedd",
+        "args": "list, any \u2192 list",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:construct"
+    },
+    "Speaker's Decomposition": {
+        "name": "deconstruct",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "deconstruct.png",
+            "height": 84,
+            "width": 254
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "aaqwqaa",
+        "args": "list \u2192 list, any",
+        "url": "https://gamma-delta.github.io/HexMod/#patterns/lists@hexcasting:deconstruct"
+    },
+    "Gulliver's Purification": {
+        "name": "interop/pehkui/get",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "interop_pehkui_get.png",
+            "height": 284,
+            "width": 322
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aawawwawwa",
+        "args": "entity \u2192 double",
+        "url": "https://gamma-delta.github.io/HexMod/#interop/pehkui@hexcasting:interop/pehkui/get"
+    },
+    "Alter Scale": {
+        "name": "interop/pehkui/set",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "interop_pehkui_set.png",
+            "height": 284,
+            "width": 322
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "ddwdwwdwwd",
+        "args": "entity, double \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#interop/pehkui@hexcasting:interop/pehkui/set"
+    },
+    "Gravitational Purification": {
+        "name": "interop/gravity/get",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "interop_gravity_get.png",
+            "height": 217,
+            "width": 307
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wawawddew",
+        "args": "entity \u2192 vector",
+        "url": "https://gamma-delta.github.io/HexMod/#interop/gravity@hexcasting:interop/gravity/get"
+    },
+    "Alter Gravity": {
+        "name": "interop/gravity/set",
+        "modName": "Hex Casting",
+        "image": {
+            "filename": "interop_gravity_set.png",
+            "height": 217,
+            "width": 307
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "wdwdwaaqw",
+        "args": "entity, vector \u2192",
+        "url": "https://gamma-delta.github.io/HexMod/#interop/gravity@hexcasting:interop/gravity/set"
+    },
+    "Sorter's Purification": {
+        "name": "type/block_item",
+        "modName": "Hexal",
+        "image": {
+            "filename": "type_block_item.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "qaqqaea",
+        "args": "itemtypable \u2192 itemtype",
+        "url": "https://talia-12.github.io/Hexal/#patterns/types@hexal:type/block_item"
+    },
+    "Physician's Purification": {
+        "name": "type/entity",
+        "modName": "Hexal",
+        "image": {
+            "filename": "type_entity.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "qawde",
+        "args": "entity \u2192 entitytype",
+        "url": "https://talia-12.github.io/Hexal/#patterns/types@hexal:type/entity"
+    },
+    "Classifier's Purification": {
+        "name": "type/iota",
+        "modName": "Hexal",
+        "image": {
+            "filename": "type_iota.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awd",
+        "args": "any \u2192 iotatype",
+        "url": "https://talia-12.github.io/Hexal/#patterns/types@hexal:type/iota"
+    },
+    "Sorter's Reflection": {
+        "name": "type/item_held",
+        "modName": "Hexal",
+        "image": {
+            "filename": "type_item_held.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "edeedqd",
+        "args": "\u2192 itemtype",
+        "url": "https://talia-12.github.io/Hexal/#patterns/types@hexal:type/item_held"
+    },
+    "Entity Distillation: Type": {
+        "name": "get_entity/type",
+        "modName": "Hexal",
+        "image": {
+            "filename": "get_entity_type.png",
+            "height": 159,
+            "width": 304
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dadqqqqqdad",
+        "args": "entitytype, pos \u2192 entity | null",
+        "url": "https://talia-12.github.io/Hexal/#patterns/types@hexal:get_entity/type"
+    },
+    "Zone Exaltation: Type": {
+        "name": "zone_entity/type",
+        "modName": "Hexal",
+        "image": {
+            "filename": "zone_entity_type.png",
+            "height": 159,
+            "width": 304
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "waweeeeewaw",
+        "args": "entitytype, pos, num \u2192 [entity]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/types@hexal:zone_entity/type"
+    },
+    "Zone Exaltation: Not-Type": {
+        "name": "zone_entity/not_type",
+        "modName": "Hexal",
+        "image": {
+            "filename": "zone_entity_not_type.png",
+            "height": 159,
+            "width": 304
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wdwqqqqqwdw",
+        "args": "entitytype, pos, num \u2192 [entity]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/types@hexal:zone_entity/not_type"
+    },
+    "Timekeeper's Reflection": {
+        "name": "current_tick",
+        "modName": "Hexal",
+        "image": {
+            "filename": "current_tick.png",
+            "height": 267,
+            "width": 158
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "ddwaa",
+        "args": "\u2192 number",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_basics@hexal:current_tick"
+    },
+    "Thanatos' Reflection": {
+        "name": "remaining_evals",
+        "modName": "Hexal",
+        "image": {
+            "filename": "remaining_evals.png",
+            "height": 240,
+            "width": 275
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqaed",
+        "args": "\u2192 number",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_basics@hexal:remaining_evals"
+    },
+    "Diver's Purification": {
+        "name": "breath",
+        "modName": "Hexal",
+        "image": {
+            "filename": "breath.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqawdwaqawd",
+        "args": "entity \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_basics@hexal:breath"
+    },
+    "Nurse's Purification": {
+        "name": "health",
+        "modName": "Hexal",
+        "image": {
+            "filename": "health.png",
+            "height": 309,
+            "width": 241
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqwawqa",
+        "args": "entity \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_basics@hexal:health"
+    },
+    "Squire's Purification": {
+        "name": "armour",
+        "modName": "Hexal",
+        "image": {
+            "filename": "armour.png",
+            "height": 217,
+            "width": 307
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "wqqqqw",
+        "args": "entity \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_basics@hexal:armour"
+    },
+    "Boxer's Purification": {
+        "name": "toughness",
+        "modName": "Hexal",
+        "image": {
+            "filename": "toughness.png",
+            "height": 317,
+            "width": 241
+        },
+        "direction": "EAST",
+        "pattern": "aeqqqqea",
+        "args": "entity \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_basics@hexal:toughness"
+    },
+    "Lamplighter's Purification": {
+        "name": "light_level",
+        "modName": "Hexal",
+        "image": {
+            "filename": "light_level.png",
+            "height": 313,
+            "width": 245
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qedqde",
+        "args": "vec \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_basics@hexal:light_level"
+    },
+    "Factorial Purification": {
+        "name": "factorial",
+        "modName": "Hexal",
+        "image": {
+            "filename": "factorial.png",
+            "height": 220,
+            "width": 307
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "wawdedwaw",
+        "args": "num \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_maths@hexal:factorial"
+    },
+    "Running Sum Purification": {
+        "name": "running/sum",
+        "modName": "Hexal",
+        "image": {
+            "filename": "running_sum.png",
+            "height": 282,
+            "width": 163
+        },
+        "direction": "WEST",
+        "pattern": "aea",
+        "args": "[num] \u2192 [num]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_maths@hexal:running/sum"
+    },
+    "Running Product Purification": {
+        "name": "running/mul",
+        "modName": "Hexal",
+        "image": {
+            "filename": "running_mul.png",
+            "height": 240,
+            "width": 271
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaawaaq",
+        "args": "[num] \u2192 [num]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/hexal_maths@hexal:running/mul"
+    },
+    "Mnemosyne's Gambit": {
+        "name": "everbook/read",
+        "modName": "Hexal",
+        "image": {
+            "filename": "everbook_read.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eweeewedqdeddw",
+        "args": "vector, pattern \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/everbook@hexal:everbook/read"
+    },
+    "Elysium's Gambit": {
+        "name": "everbook/write",
+        "modName": "Hexal",
+        "image": {
+            "filename": "everbook_write.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qwqqqwqaeaqaaw",
+        "args": "vector, pattern \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/everbook@hexal:everbook/write"
+    },
+    "Lethe's Gambit": {
+        "name": "everbook/delete",
+        "modName": "Hexal",
+        "image": {
+            "filename": "everbook_delete.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qwqqqwqaww",
+        "args": "pattern \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/everbook@hexal:everbook/delete"
+    },
+    "Brigh's Gambit": {
+        "name": "everbook/toggle_macro",
+        "modName": "Hexal",
+        "image": {
+            "filename": "everbook_toggle_macro.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "eweeewedww",
+        "args": "pattern \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/everbook@hexal:everbook/toggle_macro"
+    },
+    "Smelt": {
+        "name": "smelt",
+        "modName": "Hexal",
+        "image": {
+            "filename": "smelt.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "EAST",
+        "pattern": "wqqqwqqadad",
+        "args": "vec | entity | mote \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/hexal_spells@hexal:smelt"
+    },
+    "Freeze": {
+        "name": "freeze",
+        "modName": "Hexal",
+        "image": {
+            "filename": "freeze.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "weeeweedada",
+        "args": "vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/hexal_spells@hexal:freeze"
+    },
+    "Falling Block": {
+        "name": "falling_block",
+        "modName": "Hexal",
+        "image": {
+            "filename": "falling_block.png",
+            "height": 293,
+            "width": 337
+        },
+        "direction": "EAST",
+        "pattern": "wqwawqwqwqwqwqw",
+        "args": "vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/hexal_spells@hexal:falling_block"
+    },
+    "Place Block II": {
+        "name": "place_type",
+        "modName": "Hexal",
+        "image": {
+            "filename": "place_type.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "eeeeedeeeee",
+        "args": "(itemtype | mote), vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/hexal_spells@hexal:place_type"
+    },
+    "Particles": {
+        "name": "particles",
+        "modName": "Hexal",
+        "image": {
+            "filename": "particles.png",
+            "height": 313,
+            "width": 245
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eqqqqa",
+        "args": "vec | [vec] \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/hexal_spells@hexal:particles"
+    },
+    "Summon Projectile Wisp": {
+        "name": "wisp/summon/projectile",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_summon_projectile.png",
+            "height": 136,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqaeqeeeee",
+        "args": "[pattern], vec, vec, number \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/summon/projectile"
+    },
+    "Summon Cyclic Wisp": {
+        "name": "wisp/summon/ticking",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_summon_ticking.png",
+            "height": 136,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqaweewaqawee",
+        "args": "[pattern], vec, number \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/summon/ticking"
+    },
+    "Identity Reflection": {
+        "name": "wisp/self",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_self.png",
+            "height": 136,
+            "width": 302
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dedwqqwdedwqqaw",
+        "args": "\u2192 entity",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/self"
+    },
+    "Reservoir Reflection": {
+        "name": "wisp/media",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_media.png",
+            "height": 136,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqaweewaqaweedw",
+        "args": "\u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/media"
+    },
+    "Manager's Purification": {
+        "name": "wisp/hex",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_hex.png",
+            "height": 136,
+            "width": 308
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aweewaqaweewaawww",
+        "args": "entity \u2192 [pattern]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/hex"
+    },
+    "Allegiance Distillation": {
+        "name": "wisp/owner",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_owner.png",
+            "height": 136,
+            "width": 308
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "dwqqwdedwqqwddwww",
+        "args": "entity, entity \u2192 bool",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/owner"
+    },
+    "Pathfinder's Gambit": {
+        "name": "wisp/move/target/set",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_move_target_set.png",
+            "height": 189,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "awqwawqaw",
+        "args": "vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/move/target/set"
+    },
+    "Pathfinder's Reflection": {
+        "name": "wisp/move/target/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_move_target_get.png",
+            "height": 189,
+            "width": 302
+        },
+        "direction": "EAST",
+        "pattern": "ewdwewdew",
+        "args": "\u2192 vec",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/move/target/get"
+    },
+    "Haste": {
+        "name": "wisp/move/speed/set",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_move_speed_set.png",
+            "height": 224,
+            "width": 304
+        },
+        "direction": "WEST",
+        "pattern": "aeawqqqae",
+        "args": "num \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/move/speed/set"
+    },
+    "Speedometer's Reflection": {
+        "name": "wisp/move/speed/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_move_speed_get.png",
+            "height": 224,
+            "width": 304
+        },
+        "direction": "EAST",
+        "pattern": "eeewdqdee",
+        "args": "\u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/move/speed/get"
+    },
+    "Entity Purification: Wisp": {
+        "name": "get_entity/wisp",
+        "modName": "Hexal",
+        "image": {
+            "filename": "get_entity_wisp.png",
+            "height": 94,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqwdedwqqdaqaaww",
+        "args": "vec \u2192 entity | null",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:get_entity/wisp"
+    },
+    "Zone Distillation: Wisp": {
+        "name": "zone_entity/wisp",
+        "modName": "Hexal",
+        "image": {
+            "filename": "zone_entity_wisp.png",
+            "height": 94,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqwdedwqqwdeddww",
+        "args": "vec, num \u2192 [entity]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:zone_entity/wisp"
+    },
+    "Zone Distillation: Non-Wisp": {
+        "name": "zone_entity/not_wisp",
+        "modName": "Hexal",
+        "image": {
+            "filename": "zone_entity_not_wisp.png",
+            "height": 94,
+            "width": 305
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eewaqaweewaqaaww",
+        "args": "vec, num \u2192 [entity]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:zone_entity/not_wisp"
+    },
+    "Delay Wisp": {
+        "name": "wisp/trigger/tick",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_trigger_tick.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqawded",
+        "args": "number \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/trigger/tick"
+    },
+    "Listen": {
+        "name": "wisp/trigger/comm",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_trigger_comm.png",
+            "height": 136,
+            "width": 305
+        },
+        "direction": "EAST",
+        "pattern": "aqqqqqwdeddw",
+        "args": null,
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/trigger/comm"
+    },
+    "Wander": {
+        "name": "wisp/trigger/move",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_trigger_move.png",
+            "height": 136,
+            "width": 308
+        },
+        "direction": "EAST",
+        "pattern": "eqwawqwaqww",
+        "args": null,
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/wisps@hexal:wisp/trigger/move"
+    },
+    "Familiar's Reflection": {
+        "name": "wisp/seon/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_seon_get.png",
+            "height": 94,
+            "width": 308
+        },
+        "direction": "EAST",
+        "pattern": "daqweewqaeaqweewqaqwwww",
+        "args": "\u2192 entity | null",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/great_wisps@hexal:wisp/seon/get"
+    },
+    "Link": {
+        "name": "link",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link.png",
+            "height": 94,
+            "width": 308
+        },
+        "direction": "EAST",
+        "pattern": "eaqaaeqqqqqaweaqaaw",
+        "args": "linkable \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link"
+    },
+    "Link Others": {
+        "name": "link/others",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_others.png",
+            "height": 94,
+            "width": 308
+        },
+        "direction": "EAST",
+        "pattern": "eqqqqqawqeeeeedww",
+        "args": "linkable, linkable \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/others"
+    },
+    "Unlink": {
+        "name": "link/unlink",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_unlink.png",
+            "height": 94,
+            "width": 308
+        },
+        "direction": "WEST",
+        "pattern": "qdeddqeeeeedwqdeddw",
+        "args": "num \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/unlink"
+    },
+    "Phonebook Purification": {
+        "name": "link/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_get.png",
+            "height": 136,
+            "width": 308
+        },
+        "direction": "EAST",
+        "pattern": "eqqqqqaww",
+        "args": "num \u2192 linkable",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/get"
+    },
+    "Recognition Purification": {
+        "name": "link/get_index",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_get_index.png",
+            "height": 142,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "aeqqqqqawwd",
+        "args": "linkable \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/get_index"
+    },
+    "Popularity Reflection": {
+        "name": "link/num",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_num.png",
+            "height": 136,
+            "width": 308
+        },
+        "direction": "WEST",
+        "pattern": "qeeeeedww",
+        "args": "\u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/num"
+    },
+    "Send Iota": {
+        "name": "link/comm/send",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_comm_send.png",
+            "height": 136,
+            "width": 305
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqqwdeddw",
+        "args": "num, any \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/comm/send"
+    },
+    "Recitation Reflection": {
+        "name": "link/comm/read",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_comm_read.png",
+            "height": 220,
+            "width": 307
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "weeeeew",
+        "args": "\u2192 any",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/comm/read"
+    },
+    "Postmaster's Reflection": {
+        "name": "link/comm/num",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_comm_num.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aweeeeewaa",
+        "args": "\u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/comm/num"
+    },
+    "Unclogging Gambit": {
+        "name": "link/comm/clear",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_comm_clear.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aweeeeewa",
+        "args": null,
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/comm/clear"
+    },
+    "Open Transmit": {
+        "name": "link/comm/open_transmit",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_comm_open_transmit.png",
+            "height": 224,
+            "width": 307
+        },
+        "direction": "WEST",
+        "pattern": "qwdedwq",
+        "args": "num \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/comm/open_transmit"
+    },
+    "Close Transmit": {
+        "name": "link/comm/close_transmit",
+        "modName": "Hexal",
+        "image": {
+            "filename": "link_comm_close_transmit.png",
+            "height": 224,
+            "width": 307
+        },
+        "direction": "EAST",
+        "pattern": "ewaqawe",
+        "args": null,
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/links@hexal:link/comm/close_transmit"
+    },
+    "Gate's Opening": {
+        "name": "gate/mark",
+        "modName": "Hexal",
+        "image": {
+            "filename": "gate_mark.png",
+            "height": 87,
+            "width": 254
+        },
+        "direction": "WEST",
+        "pattern": "qaqeede",
+        "args": "gate, entity \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/gates@hexal:gate/mark"
+    },
+    "Gate's Dismissal": {
+        "name": "gate/unmark",
+        "modName": "Hexal",
+        "image": {
+            "filename": "gate_unmark.png",
+            "height": 87,
+            "width": 254
+        },
+        "direction": "EAST",
+        "pattern": "edeqqaq",
+        "args": "gate, entity \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/gates@hexal:gate/unmark"
+    },
+    "Marked Distillation": {
+        "name": "gate/mark/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "gate_mark_get.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "EAST",
+        "pattern": "edwwdeeede",
+        "args": "gate, entity \u2192 bool",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/gates@hexal:gate/mark/get"
+    },
+    "Marked Purification": {
+        "name": "gate/mark/num/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "gate_mark_num_get.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "qawwaqqqaq",
+        "args": "gate \u2192 num",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/gates@hexal:gate/mark/num/get"
+    },
+    "Gate's Closing": {
+        "name": "gate/close",
+        "modName": "Hexal",
+        "image": {
+            "filename": "gate_close.png",
+            "height": 143,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "qqqwwqqqwqqawdedw",
+        "args": "gate | gate, vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/gates@hexal:gate/close"
+    },
+    "Bind Storage": {
+        "name": "mote/storage/bind",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_storage_bind.png",
+            "height": 280,
+            "width": 322
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qaqwqaqwqaq",
+        "args": "vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/storage/bind"
+    },
+    "Bind Storage - Temporary": {
+        "name": "mote/storage/bind/temp",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_storage_bind_temp.png",
+            "height": 280,
+            "width": 322
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "edewedewede",
+        "args": "vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/storage/bind/temp"
+    },
+    "Stocktake Reflection": {
+        "name": "mote/contained_type/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_contained_type_get.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dwqqqqqwddww",
+        "args": "\u2192 [itemtype]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/contained_type/get"
+    },
+    "Stocktake Purification": {
+        "name": "mote/contained/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_contained_get.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aweeeeewaaww",
+        "args": "mote | itemtype \u2192 [mote]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/contained/get"
+    },
+    "Capacity Reflection": {
+        "name": "mote/storage/remaining_capacity/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_storage_remaining_capacity_get.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "awedqdewa",
+        "args": "\u2192 int",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/storage/remaining_capacity/get"
+    },
+    "Containment Distillation": {
+        "name": "mote/storage/contains",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_storage_contains.png",
+            "height": 214,
+            "width": 307
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dwqaeaqwd",
+        "args": "vec, (itemtype | mote) \u2192 bool",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/storage/contains"
+    },
+    "Mediafy Item": {
+        "name": "mote/make",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_make.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "WEST",
+        "pattern": "eaqa",
+        "args": "item | item, mote \u2192 mote",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/make"
+    },
+    "Return Item": {
+        "name": "mote/return",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_return.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "qded",
+        "args": "mote, vec | mote, vec, num \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/return"
+    },
+    "Weighing Purification": {
+        "name": "mote/count/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_count_get.png",
+            "height": 181,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqqqwqqqqqaa",
+        "args": "mote \u2192 int",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/count/get"
+    },
+    "Stacking Distillation": {
+        "name": "mote/combine",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_combine.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqaeqded",
+        "args": "mote, mote \u2192 mote",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/combine"
+    },
+    "Stacking Distillation II": {
+        "name": "mote/combinable",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_combinable.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "dedqeaqa",
+        "args": "mote, (mote | item) \u2192 bool",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/combinable"
+    },
+    "Splitting Gambit": {
+        "name": "mote/split",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_split.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "EAST",
+        "pattern": "eaqaaw",
+        "args": "mote, int \u2192 mote, mote",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/split"
+    },
+    "Depot Purification": {
+        "name": "mote/storage/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_storage_get.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "qqqqqaw",
+        "args": "mote \u2192 vec",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/storage/get"
+    },
+    "Depot Gambit": {
+        "name": "mote/storage/set",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_storage_set.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "eeeeedw",
+        "args": "mote, vec \u2192 mote",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/storage/set"
+    },
+    "Craft": {
+        "name": "mote/craft",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_craft.png",
+            "height": 327,
+            "width": 197
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "wwawdedwawdewwdwaqawdwwedwawdedwaww",
+        "args": "mote | [mote] | [[mote]] \u2192 [mote]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/craft"
+    },
+    "Seniority Purification": {
+        "name": "mote/villager/level/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_villager_level_get.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "qqwdedwqqaww",
+        "args": "villager \u2192 int",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/villager/level/get"
+    },
+    "Offering Purification": {
+        "name": "mote/trade/get",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_trade_get.png",
+            "height": 136,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "awdedwaawwqded",
+        "args": "villager \u2192 [complicated!]",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/trade/get"
+    },
+    "Trade": {
+        "name": "mote/trade",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_trade.png",
+            "height": 136,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "awdedwaeqded",
+        "args": "villager, [mote], int? \u2192 item",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/trade"
+    },
+    "Use Item On": {
+        "name": "mote/use_on",
+        "modName": "Hexal",
+        "image": {
+            "filename": "mote_use_on.png",
+            "height": 185,
+            "width": 302
+        },
+        "direction": "EAST",
+        "pattern": "qqqwqqqqaa",
+        "args": "mote, (entity | vec, vec) \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/spells/motes@hexal:mote/use_on"
+    },
+    "Consume Wisp": {
+        "name": "wisp/consume",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_consume.png",
+            "height": 119,
+            "width": 331
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "wawqwawwwewwwewwwawqwawwwewwwewdeaweewaqaweewaawwww",
+        "args": "entity \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/great_wisps@hexal:wisp/consume"
+    },
+    "Bind Wisp": {
+        "name": "wisp/seon/set",
+        "modName": "Hexal",
+        "image": {
+            "filename": "wisp_seon_set.png",
+            "height": 110,
+            "width": 301
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "aqweewqaeaqweewqaqwww",
+        "args": "entity \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/great_wisps@hexal:wisp/seon/set"
+    },
+    "Accelerate": {
+        "name": "tick",
+        "modName": "Hexal",
+        "image": {
+            "filename": "tick.png",
+            "height": 327,
+            "width": 194
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "wwwdwdwwwawqqeqwqqwqeqwqq",
+        "args": "vec \u2192",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/tick@hexal:tick"
+    },
+    "Gate's Reflection": {
+        "name": "gate/make",
+        "modName": "Hexal",
+        "image": {
+            "filename": "gate_make.png",
+            "height": 290,
+            "width": 334
+        },
+        "direction": "WEST",
+        "pattern": "qwqwqwqwqwqqeaeaeaeaeae",
+        "args": "null | vec | vec, entity \u2192 gate",
+        "url": "https://talia-12.github.io/Hexal/#patterns/great_spells/gates@hexal:gate/make"
+    },
+    "Phase Block": {
+        "name": "interop/fabric_only/phase_block",
+        "modName": "Hexal",
+        "image": {
+            "filename": "interop_fabric_only_phase_block.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "WEST",
+        "pattern": "daqqqa",
+        "args": "vec, num \u2192",
+        "url": "https://talia-12.github.io/Hexal/#interop/fabric_only_hexal@hexal:interop/fabric_only/phase_block"
+    },
+    "Blank Reflection": {
+        "name": "string/empty",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_empty.png",
+            "height": 178,
+            "width": 310
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "awdwa",
+        "args": "\u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/empty"
+    },
+    "Spacing Reflection": {
+        "name": "string/space",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_space.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "awdwaaww",
+        "args": "\u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/space"
+    },
+    "Comma Reflection": {
+        "name": "string/comma",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_comma.png",
+            "height": 135,
+            "width": 202
+        },
+        "direction": "EAST",
+        "pattern": "qa",
+        "args": "\u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/comma"
+    },
+    "Breaking Reflection": {
+        "name": "string/newline",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_newline.png",
+            "height": 217,
+            "width": 310
+        },
+        "direction": "EAST",
+        "pattern": "waawaw",
+        "args": "\u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/newline"
+    },
+    "Reader's Purification": {
+        "name": "string/block/get",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_block_get.png",
+            "height": 284,
+            "width": 322
+        },
+        "direction": "EAST",
+        "pattern": "awqwawqe",
+        "args": "vec \u2192 str | [str]",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/block/get"
+    },
+    "Write": {
+        "name": "string/block/set",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_block_set.png",
+            "height": 284,
+            "width": 322
+        },
+        "direction": "WEST",
+        "pattern": "dwewdweq",
+        "args": "vec, str | [str] \u2192",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/block/set"
+    },
+    "Whisper Reflection": {
+        "name": "string/chat/caster",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_chat_caster.png",
+            "height": 125,
+            "width": 260
+        },
+        "direction": "EAST",
+        "pattern": "waqa",
+        "args": "\u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/chat/caster"
+    },
+    "Listener's Reflection": {
+        "name": "string/chat/all",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_chat_all.png",
+            "height": 125,
+            "width": 260
+        },
+        "direction": "EAST",
+        "pattern": "wded",
+        "args": "\u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/chat/all"
+    },
+    "Sifter's Gambit": {
+        "name": "string/chat/prefix/set",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_chat_prefix_set.png",
+            "height": 102,
+            "width": 259
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qwaqa",
+        "args": "str | null \u2192",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/chat/prefix/set"
+    },
+    "Sifter's Reflection": {
+        "name": "string/chat/prefix/get",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_chat_prefix_get.png",
+            "height": 102,
+            "width": 259
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "ewded",
+        "args": "\u2192 str | null",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/chat/prefix/get"
+    },
+    "Scrivener's Purification": {
+        "name": "string/iota",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_iota.png",
+            "height": 189,
+            "width": 302
+        },
+        "direction": "EAST",
+        "pattern": "wawqwawaw",
+        "args": "any \u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/iota"
+    },
+    "Patternmaster's Purification": {
+        "name": "string/action",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_action.png",
+            "height": 186,
+            "width": 302
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "wdwewdwdw",
+        "args": "pattern \u2192 str | null",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/action"
+    },
+    "Concatenation Distillation": {
+        "name": "string/add",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_add.png",
+            "height": 313,
+            "width": 241
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "waawaqwawqq",
+        "args": "str, str \u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/add"
+    },
+    "Separation Distillation": {
+        "name": "string/split",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_split.png",
+            "height": 106,
+            "width": 256
+        },
+        "direction": "EAST",
+        "pattern": "aqwaqa",
+        "args": "str, str \u2192 [str]",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/split"
+    },
+    "Input Purification": {
+        "name": "string/parse",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_parse.png",
+            "height": 103,
+            "width": 256
+        },
+        "direction": "EAST",
+        "pattern": "aqwaq",
+        "args": "str \u2192 num | null",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/parse"
+    },
+    "Discoverer's Distillation": {
+        "name": "string/find",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_find.png",
+            "height": 80,
+            "width": 254
+        },
+        "direction": "EAST",
+        "pattern": "waqwwaqa",
+        "args": "str, str \u2192 num",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/find"
+    },
+    "Winnowing Distillation": {
+        "name": "string/sub",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_sub.png",
+            "height": 80,
+            "width": 254
+        },
+        "direction": "EAST",
+        "pattern": "aqwwaqwaad",
+        "args": "str, num, num \u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/sub"
+    },
+    "Length Distillation: Str": {
+        "name": "string/len",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_len.png",
+            "height": 236,
+            "width": 279
+        },
+        "direction": "EAST",
+        "pattern": "waqaeaq",
+        "args": "str \u2192 num",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/len"
+    },
+    "Case Distillation": {
+        "name": "string/case",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "string_case.png",
+            "height": 287,
+            "width": 322
+        },
+        "direction": "WEST",
+        "pattern": "dwwdwwdwdd",
+        "args": "str, bool | null \u2192 str",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/strings@moreiotas:string/case"
+    },
+    "Transformation Purification": {
+        "name": "matrix/make",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_make.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awwaeawwaadwa",
+        "args": "num | vec | list \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/make"
+    },
+    "Restoration Purification": {
+        "name": "matrix/unmake",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_unmake.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "dwwdqdwwddawd",
+        "args": "mat \u2192 num | vec | list",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/unmake"
+    },
+    "Identity Purification": {
+        "name": "matrix/identity",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_identity.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awwaeawwaqw",
+        "args": "int \u00e2\u2030\u00a5 0 \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/identity"
+    },
+    "Zero Distillation": {
+        "name": "matrix/zero",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_zero.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awwaeawwa",
+        "args": "int \u00e2\u2030\u00a5 0, int \u00e2\u2030\u00a5 0 \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/zero"
+    },
+    "Rotation Distillation": {
+        "name": "matrix/rotation",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_rotation.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awwaeawwawawddw",
+        "args": "vec, num \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/rotation"
+    },
+    "Addition Distillation: Matrix": {
+        "name": "matrix/add",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_add.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "EAST",
+        "pattern": "waawawaeawwaea",
+        "args": "mat, mat \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/add"
+    },
+    "Multiplication Distillation: Matrix": {
+        "name": "matrix/mul",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_mul.png",
+            "height": 182,
+            "width": 306
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "waqawawwaeaww",
+        "args": "mat, mat \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/mul"
+    },
+    "Transpose Purification": {
+        "name": "matrix/transpose",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_transpose.png",
+            "height": 163,
+            "width": 301
+        },
+        "direction": "EAST",
+        "pattern": "wwaeawwaede",
+        "args": "mat \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/transpose"
+    },
+    "Inverse Purification": {
+        "name": "matrix/inverse",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_inverse.png",
+            "height": 163,
+            "width": 301
+        },
+        "direction": "WEST",
+        "pattern": "wwdqdwwdqaq",
+        "args": "mat \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/inverse"
+    },
+    "Determinant Purification": {
+        "name": "matrix/determinant",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_determinant.png",
+            "height": 189,
+            "width": 302
+        },
+        "direction": "WEST",
+        "pattern": "aeawwaeawaw",
+        "args": "mat \u2192 num",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/determinant"
+    },
+    "Tower Distillation": {
+        "name": "matrix/concat/vert",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_concat_vert.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "awwaeawwawawdedwa",
+        "args": "mat, mat \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/concat/vert"
+    },
+    "Sprawling Distillation": {
+        "name": "matrix/concat/hori",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_concat_hori.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "dwwdqdwwdwdwaqawd",
+        "args": "mat, mat \u2192 mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/concat/hori"
+    },
+    "Toppling Gambit": {
+        "name": "matrix/split/vert",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_split_vert.png",
+            "height": 181,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "awdedwawawwaeawwa",
+        "args": "mat, num \u2192 mat, mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/split/vert"
+    },
+    "Mitosis Gambit": {
+        "name": "matrix/split/hori",
+        "modName": "MoreIotas",
+        "image": {
+            "filename": "matrix_split_hori.png",
+            "height": 181,
+            "width": 302
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "dwaqawdwdwwdqdwwd",
+        "args": "mat, num \u2192 mat, mat",
+        "url": "https://talia-12.github.io/MoreIotas/#patterns/matrices@moreiotas:matrix/split/hori"
+    },
+    "Progress Gambit": {
+        "name": "page/right",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "page_right.png",
+            "height": 300,
+            "width": 257
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "qqaw",
+        "args": null,
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_utility@hextweaks:page/right"
+    },
+    "Regress Gambit": {
+        "name": "page/left",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "page_left.png",
+            "height": 300,
+            "width": 257
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "eedw",
+        "args": null,
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_utility@hextweaks:page/left"
+    },
+    "Nadir of Nausea": {
+        "name": "nausea",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "nausea.png",
+            "height": 221,
+            "width": 307
+        },
+        "direction": "EAST",
+        "pattern": "weed",
+        "args": "entity, number, number \u2192",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/spells/naseua@hextweaks:nausea"
+    },
+    "Clerk's Vacant Reflection": {
+        "name": "dict/new",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_new.png",
+            "height": 293,
+            "width": 173
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaq",
+        "args": "\u2192 dict",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/new"
+    },
+    "Clerk's Distillation": {
+        "name": "dict/from",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_from.png",
+            "height": 330,
+            "width": 333
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqeqdweeew",
+        "args": "[key],[any] \u2192 dict",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/from"
+    },
+    "Clerk's Decomposition": {
+        "name": "dict/break",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_break.png",
+            "height": 330,
+            "width": 333
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqdwqqqwae",
+        "args": "dict \u2192 [key],[any]",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/break"
+    },
+    "Clerk's Decomposition II": {
+        "name": "dict/break/single",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_break_single.png",
+            "height": 330,
+            "width": 333
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqdwqqqwq",
+        "args": "dict \u2192 key,value",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/break/single"
+    },
+    "Clerk's Thoths Gambit": {
+        "name": "dict/thoths",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_thoths.png",
+            "height": 213,
+            "width": 325
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqedadad",
+        "args": "[patterns],dict \u2192 [any]",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/thoths"
+    },
+    "Clerk's Abacus Purification": {
+        "name": "dict/size",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_size.png",
+            "height": 330,
+            "width": 336
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqeewaqaeaq",
+        "args": "dict \u2192 num",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/size"
+    },
+    "Clerk's Integration Exaltation": {
+        "name": "dict/set",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_set.png",
+            "height": 242,
+            "width": 322
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqdqedqde",
+        "args": "dict, key, any \u2192 dict",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/set"
+    },
+    "Clerk's Surgeon's Exaltation": {
+        "name": "dict/get",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_get.png",
+            "height": 280,
+            "width": 322
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqdadeeed",
+        "args": "dict, key \u2192 dict, any",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/get"
+    },
+    "Clerk's Excisor's Distillation": {
+        "name": "dict/remove",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "dict_remove.png",
+            "height": 309,
+            "width": 182
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqwaqeqdd",
+        "args": "dict, key \u2192 dict",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_dict@hextweaks:dict/remove"
+    },
+    "Iterators Purification": {
+        "name": "itter",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "itter.png",
+            "height": 186,
+            "width": 310
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wdwaw",
+        "args": "Number \u2192 [Number]",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/hextweaks_utility@hextweaks:itter"
+    },
+    "Natural Search": {
+        "name": "craft/grandscroll",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "craft_grandscroll.png",
+            "height": 194,
+            "width": 347
+        },
+        "direction": "WEST",
+        "pattern": "wqqewawqwqedawdweewaeqwawdaqwdewawdadwawqwawdadwaw",
+        "args": "Entity, Vec \u2192",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/great_spells/craftgrandscroll@hextweaks:craft/grandscroll"
+    },
+    "Suspicious Glyph": {
+        "name": "suicide",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "suicide.png",
+            "height": 248,
+            "width": 340
+        },
+        "direction": "WEST",
+        "pattern": "dewdeqwwedaqedwadweqewwd",
+        "args": null,
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/great_spells/suspicious_glyph@hextweaks:suicide"
+    },
+    "Reroll Pattern": {
+        "name": "grand/reroll",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "grand_reroll.png",
+            "height": 330,
+            "width": 230
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqqqqwwawwqqeaddwwddas",
+        "args": "Entity \u2192",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/grand_spells/reroll@hextweaks:grand/reroll"
+    },
+    "Mass Mindflay": {
+        "name": "grand/massbrainsweep",
+        "modName": "HexTweaks",
+        "image": {
+            "filename": "grand_massbrainsweep.png",
+            "height": 342,
+            "width": 313
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qeqwqwqwqwqeqaeqeaqeqaeqaqdededwaqdedsde",
+        "args": "[Entity], any \u2192",
+        "url": "https://walksanatora.github.io/HexTweaks/#patterns/grand_spells/massmindflay@hextweaks:grand/massbrainsweep"
+    },
+    "Alidade's Purification II": {
+        "name": "direction/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "direction_const.png",
+            "height": 125,
+            "width": 260
+        },
+        "direction": "EAST",
+        "pattern": "waa",
+        "args": "entity \u2192 vector",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/actions@hexkinetics:direction/const"
+    },
+    "Visibility Distillation": {
+        "name": "visibility/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "visibility_const.png",
+            "height": 280,
+            "width": 322
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqadwawaw",
+        "args": "entity, vector \u2192 bool",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/actions@hexkinetics:visibility/const"
+    },
+    "Inertia Purification": {
+        "name": "is_gravity/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "is_gravity_const.png",
+            "height": 125,
+            "width": 264
+        },
+        "direction": "EAST",
+        "pattern": "daad",
+        "args": "entity \u2192 bool",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/actions@hexkinetics:is_gravity/const"
+    },
+    "Hadamard's Distillation": {
+        "name": "hadamard/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "hadamard_const.png",
+            "height": 310,
+            "width": 257
+        },
+        "direction": "WEST",
+        "pattern": "awaqawa",
+        "args": "vector, vector \u2192 vector",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/math_actions@hexkinetics:hadamard/const"
+    },
+    "Sniper's Distillation": {
+        "name": "pixel/raycast",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "pixel_raycast.png",
+            "height": 153,
+            "width": 304
+        },
+        "direction": "EAST",
+        "pattern": "weqaqded",
+        "args": "vector, vector \u2192 vector",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/actions@hexkinetics:pixel/raycast"
+    },
+    "Vehicle Purification": {
+        "name": "get_vehicle/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "get_vehicle_const.png",
+            "height": 182,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqdeewee",
+        "args": "entity \u2192 entity",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/actions@hexkinetics:get_vehicle/const"
+    },
+    "Jockey Purification": {
+        "name": "get_rider/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "get_rider_const.png",
+            "height": 331,
+            "width": 285
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqdeeaedeaee",
+        "args": "entity \u2192 entity",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/actions@hexkinetics:get_rider/const"
+    },
+    "Shooter Purification": {
+        "name": "get_shooter/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "get_shooter_const.png",
+            "height": 244,
+            "width": 271
+        },
+        "direction": "EAST",
+        "pattern": "aadedade",
+        "args": "entity \u2192 entity",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/actions@hexkinetics:get_shooter/const"
+    },
+    "Imprecision Purification": {
+        "name": "round/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "round_const.png",
+            "height": 217,
+            "width": 307
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "aadeeaa",
+        "args": "num/vec \u2192 num/vec",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/math_actions@hexkinetics:round/const"
+    },
+    "Optician's Distillation": {
+        "name": "reflection/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "reflection_const.png",
+            "height": 136,
+            "width": 302
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdqqqqq",
+        "args": "vector, vector \u2192 vector",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/math_actions@hexkinetics:reflection/const"
+    },
+    "Sphere Distillation": {
+        "name": "get_vec/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "get_vec_const.png",
+            "height": 136,
+            "width": 305
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqeddedq",
+        "args": "vec, num \u2192 list",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/math_actions@hexkinetics:get_vec/const"
+    },
+    "Span Distillation": {
+        "name": "get_vec_from/const",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "get_vec_from_const.png",
+            "height": 69,
+            "width": 254
+        },
+        "direction": "WEST",
+        "pattern": "qaqeeqaq",
+        "args": "vector, vector \u2192 list",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/math_actions@hexkinetics:get_vec_from/const"
+    },
+    "Rotate": {
+        "name": "rotate/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "rotate_spell.png",
+            "height": 329,
+            "width": 308
+        },
+        "direction": "EAST",
+        "pattern": "qqqadeeed",
+        "args": "entity, vec \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/spells/rotate_spells@hexkinetics:rotate/spell"
+    },
+    "Rotate II": {
+        "name": "rotate_two/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "rotate_two_spell.png",
+            "height": 329,
+            "width": 308
+        },
+        "direction": "WEST",
+        "pattern": "eeedaqqqa",
+        "args": "entity, vec \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/spells/rotate_spells@hexkinetics:rotate_two/spell"
+    },
+    "Rotate: Block": {
+        "name": "rotate_block/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "rotate_block_spell.png",
+            "height": 290,
+            "width": 334
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqaqqqwadeeed",
+        "args": "vector, vector \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/spells/rotate_spells@hexkinetics:rotate_block/spell"
+    },
+    "Momentum Swap": {
+        "name": "swap/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "swap_spell.png",
+            "height": 309,
+            "width": 182
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "adaadaqedaddad",
+        "args": "entity, entity \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/spells/spells@hexkinetics:swap/spell"
+    },
+    "Lesser Teleport": {
+        "name": "lesser_teleport/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "lesser_teleport_spell.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "edqdewqaeaq",
+        "args": "entity, vec/num \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/spells/spells@hexkinetics:lesser_teleport/spell"
+    },
+    "Place Projectile": {
+        "name": "projectile/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "projectile_spell.png",
+            "height": 325,
+            "width": 312
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "weeeweede",
+        "args": "vector \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/spells/spells@hexkinetics:projectile/spell"
+    },
+    "Twokai's Ideal Condition": {
+        "name": "zero_g/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "zero_g_spell.png",
+            "height": 327,
+            "width": 285
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "wwqqqwadaadawqqqww",
+        "args": "entity, number \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/great_spells/great_spells@hexkinetics:zero_g/spell"
+    },
+    "Propulsion": {
+        "name": "fast/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "fast_spell.png",
+            "height": 327,
+            "width": 230
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "wqeqaaeeeweeeaaqeqqaaq",
+        "args": "entity, number, vector \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/great_spells/great_spells@hexkinetics:fast/spell"
+    },
+    "Greater Translocation": {
+        "name": "move_block/spell",
+        "modName": "HexKinetics",
+        "image": {
+            "filename": "move_block_spell.png",
+            "height": 169,
+            "width": 333
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "eeqeeqeeeqeeqdeeqeqqwqqqeeqeqqwqq",
+        "args": "vector, vector \u2192",
+        "url": "https://sonunte.github.io/HexKinetics/#patterns/great_spells/greater_translocation@hexkinetics:move_block/spell"
+    },
+    "Duelist's Purification": {
+        "name": "get_main_hand",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "get_main_hand.png",
+            "height": 87,
+            "width": 262
+        },
+        "direction": "EAST",
+        "pattern": "adeq",
+        "args": "entity \u2192 item stack",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/item_patterns@hexbound:get_main_hand"
+    },
+    "Shieldbearer's Purification": {
+        "name": "get_off_hand",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "get_off_hand.png",
+            "height": 87,
+            "width": 262
+        },
+        "direction": "EAST",
+        "pattern": "qeda",
+        "args": "entity \u2192 item stack",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/item_patterns@hexbound:get_off_hand"
+    },
+    "Hoarder's Distillation": {
+        "name": "get_inventory/stacks",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "get_inventory_stacks.png",
+            "height": 178,
+            "width": 302
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "aqwed",
+        "args": "vector, vector \u2192 list",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/item_patterns@hexbound:get_inventory/stacks"
+    },
+    "Collector's Distillation": {
+        "name": "get_inventory/items",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "get_inventory_items.png",
+            "height": 265,
+            "width": 91
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "dewqa",
+        "args": "vector, vector \u2192 list",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/item_patterns@hexbound:get_inventory/items"
+    },
+    "Logistician's Purification": {
+        "name": "get_stack_prop/item",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "get_stack_prop_item.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "WEST",
+        "pattern": "dedqaa",
+        "args": "item stack \u2192 item",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/item_patterns@hexbound:get_stack_prop/item"
+    },
+    "Treasurer's Purification": {
+        "name": "get_stack_prop/size",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "get_stack_prop_size.png",
+            "height": 240,
+            "width": 271
+        },
+        "direction": "WEST",
+        "pattern": "dedqaq",
+        "args": "item stack \u2192 num",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/item_patterns@hexbound:get_stack_prop/size"
+    },
+    "Revolving Distillation": {
+        "name": "pattern/rotate",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "pattern_rotate.png",
+            "height": 240,
+            "width": 271
+        },
+        "direction": "WEST",
+        "pattern": "deeee",
+        "args": "pattern, num \u2192 pattern",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/pattern_editing@hexbound:pattern/rotate"
+    },
+    "Painter's Distillation": {
+        "name": "pattern/merge",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "pattern_merge.png",
+            "height": 236,
+            "width": 271
+        },
+        "direction": "NORTH_WEST",
+        "pattern": "aqqqqa",
+        "args": "pattern, pattern \u2192 pattern",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/pattern_editing@hexbound:pattern/merge"
+    },
+    "Starting Distillation": {
+        "name": "pattern/head",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "pattern_head.png",
+            "height": 221,
+            "width": 307
+        },
+        "direction": "EAST",
+        "pattern": "wqqqq",
+        "args": "pattern, num \u2192 pattern",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/pattern_editing@hexbound:pattern/head"
+    },
+    "Ending Distillation": {
+        "name": "pattern/tail",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "pattern_tail.png",
+            "height": 221,
+            "width": 307
+        },
+        "direction": "WEST",
+        "pattern": "weeee",
+        "args": "pattern, num \u2192 pattern",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/pattern_editing@hexbound:pattern/tail"
+    },
+    "Winding Purification": {
+        "name": "pattern/start_dir",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "pattern_start_dir.png",
+            "height": 182,
+            "width": 306
+        },
+        "direction": "WEST",
+        "pattern": "qeeee",
+        "args": "pattern \u2192 num",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/pattern_editing@hexbound:pattern/start_dir"
+    },
+    "Fragment's Purification": {
+        "name": "pattern/line_count",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "pattern_line_count.png",
+            "height": 182,
+            "width": 306
+        },
+        "direction": "WEST",
+        "pattern": "eqqqq",
+        "args": "pattern \u2192 num",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/pattern_editing@hexbound:pattern/line_count"
+    },
+    "Memorize Pigment": {
+        "name": "colorizer/save",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "colorizer_save.png",
+            "height": 309,
+            "width": 125
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wqwawqqawddwqwede",
+        "args": "pattern \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/spells/colorizer_storage@hexbound:colorizer/save"
+    },
+    "Recall Pigment": {
+        "name": "colorizer/load",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "colorizer_load.png",
+            "height": 309,
+            "width": 125
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wqwawqqawddwqeqaq",
+        "args": "pattern \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/spells/colorizer_storage@hexbound:colorizer/load"
+    },
+    "Forget Pigment": {
+        "name": "colorizer/delete",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "colorizer_delete.png",
+            "height": 309,
+            "width": 148
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "wqwawqqawddwqwdd",
+        "args": "pattern \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/spells/colorizer_storage@hexbound:colorizer/delete"
+    },
+    "Hex Shield": {
+        "name": "create_shield/normal",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "create_shield_normal.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eweeewe",
+        "args": "vec, vec, num \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/spells/shield@hexbound:colorizer/normal"
+    },
+    "Unstable Hex Shield": {
+        "name": "create_shield/glitchy",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "create_shield_glitchy.png",
+            "height": 327,
+            "width": 289
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "eqdweeqdw",
+        "args": "vec, vec, num \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/spells/shield@hexbound:create_shield/glitchy"
+    },
+    "Automaton's Reflection": {
+        "name": "construct_get_self",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "construct_get_self.png",
+            "height": 309,
+            "width": 249
+        },
+        "direction": "EAST",
+        "pattern": "qaawedee",
+        "args": "\u2192 entity",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/constructs_intro@hexbound:construct_get_self"
+    },
+    "Command: Pick Up Item": {
+        "name": "give_command/pick_up",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "give_command_pick_up.png",
+            "height": 309,
+            "width": 245
+        },
+        "direction": "EAST",
+        "pattern": "eddeawaw",
+        "args": "entity, [pattern] \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/executing_commands@hexbound:give_command/pick_up"
+    },
+    "Command: Drop Item": {
+        "name": "give_command/drop_off",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "give_command_drop_off.png",
+            "height": 309,
+            "width": 245
+        },
+        "direction": "EAST",
+        "pattern": "qaaqdwdw",
+        "args": "[pattern] \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/executing_commands@hexbound:give_command/drop_off"
+    },
+    "Command: Move To Position": {
+        "name": "give_command/move_to",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "give_command_move_to.png",
+            "height": 136,
+            "width": 305
+        },
+        "direction": "EAST",
+        "pattern": "qaaqwdaqqqa",
+        "args": "vector, [pattern] \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/executing_commands@hexbound:give_command/move_to"
+    },
+    "Command: Harvest": {
+        "name": "give_command/harvest",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "give_command_harvest.png",
+            "height": 153,
+            "width": 304
+        },
+        "direction": "EAST",
+        "pattern": "qaaqqedwed",
+        "args": "vector, [pattern] \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/executing_commands@hexbound:give_command/harvest"
+    },
+    "Command: Use On Block": {
+        "name": "give_command/use/block",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "give_command_use_block.png",
+            "height": 236,
+            "width": 275
+        },
+        "direction": "EAST",
+        "pattern": "qaaqdee",
+        "args": "vector, vector, [pattern] \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/executing_commands@hexbound:give_command/use/block"
+    },
+    "Send Instructions": {
+        "name": "instructions/send",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "instructions_send.png",
+            "height": 125,
+            "width": 264
+        },
+        "direction": "EAST",
+        "pattern": "qaaq",
+        "args": "entity, [pattern] \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/constructs_intro@hexbound:instructions/send"
+    },
+    "Broadcast Instructions": {
+        "name": "instructions/broadcast",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "instructions_broadcast.png",
+            "height": 178,
+            "width": 306
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqaaqqqqwq",
+        "args": "vector, [pattern] \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/bind_broadcast@hexbound:instructions/broadcast"
+    },
+    "Artificer's Gambit": {
+        "name": "bind_construct",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "bind_construct.png",
+            "height": 290,
+            "width": 340
+        },
+        "direction": "EAST",
+        "pattern": "wqaawddewdwewewewewew",
+        "args": "pattern | entity | null \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/bind_broadcast@hexbound:bind_construct"
+    },
+    "Create Spider Construct": {
+        "name": "create_construct/spider",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "create_construct_spider.png",
+            "height": 237,
+            "width": 333
+        },
+        "direction": "SOUTH_WEST",
+        "pattern": "wqwqwwqwqwqwwaeqaqdwdqaqe",
+        "args": "entity, entity, entity \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/spider_construct@hexbound:create_construct/spider"
+    },
+    "Entity Purification: Construct": {
+        "name": "get_entity/construct",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "get_entity_construct.png",
+            "height": 110,
+            "width": 304
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqdaqaawedde",
+        "args": "vector \u2192 entity or null",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/selecting_constructs@hexbound:get_entity/construct"
+    },
+    "Zone Distillation: Construct": {
+        "name": "zone_entity/construct",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "zone_entity_construct.png",
+            "height": 110,
+            "width": 304
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "qqqqqwdeddwedde",
+        "args": "vector, number \u2192 list",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/selecting_constructs@hexbound:zone_entity/construct"
+    },
+    "Zone Distillation: Non-Construct": {
+        "name": "zone_entity/not_construct",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "zone_entity_not_construct.png",
+            "height": 336,
+            "width": 272
+        },
+        "direction": "SOUTH_EAST",
+        "pattern": "eeeeewaqaawedde",
+        "args": "vector, number \u2192 list",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/constructs/selecting_constructs@hexbound:zone_entity/not_construct"
+    },
+    "Bind Figment": {
+        "name": "set_fake_impetus_player",
+        "modName": "Hexbound",
+        "image": {
+            "filename": "set_fake_impetus_player.png",
+            "height": 280,
+            "width": 322
+        },
+        "direction": "NORTH_EAST",
+        "pattern": "qaqdaqwqaeedewd",
+        "args": "vector \u2192",
+        "url": "https://hexbound.cypher.coffee/0.1.3+1.19.2/index.html#patterns/great_spells/impetus_fake_player@hexbound:set_fake_impetus_player"
+    }
+}
