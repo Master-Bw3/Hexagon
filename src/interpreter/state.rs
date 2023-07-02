@@ -11,7 +11,7 @@ pub type Stack = Vec<Iota>;
 
 pub type Considered = bool;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
@@ -21,18 +21,7 @@ pub struct State {
     pub halt: bool,
 }
 
-impl State {
-    pub fn new() -> State {
-        State {
-            stack: vec![],
-            ravenmind: None,
-            buffer: None,
-            heap: HashMap::new(),
-            consider_next: false,
-            halt: false,
-        }
-    }
-}
+
 
 pub enum Either<L, R> {
     L(L),
@@ -142,7 +131,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Number(x) => {
-                if Iota::checkEquality(&Iota::Number(*x), &Iota::Number(x.round())) {
+                if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round())) {
                     Ok(x.round() as i32)
                 } else {
                     Err(Mishap::IncorrectIota(index))
@@ -188,7 +177,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Number(x) => {
-                if Iota::checkEquality(&Iota::Number(*x), &Iota::Number(x.round())) {
+                if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round())) {
                     Ok(Either::L(x.round() as i32))
                 } else {
                     Err(Mishap::IncorrectIota(index))

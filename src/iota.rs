@@ -1,4 +1,4 @@
-use std::{iter, ops::Not};
+use std::{ops::Not};
 
 use crate::pattern_registry::{PatternRegistry, PatternRegistryExt};
 
@@ -15,7 +15,7 @@ pub enum Iota {
 }
 
 impl Iota {
-    pub fn checkEquality(&self, other: &Iota) -> bool {
+    pub fn check_equality(&self, other: &Iota) -> bool {
         let tolerance = 0.001;
 
         match (self, other) {
@@ -29,7 +29,7 @@ impl Iota {
             (Iota::List(a), Iota::List(b)) => (a
                 .iter()
                 .zip(b.iter())
-                .map(|(a, b)| Iota::checkEquality(a, b)))
+                .map(|(a, b)| Iota::check_equality(a, b)))
             .collect::<Vec<bool>>()
             .contains(&false)
             .not(),

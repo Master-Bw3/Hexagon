@@ -310,8 +310,8 @@ pub fn greater<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_bool(0, arg_count)?,
-        state.stack.get_bool(1, arg_count)?,
+        state.stack.get_number(0, arg_count)?,
+        state.stack.get_number(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
@@ -328,8 +328,8 @@ pub fn less<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_bool(0, arg_count)?,
-        state.stack.get_bool(1, arg_count)?,
+        state.stack.get_number(0, arg_count)?,
+        state.stack.get_number(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
@@ -346,8 +346,8 @@ pub fn greater_eq<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_bool(0, arg_count)?,
-        state.stack.get_bool(1, arg_count)?,
+        state.stack.get_number(0, arg_count)?,
+        state.stack.get_number(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
@@ -364,8 +364,8 @@ pub fn less_eq<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_bool(0, arg_count)?,
-        state.stack.get_bool(1, arg_count)?,
+        state.stack.get_number(0, arg_count)?,
+        state.stack.get_number(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
@@ -387,7 +387,7 @@ pub fn equals<'a>(
     );
     state.stack.remove_args(&arg_count);
 
-    let operation_result = (iotas.0).checkEquality(&iotas.1);
+    let operation_result = (iotas.0).check_equality(&iotas.1);
 
     state.stack.push(Iota::Bool(operation_result));
 
@@ -405,7 +405,7 @@ pub fn not_equals<'a>(
     );
     state.stack.remove_args(&arg_count);
 
-    let operation_result = !((iotas.0).checkEquality(&iotas.1));
+    let operation_result = !((iotas.0).check_equality(&iotas.1));
 
     state.stack.push(Iota::Bool(operation_result));
 
@@ -436,10 +436,10 @@ pub fn bool_coerce<'a>(
     state.stack.remove_args(&arg_count);
 
     let operation_result = match iota {
-        Iota::Number(num) => !(Iota::checkEquality(&Iota::Number(num), &Iota::Number(0.0))),
+        Iota::Number(num) => !(Iota::check_equality(&Iota::Number(num), &Iota::Number(0.0))),
         Iota::Bool(bool) => bool,
         Iota::Null(_) => false,
-        Iota::List(list) => list.len() != 0,
+        Iota::List(list) => !list.is_empty(),
 
         _ => false,
     };
@@ -597,7 +597,7 @@ pub fn and_bit<'a>(
                 .filter(|iota| {
                     list2
                         .iter()
-                        .map(|i| i.checkEquality(iota))
+                        .map(|i| i.check_equality(iota))
                         .collect::<Vec<bool>>()
                         .contains(&true)
                 })
@@ -629,19 +629,15 @@ pub fn or_bit<'a>(
     let operation_result = match iotas {
         (Either::L(num1), Either::L(num2)) => Iota::Number((num1 | num2) as f32),
         (Either::R(mut list1), Either::R(mut list2)) => Iota::List({
-            list2 = list2
-                .iter()
-                .filter(|iota| {
-                    list1
-                        .iter()
-                        .map(|i| i.checkEquality(iota))
-                        .collect::<Vec<bool>>()
-                        .contains(&true)
-                        .not()
-                })
-                .cloned()
-                .collect();
-            
+            list2.retain(|iota| {
+                list1
+                    .iter()
+                    .map(|i| i.check_equality(iota))
+                    .collect::<Vec<bool>>()
+                    .contains(&true)
+                    .not()
+            });
+
             list1.append(&mut list2);
             list1
         }),
@@ -675,7 +671,7 @@ pub fn xor_bit<'a>(
                 .filter(|iota| {
                     list2
                         .iter()
-                        .map(|i| i.checkEquality(iota))
+                        .map(|i| i.check_equality(iota))
                         .collect::<Vec<bool>>()
                         .contains(&true)
                         .not()
@@ -689,7 +685,7 @@ pub fn xor_bit<'a>(
                     .filter(|iota| {
                         list1
                             .iter()
-                            .map(|i| i.checkEquality(iota))
+                            .map(|i| i.check_equality(iota))
                             .collect::<Vec<bool>>()
                             .contains(&true)
                             .not()
@@ -738,7 +734,7 @@ pub fn to_set<'a>(
         if list.contains(iota) {
             acc
         } else {
-            let mut new_acc = acc.clone();
+            let mut new_acc = acc;
             new_acc.push(iota.clone());
             new_acc
         }
@@ -758,7 +754,7 @@ mod tests {
 
     #[test]
     fn and_bit_list_test() {
-        let mut state = State::new();
+        let mut state = State::default();
         state.stack = vec![
             Iota::List(vec![
                 Iota::Number(1.0),
@@ -776,7 +772,7 @@ mod tests {
 
     #[test]
     fn or_bit_list_test() {
-        let mut state = State::new();
+        let mut state = State::default();
         state.stack = vec![
             Iota::List(vec![
                 Iota::Number(1.0),
@@ -798,7 +794,7 @@ mod tests {
             Iota::Number(2.0),
             Iota::Number(4.0),
             Iota::Number(3.0),
-            ])];
+        ])];
 
         let result = or_bit(&mut state, &PatternRegistry::construct()).unwrap();
         assert_eq!(result.stack, expected)
