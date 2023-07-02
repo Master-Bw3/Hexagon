@@ -13,7 +13,7 @@ type GetterType = fn(&Stack, usize, usize) -> Result<NumberIota, Mishap>;
 
 pub fn spell(arg_count: usize, getters: Vec<GetterType>) -> Box<ActionType> {
     Box::new(
-        move |state: &mut State, _pattern_registry: &PatternRegistry| {
+        move |state: &mut State, _: &PatternRegistry| {
             for (index, getter) in getters.iter().enumerate() {
                 getter(&state.stack, index, arg_count)?;
             }
@@ -25,9 +25,7 @@ pub fn spell(arg_count: usize, getters: Vec<GetterType>) -> Box<ActionType> {
 
 pub fn push_const(iota: Iota) -> Box<ActionType> {
     Box::new(
-        move |state: &mut State,
-              _pattern_registry: &PatternRegistry|
-              -> Result<&mut State, Mishap> {
+        move |state: &mut State, _: &PatternRegistry| -> Result<&mut State, Mishap> {
             state.stack.push(iota.clone());
             Ok(state)
         },
