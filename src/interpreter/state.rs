@@ -15,7 +15,7 @@ pub type Considered = bool;
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
-    pub offhand: Offhand,
+    pub offhand: Holding,
     pub buffer: Option<Vec<(Iota, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
@@ -24,7 +24,7 @@ pub struct State {
 
 
 #[derive(Clone, Default)]
-pub enum Offhand {
+pub enum Holding {
     #[default]
     None,
     Focus
