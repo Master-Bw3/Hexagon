@@ -7,6 +7,7 @@ use crate::{
     iota::{Iota, PatternIota}, pattern_registry::PatternRegistry,
 };
 
+
 pub fn escape<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     state.consider_next = true;
     Ok(state)

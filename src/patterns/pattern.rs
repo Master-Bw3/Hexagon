@@ -16,7 +16,7 @@ impl Pattern {
         display_name: &str,
         internal_name: &str,
         signature: &str,
-        action: &'static dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>,
+        action: Box<dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>>,
     ) -> Pattern {
         Pattern {
             display_name: display_name.to_string(),

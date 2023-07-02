@@ -4,4 +4,5 @@ pub mod pattern;
 pub mod math;
 pub mod special;
 pub mod eval;
-pub mod spell;
+pub mod constructors;
+pub mod lists;

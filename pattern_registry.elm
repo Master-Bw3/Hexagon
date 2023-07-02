@@ -103,20 +103,20 @@
     , { signature = "eeeeewaqaawe", internalName = "zone_entity/not_player", action = zoneEntity, displayName = "Zone Distillation: Non-Player", outputOptions = [ IotaListType EntityType ], selectedOutput = Just ( IotaListType EntityType, IotaList Array.empty ), startDirection = East }
     , { signature = "qqqqqwdeddwd", internalName = "zone_entity/living", action = zoneEntity, displayName = "Zone Distillation: Living", outputOptions = [ IotaListType EntityType ], selectedOutput = Just ( IotaListType EntityType, IotaList Array.empty ), startDirection = East }
     , { signature = "eeeeewaqaawd", internalName = "zone_entity/not_living", action = zoneEntity, displayName = "Zone Distillation: Non-Living", outputOptions = [ IotaListType EntityType ], selectedOutput = Just ( IotaListType EntityType, IotaList Array.empty ), startDirection = East }
-    , { signature = "edqde", internalName = "append", action = append, displayName = "Integration Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qaeaq", internalName = "concat", action = concat, displayName = "Combination Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "deeed", internalName = "index", action = index, displayName = "Selection Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aqaeaq", internalName = "list_size", action = listSize, displayName = "Abacus Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "adeeed", internalName = "singleton", action = singleton, displayName = "Single's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qqaeaae", internalName = "empty_list", action = makeConstant (IotaList Array.empty), displayName = "Vacant Reflection", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qqqaede", internalName = "reverse_list", action = reverseList, displayName = "Retrograde Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ewdqdwe", internalName = "last_n_list", action = lastNList, displayName = "Flock's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qwaeawq", internalName = "splat", action = splat, displayName = "Flock's Disintegration", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "dedqde", internalName = "index_of", action = indexOf, displayName = "Locator's Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "edqdewaqa", internalName = "list_remove", action = listRemove, displayName = "Excisor's Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qaeaqwded", internalName = "slice", action = slice, displayName = "Selection Exaltation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wqaeaqw", internalName = "modify_in_place", action = modifyinPlace, displayName = "Surgeon's Exaltation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ddewedd", internalName = "construct", action = construct, displayName = "Speaker's Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aaqwqaa", internalName = "deconstruct", action = deconstruct, displayName = "Speaker's Decomposition", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = append, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = concat, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = index, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = listSize, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = singleton, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = makeConstant (IotaList Array.empty), displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = reverseList, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = lastNList, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = splat, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = indexOf, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = listRemove, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = slice, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = modifyinPlace, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = construct, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = deconstruct, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "awaawa", internalName = "save_macro", action = saveMacro, displayName = "Save Macro", outputOptions = [], selectedOutput = Nothing, startDirection = Southeast }
     ]
