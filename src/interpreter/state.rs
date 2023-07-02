@@ -15,10 +15,19 @@ pub type Considered = bool;
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
+    pub offhand: Offhand,
     pub buffer: Option<Vec<(Iota, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub halt: bool,
+}
+
+
+#[derive(Clone, Default)]
+pub enum Offhand {
+    #[default]
+    None,
+    Focus
 }
 
 pub enum Either<L, R> {

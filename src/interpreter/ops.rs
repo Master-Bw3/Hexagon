@@ -162,14 +162,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let mut state = State {
-            stack: vec![Iota::Number(1.0)],
-            ravenmind: None,
-            buffer: None,
-            consider_next: false,
-            heap: HashMap::new(),
-            halt: false
-        };
+        let mut state = State::default();
         let heap: HashMap<String, i32> = HashMap::new();
         let val = Some(OpValue::Var("$hello".to_string()));
         store(&val, &mut state, false).unwrap();
