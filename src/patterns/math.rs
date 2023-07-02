@@ -628,8 +628,8 @@ pub fn or_bit<'a>(
 
     let operation_result = match iotas {
         (Either::L(num1), Either::L(num2)) => Iota::Number((num1 | num2) as f32),
-        (Either::R(list1), Either::R(list2)) => Iota::List({
-            let mut new_list: Vec<Iota> = list2
+        (Either::R(mut list1), Either::R(mut list2)) => Iota::List({
+            list2 = list2
                 .iter()
                 .filter(|iota| {
                     list1
@@ -641,9 +641,9 @@ pub fn or_bit<'a>(
                 })
                 .cloned()
                 .collect();
-
-            new_list.append(&mut list2.clone());
-            new_list
+            
+            list1.append(&mut list2);
+            list1
         }),
 
         //might be the wrong mishap
@@ -747,4 +747,60 @@ pub fn to_set<'a>(
     state.stack.push(Iota::List(operation_result));
 
     Ok(state)
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::pattern_registry::PatternRegistryExt;
+
+    use super::*;
+
+    #[test]
+    fn and_bit_list_test() {
+        let mut state = State::new();
+        state.stack = vec![
+            Iota::List(vec![
+                Iota::Number(1.0),
+                Iota::Number(1.0),
+                Iota::Number(2.0),
+            ]),
+            Iota::List(vec![Iota::Number(2.0), Iota::Number(3.0)]),
+        ];
+
+        let expected = vec![Iota::List(vec![Iota::Number(2.0)])];
+
+        let result = and_bit(&mut state, &PatternRegistry::construct()).unwrap();
+        assert_eq!(result.stack, expected)
+    }
+
+    #[test]
+    fn or_bit_list_test() {
+        let mut state = State::new();
+        state.stack = vec![
+            Iota::List(vec![
+                Iota::Number(1.0),
+                Iota::Number(1.0),
+                Iota::Number(2.0),
+                Iota::Number(4.0),
+            ]),
+            Iota::List(vec![
+                Iota::Number(1.0),
+                Iota::Number(1.0),
+                Iota::Number(2.0),
+                Iota::Number(3.0),
+            ]),
+        ];
+
+        let expected = vec![Iota::List(vec![
+            Iota::Number(1.0),
+            Iota::Number(1.0),
+            Iota::Number(2.0),
+            Iota::Number(4.0),
+            Iota::Number(3.0),
+            ])];
+
+        let result = or_bit(&mut state, &PatternRegistry::construct()).unwrap();
+        assert_eq!(result.stack, expected)
+    }
 }

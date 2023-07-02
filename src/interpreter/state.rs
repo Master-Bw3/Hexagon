@@ -21,6 +21,19 @@ pub struct State {
     pub halt: bool,
 }
 
+impl State {
+    pub fn new() -> State {
+        State {
+            stack: vec![],
+            ravenmind: None,
+            buffer: None,
+            heap: HashMap::new(),
+            consider_next: false,
+            halt: false,
+        }
+    }
+}
+
 pub enum Either<L, R> {
     L(L),
     R(R),
