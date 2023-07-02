@@ -107,14 +107,12 @@ pub fn interpret_action<'a>(
     mut state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    if pattern_registry.find(&name).is_none() {
-        Err(Mishap::InvalidPattern)?
-    };
+    let pattern = pattern_registry.find(&name).ok_or(Mishap::InvalidPattern)?;
 
-    let is_escape = Signature::from_name(pattern_registry, &name)
-        == Signature::from_name(pattern_registry, "escape");
+    let is_escape =
+        Signature::from_sig(&pattern.signature) == Signature::from_name(pattern_registry, "escape");
 
-    let is_retro = Signature::from_name(pattern_registry, &name)
+    let is_retro = Signature::from_sig(&pattern.signature)
         == Signature::from_name(pattern_registry, "close_paren");
 
     let get_value_iota = || match &value {
@@ -131,8 +129,10 @@ pub fn interpret_action<'a>(
             true,
         );
         state.consider_next = false;
-        Ok(state)
-    } else if state.buffer.is_some() && !(is_escape || is_retro) {
+        return Ok(state)
+    }
+
+    if state.buffer.is_some() && !(is_escape || is_retro) {
         push_pattern(
             name,
             get_value_iota().cloned(),
@@ -140,25 +140,21 @@ pub fn interpret_action<'a>(
             pattern_registry,
             false,
         );
-        Ok(state)
-    } else {
-        match value {
-            Some(val) => match val {
-                ActionValue::Iota(iota) => {
-                    push_iota(iota, state, is_escape);
-                    Ok(state)
-                }
-                ActionValue::Bookkeeper(_) => todo!(),
-            },
-            None => {
-                let pattern = pattern_registry
-                    .find(&name)
-                    .ok_or(Mishap::InvalidPattern)?;
-
-                pattern.operate(state, pattern_registry, value)
-            }
-        }
+        return Ok(state)
     }
+
+    pattern.operate(state, pattern_registry, &value)?;
+
+    if value.is_some() {
+        match value.unwrap() {
+            ActionValue::Iota(iota) => {
+                push_iota(iota, state, is_escape);
+            }
+            ActionValue::Bookkeeper(_) => todo!(),
+        };
+    }
+    
+    return Ok(state)
 }
 
 pub fn push_pattern(

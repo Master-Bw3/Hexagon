@@ -24,7 +24,7 @@ pub fn append<'a>(
     Ok(state)
 }
 
-pub fn concat_<'a>(
+pub fn concat<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {

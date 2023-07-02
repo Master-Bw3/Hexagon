@@ -1,8 +1,12 @@
-use crate::patterns::{constructors, eval, math, pattern::Pattern, special};
+use std::f32::consts::{PI, TAU, E};
 
-use crate::iota::Iota;
+use crate::patterns::lists;
+use crate::patterns::{constructors, eval, math, pattern::Pattern, special};
+use crate::iota::{Iota, VectorIota, NullIota};
+use crate::interpreter::state::{StackExt, Stack};
 
 pub type PatternRegistry = Vec<Pattern>;
+
 
 pub trait PatternRegistryExt {
     fn construct() -> PatternRegistry;
@@ -59,21 +63,62 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
 
             //lists
-            // Pattern::new("Integration Distillation", "append", "edqde", Box::new(lists::append)),
-            // Pattern::new("Combination Distillation", "concat", "qaeaq", Box::new(lists::concat)),
-            // Pattern::new("Selection Distillation", "index", "deeed", Box::new(lists::index)),
-            // Pattern::new("Abacus Purification", "list_size", "aqaeaq", Box::new(lists::list_size)),
-            // Pattern::new("Single's Purification", "singleton", "adeeed", Box::new(lists::singleton)),
-            // Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Iota::List(vec![]))),
-            // Pattern::new("Retrograde Purification", "reverse_list", "qqqaede", Box::new(lists::reverse_list)),
-            // Pattern::new("Flock's Gambit", "last_n_list", "ewdqdwe", Box::new(lists::last_n_list)),
-            // Pattern::new("Flock's Disintegration", "splat", "qwaeawq", Box::new(lists::splat)),
-            // Pattern::new("Locator's Distillation", "index_of", "dedqde", Box::new(lists::index_of)),
-            // Pattern::new("Excisor's Distillation", "list_remove", "edqdewaqa", Box::new(lists::list_remove)),
-            // Pattern::new("Selection Exaltation", "slice", "qaeaqwded", Box::new(lists::slice)),
-            // Pattern::new("Surgeon's Exaltation", "modify_in_place", "wqaeaqw", Box::new(lists::modify_in_place)),
-            // Pattern::new("Speaker's Distillation", "construct", "ddewedd", Box::new(lists::construct)),
-            // Pattern::new("Speaker's Decomposition", "deconstruct", "aaqwqaa", Box::new(lists::deconstruct)),
+            Pattern::new("Integration Distillation", "append", "edqde", Box::new(lists::append)),
+            Pattern::new("Combination Distillation", "concat", "qaeaq", Box::new(lists::concat)),
+            Pattern::new("Selection Distillation", "index", "deeed", Box::new(lists::index)),
+            Pattern::new("Abacus Purification", "list_size", "aqaeaq", Box::new(lists::list_size)),
+            Pattern::new("Single's Purification", "singleton", "adeeed", Box::new(lists::singleton)),
+            Pattern::new("Retrograde Purification", "reverse_list", "qqqaede", Box::new(lists::reverse_list)),
+            Pattern::new("Flock's Gambit", "last_n_list", "ewdqdwe", Box::new(lists::last_n_list)),
+            Pattern::new("Flock's Disintegration", "splat", "qwaeawq", Box::new(lists::splat)),
+            Pattern::new("Locator's Distillation", "index_of", "dedqde", Box::new(lists::index_of)),
+            Pattern::new("Excisor's Distillation", "list_remove", "edqdewaqa", Box::new(lists::list_remove)),
+            Pattern::new("Selection Exaltation", "slice", "qaeaqwded", Box::new(lists::slice)),
+            Pattern::new("Surgeon's Exaltation", "modify_in_place", "wqaeaqw", Box::new(lists::modify_in_place)),
+            Pattern::new("Speaker's Distillation", "construct", "ddewedd", Box::new(lists::construct)),
+            Pattern::new("Speaker's Decomposition", "deconstruct", "aaqwqaa", Box::new(lists::deconstruct)),
+
+            //consts
+            Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Iota::List(vec![]))),
+            Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(Iota::Vector(VectorIota::new(1.0, 0.0, 0.0)))),
+            Pattern::new("Vector Reflection +Y", "const/vec/py", "qqqqqew", constructors::push_const(Iota::Vector(VectorIota::new(0.0, 1.0, 0.0)))),
+            Pattern::new("Vector Reflection +Z", "const/vec/pz", "qqqqqed", constructors::push_const(Iota::Vector(VectorIota::new(0.0, 0.0, 1.0)))),
+            Pattern::new("Vector Reflection -X", "const/vec/nx", "eeeeeqa", constructors::push_const(Iota::Vector(VectorIota::new(-1.0, 0.0, 0.0)))),
+            Pattern::new("Vector Reflection -Y", "const/vec/ny", "eeeeeqw", constructors::push_const(Iota::Vector(VectorIota::new(0.0, -1.0, 0.0)))),
+            Pattern::new("Vector Reflection -Z", "const/vec/nz", "eeeeeqd", constructors::push_const(Iota::Vector(VectorIota::new(0.0, 0.0, -1.0)))),
+            Pattern::new("Vector Reflection Zero", "const/vec/0", "qqqqq", constructors::push_const(Iota::Vector(VectorIota::new(0.0, 0.0, 0.0)))),
+            Pattern::new("Arc's Reflection", "const/double/pi", "qdwdq", constructors::push_const(Iota::Number(PI))),
+            Pattern::new("Circle's Reflection", "const/double/tau", "eawae", constructors::push_const(Iota::Number(TAU))),
+            Pattern::new("Euler's Reflection", "const/double/e", "aaq", constructors::push_const(Iota::Number(E))),
+            Pattern::new("d", "const/null", "Nullary Reflection", constructors::push_const(Iota::Null(NullIota::Null))),
+            Pattern::new("aqae", "const/true", "True Reflection", constructors::push_const(Iota::Bool(true))),
+            Pattern::new("dedq", "const/false", "False Reflection", constructors::push_const(Iota::Bool(false))),
+
+
+
+
+            //requires value to be set
+            Pattern::new("Numerical Reflection", "number", "", Box::new(special::no_action)),
+
+            Pattern::new("Entity Purification",  "get_entity", "qqqqqdaqa", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Entity Purification: Animal",  "get_entity/animal", "qqqqqdaqaawa", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Entity Purification: Monster",  "get_entity/monster", "qqqqqdaqaawq", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Entity Purification: Item",  "get_entity/item", "qqqqqdaqaaww", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Entity Purification: Player",  "get_entity/player", "qqqqqdaqaawe", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Entity Purification: Living",  "get_entity/living", "qqqqqdaqaawd", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Zone Distillation: Any",  "zone_entity", "qqqqqwded", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Animal",  "zone_entity/animal", "qqqqqwdeddwa", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Non-Animal",  "zone_entity/not_animal", "eeeeewaqaawa", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Monster",  "zone_entity/monster", "qqqqqwdeddwq", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Non-Monster",  "zone_entity/not_monster", "eeeeewaqaawq", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Item",  "zone_entity/item", "qqqqqwdeddww", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Non-Item",  "zone_entity/not_item", "eeeeewaqaaww", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Player",  "zone_entity/player", "qqqqqwdeddwe", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Non-Player",  "zone_entity/not_player", "eeeeewaqaawe", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Living",  "zone_entity/living", "qqqqqwdeddwd", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Zone Distillation: Non-Living",  "zone_entity/not_living", "eeeeewaqaawd", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            
+
 
 
 
