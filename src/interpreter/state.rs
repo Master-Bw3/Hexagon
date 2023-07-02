@@ -21,8 +21,6 @@ pub struct State {
     pub halt: bool,
 }
 
-
-
 pub enum Either<L, R> {
     L(L),
     R(R),
@@ -37,7 +35,14 @@ pub trait StackExt {
     fn get_null(&self, index: usize, arg_count: usize) -> Result<NullIota, Mishap>;
     fn get_entity(&self, index: usize, arg_count: usize) -> Result<EntityIota, Mishap>;
     fn get_list(&self, index: usize, arg_count: usize) -> Result<ListIota, Mishap>;
+
     fn get_integer(&self, index: usize, arg_count: usize) -> Result<i32, Mishap>;
+    fn get_positive_integer_under_inclusive(
+        &self,
+        index: usize,
+        list_size: usize,
+        arg_count: usize,
+    ) -> Result<i32, Mishap>;
 
     fn get_num_or_vec(
         &self,
@@ -132,6 +137,27 @@ impl StackExt for Stack {
         match iota {
             Iota::Number(x) => {
                 if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round())) {
+                    Ok(x.round() as i32)
+                } else {
+                    Err(Mishap::IncorrectIota(index))
+                }
+            }
+            _ => Err(Mishap::IncorrectIota(index)),
+        }
+    }
+
+    fn get_positive_integer_under_inclusive(
+        &self,
+        index: usize,
+        list_size: usize,
+        arg_count: usize,
+    ) -> Result<i32, Mishap> {
+        let iota = self.get_iota(index, arg_count)?;
+        match iota {
+            Iota::Number(x) => {
+                if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round()))
+                    && (0..list_size).contains(&(x.round() as usize))
+                {
                     Ok(x.round() as i32)
                 } else {
                     Err(Mishap::IncorrectIota(index))

@@ -58,13 +58,13 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Inversion Purification", "not_bit", "dweaqa", Box::new(math::not_bit)),
             Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
 
-            //list)s
+            //lists
             // Pattern::new("Integration Distillation", "append", "edqde", Box::new(lists::append)),
             // Pattern::new("Combination Distillation", "concat", "qaeaq", Box::new(lists::concat)),
             // Pattern::new("Selection Distillation", "index", "deeed", Box::new(lists::index)),
             // Pattern::new("Abacus Purification", "list_size", "aqaeaq", Box::new(lists::list_size)),
             // Pattern::new("Single's Purification", "singleton", "adeeed", Box::new(lists::singleton)),
-            Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Iota::List(vec![]))),
+            // Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Iota::List(vec![]))),
             // Pattern::new("Retrograde Purification", "reverse_list", "qqqaede", Box::new(lists::reverse_list)),
             // Pattern::new("Flock's Gambit", "last_n_list", "ewdqdwe", Box::new(lists::last_n_list)),
             // Pattern::new("Flock's Disintegration", "splat", "qwaeawq", Box::new(lists::splat)),
