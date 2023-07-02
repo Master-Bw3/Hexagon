@@ -117,7 +117,13 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Zone Distillation: Non-Player",  "zone_entity/not_player", "eeeeewaqaawe", constructors::spell_2(Stack::get_vector, Stack::get_number)),
             Pattern::new("Zone Distillation: Living",  "zone_entity/living", "qqqqqwdeddwd", constructors::spell_2(Stack::get_vector, Stack::get_number)),
             Pattern::new("Zone Distillation: Non-Living",  "zone_entity/not_living", "eeeeewaqaawd", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            
+            Pattern::new("aa",  "entity_pos/eye", "Compass' Purification", constructors::spell_1(Stack::get_entity)),
+            Pattern::new("dd",  "entity_pos/foot", "Compass' Purification II", constructors::spell_1(Stack::get_entity)),                       
+            Pattern::new("wa",  "get_entity_look", "Alidade's Purification", constructors::spell_1(Stack::get_entity)),                       
+            Pattern::new("awq",  "get_entity_height", "Stadiometer's Purification", constructors::spell_1(Stack::get_entity)),                       
+            Pattern::new("wq",  "get_entity_velocity", "Pace Purification", constructors::spell_1(Stack::get_entity)),                       
+            Pattern::new("Zone Distillation: Animal",  "zone_entity/animal", "qqqqqwdeddwa", constructors::spell_2(Stack::get_vector, Stack::get_vector)),
+
 
 
 
