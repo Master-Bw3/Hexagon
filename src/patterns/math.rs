@@ -731,7 +731,7 @@ pub fn to_set<'a>(
     state.stack.remove_args(&arg_count);
 
     let operation_result = list.iter().fold(vec![], |acc, iota| {
-        if list.contains(iota) {
+        if acc.contains(iota) {
             acc
         } else {
             let mut new_acc = acc;
@@ -797,6 +797,55 @@ mod tests {
         ])];
 
         let result = or_bit(&mut state, &PatternRegistry::construct()).unwrap();
+        assert_eq!(result.stack, expected)
+    }
+
+    #[test]
+    fn xor_bit_list_test() {
+        let mut state = State::default();
+        state.stack = vec![
+            Iota::List(vec![
+                Iota::Number(1.0),
+                Iota::Number(1.0),
+                Iota::Number(2.0),
+                Iota::Number(4.0),
+            ]),
+            Iota::List(vec![
+                Iota::Number(1.0),
+                Iota::Number(2.0),
+                Iota::Number(3.0),
+            ]),
+        ];
+
+        let expected = vec![Iota::List(vec![
+            Iota::Number(4.0),
+            Iota::Number(3.0),
+        ])];
+
+        let result = xor_bit(&mut state, &PatternRegistry::construct()).unwrap();
+        assert_eq!(result.stack, expected)
+    }
+
+    #[test]
+    fn to_set_test() {
+        let mut state = State::default();
+        state.stack = vec![
+            Iota::List(vec![
+                Iota::Number(1.0),
+                Iota::Number(1.0),
+                Iota::Number(2.0),
+                Iota::Number(3.0),
+                Iota::Number(1.0),
+            ]),
+        ];
+
+        let expected = vec![Iota::List(vec![
+            Iota::Number(1.0),
+            Iota::Number(2.0),
+            Iota::Number(3.0),
+        ])];
+
+        let result = to_set(&mut state, &PatternRegistry::construct()).unwrap();
         assert_eq!(result.stack, expected)
     }
 }
