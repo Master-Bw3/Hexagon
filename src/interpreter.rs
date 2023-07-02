@@ -2,8 +2,6 @@ pub mod mishap;
 mod ops;
 pub mod state;
 
-use std::collections::HashMap;
-
 use crate::{
     interpreter::{
         ops::{embed, push, store, EmbedType},
@@ -17,14 +15,7 @@ use crate::{
 use self::{mishap::Mishap, state::State};
 
 pub fn interpret(node: AstNode) -> Result<State, String> {
-    let mut state = State {
-        stack: vec![],
-        ravenmind: None,
-        buffer: None,
-        heap: HashMap::new(),
-        consider_next: false,
-        halt: false,
-    };
+    let mut state = State::default();
     let pattern_registry = PatternRegistry::construct();
 
     (interpret_node(node, &mut state, &pattern_registry)).map(|state| state.clone())
@@ -129,7 +120,7 @@ pub fn interpret_action<'a>(
             true,
         );
         state.consider_next = false;
-        return Ok(state)
+        return Ok(state);
     }
 
     if state.buffer.is_some() && !(is_escape || is_retro) {
@@ -140,21 +131,21 @@ pub fn interpret_action<'a>(
             pattern_registry,
             false,
         );
-        return Ok(state)
+        return Ok(state);
     }
 
     pattern.operate(state, pattern_registry, &value)?;
 
-    if value.is_some() {
-        match value.unwrap() {
+    if let Some(val) = value {
+        match val {
             ActionValue::Iota(iota) => {
                 push_iota(iota, state, is_escape);
             }
             ActionValue::Bookkeeper(_) => todo!(),
         };
     }
-    
-    return Ok(state)
+
+    Ok(state)
 }
 
 pub fn push_pattern(

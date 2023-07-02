@@ -1,9 +1,9 @@
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{Either, StackExt, State},
+        state::{StackExt, State},
     },
-    iota::{Iota, NullIota::Null, VectorIota},
+    iota::{Iota, NullIota::Null},
     pattern_registry::PatternRegistry,
 };
 
