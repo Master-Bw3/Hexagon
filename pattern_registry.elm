@@ -27,42 +27,8 @@
     , { signature = "ddad", internalName = "fisherman", action = fisherman, displayName = "Fisherman's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aada", internalName = "fisherman/copy", action = fishermanCopy, displayName = "Fisherman's Gambit II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qaawdde", internalName = "swizzle", action = noAction, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East } -- do this
-    , { signature = "wddw", internalName = "sub", action = subtract, displayName = "Subtractive Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "waqaw", internalName = "mul_dot", action = mulDot, displayName = "Multiplicative Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wdedw", internalName = "div_cross", action = divCross, displayName = "Division Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wqaqw", internalName = "abs_len", action = absLen, displayName = "Length Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wedew", internalName = "pow_proj", action = powProj, displayName = "Power Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ewq", internalName = "floor", action = floorAction, displayName = "Floor Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qwe", internalName = "ceil", action = ceilAction, displayName = "Ceiling Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "eqqqqq", internalName = "construct_vec", action = constructVector, displayName = "Vector Exaltation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qeeeee", internalName = "deconstruct_vec", action = deconstructVector, displayName = "Vector Disintegration", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qqqqqaww", internalName = "coerce_axial", action = coerceAxial, displayName = "Axial Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wdw", internalName = "and", action = andBool, displayName = "Conjunction Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "waw", internalName = "or", action = orBool, displayName = "Disjunction Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "dwa", internalName = "xor", action = xorBool, displayName = "Exclusion Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "e", internalName = "greater", action = greaterThan, displayName = "Maximus Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "q", internalName = "less", action = lessThan, displayName = "Minimus Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ee", internalName = "greater_eq", action = greaterThanOrEqualTo, displayName = "Maximus Distillation II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qq", internalName = "less_eq", action = lessThanOrEqualTo, displayName = "Minimus Distillation II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ad", internalName = "equals", action = equalTo, displayName = "Equality Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "da", internalName = "not_equals", action = notEqualTo, displayName = "Inequality Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "dw", internalName = "not", action = invertBool, displayName = "Negation Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aw", internalName = "bool_coerce", action = boolCoerce, displayName = "Augur's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "awdd", internalName = "if", action = ifBool, displayName = "Augur's Exaltation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "eqqq", internalName = "random", action = spellNoInput, displayName = "Entropy Reflection", outputOptions = [NumberType], selectedOutput = Just (NumberType, Number 0), startDirection = East }
-    , { signature = "qqqqqaa", internalName = "sin", action = sine, displayName = "Sine Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qqqqqad", internalName = "cos", action = cosine, displayName = "Cosine Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wqqqqqadq", internalName = "tan", action = tangent, displayName = "Tangent Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ddeeeee", internalName = "arcsin", action = arcsin, displayName = "Inverse Sine Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "adeeeee", internalName = "arccos", action = arccos, displayName = "Inverse Cosine Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "eadeeeeew", internalName = "arctan", action = arctan, displayName = "Inverse Tangent Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "eqaqe", internalName = "logarithm", action = logarithm, displayName = "Logarithmic Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "addwaad", internalName = "modulo", action = modulo, displayName = "Modulus Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wdweaqa", internalName = "and_bit", action = andBit, displayName = "Intersection Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "waweaqa", internalName = "or_bit", action = orBit, displayName = "Unifying Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "dwaeaqa", internalName = "xor_bit", action = xorBit, displayName = "Exclusionary Distillation", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "dweaqa", internalName = "not_bit", action = notBit, displayName = "Inversion Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aweaqa", internalName = "to_set", action = toSet, displayName = "Uniqueness Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "de", internalName = "print", action = print, displayName = "Reveal", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aawaawaa", internalName = "explode", action = explode, displayName = "Explosion", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "ddwddwdd", internalName = "explode/fire", action = explodeFire, displayName = "Fireball", outputOptions = [], selectedOutput = Nothing, startDirection = East }

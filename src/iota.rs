@@ -1,3 +1,5 @@
+use std::{iter, ops::Not};
+
 use crate::pattern_registry::{PatternRegistry, PatternRegistryExt};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -10,6 +12,30 @@ pub enum Iota {
     Null(NullIota),
     Entity(EntityIota),
     List(ListIota),
+}
+
+impl Iota {
+    pub fn checkEquality(&self, other: &Iota) -> bool {
+        let TOLERANCE = 0.001;
+
+        match (self, other) {
+            (Iota::Number(a), Iota::Number(b)) => (a - b).abs() < TOLERANCE,
+            (Iota::Vector(a), Iota::Vector(b)) => (a.norm() - b.norm()).abs() < TOLERANCE,
+            (Iota::Pattern(a), Iota::Pattern(b)) => a.signature == b.signature,
+            (Iota::Bool(a), Iota::Bool(b)) => a == b,
+            (Iota::Garbage(_), Iota::Garbage(_)) => true,
+            (Iota::Null(_), Iota::Null(_)) => true,
+            (Iota::Entity(a), Iota::Entity(b)) => a == b,
+            (Iota::List(a), Iota::List(b)) => (a
+                .iter()
+                .zip(b.iter())
+                .map(|(a, b)| Iota::checkEquality(a, b)))
+            .collect::<Vec<bool>>()
+            .contains(&false)
+            .not(),
+            _ => false,
+        }
+    }
 }
 
 pub type NumberIota = f32;
@@ -94,8 +120,7 @@ impl SignatureExt for Signature {
     }
 
     fn as_str(&self) -> String {
-        self
-            .iter()
+        self.iter()
             .map(|char| match char {
                 PatternSigDir::Q => 'q',
                 PatternSigDir::A => 'a',

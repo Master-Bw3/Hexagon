@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 
-use crate::{
-    iota::{
-        BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
-        VectorIota,
-    },
+use crate::iota::{
+    BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
+    VectorIota,
 };
 
 use super::mishap::Mishap;
@@ -23,7 +21,6 @@ pub struct State {
     pub halt: bool,
 }
 
-
 pub enum Either<L, R> {
     L(L),
     R(R),
@@ -38,17 +35,25 @@ pub trait StackExt {
     fn get_null(&self, index: usize, arg_count: usize) -> Result<NullIota, Mishap>;
     fn get_entity(&self, index: usize, arg_count: usize) -> Result<EntityIota, Mishap>;
     fn get_list(&self, index: usize, arg_count: usize) -> Result<ListIota, Mishap>;
+    fn get_integer(&self, index: usize, arg_count: usize) -> Result<i32, Mishap>;
 
     fn get_num_or_vec(
         &self,
         index: usize,
         arg_count: usize,
     ) -> Result<Either<NumberIota, VectorIota>, Mishap>;
+
     fn get_list_or_pattern(
         &self,
         index: usize,
         arg_count: usize,
     ) -> Result<Either<ListIota, PatternIota>, Mishap>;
+
+    fn get_integer_or_list(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<i32, ListIota>, Mishap>;
 
     fn get_iota(&self, index: usize, arg_count: usize) -> Result<&Iota, Mishap>;
 
@@ -120,6 +125,20 @@ impl StackExt for Stack {
         }
     }
 
+    fn get_integer(&self, index: usize, arg_count: usize) -> Result<i32, Mishap> {
+        let iota = self.get_iota(index, arg_count)?;
+        match iota {
+            Iota::Number(x) => {
+                if Iota::checkEquality(&Iota::Number(*x), &Iota::Number(x.round())) {
+                    Ok(x.round() as i32)
+                } else {
+                    Err(Mishap::IncorrectIota(index))
+                }
+            }
+            _ => Err(Mishap::IncorrectIota(index)),
+        }
+    }
+
     fn get_num_or_vec(
         &self,
         index: usize,
@@ -143,6 +162,26 @@ impl StackExt for Stack {
         match iota {
             Iota::List(x) => Ok(Either::L(x.clone())),
             Iota::Pattern(x) => Ok(Either::R(x.clone())),
+
+            _ => Err(Mishap::IncorrectIota(index)),
+        }
+    }
+
+    fn get_integer_or_list(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<i32, ListIota>, Mishap> {
+        let iota = self.get_iota(index, arg_count)?;
+        match iota {
+            Iota::Number(x) => {
+                if Iota::checkEquality(&Iota::Number(*x), &Iota::Number(x.round())) {
+                    Ok(Either::L(x.round() as i32))
+                } else {
+                    Err(Mishap::IncorrectIota(index))
+                }
+            }
+            Iota::List(x) => Ok(Either::R(x.clone())),
 
             _ => Err(Mishap::IncorrectIota(index)),
         }
