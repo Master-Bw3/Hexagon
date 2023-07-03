@@ -1,5 +1,5 @@
 use crate::{
-    iota::{EntityIota, GarbageIota, Iota, NullIota, PatternIota},
+    iota::{EntityIota, EntityType, GarbageIota, Iota, NullIota, PatternIota},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 use nalgebra::matrix;
@@ -85,18 +85,27 @@ fn parse_action(
     right: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
 ) -> AstNode {
-    AstNode::Action {
-        name: { left.as_str().to_string() },
-        value: {
-            right.map(|pair| match pair.as_rule() {
-                Rule::Iota => ActionValue::Iota(parse_iota(pair, pattern_registry)),
-                Rule::BookkeeperValue => ActionValue::Bookkeeper(parse_bookkeeper(pair)),
-                
-
-                _ => unreachable!(),
-            })
-        },
-    }
+    right
+        .clone()
+        .map(|pair| match pair.as_rule() {
+            Rule::Iota => AstNode::Action {
+                name: left.as_str().to_string(),
+                value: Some(ActionValue::Iota(parse_iota(pair, pattern_registry))),
+            },
+            Rule::EntityType => AstNode::Action {
+                name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
+                value: None,
+            },
+            Rule::BookkeeperValue => AstNode::Action {
+                name: left.as_str().to_string(),
+                value: Some(ActionValue::Bookkeeper(parse_bookkeeper(pair))),
+            },
+            _ => unreachable!(),
+        })
+        .unwrap_or(AstNode::Action {
+            name: left.as_str().to_string(),
+            value: None,
+        })
 }
 
 fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
@@ -169,18 +178,22 @@ fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota 
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
         Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
-        Rule::Pattern => {match inner_pair.clone().into_inner().next() {
+        Rule::Pattern => match inner_pair.clone().into_inner().next() {
             Some(inner_inner_pair) => match inner_inner_pair.as_str() {
                 "{" => Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None)),
-                "}" => Iota::Pattern(PatternIota::from_name(pattern_registry, "close_paren", None)),
-                _ => unreachable!()
+                "}" => Iota::Pattern(PatternIota::from_name(
+                    pattern_registry,
+                    "close_paren",
+                    None,
+                )),
+                _ => unreachable!(),
             },
             None => Iota::Pattern(PatternIota::from_name(
                 pattern_registry,
                 inner_pair.as_str(),
                 None,
             )),
-        }},
+        },
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();
             Iota::Vector(matrix![
@@ -202,14 +215,26 @@ fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota 
         Rule::Entity => {
             let mut inner = inner_pair.into_inner();
             let name = inner.next().unwrap().as_str().to_string();
-            let entity_type = inner.next().unwrap().as_str().to_string();
+            let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
 
-            Iota::Entity(EntityIota { name, EntityType::from_str(entity_type) })
+            Iota::Entity(EntityIota { name, entity_type })
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
             Iota::List(inner.map(|x| parse_iota(x, pattern_registry)).collect())
         }
+        _ => unreachable!(),
+    }
+}
+
+fn parse_entity_type(string: String) -> EntityType {
+    match &string[..] {
+        "Animal" => EntityType::Animal,
+        "Monster" => EntityType::Monster,
+        "Living" => EntityType::Living,
+        "Item" => EntityType::Item,
+        "Player" => EntityType::Player,
+        "Misc" => EntityType::Misc,
         _ => unreachable!(),
     }
 }

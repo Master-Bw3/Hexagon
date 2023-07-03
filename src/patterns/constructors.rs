@@ -62,6 +62,27 @@ pub fn spell_3<T: 'static, U: 'static, V: 'static>(
     })
 }
 
+pub fn value_0<U: 'static>(
+    value_type_getter: GetterType<U>,
+) -> Box<ActionWithValueType> {
+    Box::new(
+        move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
+            match value {
+                ActionValue::Iota(iota) => {
+                    //return early with an error if iota is of an invalid type
+                    value_type_getter(&vec![iota.clone()], 0, 1)
+                        .map_err(|_| Mishap::InvalidValue)?;
+
+                    state.stack.push(iota.clone())
+                }
+                ActionValue::Bookkeeper(_) => Err(Mishap::InvalidValue)?,
+            }
+
+            Ok(state)
+        },
+    )
+}
+
 pub fn value_1<T: 'static, U: 'static>(
     getter: GetterType<T>,
     value_type_getter: GetterType<U>,
@@ -114,11 +135,11 @@ pub fn value_2<T: 'static, U: 'static, V: 'static>(
     )
 }
 
-pub fn get_entity(entity_type: Option<&EntityType>) -> Box<ActionWithValueType> {
+pub fn get_entity(entity_type: Option<&'static EntityType>) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
             let arg_count = 1;
-            &state.stack.get_vector(0, arg_count)?;
+            let _ = &state.stack.get_vector(0, arg_count)?;
             state.stack.remove_args(&arg_count);
 
             match value {
@@ -137,9 +158,9 @@ pub fn get_entity(entity_type: Option<&EntityType>) -> Box<ActionWithValueType> 
     )
 }
 
-pub fn zone_entity(entity_type: Option<&EntityType>, inverse: bool) -> Box<ActionWithValueType> {
-    let conditon = |iota: &Iota| {
-        if inverse {
+pub fn zone_entity(entity_type: Option<&'static EntityType>, inverse: &'static bool) -> Box<ActionWithValueType> {
+    let conditon = move |iota: &Iota| {
+        if *inverse {
             iota.is_entity(None) && !iota.is_entity(entity_type)
         } else {
             iota.is_entity(entity_type)
@@ -149,8 +170,8 @@ pub fn zone_entity(entity_type: Option<&EntityType>, inverse: bool) -> Box<Actio
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
             let arg_count = 2;
-            &state.stack.get_vector(0, arg_count)?;
-            &state.stack.get_number(1, arg_count)?;
+            let _ = &state.stack.get_vector(0, arg_count)?;
+            let _ = &state.stack.get_number(1, arg_count)?;
             state.stack.remove_args(&arg_count);
 
             match value {

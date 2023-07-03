@@ -14,13 +14,13 @@ ElseIf = {"else if" ~ Newline? ~ Term}
 
 Term = {"{" ~ Hex ~ "}"}
 
-Action = { ActionName ~ (":" ~ (Iota | BookkeeperValue | ActionDiscriminator | IntroRetro))? }
+Action = { ActionName ~ (":" ~ (EntityType | BookkeeperValue | IntroRetro | Iota))? }
 
 ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
 BookkeeperValue = {("v" | "-")+}
 
-ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
+// ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
 Iota = { Number | Vector | Entity | Influence | Bool | Pattern | List}
 
@@ -40,7 +40,7 @@ UuidSlice = @{ (ASCII_DIGIT | ASCII_ALPHA_LOWER){4} }
 
 UUIDEnd = @{ (ASCII_DIGIT | ASCII_ALPHA_LOWER){12} }
 
-EntityType = @{ASCII_ALPHA_LOWER+ ~ ":" ~ ASCII_ALPHA_LOWER+}
+EntityType = @{"Animal" | "Monster" | "Living" | "Item" | "Player" | "Misc"}
 
 Influence = @{"Null" | "Garbage" ~ !(ASCII_ALPHA)}
 
