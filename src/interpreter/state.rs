@@ -22,12 +22,11 @@ pub struct State {
     pub halt: bool,
 }
 
-
 #[derive(Clone, Default)]
 pub enum Holding {
     #[default]
     None,
-    Focus
+    Focus,
 }
 
 pub enum Either<L, R> {
@@ -140,6 +139,7 @@ impl StackExt for Stack {
             _ => Err(Mishap::IncorrectIota(index)),
         }
     }
+
 
     fn get_integer(&self, index: usize, arg_count: usize) -> Result<i32, Mishap> {
         let iota = self.get_iota(index, arg_count)?;

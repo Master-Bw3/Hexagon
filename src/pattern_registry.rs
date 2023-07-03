@@ -1,12 +1,11 @@
-use std::f32::consts::{PI, TAU, E};
+use std::f32::consts::{E, PI, TAU};
 
+use crate::interpreter::state::{Stack, StackExt};
+use crate::iota::{Iota, NullIota, VectorIota, EntityType};
 use crate::patterns::lists;
 use crate::patterns::{constructors, eval, math, pattern::Pattern, special};
-use crate::iota::{Iota, VectorIota, NullIota};
-use crate::interpreter::state::{StackExt, Stack};
 
 pub type PatternRegistry = Vec<Pattern>;
-
 
 pub trait PatternRegistryExt {
     fn construct() -> PatternRegistry;
@@ -100,29 +99,72 @@ impl PatternRegistryExt for PatternRegistry {
             //requires value to be set
             Pattern::new("Numerical Reflection", "number", "", Box::new(special::no_action)),
 
-            Pattern::new("Entity Purification",  "get_entity", "qqqqqdaqa", constructors::spell_1(Stack::get_vector)),
-            Pattern::new("Entity Purification: Animal",  "get_entity/animal", "qqqqqdaqaawa", constructors::spell_1(Stack::get_vector)),
-            Pattern::new("Entity Purification: Monster",  "get_entity/monster", "qqqqqdaqaawq", constructors::spell_1(Stack::get_vector)),
-            Pattern::new("Entity Purification: Item",  "get_entity/item", "qqqqqdaqaaww", constructors::spell_1(Stack::get_vector)),
-            Pattern::new("Entity Purification: Player",  "get_entity/player", "qqqqqdaqaawe", constructors::spell_1(Stack::get_vector)),
-            Pattern::new("Entity Purification: Living",  "get_entity/living", "qqqqqdaqaawd", constructors::spell_1(Stack::get_vector)),
-            Pattern::new("Zone Distillation: Any",  "zone_entity", "qqqqqwded", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Animal",  "zone_entity/animal", "qqqqqwdeddwa", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Non-Animal",  "zone_entity/not_animal", "eeeeewaqaawa", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Monster",  "zone_entity/monster", "qqqqqwdeddwq", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Non-Monster",  "zone_entity/not_monster", "eeeeewaqaawq", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Item",  "zone_entity/item", "qqqqqwdeddww", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Non-Item",  "zone_entity/not_item", "eeeeewaqaaww", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Player",  "zone_entity/player", "qqqqqwdeddwe", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Non-Player",  "zone_entity/not_player", "eeeeewaqaawe", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Living",  "zone_entity/living", "qqqqqwdeddwd", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("Zone Distillation: Non-Living",  "zone_entity/not_living", "eeeeewaqaawd", constructors::spell_2(Stack::get_vector, Stack::get_number)),
-            Pattern::new("aa",  "entity_pos/eye", "Compass' Purification", constructors::spell_1(Stack::get_entity)),
-            Pattern::new("dd",  "entity_pos/foot", "Compass' Purification II", constructors::spell_1(Stack::get_entity)),                       
-            Pattern::new("wa",  "get_entity_look", "Alidade's Purification", constructors::spell_1(Stack::get_entity)),                       
-            Pattern::new("awq",  "get_entity_height", "Stadiometer's Purification", constructors::spell_1(Stack::get_entity)),                       
-            Pattern::new("wq",  "get_entity_velocity", "Pace Purification", constructors::spell_1(Stack::get_entity)),                       
-            Pattern::new("Zone Distillation: Animal",  "zone_entity/animal", "qqqqqwdeddwa", constructors::spell_2(Stack::get_vector, Stack::get_vector)),
+            Pattern::new_with_val("Entity Purification",  "get_entity", "qqqqqdaqa",
+                constructors::get_entity(None)),
+
+            Pattern::new_with_val("Entity Purification: Animal",  "get_entity/animal", "qqqqqdaqaawa",
+            constructors::get_entity(Some(&EntityType::Animal))),
+
+
+            Pattern::new_with_val("Entity Purification: Monster",  "get_entity/monster", "qqqqqdaqaawq",
+            constructors::get_entity(Some(&EntityType::Animal))),
+
+            Pattern::new_with_val("Entity Purification: Item",  "get_entity/item", "qqqqqdaqaaww",
+                constructors::value_1(Stack::get_vector, Stack::get_entity)),
+
+            Pattern::new_with_val("Entity Purification: Player",  "get_entity/player", "qqqqqdaqaawe",
+                constructors::value_1(Stack::get_vector, Stack::get_entity)),
+
+            Pattern::new_with_val("Entity Purification: Living",  "get_entity/living", "qqqqqdaqaawd",
+                constructors::value_1(Stack::get_vector, Stack::get_entity)),
+
+            Pattern::new_with_val("Zone Distillation: Any",  "zone_entity", "qqqqqwded",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Animal",  "zone_entity/animal", "qqqqqwdeddwa",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Non-Animal",  "zone_entity/not_animal", "eeeeewaqaawa",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Monster",  "zone_entity/monster", "qqqqqwdeddwq",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+            Pattern::new_with_val("Zone Distillation: Non-Monster",  "zone_entity/not_monster", "eeeeewaqaawq",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Item",  "zone_entity/item", "qqqqqwdeddww",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Non-Item",  "zone_entity/not_item", "eeeeewaqaaww",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Player",  "zone_entity/player", "qqqqqwdeddwe",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Non-Player",  "zone_entity/not_player", "eeeeewaqaawe",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Living",  "zone_entity/living", "qqqqqwdeddwd",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("Zone Distillation: Non-Living",  "zone_entity/not_living", "eeeeewaqaawd",
+                constructors::value_2(Stack::get_vector, Stack::get_number, Stack::get_entity_list)),
+
+            Pattern::new_with_val("entity_pos/eye", "Compass' Purification", "aa",
+                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+
+            Pattern::new_with_val("entity_pos/foot", "Compass' Purification II", "dd",
+                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+
+            Pattern::new_with_val("get_entity_look", "Alidade's Purification", "wa",
+                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+
+            Pattern::new_with_val("get_entity_height", "Stadiometer's Purification", "awq",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
+
+            Pattern::new_with_val("get_entity_velocity", "Pace Purification", "wq",
+                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+
 
 
 

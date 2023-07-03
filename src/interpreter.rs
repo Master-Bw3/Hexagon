@@ -136,15 +136,6 @@ pub fn interpret_action<'a>(
 
     pattern.operate(state, pattern_registry, &value)?;
 
-    if let Some(val) = value {
-        match val {
-            ActionValue::Iota(iota) => {
-                push_iota(iota, state, is_escape);
-            }
-            ActionValue::Bookkeeper(_) => todo!(),
-        };
-    }
-
     Ok(state)
 }
 

@@ -204,7 +204,7 @@ fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota 
             let name = inner.next().unwrap().as_str().to_string();
             let entity_type = inner.next().unwrap().as_str().to_string();
 
-            Iota::Entity(EntityIota { name, entity_type })
+            Iota::Entity(EntityIota { name, EntityType::from_str(entity_type) })
         }
         Rule::List => {
             let inner = inner_pair.into_inner();

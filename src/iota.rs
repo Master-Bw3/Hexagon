@@ -1,4 +1,4 @@
-use std::{ops::Not};
+use std::ops::Not;
 
 use crate::pattern_registry::{PatternRegistry, PatternRegistryExt};
 
@@ -36,6 +36,35 @@ impl Iota {
             _ => false,
         }
     }
+
+    pub fn is_entity_list(&self, entity_type: Option<&EntityType>) -> bool {
+        match self {
+            Iota::List(x) => {
+                x.iter()
+                    .filter(|i| match i {
+                        Iota::Entity(entity) => match entity_type {
+                            Some(t) => entity.entity_type == *t,
+                            None => true,
+                        },
+                        _ => false,
+                    })
+                    .collect::<Vec<&Iota>>()
+                    .len()
+                    == x.len()
+            }
+            _ => false,
+        }
+    }
+
+    pub fn is_entity(&self, entity_type: Option<&EntityType>) -> bool {
+        match self {
+            Iota::Entity(entity) => match entity_type {
+                Some(t) => entity.entity_type == *t,
+                None => true,
+            },
+            _ => false,
+        }
+    }
 }
 
 pub type NumberIota = f32;
@@ -56,7 +85,17 @@ pub enum NullIota {
 #[derive(Debug, Clone, PartialEq)]
 pub struct EntityIota {
     pub name: String,
-    pub entity_type: String,
+    pub entity_type: EntityType,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EntityType {
+    Animal,
+    Monster,
+    Living,
+    Item,
+    Player,
+    Misc,
 }
 
 #[derive(Debug, Clone, PartialEq)]

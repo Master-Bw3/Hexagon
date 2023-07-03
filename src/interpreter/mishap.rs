@@ -10,6 +10,8 @@ pub enum Mishap {
     HastyRetrospection,
     InvalidPattern,
     ExpectedPattern(Iota),
+    ExpectedValue,
+    InvalidValue
 }
 
 impl Mishap {
@@ -38,6 +40,8 @@ impl Mishap {
                 new_stack
             }
             Mishap::ExpectedPattern(_) => todo!(),
+            Mishap::ExpectedValue => todo!(),
+            Mishap::InvalidValue => todo!(),
         }
     }
 }

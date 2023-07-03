@@ -1,14 +1,24 @@
 use crate::{
     interpreter::{mishap::Mishap, state::State},
-    parser::ActionValue, pattern_registry::PatternRegistry,
+    parser::ActionValue,
+    pattern_registry::PatternRegistry,
 };
 
-pub type ActionType = dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>;
+pub type ActionNoValueType =
+    dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>;
+pub type ActionWithValueType =
+    dyn for<'a> Fn(&'a mut State, &PatternRegistry, &ActionValue) -> Result<&'a mut State, Mishap>;
+
+pub enum ActionFunction {
+    ActionNoValue(Box<ActionNoValueType>),
+    ActionWithValue(Box<ActionWithValueType>),
+}
+
 pub struct Pattern {
     pub display_name: String,
     pub internal_name: String,
     pub signature: String,
-    pub action: Box<ActionType>,
+    pub action: ActionFunction,
 }
 
 impl Pattern {
@@ -16,25 +26,43 @@ impl Pattern {
         display_name: &str,
         internal_name: &str,
         signature: &str,
-        action: Box<ActionType>,
+        action: Box<ActionNoValueType>,
     ) -> Pattern {
         Pattern {
             display_name: display_name.to_string(),
             internal_name: internal_name.to_string(),
             signature: signature.to_string(),
-            action: Box::new(action),
+            action: ActionFunction::ActionNoValue(Box::new(action)),
         }
     }
 
-    pub fn operate<'a>(&self, state: &'a mut State, pattern_registry: &PatternRegistry, _value: &Option<ActionValue>) -> Result<&'a mut State, Mishap> {
-        // let value = match value {
-        //     Some(val) => match val {
-        //         ActionValue::Iota(iota) => Some(iota),
-        //         ActionValue::Bookkeeper(_) => None,
-        //     },
-        //     None => None,
-        // };
+    pub fn new_with_val(
+        display_name: &str,
+        internal_name: &str,
+        signature: &str,
+        action: Box<ActionWithValueType>,
+    ) -> Pattern {
+        Pattern {
+            display_name: display_name.to_string(),
+            internal_name: internal_name.to_string(),
+            signature: signature.to_string(),
+            action: ActionFunction::ActionWithValue(Box::new(action)),
+        }
+    }
 
-        (self.action)(state, pattern_registry)
+    pub fn operate<'a>(
+        &self,
+        state: &'a mut State,
+        pattern_registry: &PatternRegistry,
+        value: &Option<ActionValue>,
+    ) -> Result<&'a mut State, Mishap> {
+        match &self.action {
+            ActionFunction::ActionNoValue(action) => action(state, pattern_registry),
+            ActionFunction::ActionWithValue(action) => action(
+                state,
+                pattern_registry,
+                value.as_ref().ok_or(Mishap::ExpectedValue)?,
+            ),
+        }
     }
 }
