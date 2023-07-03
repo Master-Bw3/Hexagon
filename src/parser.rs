@@ -33,8 +33,10 @@ fn construct_ast_node(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) 
             let mut pair = pair.into_inner();
             let left = pair.next().unwrap();
             let right = pair.next();
+            let righter = pair.next();
 
-            Some(parse_action(left, right, pattern_registry))
+
+            Some(parse_action(left, right, righter, pattern_registry))
         }
         Rule::Op => {
             let mut pair = pair.into_inner();
@@ -83,6 +85,7 @@ fn parse_op(
 fn parse_action(
     left: Pair<'_, Rule>,
     right: Option<Pair<'_, Rule>>,
+    righter: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
 ) -> AstNode {
     right
@@ -94,7 +97,7 @@ fn parse_action(
             },
             Rule::EntityType => AstNode::Action {
                 name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
-                value: None,
+                value: righter.map(|p| ActionValue::Iota(parse_iota(p, pattern_registry))),
             },
             Rule::BookkeeperValue => AstNode::Action {
                 name: left.as_str().to_string(),

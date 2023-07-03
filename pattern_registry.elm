@@ -10,7 +10,6 @@
     , { signature = "eaqwqaewede", internalName = "circle/impetus_dir", action = spellNoInput, displayName = "Lodestone Reflection", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, 0, 0 ) ), startDirection = East }
     , { signature = "eaqwqaewdd", internalName = "circle/bounds/min", action = spellNoInput, displayName = "Lesser Fold Reflection", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, 0, 0 ) ), startDirection = East }
     , { signature = "aqwqawaaqa", internalName = "circle/bounds/max", action = spellNoInput, displayName = "Greater Fold Reflection", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, 0, 0 ) ), startDirection = East }
-    , { signature = "aawdd", internalName = "swap", action = swap, displayName = "Jester's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = Northeast }
     , { signature = "aaeaa", internalName = "rotate", action = rotate, displayName = "Rotation Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "ddqdd", internalName = "rotate_reverse", action = rotateReverse, displayName = "Rotation Gambit II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aadaa", internalName = "duplicate", action = duplicate, displayName = "Gemini Decomposition", outputOptions = [], selectedOutput = Nothing, startDirection = East }
@@ -18,7 +17,6 @@
     , { signature = "ddqaa", internalName = "tuck", action = tuck, displayName = "Undertaker's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aadadaaw", internalName = "two_dup", action = dup2, displayName = "Dioscuri Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qwaeawqaeaqa", internalName = "stack_len", action = stackLength, displayName = "Flock's Reflection", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aadaadaa", internalName = "duplicate_n", action = duplicateN, displayName = "Gemini Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "ddad", internalName = "fisherman", action = fisherman, displayName = "Fisherman's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aada", internalName = "fisherman/copy", action = fishermanCopy, displayName = "Fisherman's Gambit II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qaawdde", internalName = "swizzle", action = noAction, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East } -- do this

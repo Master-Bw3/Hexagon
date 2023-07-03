@@ -111,8 +111,8 @@ pub fn last_n_list<'a>(
 
     let mut iotas = vec![];
 
-    for index in 0..list_arg_count {
-        iotas.push(state.stack.get_iota(index, list_arg_count)?.clone());
+    for index in 0..(list_arg_count) {
+        iotas.push(state.stack.get_iota(index, list_arg_count + 1)?.clone());
     }
     state.stack.remove_args(&(list_arg_count + 1));
 

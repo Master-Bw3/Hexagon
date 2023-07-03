@@ -3,12 +3,9 @@ mod ops;
 pub mod state;
 
 use crate::{
-    interpreter::{
-        ops::{embed, push, store, EmbedType},
-        state::StackExt,
-    },
+    interpreter::ops::{embed, push, store, EmbedType},
     iota::{Iota, PatternIota, Signature, SignatureExt},
-    parser::{ActionValue, AstNode},
+    parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -47,25 +44,12 @@ fn interpret_node<'a>(
             for node in nodes {
                 interpret_node(node, state, pattern_registry)?;
             }
-            interpret_action("close_paren".to_string(), None, state, pattern_registry)
-                .map_err(|err| format!("{:?}", err))?;
+            interpret_action("close_paren".to_string(), None, state, pattern_registry)?;
 
             Ok(state)
         }
         AstNode::Op { name, arg } => {
-            match name {
-                crate::parser::OpName::Store => store(&arg, state, false),
-                crate::parser::OpName::Copy => store(&arg, state, true),
-                crate::parser::OpName::Push => push(&arg, state),
-                crate::parser::OpName::Embed => {
-                    embed(&arg, state, pattern_registry, EmbedType::Normal)
-                }
-                crate::parser::OpName::SmartEmbed => todo!(),
-                crate::parser::OpName::ConsiderEmbed => todo!(),
-                crate::parser::OpName::IntroEmbed => todo!(),
-            }?;
-
-            Ok(state)
+            interpret_op(name, arg, state, pattern_registry).map_err(|err| format!("{:?}", err))
         }
         AstNode::IfBlock {
             condition,
@@ -90,6 +74,36 @@ fn interpret_node<'a>(
             Ok(state)
         }
     }
+}
+
+pub fn interpret_op<'a>(
+    name: OpName,
+    arg: Option<OpValue>,
+    mut state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, String> {
+    if state.consider_next {
+        todo!("probably shouldn't be allowed");
+        state.consider_next = false;
+        return Ok(state);
+    }
+
+    if state.buffer.is_some() {
+        todo!("convert op to patterns");
+        return Ok(state);
+    }
+
+    match name {
+        crate::parser::OpName::Store => store(&arg, state, false),
+        crate::parser::OpName::Copy => store(&arg, state, true),
+        crate::parser::OpName::Push => push(&arg, state),
+        crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
+        crate::parser::OpName::SmartEmbed => todo!(),
+        crate::parser::OpName::ConsiderEmbed => todo!(),
+        crate::parser::OpName::IntroEmbed => todo!(),
+    }?;
+
+    Ok(state)
 }
 
 pub fn interpret_action<'a>(

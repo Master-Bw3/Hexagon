@@ -14,7 +14,7 @@ ElseIf = {"else if" ~ Newline? ~ Term}
 
 Term = {"{" ~ Hex ~ "}"}
 
-Action = { ActionName ~ (":" ~ (EntityType | BookkeeperValue | IntroRetro | Iota))? }
+Action = { ActionName ~ (":" ~ EntityType)? ~ (":" ~ ( BookkeeperValue | Iota | IntroRetro ))? }
 
 ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 

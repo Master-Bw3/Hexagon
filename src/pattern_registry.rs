@@ -3,7 +3,7 @@ use std::f32::consts::{E, PI, TAU};
 use crate::interpreter::state::{Stack, StackExt};
 use crate::iota::{Iota, NullIota, VectorIota, EntityType};
 use crate::patterns::constructors::value_0;
-use crate::patterns::lists;
+use crate::patterns::{lists, stack};
 use crate::patterns::{constructors, eval, math, pattern::Pattern, special};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -78,6 +78,11 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Speaker's Distillation", "construct", "ddewedd", Box::new(lists::construct)),
             Pattern::new("Speaker's Decomposition", "deconstruct", "aaqwqaa", Box::new(lists::deconstruct)),
 
+            //stack manipulation
+            Pattern::new("Gemini Gambit", "duplicate_n", "aadaadaa", Box::new(stack::duplicate_n)),
+            Pattern::new("Jester's Gambit", "swap", "aawdd", Box::new(stack::swap)),
+
+
             //consts
             Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Iota::List(vec![]))),
             Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(Iota::Vector(VectorIota::new(1.0, 0.0, 0.0)))),
@@ -93,9 +98,6 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("d", "const/null", "Nullary Reflection", constructors::push_const(Iota::Null(NullIota::Null))),
             Pattern::new("aqae", "const/true", "True Reflection", constructors::push_const(Iota::Bool(true))),
             Pattern::new("dedq", "const/false", "False Reflection", constructors::push_const(Iota::Bool(false))),
-
-
-
 
             //requires value to be set
             Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number)),

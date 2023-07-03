@@ -6,3 +6,4 @@ pub mod special;
 pub mod eval;
 pub mod constructors;
 pub mod lists;
+pub mod stack;
