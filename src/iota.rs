@@ -155,7 +155,7 @@ impl SignatureExt for Signature {
     }
 
     fn from_name(registry: &PatternRegistry, string: &str) -> Signature {
-        Signature::from_sig(&registry.find(string).unwrap().signature)
+        Signature::from_sig(&registry.find(string).expect(string).signature)
     }
 
     fn as_str(&self) -> String {

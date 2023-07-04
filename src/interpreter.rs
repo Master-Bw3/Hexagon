@@ -3,7 +3,7 @@ mod ops;
 pub mod state;
 
 use crate::{
-    compiler::ops::{compile_op_store, compile_op_copy},
+    compiler::ops::{compile_op_store, compile_op_copy, compile_op_push},
     interpreter::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
@@ -99,7 +99,7 @@ pub fn interpret_op<'a>(
             crate::parser::OpName::Copy => {
                 compile_op_copy(&mut state.heap, pattern_registry, &arg)
             }
-            crate::parser::OpName::Push => todo!(),
+            crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Embed => todo!(),
             crate::parser::OpName::SmartEmbed => todo!(),
             crate::parser::OpName::ConsiderEmbed => todo!(),

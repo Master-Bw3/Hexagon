@@ -10,9 +10,7 @@
     , { signature = "eaqwqaewede", internalName = "circle/impetus_dir", action = spellNoInput, displayName = "Lodestone Reflection", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, 0, 0 ) ), startDirection = East }
     , { signature = "eaqwqaewdd", internalName = "circle/bounds/min", action = spellNoInput, displayName = "Lesser Fold Reflection", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, 0, 0 ) ), startDirection = East }
     , { signature = "aqwqawaaqa", internalName = "circle/bounds/max", action = spellNoInput, displayName = "Greater Fold Reflection", outputOptions = [ VectorType ], selectedOutput = Just ( VectorType, Vector ( 0, 0, 0 ) ), startDirection = East }
-    , { signature = "aaeaa", internalName = "rotate", action = rotate, displayName = "Rotation Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "ddqdd", internalName = "rotate_reverse", action = rotateReverse, displayName = "Rotation Gambit II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aadaa", internalName = "duplicate", action = duplicate, displayName = "Gemini Decomposition", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aaedd", internalName = "over", action = over, displayName = "Prospector's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "ddqaa", internalName = "tuck", action = tuck, displayName = "Undertaker's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "aadadaaw", internalName = "two_dup", action = dup2, displayName = "Dioscuri Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
@@ -63,6 +61,4 @@
     , { signature = "wawqwqwqwqwqwew", internalName = "readable/entity", action = makeConstant (Boolean False), displayName = "Auditor's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "deeeeeq", internalName = "writable", action = writable, displayName = "Assessor's Reflection", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "wdwewewewewewqw", internalName = "writable/entity", action = makeConstant (Boolean False), displayName = "Assessor's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qeewdweddw", internalName = "read/local", action = readLocal, displayName = "Muninn's Reflection", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "eqqwawqaaw", internalName = "write/local", action = writeLocal, displayName = "Huginn's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "awaawa", internalName = "save_macro", action = saveMacro, displayName = "Save Macro", outputOptions = [], selectedOutput = Nothing, startDirection = Southeast }

@@ -3,7 +3,7 @@ use std::f32::consts::{E, PI, TAU};
 use crate::interpreter::state::{Stack, StackExt};
 use crate::iota::{Iota, NullIota, VectorIota, EntityType};
 use crate::patterns::constructors::value_0;
-use crate::patterns::{lists, stack};
+use crate::patterns::{lists, stack, read_write};
 use crate::patterns::{constructors, eval, math, pattern::Pattern, special};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -79,8 +79,15 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Speaker's Decomposition", "deconstruct", "aaqwqaa", Box::new(lists::deconstruct)),
 
             //stack manipulation
+            Pattern::new("Gemini Decomposition", "duplicate", "aadaa", Box::new(stack::duplicate)),
+
             Pattern::new("Gemini Gambit", "duplicate_n", "aadaadaa", Box::new(stack::duplicate_n)),
             Pattern::new("Jester's Gambit", "swap", "aawdd", Box::new(stack::swap)),
+            Pattern::new("Rotation Gambit", "rotate", "aaeaa", Box::new(stack::rotate)),
+
+            //read/write
+            Pattern::new("Muninn's Reflection", "read/local",  "qeewdweddw", Box::new(read_write::read_local)),
+            Pattern::new("Huginn's Gambit", "write/local",  "eqqwawqaaw", Box::new(read_write::write_local)),
 
 
             //consts
