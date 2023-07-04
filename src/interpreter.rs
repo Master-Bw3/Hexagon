@@ -78,7 +78,6 @@ fn interpret_node<'a>(
                     }
                 }
                 push_pattern("if".to_string(), None, state, pattern_registry, false);
-                push_pattern("eval".to_string(), None, state, pattern_registry, false);
             } else {
                 interpret_node(*condition, state, pattern_registry)?;
 
