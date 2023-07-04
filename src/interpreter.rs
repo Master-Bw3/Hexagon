@@ -3,7 +3,10 @@ mod ops;
 pub mod state;
 
 use crate::{
-    interpreter::ops::{embed, push, store, EmbedType},
+    interpreter::{
+        ops::{embed, push, store, EmbedType},
+        state::StackExt,
+    },
     iota::{Iota, PatternIota, Signature, SignatureExt},
     parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -44,7 +47,8 @@ fn interpret_node<'a>(
             for node in nodes {
                 interpret_node(node, state, pattern_registry)?;
             }
-            interpret_action("close_paren".to_string(), None, state, pattern_registry)?;
+            interpret_action("close_paren".to_string(), None, state, pattern_registry)
+                .map_err(|err| format!("{:?}", err))?;
 
             Ok(state)
         }

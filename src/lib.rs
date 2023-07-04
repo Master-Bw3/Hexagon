@@ -6,6 +6,8 @@ pub mod patterns;
 pub mod iota;
 pub mod interpreter;
 pub mod pattern_registry;
+pub mod compiler;
+
 
 pub fn run() {
     let source = fs::read_to_string("test.hexcasting").expect("Should have been able to read the file");
