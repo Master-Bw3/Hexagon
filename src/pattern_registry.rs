@@ -61,6 +61,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Exclusionary Distillation", "xor_bit", "dwaeaqa", Box::new(math::xor_bit)),
             Pattern::new("Inversion Purification", "not_bit", "dweaqa", Box::new(math::not_bit)),
             Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
+            Pattern::new("Augur's Exaltation", "if", "awdd",  Box::new(math::bool_if)),
+
 
             //lists
             Pattern::new("Integration Distillation", "append", "edqde", Box::new(lists::append)),

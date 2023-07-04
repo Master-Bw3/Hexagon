@@ -67,6 +67,7 @@ fn interpret_node<'a>(
 
             if state.buffer.is_some() {
                 interpret_node(*condition, state, pattern_registry)?;
+                push_pattern("eval".to_string(), None, state, pattern_registry, false);
                 interpret_node(*succeed, state, pattern_registry)?;
                 match fail {
                     Some(fail_node) => {
@@ -76,6 +77,8 @@ fn interpret_node<'a>(
                         interpret_node(AstNode::Hex(vec![]), state, pattern_registry)?;
                     }
                 }
+                push_pattern("if".to_string(), None, state, pattern_registry, false);
+                push_pattern("eval".to_string(), None, state, pattern_registry, false);
             } else {
                 interpret_node(*condition, state, pattern_registry)?;
 

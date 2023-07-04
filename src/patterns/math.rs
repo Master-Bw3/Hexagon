@@ -745,6 +745,25 @@ pub fn to_set<'a>(
     Ok(state)
 }
 
+pub fn bool_if<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 3;
+    let iotas = (
+        state.stack.get_bool(0, arg_count)?,
+        state.stack.get_iota(1, arg_count)?.clone(),
+        state.stack.get_iota(2, arg_count)?.clone(),
+    );
+    state.stack.remove_args(&arg_count);
+
+    let operation_result = if iotas.0 { iotas.1 } else { iotas.2 };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -817,10 +836,7 @@ mod tests {
             ]),
         ];
 
-        let expected = vec![Iota::List(vec![
-            Iota::Number(4.0),
-            Iota::Number(3.0),
-        ])];
+        let expected = vec![Iota::List(vec![Iota::Number(4.0), Iota::Number(3.0)])];
 
         let result = xor_bit(&mut state, &PatternRegistry::construct()).unwrap();
         assert_eq!(result.stack, expected)
@@ -829,15 +845,13 @@ mod tests {
     #[test]
     fn to_set_test() {
         let mut state = State::default();
-        state.stack = vec![
-            Iota::List(vec![
-                Iota::Number(1.0),
-                Iota::Number(1.0),
-                Iota::Number(2.0),
-                Iota::Number(3.0),
-                Iota::Number(1.0),
-            ]),
-        ];
+        state.stack = vec![Iota::List(vec![
+            Iota::Number(1.0),
+            Iota::Number(1.0),
+            Iota::Number(2.0),
+            Iota::Number(3.0),
+            Iota::Number(1.0),
+        ])];
 
         let expected = vec![Iota::List(vec![
             Iota::Number(1.0),
