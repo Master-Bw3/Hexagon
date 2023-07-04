@@ -3,7 +3,7 @@ mod ops;
 pub mod state;
 
 use crate::{
-    compiler::ops::{compile_op_store, compile_op_copy, compile_op_push},
+    compiler::ops::{compile_op_copy, compile_op_push, compile_op_store},
     interpreter::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
@@ -61,21 +61,37 @@ fn interpret_node<'a>(
             succeed,
             fail,
         } => {
-            interpret_node(*condition, state, pattern_registry)?;
-
-            let condition = state
-                .stack
-                .get_bool(0, 1)
-                .map_err(|err| format!("{:?}", err))?;
-
-            state.stack.remove_args(&1);
-
-            if condition {
-                interpret_node(*succeed, state, pattern_registry)?;
-            } else if let Some(node) = fail {
-                interpret_node(*node, state, pattern_registry)?;
+            if state.consider_next {
+                return Err("Ops cannot be considered".to_string());
             }
 
+            if state.buffer.is_some() {
+                interpret_node(*condition, state, pattern_registry)?;
+                interpret_node(*succeed, state, pattern_registry)?;
+                match fail {
+                    Some(fail_node) => {
+                        interpret_node(*fail_node, state, pattern_registry)?;
+                    }
+                    None => {
+                        interpret_node(AstNode::Hex(vec![]), state, pattern_registry)?;
+                    }
+                }
+            } else {
+                interpret_node(*condition, state, pattern_registry)?;
+
+                let condition = state
+                    .stack
+                    .get_bool(0, 1)
+                    .map_err(|err| format!("{:?}", err))?;
+
+                state.stack.remove_args(&1);
+
+                if condition {
+                    interpret_node(*succeed, state, pattern_registry)?;
+                } else if let Some(node) = fail {
+                    interpret_node(*node, state, pattern_registry)?;
+                }
+            }
             Ok(state)
         }
     }
@@ -96,9 +112,7 @@ pub fn interpret_op<'a>(
             crate::parser::OpName::Store => {
                 compile_op_store(&mut state.heap, pattern_registry, &arg)
             }
-            crate::parser::OpName::Copy => {
-                compile_op_copy(&mut state.heap, pattern_registry, &arg)
-            }
+            crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Embed => todo!(),
             crate::parser::OpName::SmartEmbed => todo!(),
