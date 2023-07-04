@@ -55,7 +55,7 @@ pub fn spell_3<T: 'static, U: 'static, V: 'static>(
     Box::new(move |state: &mut State, _: &PatternRegistry| {
         getter1(&state.stack, 0, 3)?;
         getter2(&state.stack, 1, 3)?;
-        getter3(&state.stack, 1, 3)?;
+        getter3(&state.stack, 2, 3)?;
 
         state.stack.remove_args(&3);
         Ok(state)

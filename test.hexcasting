@@ -3,18 +3,19 @@ Numerical Reflection: 5
 Copy($len)
 
 //Counter's Queue
-Numerical Reflection: 0
-Copy($i)
+Numerical Reflection: -1
+Store($i)
+
+
+Numerical Reflection: 1
 Jester's Gambit
 Gemini Gambit
 $len
 Flock's Gambit
 {
-    {
-        $i
-    }
-    Flock's Disintegration
+    $i
     Additive Distillation
     Copy($i)
 }
-
+Jester's Gambit
+Thoth's Gambit

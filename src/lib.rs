@@ -16,5 +16,5 @@ pub fn run() {
 
     let interpreter_result = interpret(parse_result);
 
-    println!("{:?} \n {:?}", interpreter_result.as_ref().unwrap().stack, interpreter_result.as_ref().unwrap().buffer)
+    println!("\n result: {:?} \n {:?}", interpreter_result.as_ref().unwrap().stack, interpreter_result.as_ref().unwrap().buffer)
 }

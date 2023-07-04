@@ -26,7 +26,7 @@ pub fn write_local<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_iota(1, arg_count)?.clone();
+    let iota = state.stack.get_iota(0, arg_count)?.clone();
     state.stack.remove_args(&arg_count);
 
     state.ravenmind = Some(iota);

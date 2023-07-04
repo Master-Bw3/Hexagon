@@ -86,6 +86,8 @@ pub fn for_each<'a>(
     let iota_list = state.stack.get_list(1, 2)?;
     state.stack.remove_args(&arg_count);
 
+    let mut result = vec![];
+
     for iota in iota_list {
         let mut temp_state = state.clone();
         temp_state.stack.push(iota);
@@ -96,10 +98,12 @@ pub fn for_each<'a>(
             break;
         }
 
+        result.append(&mut temp_state.stack);
         //update state
         temp_state.stack = state.stack.clone();
-        std::mem::swap(state, &mut temp_state);
+        *state = temp_state;
     }
+    state.stack.push(Iota::List(result));
 
     Ok(state)
 }

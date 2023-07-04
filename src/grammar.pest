@@ -18,7 +18,7 @@ Action = { ActionName ~ (":" ~ EntityType)? ~ (":" ~ ( BookkeeperValue | Iota | 
 
 ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
-BookkeeperValue = {("v" | "-")+}
+BookkeeperValue = @{("v" | "-")+ ~ !(ASCII_DIGIT)}
 
 // ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
@@ -28,7 +28,7 @@ List = !{"[" ~ ((Iota ~ ",")* ~ Iota)? ~ "]" }
 
 Vector = {"(" ~ Number ~ "," ~ Number ~ "," ~ Number ~ ")" }
 
-Number = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
+Number = @{ "-"? ~ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
 
 Entity = {"{" ~ String ~ "," ~ EntityType ~ ("," ~ Uuid)? ~ "}" }
 
