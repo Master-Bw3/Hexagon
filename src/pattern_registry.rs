@@ -102,9 +102,9 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Arc's Reflection", "const/double/pi", "qdwdq", constructors::push_const(Iota::Number(PI))),
             Pattern::new("Circle's Reflection", "const/double/tau", "eawae", constructors::push_const(Iota::Number(TAU))),
             Pattern::new("Euler's Reflection", "const/double/e", "aaq", constructors::push_const(Iota::Number(E))),
-            Pattern::new("d", "const/null", "Nullary Reflection", constructors::push_const(Iota::Null(NullIota::Null))),
-            Pattern::new("aqae", "const/true", "True Reflection", constructors::push_const(Iota::Bool(true))),
-            Pattern::new("dedq", "const/false", "False Reflection", constructors::push_const(Iota::Bool(false))),
+            Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(Iota::Null(NullIota::Null))),
+            Pattern::new("True Reflection", "const/true", "aqae",constructors::push_const(Iota::Bool(true))),
+            Pattern::new("False Reflection", "const/false", "dedq",constructors::push_const(Iota::Bool(false))),
 
             //requires value to be set
             Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number)),
