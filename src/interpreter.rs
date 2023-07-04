@@ -27,7 +27,7 @@ fn interpret_node<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, String> {
-    println!("a: {:?}, {:?}", state.stack, state.buffer);
+    // println!("a: {:?}, {:?}", state.stack, state.buffer);
 
     match node {
         AstNode::File(nodes) => {

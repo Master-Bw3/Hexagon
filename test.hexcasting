@@ -1,14 +1,15 @@
 //test input
 Numerical Reflection: 5
-Copy($len)
 
 //Counter's Queue
+Store($len)
+
 Numerical Reflection: -1
 Store($i)
 
 
 Numerical Reflection: 1
-Jester's Gambit
+$len
 Gemini Gambit
 $len
 Flock's Gambit
