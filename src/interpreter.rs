@@ -3,6 +3,7 @@ mod ops;
 pub mod state;
 
 use crate::{
+    compiler::ops::{compile_op_store, compile_op_copy},
     interpreter::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
@@ -83,31 +84,43 @@ fn interpret_node<'a>(
 pub fn interpret_op<'a>(
     name: OpName,
     arg: Option<OpValue>,
-    mut state: &'a mut State,
+    state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, String> {
     if state.consider_next {
-        todo!("probably shouldn't be allowed");
-        state.consider_next = false;
-        return Ok(state);
+        return Err("Ops cannot be considered".to_string());
     }
 
     if state.buffer.is_some() {
-        todo!("convert op to patterns");
-        return Ok(state);
+        let compiled = match name {
+            crate::parser::OpName::Store => {
+                compile_op_store(&mut state.heap, pattern_registry, &arg)
+            }
+            crate::parser::OpName::Copy => {
+                compile_op_copy(&mut state.heap, pattern_registry, &arg)
+            }
+            crate::parser::OpName::Push => todo!(),
+            crate::parser::OpName::Embed => todo!(),
+            crate::parser::OpName::SmartEmbed => todo!(),
+            crate::parser::OpName::ConsiderEmbed => todo!(),
+            crate::parser::OpName::IntroEmbed => todo!(),
+        }?;
+        for iota in compiled {
+            push_iota(iota, state, false)
+        }
+    } else {
+        match name {
+            crate::parser::OpName::Store => store(&arg, state, false),
+            crate::parser::OpName::Copy => store(&arg, state, true),
+            crate::parser::OpName::Push => push(&arg, state),
+            crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
+            crate::parser::OpName::SmartEmbed => todo!(),
+            crate::parser::OpName::ConsiderEmbed => todo!(),
+            crate::parser::OpName::IntroEmbed => todo!(),
+        }?;
     }
 
-    match name {
-        crate::parser::OpName::Store => store(&arg, state, false),
-        crate::parser::OpName::Copy => store(&arg, state, true),
-        crate::parser::OpName::Push => push(&arg, state),
-        crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
-        crate::parser::OpName::SmartEmbed => todo!(),
-        crate::parser::OpName::ConsiderEmbed => todo!(),
-        crate::parser::OpName::IntroEmbed => todo!(),
-    }?;
-
-    Ok(state)
+    return Ok(state);
 }
 
 pub fn interpret_action<'a>(

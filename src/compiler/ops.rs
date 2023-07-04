@@ -6,11 +6,26 @@ use crate::{
     pattern_registry::PatternRegistry,
 };
 
+pub fn compile_op_copy(
+    heap: &mut HashMap<String, i32>,
+    pattern_registry: &PatternRegistry,
+    value: &Option<OpValue>,
+) -> Result<Vec<Iota>, String> {
+    let mut compiled = vec![Iota::Pattern(PatternIota::from_name(
+        pattern_registry,
+        "duplicate",
+        None,
+    ))];
+
+    compiled.append(&mut compile_op_store(heap, pattern_registry, value)?);
+
+    Ok(compiled)
+}
+
 pub fn compile_op_store(
     heap: &mut HashMap<String, i32>,
     pattern_registry: &PatternRegistry,
     value: &Option<OpValue>,
-    copy: bool,
 ) -> Result<Vec<Iota>, String> {
     let value = value
         .as_ref()
@@ -23,17 +38,7 @@ pub fn compile_op_store(
         }
     };
 
-    let mut compiled = if copy {
-        vec![Iota::Pattern(PatternIota::from_name(
-            pattern_registry,
-            "duplicate",
-            None,
-        ))]
-    } else {
-        vec![]
-    };
-
-    compiled.append(&mut match index {
+    let compiled = match index {
         Some(index) => {
             vec![
                 Iota::Pattern(PatternIota::from_name(pattern_registry, "read/local", None)),
@@ -70,7 +75,7 @@ pub fn compile_op_store(
                 )),
             ]
         }
-    });
+    };
 
     Ok(compiled)
 }
