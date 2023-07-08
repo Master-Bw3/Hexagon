@@ -40,7 +40,7 @@ fn interpret_node<'a>(
             Ok(state)
         }
 
-        AstNode::Action { name, value } => interpret_action(name, value, state, pattern_registry)
+        AstNode::Action { name, value, line } => interpret_action(name, value, state, pattern_registry)
             .map_err(|err| format!("{:?}", err)),
         AstNode::Hex(nodes) => {
             interpret_action("open_paren".to_string(), None, state, pattern_registry)
@@ -53,13 +53,14 @@ fn interpret_node<'a>(
 
             Ok(state)
         }
-        AstNode::Op { name, arg } => {
+        AstNode::Op { name, arg, line } => {
             interpret_op(name, arg, state, pattern_registry).map_err(|err| format!("{:?}", err))
         }
         AstNode::IfBlock {
             condition,
             succeed,
             fail,
+            line,
         } => {
             if state.consider_next {
                 return Err("Ops cannot be considered".to_string());

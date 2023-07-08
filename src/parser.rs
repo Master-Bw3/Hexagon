@@ -35,7 +35,6 @@ fn construct_ast_node(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) 
             let right = pair.next();
             let righter = pair.next();
 
-
             Some(parse_action(left, right, righter, pattern_registry))
         }
         Rule::Op => {
@@ -79,6 +78,7 @@ fn parse_op(
                 _ => unreachable!(),
             })
         },
+        line: name.line_col(),
     }
 }
 
@@ -93,25 +93,30 @@ fn parse_action(
         .map(|pair| match pair.as_rule() {
             Rule::Iota => AstNode::Action {
                 name: left.as_str().to_string(),
-                value: Some(ActionValue::Iota(parse_iota(pair, pattern_registry))),
+                value: Some(ActionValue::Iota(parse_iota(pair.clone(), pattern_registry))),
+                line: pair.line_col(),
             },
             Rule::EntityType => AstNode::Action {
                 name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
                 value: righter.map(|p| ActionValue::Iota(parse_iota(p, pattern_registry))),
+                line: pair.line_col(),
             },
             Rule::BookkeeperValue => AstNode::Action {
                 name: left.as_str().to_string(),
-                value: Some(ActionValue::Bookkeeper(parse_bookkeeper(pair))),
+                value: Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
+                line: pair.line_col(),
             },
             _ => unreachable!(),
         })
         .unwrap_or(AstNode::Action {
             name: left.as_str().to_string(),
             value: None,
+            line: left.line_col(),
         })
 }
 
 fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
+    let line = pair.line_col();
     let inner = pair.into_inner().next().unwrap();
     AstNode::Action {
         name: {
@@ -122,6 +127,7 @@ fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
             }
         },
         value: None,
+        line: line,
     }
 }
 
@@ -129,11 +135,12 @@ fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     AstNode::Op {
         name: OpName::Push,
         arg: { Some(OpValue::Var(pair.as_str().to_string())) },
+        line: pair.line_col(),
     }
 }
 
 fn parse_embed(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> AstNode {
-    let inner_pair = pair.into_inner().next().unwrap();
+    let inner_pair = pair.clone().into_inner().next().unwrap();
     AstNode::Op {
         name: {
             match inner_pair.as_rule() {
@@ -148,11 +155,16 @@ fn parse_embed(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> AstN
             .into_inner()
             .next()
             .map(|iota| OpValue::Iota(parse_iota(iota, pattern_registry)))),
+        line: pair.line_col(),
     }
 }
 
 fn parse_if_block(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> AstNode {
-    fn parse_inner(mut inner: Pairs<'_, Rule>, pattern_registry: &PatternRegistry) -> AstNode {
+    fn parse_inner(
+        line: (usize, usize),
+        mut inner: Pairs<'_, Rule>,
+        pattern_registry: &PatternRegistry,
+    ) -> AstNode {
         AstNode::IfBlock {
             condition: {
                 let mut condition = inner.next().unwrap().into_inner();
@@ -168,13 +180,14 @@ fn parse_if_block(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> A
                         construct_ast_node(branch.into_inner().next().unwrap(), pattern_registry)
                             .unwrap(),
                     ),
-                    Rule::ElseIf => Box::new(parse_inner(inner, pattern_registry)),
+                    Rule::ElseIf => Box::new(parse_inner(line, inner, pattern_registry)),
                     _ => unreachable!(),
                 })
             },
+            line: line,
         }
     }
-    parse_inner(pair.into_inner(), pattern_registry)
+    parse_inner(pair.line_col(), pair.into_inner(), pattern_registry)
 }
 
 fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota {
@@ -257,15 +270,18 @@ fn parse_string(pair: Pair<'_, Rule>) -> String {
 pub enum AstNode {
     File(Vec<AstNode>),
     Action {
+        line: (usize, usize),
         name: String,
         value: Option<ActionValue>,
     },
     Hex(Vec<AstNode>),
     Op {
+        line: (usize, usize),
         name: OpName,
         arg: Option<OpValue>,
     },
     IfBlock {
+        line: (usize, usize),
         condition: Box<AstNode>,
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
