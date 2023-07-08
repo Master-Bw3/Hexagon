@@ -28,15 +28,6 @@ impl Iterator for Factorial {
     }
 }
 
-fn factorial(x: usize) -> usize {
-    if x == 0 {
-        // sorry. it works better this way in these cases
-        0
-    } else {
-        Factorial::new().nth(x).unwrap()
-    }
-}
-
 /** Fn to take a stack and a value and perform a shuffling of the last few elems */
 fn ixed_factorial<T: Clone>(mut value: usize, stack: &mut [T]) -> Result<(), Mishap> {
     let mut strides: Vec<usize> = Factorial::new().take_while(|&x| x <= value).collect();
