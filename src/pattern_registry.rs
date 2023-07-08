@@ -128,6 +128,21 @@ impl PatternRegistryExt for PatternRegistry {
             //spells
             Pattern::new("Alter Gravity", "interop/gravity/set", "wdwdwaaqw", constructors::spell_2(Stack::get_entity, Stack::get_vector)),
             Pattern::new("Alter Scale", "interop/pehkui/set", "ddwdwwdwwd", constructors::spell_2(Stack::get_entity, Stack::get_number)),
+            Pattern::new("Explosion", "explode", "aawaawaa", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Fireball", "explode/fire", "ddwddwdd", constructors::spell_2(Stack::get_vector, Stack::get_number)),
+            Pattern::new("Impulse", "add_motion", "awqqqwaqw", constructors::spell_2(Stack::get_entity, Stack::get_vector)),
+            Pattern::new("Blink", "blink", "awqqqwaq", constructors::spell_2(Stack::get_entity, Stack::get_number)),
+            Pattern::new("Break Block", "break_block", "qaqqqqq", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Place Block", "place_block", "eeeeede", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Internalize Pigment", "colorize", "awddwqawqwawq", Box::new(special::no_action)),
+            Pattern::new("Create Water", "create_water", "aqawqadaq", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Destroy Liquid", "destroy_water", "dedwedade", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Ignite Block", "ignite", "aaqawawa", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Extinguish Area", "extinguish", "ddedwdwd", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Conjure Block", "conjure_block", "qqa", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Conjure Light", "conjure_light", "qqd", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Overgrow", "bonemeal", "wqaqwawqaqw", constructors::spell_1(Stack::get_vector)),
+
 
 
             //requires value to be set

@@ -12,9 +12,7 @@ use crate::{
 
 use super::{ActionNoValueType, ActionWithValueType};
 
-
 type GetterType<T> = fn(&Stack, usize, usize) -> Result<T, Mishap>;
-
 
 // pub fn operator<T: 'static>(arg_count: usize, action: &'static ActionNoValueType) -> Box<ActionNoValueType> {
 //     Box::new(move |state: &mut State, pattern_registry: &PatternRegistry| {
@@ -26,14 +24,14 @@ type GetterType<T> = fn(&Stack, usize, usize) -> Result<T, Mishap>;
 //         let args = &state.stack[stack_len-arg_count..];
 //         state.stack.remove_args(&1);
 //         let new_data = action(state, pattern_registry);
-        
+
 //         state.stack
-        
 
 //         todo!()
-        
+
 //     })
 // }
+
 
 
 pub fn spell_1<T: 'static>(getter: GetterType<T>) -> Box<ActionNoValueType> {
@@ -72,9 +70,7 @@ pub fn spell_3<T: 'static, U: 'static, V: 'static>(
     })
 }
 
-pub fn value_0<U: 'static>(
-    value_type_getter: GetterType<U>,
-) -> Box<ActionWithValueType> {
+pub fn value_0<U: 'static>(value_type_getter: GetterType<U>) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
             match value {
@@ -168,7 +164,10 @@ pub fn get_entity(entity_type: Option<&'static EntityType>) -> Box<ActionWithVal
     )
 }
 
-pub fn zone_entity(entity_type: Option<&'static EntityType>, inverse: &'static bool) -> Box<ActionWithValueType> {
+pub fn zone_entity(
+    entity_type: Option<&'static EntityType>,
+    inverse: &'static bool,
+) -> Box<ActionWithValueType> {
     let conditon = move |iota: &Iota| {
         if *inverse {
             iota.is_entity(None) && !iota.is_entity(entity_type)

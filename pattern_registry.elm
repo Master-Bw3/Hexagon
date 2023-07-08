@@ -1,17 +1,18 @@
-    , { signature = "aawaawaa", internalName = "explode", action = explode, displayName = "Explosion", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ddwddwdd", internalName = "explode/fire", action = explodeFire, displayName = "Fireball", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "awqqqwaqw", internalName = "add_motion", action = addMotion, displayName = "Impulse", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "awqqqwaq", internalName = "blink", action = blink, displayName = "Blink", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qaqqqqq", internalName = "break_block", action = breakBlock, displayName = "Break Block", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "eeeeede", internalName = "place_block", action = placeBlock, displayName = "Place Block", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "awddwqawqwawq", internalName = "colorize", action = colorize, displayName = "Internalize Pigment", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aqawqadaq", internalName = "create_water", action = createWater, displayName = "Create Water", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "dedwedade", internalName = "destroy_water", action = destroyWater, displayName = "Destroy Liquid", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aaqawawa", internalName = "ignite", action = ignite, displayName = "Ignite Block", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ddedwdwd", internalName = "extinguish", action = extinguish, displayName = "Extinguish Area", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qqa", internalName = "conjure_block", action = conjureBlock, displayName = "Conjure Block", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "qqd", internalName = "conjure_light", action = conjureLight, displayName = "Conjure Light", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wqaqwawqaqw", internalName = "bonemeal", action = bonemeal, displayName = "Overgrow", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = explode, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = explodeFire, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = addMotion, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = blink, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = breakBlock, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = placeBlock, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = colorize, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = createWater, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = destroyWater, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = ignite, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = extinguish, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = conjureBlock, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = conjureLight, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = bonemeal, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    
     , { signature = "qqqqqwaeaeaeaeaea", internalName = "recharge", action = recharge, displayName = "Recharge Item", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qdqawwaww", internalName = "erase", action = erase, displayName = "Erase Item", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "wqaqwd", internalName = "edify", action = edify, displayName = "Edify Sapling", outputOptions = [], selectedOutput = Nothing, startDirection = East }
