@@ -3,7 +3,7 @@ use std::f32::consts::{E, PI, TAU};
 use crate::interpreter::state::{Stack, StackExt};
 use crate::iota::{Iota, NullIota, VectorIota, EntityType, EntityIota};
 use crate::patterns::constructors::value_0;
-use crate::patterns::{lists, stack, read_write, Pattern};
+use crate::patterns::{lists, stack, read_write, Pattern, swizzle};
 use crate::patterns::{constructors, eval, math, special};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -92,6 +92,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Flock's Reflection", "stack_len", "qwaeawqaeaqa", Box::new(stack::stack_len)),
             Pattern::new("Fisherman's Gambit", "fisherman", "ddad", Box::new(stack::fisherman)),
             Pattern::new("Fisherman's Gambit II", "fisherman/copy", "aada", Box::new(stack::fisherman_copy)),
+            Pattern::new("Swindler's Gambit", "swizzle", "qaawdde", Box::new(swizzle::swizzle)),
+
             // Pattern::new("", "", "", Box::new(stack::)),
 
 
