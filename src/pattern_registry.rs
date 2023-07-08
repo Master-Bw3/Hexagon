@@ -1,7 +1,7 @@
 use std::f32::consts::{E, PI, TAU};
 
 use crate::interpreter::state::{Stack, StackExt};
-use crate::iota::{Iota, NullIota, VectorIota, EntityType};
+use crate::iota::{Iota, NullIota, VectorIota, EntityType, EntityIota};
 use crate::patterns::constructors::value_0;
 use crate::patterns::{lists, stack, read_write, Pattern};
 use crate::patterns::{constructors, eval, math, special};
@@ -82,10 +82,18 @@ impl PatternRegistryExt for PatternRegistry {
 
             //stack manipulation
             Pattern::new("Gemini Decomposition", "duplicate", "aadaa", Box::new(stack::duplicate)),
-
+            Pattern::new("Dioscuri Gambit", "two_dup", "aadadaaw", Box::new(stack::two_dup)),
             Pattern::new("Gemini Gambit", "duplicate_n", "aadaadaa", Box::new(stack::duplicate_n)),
             Pattern::new("Jester's Gambit", "swap", "aawdd", Box::new(stack::swap)),
             Pattern::new("Rotation Gambit", "rotate", "aaeaa", Box::new(stack::rotate)),
+            Pattern::new("Rotation Gambit II", "rotate_reverse", "ddqdd", Box::new(stack::rotate_reverse)),
+            Pattern::new("Prospector's Gambit", "over", "aaedd", Box::new(stack::over)),
+            Pattern::new("Undertaker's Gambit", "tuck", "ddqaa", Box::new(stack::tuck)),
+            Pattern::new("Flock's Reflection", "stack_len", "qwaeawqaeaqa", Box::new(stack::stack_len)),
+            // Pattern::new("", "", "", Box::new(stack::)),
+
+
+
 
             //read/write
             Pattern::new("Muninn's Reflection", "read/local",  "qeewdweddw", Box::new(read_write::read_local)),
@@ -93,6 +101,8 @@ impl PatternRegistryExt for PatternRegistry {
 
 
             //consts
+            Pattern::new("Mind's Reflection", "get_caster", "qaq", 
+                constructors::push_const(Iota::Entity(EntityIota {name: "Caster".to_string(), entity_type: EntityType::Player}))),
             Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Iota::List(vec![]))),
             Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(Iota::Vector(VectorIota::new(1.0, 0.0, 0.0)))),
             Pattern::new("Vector Reflection +Y", "const/vec/py", "qqqqqew", constructors::push_const(Iota::Vector(VectorIota::new(0.0, 1.0, 0.0)))),
@@ -107,6 +117,11 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(Iota::Null(NullIota::Null))),
             Pattern::new("True Reflection", "const/true", "aqae",constructors::push_const(Iota::Bool(true))),
             Pattern::new("False Reflection", "const/false", "dedq",constructors::push_const(Iota::Bool(false))),
+
+            //spells
+            Pattern::new("Alter Gravity", "interop/gravity/set", "wdwdwaaqw", constructors::spell_2(Stack::get_entity, Stack::get_vector)),
+            Pattern::new("Alter Scale", "interop/pehkui/set", "ddwdwwdwwd", constructors::spell_2(Stack::get_entity, Stack::get_number)),
+
 
             //requires value to be set
             Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number)),
@@ -178,10 +193,35 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("get_entity_velocity", "Pace Purification", "wq",
                 constructors::value_1(Stack::get_entity, Stack::get_vector)),
 
+            Pattern::new_with_val("interop/gravity/get", "Gravitational Purification", "wawawddew",
+                constructors::value_1(Stack::get_entity, Stack::get_vector)),
 
+            Pattern::new_with_val("interop/pehkui/get", "Gulliver's Purification", "aawawwawwa",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
 
+            Pattern::new_with_val("Archer's Distillation", "raycast", "wqaawdd",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
 
+            Pattern::new_with_val("Architect's Distillation", "raycast/axis", "weddwaa",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
 
+            Pattern::new_with_val("Scout's Distillation", "raycast/entity", "weaqa",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
+
+            Pattern::new_with_val("Waystone Reflection", "circle/impetus_pos", "eaqwqae",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
+
+            Pattern::new_with_val("Lodestone Reflection", "circle/impetus_dir", "eaqwqaewede",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
+
+            Pattern::new_with_val("Lesser Fold Reflection", "circle/bounds/min", "eaqwqaewdd",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
+
+            Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
+
+            Pattern::new_with_val("", "", "",
+                constructors::value_1(Stack::get_entity, Stack::get_number)),
 
         ];
 
