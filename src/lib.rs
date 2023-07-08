@@ -1,12 +1,12 @@
 use std::fs;
 
 use crate::interpreter::interpret;
-pub mod parser;
-pub mod patterns;
-pub mod iota;
-pub mod interpreter;
-pub mod pattern_registry;
-pub mod compiler;
+mod parser;
+mod patterns;
+mod iota;
+mod interpreter;
+mod pattern_registry;
+mod compiler;
 
 
 pub fn run() {
