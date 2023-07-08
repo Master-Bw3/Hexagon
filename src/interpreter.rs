@@ -15,7 +15,7 @@ use crate::{
 
 use self::{mishap::Mishap, state::State};
 
-pub fn interpret(node: AstNode) -> Result<State, String> {
+pub fn interpret(node: AstNode) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State::default();
     let pattern_registry = PatternRegistry::construct();
 
@@ -26,7 +26,7 @@ fn interpret_node<'a>(
     node: AstNode,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
-) -> Result<&'a mut State, String> {
+) -> Result<&'a mut State, (Mishap, (usize, usize))> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
 
     match node {
@@ -41,20 +41,20 @@ fn interpret_node<'a>(
         }
 
         AstNode::Action { name, value, line } => interpret_action(name, value, state, pattern_registry)
-            .map_err(|err| format!("{:?}", err)),
+            .map_err(|err| (err, line)),
         AstNode::Hex(nodes) => {
             interpret_action("open_paren".to_string(), None, state, pattern_registry)
-                .map_err(|err| format!("{:?}", err))?;
+                .map_err(|err| (err, (0, 0)))?;
             for node in nodes {
                 interpret_node(node, state, pattern_registry)?;
             }
             interpret_action("close_paren".to_string(), None, state, pattern_registry)
-                .map_err(|err| format!("{:?}", err))?;
+                .map_err(|err| (err, (0, 0)))?;
 
             Ok(state)
         }
         AstNode::Op { name, arg, line } => {
-            interpret_op(name, arg, state, pattern_registry).map_err(|err| format!("{:?}", err))
+            interpret_op(name, arg, state, pattern_registry).map_err(|err| (err, (0, 0)))
         }
         AstNode::IfBlock {
             condition,
@@ -63,7 +63,7 @@ fn interpret_node<'a>(
             line,
         } => {
             if state.consider_next {
-                return Err("Ops cannot be considered".to_string());
+                return Err((Mishap::OpCannotBeConsidered, line));
             }
 
             if state.buffer.is_some() {
@@ -85,7 +85,7 @@ fn interpret_node<'a>(
                 let condition = state
                     .stack
                     .get_bool(0, 1)
-                    .map_err(|err| format!("{:?}", err))?;
+                    .map_err(|err| (err, line))?;
 
                 state.stack.remove_args(&1);
 
@@ -105,9 +105,9 @@ pub fn interpret_op<'a>(
     arg: Option<OpValue>,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
-) -> Result<&'a mut State, String> {
+) -> Result<&'a mut State, Mishap> {
     if state.consider_next {
-        return Err("Ops cannot be considered".to_string());
+        return Err(Mishap::OpCannotBeConsidered);
     }
 
     if state.buffer.is_some() {

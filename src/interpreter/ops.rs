@@ -1,38 +1,28 @@
-
 use crate::{
     iota::{Iota, PatternIota},
-    parser::OpValue, pattern_registry::PatternRegistry,
+    parser::OpValue,
+    pattern_registry::PatternRegistry,
 };
 
-use super::{
-    push_iota,
-    state::{State},
-};
+use super::{mishap::Mishap, push_iota, state::State};
 
 pub fn store<'a>(
     value: &'a Option<OpValue>,
     mut state: &'a mut State,
     copy: bool,
-) -> Result<(), String> {
+) -> Result<(), Mishap> {
     let val = match value {
         Some(val) => val,
-        None => Err("Expected 1 input, but recieved 0 inputs")?,
+        None => Err(Mishap::OpNotEnoughArgs(1))?,
     };
     match val {
-        OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota)),
+        OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone())),
         OpValue::Var(var) => {
             let iota = {
                 if copy {
-                    state
-                        .stack
-                        .last()
-                        .ok_or("Cannot assign variable because stack is empty".to_string())?
-                        .clone()
+                    state.stack.last().ok_or(Mishap::NotEnoughIotas(1))?.clone()
                 } else {
-                    state
-                        .stack
-                        .pop()
-                        .ok_or("Cannot assign variable because stack is empty".to_string())?
+                    state.stack.pop().ok_or(Mishap::NotEnoughIotas(1))?
                 }
             };
 
@@ -96,21 +86,20 @@ fn get_iota_from_ravenmind(ravenmind: Option<Iota>, index: usize) -> Option<Iota
     unwrapped_ravenmind.get(index).cloned()
 }
 
-pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), String> {
+pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), Mishap> {
     match value {
         Some(val) => match val {
-            OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota)),
+            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
             OpValue::Var(var) => {
-                let index = *state.heap.get(var).ok_or("variable not assigned")?;
-                let iota =
-                    get_iota_from_ravenmind(state.ravenmind.clone(), index.try_into().unwrap())
-                        .ok_or("no iota found at index")?;
+                let index = *state.heap.get(var).ok_or(Mishap::VariableNotAssigned)? as usize;
+                let iota = get_iota_from_ravenmind(state.ravenmind.clone(), index)
+                    .ok_or(Mishap::NoIotaAtIndex(index))?;
                 push_iota(iota, state, state.consider_next);
                 state.consider_next = false;
                 Ok(())
             }
         },
-        None => Err("Expected 1 input, but recieved 0 inputs".to_string()),
+        None => Err(Mishap::OpNotEnoughArgs(1))?,
     }
 }
 
@@ -126,11 +115,10 @@ pub fn embed<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     embed_type: EmbedType,
-) -> Result<(), String> {
-    
+) -> Result<(), Mishap> {
     let val = match value {
         Some(val) => val,
-        None => Err("Expected 1 input, but recieved 0 inputs".to_string())?,
+        None => Err(Mishap::OpNotEnoughArgs(1))?,
     };
 
     match val {
@@ -144,12 +132,12 @@ pub fn embed<'a>(
                 state.stack.push(Iota::Pattern(PatternIota::from_name(
                     pattern_registry,
                     "open_paren",
-                    None
+                    None,
                 )));
                 state.stack.push(iota.clone());
             }
         },
-        OpValue::Var(var) => Err(format!("Expected Iota, recieved {:?}", var))?,
+        OpValue::Var(var) => Err(Mishap::OpExpectedIota)?,
     };
     Ok(())
 }
@@ -158,7 +146,6 @@ pub fn embed<'a>(
 mod tests {
     use super::*;
     use std::collections::HashMap;
-
 
     #[test]
     fn test() {

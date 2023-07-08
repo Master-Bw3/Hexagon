@@ -3,14 +3,14 @@ use std::{collections::HashMap, vec};
 use crate::{
     iota::{Iota, PatternIota},
     parser::OpValue,
-    pattern_registry::PatternRegistry,
+    pattern_registry::PatternRegistry, interpreter::mishap::Mishap,
 };
 
 pub fn compile_op_copy(
     heap: &mut HashMap<String, i32>,
     pattern_registry: &PatternRegistry,
     arg: &Option<OpValue>,
-) -> Result<Vec<Iota>, String> {
+) -> Result<Vec<Iota>, Mishap> {
     let mut compiled = vec![Iota::Pattern(PatternIota::from_name(
         pattern_registry,
         "duplicate",
@@ -26,14 +26,14 @@ pub fn compile_op_store(
     heap: &mut HashMap<String, i32>,
     pattern_registry: &PatternRegistry,
     arg: &Option<OpValue>,
-) -> Result<Vec<Iota>, String> {
+) -> Result<Vec<Iota>, Mishap> {
     let value = arg
         .as_ref()
-        .ok_or("Expected 1 input, but recieved 0 inputs")?;
+        .ok_or(Mishap::OpNotEnoughArgs(1))?;
 
     let (index, var) = {
         match value {
-            OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota))?,
+            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
             OpValue::Var(var) => (heap.get(var), var),
         }
     };
@@ -84,15 +84,15 @@ pub fn compile_op_push(
     heap: &mut HashMap<String, i32>,
     pattern_registry: &PatternRegistry,
     arg: &Option<OpValue>,
-) -> Result<Vec<Iota>, String> {
+) -> Result<Vec<Iota>, Mishap> {
     let value = arg
         .as_ref()
-        .ok_or("Expected 1 input, but recieved 0 inputs")?;
+        .ok_or(Mishap::OpNotEnoughArgs(1))?;
 
     let index = {
         match value {
-            OpValue::Iota(iota) => Err(format!("Expected Var, recieved {:?}", iota))?,
-            OpValue::Var(var) => heap.get(var).ok_or("variable not assigned".to_string())?,
+            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
+            OpValue::Var(var) => heap.get(var).ok_or(Mishap::VariableNotAssigned)?,
         }
     };
     let compiled = vec![

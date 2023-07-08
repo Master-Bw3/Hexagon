@@ -11,7 +11,14 @@ pub enum Mishap {
     InvalidPattern,
     ExpectedPattern(Iota),
     ExpectedValue,
-    InvalidValue
+    InvalidValue,
+    OpCannotBeConsidered,
+    OpNotEnoughArgs(i32),
+    OpExpectedVar(Iota),
+    OpExpectedIota,
+    VariableNotAssigned,
+    NoIotaAtIndex(usize)
+
 }
 
 impl Mishap {
@@ -42,6 +49,12 @@ impl Mishap {
             Mishap::ExpectedPattern(_) => todo!(),
             Mishap::ExpectedValue => todo!(),
             Mishap::InvalidValue => todo!(),
+            Mishap::OpCannotBeConsidered => todo!(),
+            Mishap::OpNotEnoughArgs(_) => todo!(),
+            Mishap::OpExpectedVar(_) => todo!(),
+            Mishap::VariableNotAssigned => todo!(),
+            Mishap::OpExpectedIota => todo!(),
+            Mishap::NoIotaAtIndex(_) => todo!(),
         }
     }
 }
