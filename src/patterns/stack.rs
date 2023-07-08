@@ -169,7 +169,7 @@ pub fn fisherman<'a>(
         return Err(Mishap::NotEnoughIotas(iota as usize));
     }
 
-    if iota >= 0.0 {
+    if iota >= 0 {
         let iota = iota as usize;
         let operation_result = { state.stack[state.stack.len() - iota].clone() };
 
