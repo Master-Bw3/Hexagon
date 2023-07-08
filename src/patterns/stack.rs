@@ -210,6 +210,77 @@ pub fn fisherman_copy<'a>(
     Ok(state)
 }
 
+// pub fn swizzle<'a>(
+//     state: &'a mut State,
+//     _pattern_registry: &PatternRegistry,
+// ) -> Result<&'a mut State, Mishap> {
+//     if state.stack.is_empty() {
+//         return Err(Mishap::NotEnoughIotas(1));
+//     }
+
+//     let arg_count = 1;
+//     let code = state
+//         .stack
+//         .get_positive_integer_under_inclusive(0, usize::MAX, arg_count)?
+//         .clone();
+//     state.stack.remove_args(&arg_count);
+
+//     let mut strides: Vec<i32> = vec![];
+
+//     for f in FactorialIter::new() {
+//         if f <= code {
+//             strides.push(f)
+//         } else {
+//             break;
+//         }
+//     }
+
+//     if strides.len() > state.stack.len() {
+//         return Err(Mishap::NotEnoughIotas(strides.len() + 1));
+//     }
+
+//     let mut edit_target =
+//         &mut state.stack.clone()[(state.stack.len() - strides.len())..state.stack.len()];
+//     let swap = edit_target.to_vec();
+//     let mut radix = code;
+//     let mut strides_reversed = strides.clone();
+//     strides_reversed.reverse();
+//     for divisor in strides_reversed {
+//         let index = radix / divisor;
+//         radix %= divisor;
+//         edit_target[0] = swap[index as usize].clone();
+//         let edit_target_len = edit_target.len();
+//         edit_target = edit_target[1..edit_target_len].as_mut();
+//         println!("edit: {:?}", edit_target);
+//     }
+
+//     println!("stack: {:?}, \n edit: {:?}", state.stack, edit_target);
+
+//     Ok(state)
+// }
+
+struct FactorialIter {
+    acc: i32,
+    n: i32,
+}
+
+impl FactorialIter {
+    fn new() -> FactorialIter {
+        FactorialIter { acc: 1, n: 1 }
+    }
+}
+
+impl Iterator for FactorialIter {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let out = self.acc;
+        self.acc *= self.n;
+        self.n += 1;
+        Some(out)
+    }
+}
+
 mod tests {
 
     use crate::pattern_registry::PatternRegistryExt;
@@ -301,3 +372,4 @@ mod tests {
         assert_eq!(result.stack, expected)
     }
 }
+
