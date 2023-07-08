@@ -136,7 +136,7 @@ pub fn interpret_op<'a>(
         }?;
     }
 
-    return Ok(state);
+    Ok(state)
 }
 
 pub fn interpret_action<'a>(

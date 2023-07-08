@@ -1,5 +1,3 @@
-use std::any::{self, Any, TypeId};
-
 use crate::{
     interpreter::{
         mishap::Mishap,
@@ -170,9 +168,9 @@ pub fn zone_entity(
 ) -> Box<ActionWithValueType> {
     let conditon = move |iota: &Iota| {
         if *inverse {
-            iota.is_entity(None) && !iota.is_entity(entity_type)
+            iota.is_entity_list(None) && !iota.is_entity_list(entity_type)
         } else {
-            iota.is_entity(entity_type)
+            iota.is_entity_list(entity_type)
         }
     };
 

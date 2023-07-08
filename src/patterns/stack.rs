@@ -1,11 +1,9 @@
-use nalgebra::ComplexField;
-
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{Either, StackExt, State},
+        state::{StackExt, State},
     },
-    iota::{Iota, VectorIota},
+    iota::{Iota},
     pattern_registry::PatternRegistry,
 };
 
@@ -162,7 +160,7 @@ pub fn fisherman<'a>(
     }
 
     let arg_count = 1;
-    let iota = state.stack.get_integer(0, arg_count)?.clone();
+    let iota = state.stack.get_integer(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     if state.stack.len() < iota as usize {
@@ -181,7 +179,7 @@ pub fn fisherman<'a>(
         let iota2 = state.stack.get_iota(0, arg_count)?.clone();
         state.stack.remove_args(&arg_count);
 
-        state.stack.insert(iota.abs() as usize, iota2)
+        state.stack.insert(iota.unsigned_abs() as usize, iota2)
     }
 
     Ok(state)
@@ -196,7 +194,7 @@ pub fn fisherman_copy<'a>(
     }
 
     let arg_count = 1;
-    let iota = state.stack.get_integer(0, arg_count)?.clone() as usize;
+    let iota = state.stack.get_integer(0, arg_count)? as usize;
     state.stack.remove_args(&arg_count);
 
     if state.stack.len() < iota {
@@ -276,6 +274,7 @@ mod tests {
         assert_eq!(result.stack, expected)
     }
 
+    #[test]
     fn fisherman_neg_test() {
         todo!("negative fisherman isn't a thing yet")
     }

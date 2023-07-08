@@ -61,8 +61,7 @@ pub fn swizzle<'a>(
     let arg_count = 1;
     let code = state
         .stack
-        .get_positive_integer_under_inclusive(0, usize::MAX, arg_count)?
-        .clone() as usize;
+        .get_positive_integer_under_inclusive(0, usize::MAX, arg_count)? as usize;
     state.stack.remove_args(&arg_count);
 
     ixed_factorial(code, &mut state.stack[..])?;
@@ -75,6 +74,7 @@ mod tests {
     use crate::{pattern_registry::PatternRegistryExt, iota::Iota};
 
     use super::*;
+    
     #[test]
     fn swizzle_test() {
         let mut state = State::default();
