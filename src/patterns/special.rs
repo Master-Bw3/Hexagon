@@ -2,7 +2,7 @@ use crate::{
     interpreter::{
         mishap::Mishap,
         push_pattern,
-        state::State,
+        state::{State, StackExt},
     },
     iota::{Iota, PatternIota}, pattern_registry::PatternRegistry,
 };
@@ -85,5 +85,14 @@ pub fn no_action<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mu
 
 pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     state.halt = true;
+    Ok(state)
+}
+
+pub fn print<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> { 
+    let iota = state.stack.get_iota(0, 1)?;
+    println!("{:?}", iota);
     Ok(state)
 }

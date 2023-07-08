@@ -24,6 +24,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Hermes' Gambit", "eval", "deaqq", Box::new(eval::eval)),
             Pattern::new("Thoth's Gambit", "for_each", "dadad", Box::new(eval::for_each)),
             Pattern::new("Charon's Gambit", "halt", "aqdee", Box::new(special::halt)),
+            Pattern::new("Reveal", "print", "de", Box::new(special::print)),
+
 
             //math
             Pattern::new("Additive Distillation", "add", "waaw", Box::new(math::add)),
@@ -62,6 +64,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Inversion Purification", "not_bit", "dweaqa", Box::new(math::not_bit)),
             Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
             Pattern::new("Augur's Exaltation", "if", "awdd",  Box::new(math::bool_if)),
+            Pattern::new("Entropy Reflection", "random", "eqqq",  Box::new(math::random)),
 
 
             //lists

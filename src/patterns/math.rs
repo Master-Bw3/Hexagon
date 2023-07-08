@@ -764,6 +764,21 @@ pub fn bool_if<'a>(
     Ok(state)
 }
 
+
+pub fn random<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+
+    let rand = rand::random::<f32>();
+
+    state.stack.push(Iota::Number(rand));
+
+    Ok(state)
+}
+
+
+
 #[cfg(test)]
 mod tests {
 
