@@ -10,21 +10,19 @@ use crate::{
     pattern_registry::PatternRegistry,
 };
 
-use super::pattern::{ActionNoValueType, ActionWithValueType};
+use super::{ActionNoValueType, ActionWithValueType};
+
 
 type GetterType<T> = fn(&Stack, usize, usize) -> Result<T, Mishap>;
 
-// pub fn spell<T:'static >(arg_count: usize, getters: Vec<GetterType<T>>) -> Box<ActionType> {
-//     Box::new(
-//         move |state: &mut State, _: &PatternRegistry| {
-//             for (index, getter) in getters.iter().enumerate() {
-//                 getter(&state.stack, index, arg_count)?;
-//             }
-//             state.stack.remove_args(&arg_count);
-//             Ok(state)
-//         },
-//     )
-// }
+
+pub fn operator<T: 'static>(arg_count: usize, action: Box<ActionNoValueType>) -> Box<ActionNoValueType> {
+    Box::new(move |state: &mut State, _: &PatternRegistry| {
+        state.stack.remove_args(&1);
+        Ok(state)
+    })
+}
+
 
 pub fn spell_1<T: 'static>(getter: GetterType<T>) -> Box<ActionNoValueType> {
     Box::new(move |state: &mut State, _: &PatternRegistry| {

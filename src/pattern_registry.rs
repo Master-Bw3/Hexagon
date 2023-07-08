@@ -3,8 +3,8 @@ use std::f32::consts::{E, PI, TAU};
 use crate::interpreter::state::{Stack, StackExt};
 use crate::iota::{Iota, NullIota, VectorIota, EntityType};
 use crate::patterns::constructors::value_0;
-use crate::patterns::{lists, stack, read_write};
-use crate::patterns::{constructors, eval, math, pattern::Pattern, special};
+use crate::patterns::{lists, stack, read_write, Pattern};
+use crate::patterns::{constructors, eval, math, special};
 
 pub type PatternRegistry = Vec<Pattern>;
 
