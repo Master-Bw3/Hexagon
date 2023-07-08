@@ -90,6 +90,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Prospector's Gambit", "over", "aaedd", Box::new(stack::over)),
             Pattern::new("Undertaker's Gambit", "tuck", "ddqaa", Box::new(stack::tuck)),
             Pattern::new("Flock's Reflection", "stack_len", "qwaeawqaeaqa", Box::new(stack::stack_len)),
+            Pattern::new("Fisherman's Gambit", "fisherman", "ddad", Box::new(stack::fisherman)),
+            // Pattern::new("Fisherman's Gambit II", "fisherman/copy", "aada", Box::new(stack::fisherman_copy)),
             // Pattern::new("", "", "", Box::new(stack::)),
 
 

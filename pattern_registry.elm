@@ -1,6 +1,3 @@
-    , { signature = "", internalName = "", action = stackLength, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "ddad", internalName = "fisherman", action = fisherman, displayName = "Fisherman's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "aada", internalName = "fisherman/copy", action = fishermanCopy, displayName = "Fisherman's Gambit II", outputOptions = [], selectedOutput = Nothing, startDirection = East }
     , { signature = "qaawdde", internalName = "swizzle", action = noAction, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East } -- do this
     , { signature = "eqqq", internalName = "random", action = spellNoInput, displayName = "Entropy Reflection", outputOptions = [NumberType], selectedOutput = Just (NumberType, Number 0), startDirection = East }
     , { signature = "de", internalName = "print", action = print, displayName = "Reveal", outputOptions = [], selectedOutput = Nothing, startDirection = East }

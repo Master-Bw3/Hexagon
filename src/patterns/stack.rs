@@ -1,3 +1,5 @@
+use nalgebra::ComplexField;
+
 use crate::{
     interpreter::{
         mishap::Mishap,
@@ -151,6 +153,63 @@ pub fn stack_len<'a>(
     Ok(state)
 }
 
+pub fn fisherman<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    if state.stack.len() < 2 {
+        return Err(Mishap::NotEnoughIotas(2));
+    }
+
+    let arg_count = 1;
+    let iota = state.stack.get_integer(0, arg_count)?.clone();
+    state.stack.remove_args(&arg_count);
+
+    if state.stack.len() < iota as usize {
+        return Err(Mishap::NotEnoughIotas(iota as usize));
+    }
+
+    if iota >= 0.0 {
+        let iota = iota as usize;
+        let operation_result = { state.stack[state.stack.len() - iota].clone() };
+
+        state.stack.remove(state.stack.len() - iota);
+
+        state.stack.push(operation_result);
+    } else {
+        let arg_count = 1;
+        let iota2 = state.stack.get_iota(0, arg_count)?.clone();
+        state.stack.remove_args(&arg_count);
+
+        state.stack.insert(iota.abs() as usize, iota2)
+    }
+
+    Ok(state)
+}
+
+pub fn fisherman_copy<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    if state.stack.len() < 2 {
+        return Err(Mishap::NotEnoughIotas(2));
+    }
+
+    let arg_count = 1;
+    let iota = state.stack.get_integer(0, arg_count)?.clone() as usize;
+    state.stack.remove_args(&arg_count);
+
+    if state.stack.len() < iota {
+        return Err(Mishap::NotEnoughIotas(iota));
+    }
+
+    let operation_result = { state.stack[state.stack.len() - 1 - iota].clone() };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
+
 mod tests {
 
     use crate::pattern_registry::PatternRegistryExt;
@@ -198,6 +257,47 @@ mod tests {
         let expected = vec![Iota::Number(1.0), Iota::Number(0.0), Iota::Number(1.0)];
 
         let result = tuck(&mut state, &PatternRegistry::construct()).unwrap();
+        assert_eq!(result.stack, expected)
+    }
+
+    #[test]
+    fn fisherman_test() {
+        let mut state = State::default();
+        state.stack = vec![
+            Iota::Number(0.0),
+            Iota::Number(1.0),
+            Iota::Number(2.0),
+            Iota::Number(2.0),
+        ];
+
+        let expected = vec![Iota::Number(0.0), Iota::Number(2.0), Iota::Number(1.0)];
+
+        let result = fisherman(&mut state, &PatternRegistry::construct()).unwrap();
+        assert_eq!(result.stack, expected)
+    }
+
+    fn fisherman_neg_test() {
+        todo!("negative fisherman isn't a thing yet")
+    }
+
+    #[test]
+    fn fisherman_copy_test() {
+        let mut state = State::default();
+        state.stack = vec![
+            Iota::Number(0.0),
+            Iota::Number(1.0),
+            Iota::Number(2.0),
+            Iota::Number(2.0),
+        ];
+
+        let expected = vec![
+            Iota::Number(0.0),
+            Iota::Number(1.0),
+            Iota::Number(2.0),
+            Iota::Number(0.0),
+        ];
+
+        let result = fisherman_copy(&mut state, &PatternRegistry::construct()).unwrap();
         assert_eq!(result.stack, expected)
     }
 }
