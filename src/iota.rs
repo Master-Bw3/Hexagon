@@ -122,7 +122,7 @@ impl PatternIota {
 
 pub type Signature = Vec<PatternSigDir>;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PatternSigDir {
     Q,
     A,

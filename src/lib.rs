@@ -7,6 +7,7 @@ mod iota;
 mod parser;
 mod pattern_registry;
 mod patterns;
+mod parse_config;
 
 pub fn run() {
     let path = "./test.hexcasting";

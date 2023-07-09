@@ -12,7 +12,7 @@ use pest_derive::Parser;
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
-struct HexParser;
+pub struct HexParser;
 pub fn parse(source: &str) -> Result<AstNode, Box<Error<Rule>>> {
     let mut ast = vec![];
     let pattern_registry = PatternRegistry::construct();
@@ -193,7 +193,7 @@ fn parse_if_block(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> A
     parse_inner(pair.line_col(), pair.into_inner(), pattern_registry)
 }
 
-fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota {
+pub fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota {
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
         Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
@@ -246,7 +246,7 @@ fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota 
     }
 }
 
-fn parse_entity_type(string: String) -> EntityType {
+pub fn parse_entity_type(string: String) -> EntityType {
     match &string[..] {
         "Animal" => EntityType::Animal,
         "Monster" => EntityType::Monster,
