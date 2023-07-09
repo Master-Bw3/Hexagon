@@ -96,7 +96,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Fisherman's Gambit", "fisherman", "ddad", Box::new(stack::fisherman)),
             Pattern::new("Fisherman's Gambit II", "fisherman/copy", "aada", Box::new(stack::fisherman_copy)),
             Pattern::new("Swindler's Gambit", "swizzle", "qaawdde", Box::new(swizzle::swizzle)),
-            Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(special::mask)),
+            Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask)),
 
 
             //read/write

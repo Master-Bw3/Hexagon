@@ -119,34 +119,3 @@ pub fn beep<'a>(
 
     Ok(state)
 }
-
-pub fn mask<'a>(
-    state: &'a mut State,
-    _pattern_registry: &PatternRegistry,
-    value: &ActionValue,
-) -> Result<&'a mut State, Mishap> {
-    let code = match value {
-        ActionValue::Bookkeeper(code) => code,
-        _ => Err(Mishap::InvalidValue)?,
-    };
-
-    let apply_code = |(iota, char): (&Iota, char)| match char {
-        '-' => Some(iota.clone()),
-        'v' => None,
-        _ => unreachable!(),
-    };
-
-    if state.stack.len() < code.len() {
-        return Err(Mishap::NotEnoughIotas(code.len()));
-    }
-
-    let mut new_stack = state.stack[..state.stack.len() - code.len()].to_vec();
-    let top_stack = state.stack[state.stack.len() - code.len()..].to_vec();
-    let apply_result = &mut top_stack.iter().zip(code.chars()).filter_map(apply_code).collect::<Vec<_>>();
-
-    new_stack.append(apply_result);
-
-    state.stack = new_stack;
-
-    Ok(state)
-}
