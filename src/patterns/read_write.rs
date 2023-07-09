@@ -1,7 +1,7 @@
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{StackExt, State, Holding},
+        state::{Holding, StackExt, State},
     },
     iota::{Iota, NullIota},
     pattern_registry::PatternRegistry,
@@ -38,11 +38,69 @@ pub fn erase<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-
-
     state.offhand = match state.offhand {
         Holding::None => Holding::None,
         Holding::Focus(_) => Holding::Focus(None),
+        Holding::Trinket(_) => Holding::Trinket(None),
+        Holding::Artifact(_) => Holding::Artifact(None),
+        Holding::Cypher(_) => Holding::Cypher(None),
+    };
+
+    Ok(state)
+}
+
+pub fn craft_trinket<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let iotas = (
+        state.stack.get_entity(0, arg_count)?,
+        state.stack.get_list(1, arg_count)?,
+    );
+    state.stack.remove_args(&arg_count);
+
+    state.offhand = match state.offhand {
+        Holding::Trinket(None) => Holding::Trinket(Some(Iota::List(iotas.1))),
+        _ => state.offhand.clone(), //should mishap but im lazy so no
+    };
+
+    Ok(state)
+}
+
+pub fn craft_cypher<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let iotas = (
+        state.stack.get_entity(0, arg_count)?,
+        state.stack.get_list(1, arg_count)?,
+    );
+    state.stack.remove_args(&arg_count);
+
+    state.offhand = match state.offhand {
+        Holding::Trinket(None) => Holding::Cypher(Some(Iota::List(iotas.1))),
+        _ => state.offhand.clone(), //should mishap but im lazy so no
+    };
+
+    Ok(state)
+}
+
+pub fn craft_artifact<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let iotas = (
+        state.stack.get_entity(0, arg_count)?,
+        state.stack.get_list(1, arg_count)?,
+    );
+    state.stack.remove_args(&arg_count);
+
+    state.offhand = match state.offhand {
+        Holding::Trinket(None) => Holding::Artifact(Some(Iota::List(iotas.1))),
+        _ => state.offhand.clone(), //should mishap but im lazy so no
     };
 
     Ok(state)

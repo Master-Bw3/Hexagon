@@ -27,6 +27,9 @@ pub enum Holding {
     #[default]
     None,
     Focus(Option<Iota>),
+    Trinket(Option<Iota>),
+    Artifact(Option<Iota>),
+    Cypher(Option<Iota>),
 }
 
 pub enum Either<L, R> {
@@ -139,7 +142,6 @@ impl StackExt for Stack {
             _ => Err(Mishap::IncorrectIota(index)),
         }
     }
-
 
     fn get_integer(&self, index: usize, arg_count: usize) -> Result<i32, Mishap> {
         let iota = self.get_iota(index, arg_count)?;

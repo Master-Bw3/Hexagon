@@ -149,6 +149,11 @@ impl PatternRegistryExt for PatternRegistry {
 
             //read/write
             Pattern::new("Erase Item", "erase", "qdqawwaww", Box::new(read_write::erase)),
+            Pattern::new("Craft Trinket", "craft/trinket", "wwaqqqqqeaqeaeqqqeaeq", Box::new(read_write::craft_trinket)),
+            Pattern::new("Craft Cypher", "craft/cypher", "waqqqqq", Box::new(read_write::craft_cypher)),
+            Pattern::new("Craft Artifact", "craft/artifact", "wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq", Box::new(read_write::craft_artifact)),
+            // Pattern::new("", "", "", Box::new(read_write::)),
+
 
 
 
