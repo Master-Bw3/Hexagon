@@ -30,7 +30,7 @@ Vector = {"(" ~ Number ~ "," ~ Number ~ "," ~ Number ~ ")" }
 
 Number = @{ "-"? ~ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
 
-Entity = {"{" ~ String ~ "," ~ EntityType ~ ("," ~ Uuid)? ~ "}" }
+Entity = {"{" ~ String ~ "," ~ WHITESPACE? ~ EntityType ~ ("," ~ Uuid)? ~ "}" }
 
 Uuid = ${ UuidStart ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UUIDEnd }
 
@@ -42,9 +42,9 @@ UUIDEnd = @{ (ASCII_DIGIT | ASCII_ALPHA_LOWER){12} }
 
 EntityType = @{"Animal" | "Monster" | "Living" | "Item" | "Player" | "Misc"}
 
-Influence = @{"Null" | "Garbage" ~ !(ASCII_ALPHA)}
+Influence = @{("Null" | "Garbage") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
-Bool = @{"True" | "False" ~ !(ASCII_ALPHA)}
+Bool = @{("True" | "False") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
 Pattern = ${ IntroRetro | PatternName | ActionName }
 

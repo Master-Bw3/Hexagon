@@ -93,7 +93,10 @@ fn parse_action(
         .map(|pair| match pair.as_rule() {
             Rule::Iota => AstNode::Action {
                 name: left.as_str().to_string(),
-                value: Some(ActionValue::Iota(parse_iota(pair.clone(), pattern_registry))),
+                value: Some(ActionValue::Iota(parse_iota(
+                    pair.clone(),
+                    pattern_registry,
+                ))),
                 line: pair.line_col(),
             },
             Rule::EntityType => AstNode::Action {
@@ -184,7 +187,7 @@ fn parse_if_block(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> A
                     _ => unreachable!(),
                 })
             },
-            line
+            line,
         }
     }
     parse_inner(pair.line_col(), pair.into_inner(), pattern_registry)
@@ -202,13 +205,13 @@ fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota 
                     "close_paren",
                     None,
                 )),
-                _ => unreachable!(),
+                _ => Iota::Pattern(PatternIota::from_name(
+                    pattern_registry,
+                    inner_pair.as_str(),
+                    None,
+                )),
             },
-            None => Iota::Pattern(PatternIota::from_name(
-                pattern_registry,
-                inner_pair.as_str(),
-                None,
-            )),
+            None => unreachable!(),
         },
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();

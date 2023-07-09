@@ -128,7 +128,7 @@ pub fn embed<'a>(
                     interpret_action(
                         pattern_registry
                             .find(&pat.signature.as_str())
-                            .unwrap_or(Err(Mishap::InvalidPattern)?)
+                            .ok_or(Mishap::InvalidPattern)?
                             .internal_name
                             .clone(),
                         pat.value.clone().map(|iota| ActionValue::Iota(iota)),
