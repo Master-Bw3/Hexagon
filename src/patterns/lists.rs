@@ -245,11 +245,14 @@ pub fn deconstruct<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let mut iota = state.stack.get_list(0, arg_count)?;
+    let mut iota = state.stack.get_list(0, arg_count)?.clone();
     state.stack.remove_args(&arg_count);
 
+    let taken = iota[0].clone();
     iota.remove(0);
+
     state.stack.push(Iota::List(iota));
+    state.stack.push(taken);
 
     Ok(state)
 }
