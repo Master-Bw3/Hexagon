@@ -208,14 +208,10 @@ pub fn akashic_write<'a>(
     );
     state.stack.remove_args(&arg_count);
 
-    let location = [(iotas.0).x as i32, (iotas.0).y as i32, (iotas.0).z as i32];
+    let location = &[(iotas.0).x as i32, (iotas.0).y as i32, (iotas.0).z as i32];
 
-    match state.libraries.get(&location) {
-        Some(library) => {
-            let mut new_library = library;
-            new_library.insert((iotas.1).signature, iotas.2);
-            state.libraries.insert(location, new_library)
-        }
+    match state.libraries.get_mut(location) {
+        Some(library) => library.insert((iotas.1).signature, iotas.2),
         None => Err(Mishap::NoAkashicRecord(iotas.0))?,
     };
 
