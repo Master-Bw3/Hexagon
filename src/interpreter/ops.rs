@@ -1,10 +1,10 @@
 use crate::{
-    iota::{Iota, PatternIota},
-    parser::OpValue,
-    pattern_registry::PatternRegistry,
+    iota::{Iota, PatternIota, SignatureExt},
+    parser::{ActionValue, OpValue},
+    pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-use super::{mishap::Mishap, push_iota, state::State};
+use super::{interpret_action, mishap::Mishap, push_iota, state::State};
 
 pub fn store<'a>(
     value: &'a Option<OpValue>,
@@ -123,9 +123,21 @@ pub fn embed<'a>(
 
     match val {
         OpValue::Iota(iota) => match embed_type {
-            EmbedType::Normal => {
-                state.stack.push(iota.clone());
-            }
+            EmbedType::Normal => match iota {
+                Iota::Pattern(pat) => {
+                    interpret_action(
+                        pattern_registry
+                            .find(&pat.signature.as_str())
+                            .unwrap_or(Err(Mishap::InvalidPattern)?)
+                            .internal_name
+                            .clone(),
+                        pat.value.clone().map(|iota| ActionValue::Iota(iota)),
+                        state,
+                        pattern_registry,
+                    )?;
+                }
+                _ => return Err(Mishap::IncorrectIota(0)),
+            },
             EmbedType::Smart => todo!(),
             EmbedType::Consider => todo!(),
             EmbedType::IntroRetro => {
@@ -135,6 +147,11 @@ pub fn embed<'a>(
                     None,
                 )));
                 state.stack.push(iota.clone());
+                state.stack.push(Iota::Pattern(PatternIota::from_name(
+                    pattern_registry,
+                    "close_paren",
+                    None,
+                )));
             }
         },
         OpValue::Var(var) => Err(Mishap::OpExpectedIota)?,
