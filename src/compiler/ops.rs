@@ -1,9 +1,10 @@
 use std::{collections::HashMap, vec};
 
 use crate::{
+    interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{Iota, PatternIota},
     parser::OpValue,
-    pattern_registry::PatternRegistry, interpreter::mishap::Mishap,
+    pattern_registry::PatternRegistry,
 };
 
 pub fn compile_op_copy(
@@ -24,12 +25,10 @@ pub fn compile_op_copy(
 
 pub fn compile_op_store(
     heap: &mut HashMap<String, i32>,
-    pattern_registry: &PatternRegistry,
+    registry: &PatternRegistry,
     arg: &Option<OpValue>,
 ) -> Result<Vec<Iota>, Mishap> {
-    let value = arg
-        .as_ref()
-        .ok_or(Mishap::OpNotEnoughArgs(1))?;
+    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
 
     let (index, var) = {
         match value {
@@ -41,23 +40,15 @@ pub fn compile_op_store(
     let compiled = match index {
         Some(index) => {
             vec![
-                Iota::Pattern(PatternIota::from_name(pattern_registry, "read/local", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "read/local", None)),
                 Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
+                    registry,
                     "number",
                     Some(Iota::Number(*index as f32)),
                 )),
-                Iota::Pattern(PatternIota::from_name(pattern_registry, "rotate", None)),
-                Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    "modify_in_place",
-                    None,
-                )),
-                Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    "write/local",
-                    None,
-                )),
+                Iota::Pattern(PatternIota::from_name(registry, "rotate", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "modify_in_place", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "write/local", None)),
             ]
         }
         None => {
@@ -65,14 +56,10 @@ pub fn compile_op_store(
             heap.insert(var.clone(), new_index);
 
             vec![
-                Iota::Pattern(PatternIota::from_name(pattern_registry, "read/local", None)),
-                Iota::Pattern(PatternIota::from_name(pattern_registry, "swap", None)),
-                Iota::Pattern(PatternIota::from_name(pattern_registry, "append", None)),
-                Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    "write/local",
-                    None,
-                )),
+                Iota::Pattern(PatternIota::from_name(registry, "read/local", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "swap", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "append", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "write/local", None)),
             ]
         }
     };
@@ -82,12 +69,10 @@ pub fn compile_op_store(
 
 pub fn compile_op_push(
     heap: &mut HashMap<String, i32>,
-    pattern_registry: &PatternRegistry,
+    registry: &PatternRegistry,
     arg: &Option<OpValue>,
 ) -> Result<Vec<Iota>, Mishap> {
-    let value = arg
-        .as_ref()
-        .ok_or(Mishap::OpNotEnoughArgs(1))?;
+    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
 
     let index = {
         match value {
@@ -96,14 +81,44 @@ pub fn compile_op_push(
         }
     };
     let compiled = vec![
-        Iota::Pattern(PatternIota::from_name(pattern_registry, "read/local", None)),
+        Iota::Pattern(PatternIota::from_name(registry, "read/local", None)),
         Iota::Pattern(PatternIota::from_name(
-            pattern_registry,
+            registry,
             "number",
             Some(Iota::Number(*index as f32)),
         )),
-        Iota::Pattern(PatternIota::from_name(pattern_registry, "index", None)),
+        Iota::Pattern(PatternIota::from_name(registry, "index", None)),
     ];
+
+    Ok(compiled)
+}
+
+pub fn compile_op_embed(
+    registry: &PatternRegistry,
+    arg: &Option<OpValue>,
+    embed_type: EmbedType,
+) -> Result<Vec<Iota>, Mishap> {
+    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
+
+    let iota = {
+        if let OpValue::Iota(iota) = value {
+            iota.clone()
+        } else {
+            Err(Mishap::OpExpectedIota)?
+        }
+    };
+
+    let compiled = match embed_type {
+        EmbedType::Normal => vec![iota],
+        EmbedType::Smart => todo!(),
+        EmbedType::Consider => todo!(),
+        EmbedType::IntroRetro => vec![
+            Iota::Pattern(PatternIota::from_name(registry, "open_paren", None)),
+            iota,
+            Iota::Pattern(PatternIota::from_name(registry, "close_paren", None)),
+            Iota::Pattern(PatternIota::from_name(registry, "splat", None)),
+        ],
+    };
 
     Ok(compiled)
 }

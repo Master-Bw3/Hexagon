@@ -1,9 +1,9 @@
 pub mod mishap;
-mod ops;
+pub mod ops;
 pub mod state;
 
 use crate::{
-    compiler::ops::{compile_op_copy, compile_op_push, compile_op_store},
+    compiler::ops::{compile_op_copy, compile_op_push, compile_op_store, compile_op_embed},
     interpreter::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
@@ -117,10 +117,10 @@ pub fn interpret_op<'a>(
             }
             crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Embed => todo!(),
-            crate::parser::OpName::SmartEmbed => todo!(),
-            crate::parser::OpName::ConsiderEmbed => todo!(),
-            crate::parser::OpName::IntroEmbed => todo!(),
+            crate::parser::OpName::Embed => compile_op_embed(pattern_registry, &arg, EmbedType::Normal),
+            crate::parser::OpName::SmartEmbed => compile_op_embed(pattern_registry, &arg, EmbedType::Smart),
+            crate::parser::OpName::ConsiderEmbed => compile_op_embed(pattern_registry, &arg, EmbedType::Consider),
+            crate::parser::OpName::IntroEmbed => compile_op_embed(pattern_registry, &arg, EmbedType::IntroRetro),
         }?;
         for iota in compiled {
             push_iota(iota, state, false)
@@ -131,9 +131,9 @@ pub fn interpret_op<'a>(
             crate::parser::OpName::Copy => store(&arg, state, true),
             crate::parser::OpName::Push => push(&arg, state),
             crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
-            crate::parser::OpName::SmartEmbed => todo!(),
-            crate::parser::OpName::ConsiderEmbed => todo!(),
-            crate::parser::OpName::IntroEmbed => todo!(),
+            crate::parser::OpName::SmartEmbed => embed(&arg, state, pattern_registry, EmbedType::Smart),
+            crate::parser::OpName::ConsiderEmbed => embed(&arg, state, pattern_registry, EmbedType::Consider),
+            crate::parser::OpName::IntroEmbed => embed(&arg, state, pattern_registry, EmbedType::IntroRetro),
         }?;
     }
 

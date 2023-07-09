@@ -138,21 +138,7 @@ pub fn embed<'a>(
                 }
                 _ => return Err(Mishap::IncorrectIota(0)),
             },
-            EmbedType::Smart => todo!(),
-            EmbedType::Consider => todo!(),
-            EmbedType::IntroRetro => {
-                state.stack.push(Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    "open_paren",
-                    None,
-                )));
-                state.stack.push(iota.clone());
-                state.stack.push(Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    "close_paren",
-                    None,
-                )));
-            }
+            _ => state.stack.push(iota.clone()),
         },
         OpValue::Var(var) => Err(Mishap::OpExpectedIota)?,
     };
