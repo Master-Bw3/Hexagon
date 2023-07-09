@@ -1,3 +1,5 @@
+use rand::{seq::SliceRandom, thread_rng};
+
 use crate::{
     interpreter::{
         mishap::Mishap,
@@ -94,5 +96,21 @@ pub fn print<'a>(
 ) -> Result<&'a mut State, Mishap> { 
     let iota = state.stack.get_iota(0, 1)?;
     println!("{:?}", iota);
+    Ok(state)
+}
+
+pub fn beep<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 3;
+    state.stack.remove_args(&arg_count);
+
+    let notes = ["beep", "boop"];
+    let mut rng = thread_rng();
+    
+    let note = notes.choose(&mut rng).unwrap();
+    println!("{note}");
+
     Ok(state)
 }

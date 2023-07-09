@@ -26,7 +26,7 @@ pub struct State {
 pub enum Holding {
     #[default]
     None,
-    Focus,
+    Focus(Option<Iota>),
 }
 
 pub enum Either<L, R> {

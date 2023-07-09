@@ -142,6 +142,13 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Conjure Block", "conjure_block", "qqa", constructors::spell_1(Stack::get_vector)),
             Pattern::new("Conjure Light", "conjure_light", "qqd", constructors::spell_1(Stack::get_vector)),
             Pattern::new("Overgrow", "bonemeal", "wqaqwawqaqw", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Recharge Item", "recharge", "qqqqqwaeaeaeaeaea", constructors::spell_1(Stack::get_entity)),
+            Pattern::new("Edify Sapling", "edify", "wqaqwd", constructors::spell_1(Stack::get_vector)),
+            Pattern::new("Make Note", "beep", "adaa", Box::new(special::beep)),
+
+
+            //read/write
+            Pattern::new("Erase Item", "erase", "qdqawwaww", Box::new(read_write::erase)),
 
 
 

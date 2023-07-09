@@ -1,7 +1,7 @@
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{StackExt, State},
+        state::{StackExt, State, Holding},
     },
     iota::{Iota, NullIota},
     pattern_registry::PatternRegistry,
@@ -30,6 +30,20 @@ pub fn write_local<'a>(
     state.stack.remove_args(&arg_count);
 
     state.ravenmind = Some(iota);
+
+    Ok(state)
+}
+
+pub fn erase<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+
+
+    state.offhand = match state.offhand {
+        Holding::None => Holding::None,
+        Holding::Focus(_) => Holding::Focus(None),
+    };
 
     Ok(state)
 }
