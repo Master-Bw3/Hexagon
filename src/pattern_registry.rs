@@ -271,8 +271,8 @@ impl PatternRegistryExt for PatternRegistry {
     fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern> {
         if let Some(ActionValue::Bookkeeper(code)) = value {
             let mut bookkeeper = Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
-            if query == bookkeeper.display_name || query == bookkeeper.internal_name {
-                bookkeeper.signature = parse_bookkeeper_code(code);
+            bookkeeper.signature = parse_bookkeeper_code(code);
+            if query == bookkeeper.display_name || query == bookkeeper.internal_name || query == bookkeeper.signature {
                 return Some(bookkeeper);}
             else {
                 return None
