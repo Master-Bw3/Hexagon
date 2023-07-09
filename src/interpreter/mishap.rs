@@ -1,5 +1,5 @@
 use crate::iota::GarbageIota::Garbage;
-use crate::iota::{PatternIota};
+use crate::iota::{PatternIota, VectorIota};
 use crate::{interpreter::state::Stack, iota::Iota};
 
 #[derive(Debug)]
@@ -17,7 +17,8 @@ pub enum Mishap {
     OpExpectedVar(Iota),
     OpExpectedIota,
     VariableNotAssigned,
-    NoIotaAtIndex(usize)
+    NoIotaAtIndex(usize),
+    NoAkashicRecord(VectorIota)
 
 }
 
@@ -55,6 +56,7 @@ impl Mishap {
             Mishap::VariableNotAssigned => todo!(),
             Mishap::OpExpectedIota => todo!(),
             Mishap::NoIotaAtIndex(_) => todo!(),
+            Mishap::NoAkashicRecord(_) => todo!(),
         }
     }
 }

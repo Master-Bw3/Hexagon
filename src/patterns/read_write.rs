@@ -169,3 +169,29 @@ pub fn writable<'a>(
 
     Ok(state)
 }
+
+pub fn akashic_read<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let iotas = (
+        state.stack.get_vector(0, arg_count)?,
+        state.stack.get_pattern(1, arg_count)?,
+    );
+    state.stack.remove_args(&arg_count);
+
+    let location = &[(iotas.0).x as i32, (iotas.0).y as i32, (iotas.0).z as i32];
+
+    let operation_result = match state.libraries.get(location) {
+        Some(library) => library
+            .get(&iotas.1.signature)
+            .unwrap_or(&Iota::Null(NullIota::Null))
+            .clone(),
+        None => Err(Mishap::NoAkashicRecord(iotas.0))?,
+    };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
