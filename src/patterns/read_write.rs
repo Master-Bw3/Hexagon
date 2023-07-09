@@ -195,3 +195,29 @@ pub fn akashic_read<'a>(
 
     Ok(state)
 }
+
+pub fn akashic_write<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 3;
+    let iotas = (
+        state.stack.get_vector(0, arg_count)?,
+        state.stack.get_pattern(1, arg_count)?,
+        state.stack.get_iota(2, arg_count)?.clone(),
+    );
+    state.stack.remove_args(&arg_count);
+
+    let location = [(iotas.0).x as i32, (iotas.0).y as i32, (iotas.0).z as i32];
+
+    match state.libraries.get(&location) {
+        Some(library) => {
+            let mut new_library = library;
+            new_library.insert((iotas.1).signature, iotas.2);
+            state.libraries.insert(location, new_library)
+        }
+        None => Err(Mishap::NoAkashicRecord(iotas.0))?,
+    };
+
+    Ok(state)
+}
