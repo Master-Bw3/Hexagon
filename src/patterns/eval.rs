@@ -41,7 +41,7 @@ fn eval_list(
     for iota in list {
         match iota {
             Iota::Pattern(pattern) => {
-                if pattern.signature == Signature::from_name(pattern_registry, "halt") {
+                if pattern.signature == Signature::from_name(pattern_registry, "halt", &None) {
                     halted = true;
                     break;
                 }
@@ -69,7 +69,7 @@ fn eval_pattern(
 ) -> Result<(), Mishap> {
     interpreter::interpret_action(
         pattern.signature.as_str(),
-        pattern.value.clone().map(ActionValue::Iota),
+        *pattern.value.clone(),
         state,
         pattern_registry,
     )?;

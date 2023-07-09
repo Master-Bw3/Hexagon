@@ -308,7 +308,7 @@ pub enum OpValue {
     Var(String),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ActionValue {
     Iota(Iota),
     Bookkeeper(String),

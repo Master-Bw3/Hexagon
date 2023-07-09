@@ -3,7 +3,7 @@ use std::{collections::HashMap, vec};
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{Iota, PatternIota},
-    parser::OpValue,
+    parser::{ActionValue, OpValue},
     pattern_registry::PatternRegistry,
 };
 
@@ -44,7 +44,7 @@ pub fn compile_op_store(
                 Iota::Pattern(PatternIota::from_name(
                     registry,
                     "number",
-                    Some(Iota::Number(*index as f32)),
+                    Some(ActionValue::Iota(Iota::Number(*index as f32))),
                 )),
                 Iota::Pattern(PatternIota::from_name(registry, "rotate", None)),
                 Iota::Pattern(PatternIota::from_name(registry, "modify_in_place", None)),
@@ -85,7 +85,7 @@ pub fn compile_op_push(
         Iota::Pattern(PatternIota::from_name(
             registry,
             "number",
-            Some(Iota::Number(*index as f32)),
+            Some(ActionValue::Iota(Iota::Number(*index as f32))),
         )),
         Iota::Pattern(PatternIota::from_name(registry, "index", None)),
     ];

@@ -1,6 +1,6 @@
 use std::ops::Not;
 
-use crate::pattern_registry::{PatternRegistry, PatternRegistryExt};
+use crate::{pattern_registry::{PatternRegistry, PatternRegistryExt}, parser::ActionValue};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Iota {
@@ -101,18 +101,18 @@ pub enum EntityType {
 #[derive(Debug, Clone, PartialEq)]
 pub struct PatternIota {
     pub signature: Signature,
-    pub value: Box<Option<Iota>>,
+    pub value: Box<Option<ActionValue>>,
 }
 
 impl PatternIota {
-    pub fn from_name(registry: &PatternRegistry, name: &str, value: Option<Iota>) -> PatternIota {
+    pub fn from_name(registry: &PatternRegistry, name: &str, value: Option<ActionValue>) -> PatternIota {
         PatternIota {
-            signature: Signature::from_name(registry, name),
+            signature: Signature::from_name(registry, name, &value),
             value: Box::new(value),
         }
     }
 
-    pub fn from_sig(name: &str, value: Option<Iota>) -> PatternIota {
+    pub fn from_sig(name: &str, value: Option<ActionValue>) -> PatternIota {
         PatternIota {
             signature: Signature::from_sig(name),
             value: Box::new(value),
@@ -134,7 +134,7 @@ pub enum PatternSigDir {
 
 pub trait SignatureExt {
     fn from_sig(string: &str) -> Signature;
-    fn from_name(registry: &PatternRegistry, string: &str) -> Signature;
+    fn from_name(registry: &PatternRegistry, string: &str, value: &Option<ActionValue>) -> Signature;
     fn as_str(&self) -> String;
 }
 
@@ -154,8 +154,8 @@ impl SignatureExt for Signature {
             .collect()
     }
 
-    fn from_name(registry: &PatternRegistry, string: &str) -> Signature {
-        Signature::from_sig(&registry.find(string).expect(string).signature)
+    fn from_name(registry: &PatternRegistry, string: &str, value: &Option<ActionValue>) -> Signature {
+        Signature::from_sig(&registry.find(string, value).expect(string).signature)
     }
 
     fn as_str(&self) -> String {

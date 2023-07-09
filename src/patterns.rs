@@ -1,13 +1,15 @@
-pub mod selectors;
-pub mod math;
-pub mod special;
-pub mod eval;
 pub mod constructors;
+pub mod eval;
 pub mod lists;
-pub mod stack;
+pub mod math;
 pub mod read_write;
-pub mod swizzle;
+pub mod selectors;
 pub mod sentinel;
+pub mod special;
+pub mod stack;
+pub mod swizzle;
+
+use std::rc::Rc;
 
 use crate::{
     interpreter::{mishap::Mishap, state::State},
@@ -21,11 +23,13 @@ pub type ActionNoValueType =
 pub type ActionWithValueType =
     dyn for<'a> Fn(&'a mut State, &PatternRegistry, &ActionValue) -> Result<&'a mut State, Mishap>;
 
+#[derive(Clone)]
 pub enum ActionFunction {
-    ActionNoValue(Box<ActionNoValueType>),
-    ActionWithValue(Box<ActionWithValueType>),
+    ActionNoValue(Rc<ActionNoValueType>),
+    ActionWithValue(Rc<ActionWithValueType>),
 }
 
+#[derive(Clone)]
 pub struct Pattern {
     pub display_name: String,
     pub internal_name: String,
@@ -44,7 +48,7 @@ impl Pattern {
             display_name: display_name.to_string(),
             internal_name: internal_name.to_string(),
             signature: signature.to_string(),
-            action: ActionFunction::ActionNoValue(Box::new(action)),
+            action: ActionFunction::ActionNoValue(Rc::new(action)),
         }
     }
 
@@ -58,7 +62,7 @@ impl Pattern {
             display_name: display_name.to_string(),
             internal_name: internal_name.to_string(),
             signature: signature.to_string(),
-            action: ActionFunction::ActionWithValue(Box::new(action)),
+            action: ActionFunction::ActionWithValue(Rc::new(action)),
         }
     }
 

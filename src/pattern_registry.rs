@@ -1,7 +1,8 @@
 use std::f32::consts::{E, PI, TAU};
 
 use crate::interpreter::state::{Stack, StackExt};
-use crate::iota::{Iota, NullIota, VectorIota, EntityType, EntityIota};
+use crate::iota::{Iota, NullIota, VectorIota, EntityType, EntityIota, Signature};
+use crate::parser::ActionValue;
 use crate::patterns::constructors::value_0;
 use crate::patterns::{lists, stack, read_write, Pattern, swizzle, sentinel};
 use crate::patterns::{constructors, eval, math, special};
@@ -10,7 +11,7 @@ pub type PatternRegistry = Vec<Pattern>;
 
 pub trait PatternRegistryExt {
     fn construct() -> PatternRegistry;
-    fn find(&self, query: &str) -> Option<&Pattern>;
+    fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern>;
 }
 
 impl PatternRegistryExt for PatternRegistry {
@@ -96,7 +97,6 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Fisherman's Gambit", "fisherman", "ddad", Box::new(stack::fisherman)),
             Pattern::new("Fisherman's Gambit II", "fisherman/copy", "aada", Box::new(stack::fisherman_copy)),
             Pattern::new("Swindler's Gambit", "swizzle", "qaawdde", Box::new(swizzle::swizzle)),
-            Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask)),
 
 
             //read/write
@@ -268,7 +268,17 @@ impl PatternRegistryExt for PatternRegistry {
         registry
     }
 
-    fn find(&self, query: &str) -> Option<&Pattern> {
+    fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern> {
+        if let Some(ActionValue::Bookkeeper(code)) = value {
+            let mut bookkeeper = Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
+            if query == bookkeeper.display_name || query == bookkeeper.internal_name {
+                bookkeeper.signature = parse_bookkeeper_code(code);
+                return Some(bookkeeper);}
+            else {
+                return None
+            }
+        }
+
         self.iter()
             .filter(|entry| {
                 entry.display_name == *query
@@ -278,5 +288,38 @@ impl PatternRegistryExt for PatternRegistry {
             .collect::<Vec<&Pattern>>()
             .get(0)
             .copied()
+            .cloned()
     }
+}
+
+fn parse_bookkeeper_code(code: &String) -> String {
+
+    code.chars().fold((' ', vec![]), |mut acc: (char, Vec<&str>), segment| {
+        match segment {
+            '-' => if acc.0 == '-' {
+                acc.1.push("w"); 
+                (segment, acc.1)
+            } else if acc.0 == 'v' {
+                acc.1.push("e"); 
+                (segment, acc.1)
+            } else { 
+                (segment, acc.1)
+            },
+
+            'v' => if acc.0 == '-' {
+                acc.1.push("ea"); 
+                (segment, acc.1)
+            } else if acc.0 == 'v' {
+                acc.1.push("da"); 
+                (segment, acc.1)
+            } else { 
+                acc.1.push("a"); 
+                (segment, acc.1)
+            },
+
+            _ => acc
+        }
+    })
+    .1
+    .concat()
 }

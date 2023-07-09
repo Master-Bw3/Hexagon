@@ -167,23 +167,18 @@ pub fn interpret_action<'a>(
     mut state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let pattern = pattern_registry.find(&name).ok_or(Mishap::InvalidPattern)?;
+    let pattern = pattern_registry.find(&name, &value).ok_or(Mishap::InvalidPattern)?;
 
     let is_escape =
-        Signature::from_sig(&pattern.signature) == Signature::from_name(pattern_registry, "escape");
+        Signature::from_sig(&pattern.signature) == Signature::from_name(pattern_registry, "escape", &None);
 
     let is_retro = Signature::from_sig(&pattern.signature)
-        == Signature::from_name(pattern_registry, "close_paren");
-
-    let get_value_iota = || match &value {
-        Some(ActionValue::Iota(iota)) => Some(iota),
-        _ => None,
-    };
+        == Signature::from_name(pattern_registry, "close_paren", &None);
 
     if state.consider_next {
         push_pattern(
             name,
-            get_value_iota().cloned(),
+            value,
             state,
             pattern_registry,
             true,
@@ -195,7 +190,7 @@ pub fn interpret_action<'a>(
     if state.buffer.is_some() && !(is_escape || is_retro) {
         push_pattern(
             name,
-            get_value_iota().cloned(),
+            value,
             state,
             pattern_registry,
             false,
@@ -210,7 +205,7 @@ pub fn interpret_action<'a>(
 
 pub fn push_pattern(
     pattern: String,
-    value: Option<Iota>,
+    value: Option<ActionValue>,
     state: &mut State,
     pattern_registry: &PatternRegistry,
     considered: bool,

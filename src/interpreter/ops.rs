@@ -127,11 +127,11 @@ pub fn embed<'a>(
                 Iota::Pattern(pat) => {
                     interpret_action(
                         pattern_registry
-                            .find(&pat.signature.as_str())
+                            .find(&pat.signature.as_str(), &None)
                             .ok_or(Mishap::InvalidPattern)?
                             .internal_name
                             .clone(),
-                        pat.value.clone().map(|iota| ActionValue::Iota(iota)),
+                        *pat.value.clone(),
                         state,
                         pattern_registry,
                     )?;
