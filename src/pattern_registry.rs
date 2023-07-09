@@ -101,6 +101,15 @@ impl PatternRegistryExt for PatternRegistry {
             //read/write
             Pattern::new("Muninn's Reflection", "read/local",  "qeewdweddw", Box::new(read_write::read_local)),
             Pattern::new("Huginn's Gambit", "write/local",  "eqqwawqaaw", Box::new(read_write::write_local)),
+            Pattern::new("Erase Item", "erase", "qdqawwaww", Box::new(read_write::erase)),
+            Pattern::new("Craft Trinket", "craft/trinket", "wwaqqqqqeaqeaeqqqeaeq", Box::new(read_write::craft_trinket)),
+            Pattern::new("Craft Cypher", "craft/cypher", "waqqqqq", Box::new(read_write::craft_cypher)),
+            Pattern::new("Craft Artifact", "craft/artifact", "wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq", Box::new(read_write::craft_artifact)),
+            Pattern::new("Scribe's Reflection", "read",  "qqqwqqqqqaq", Box::new(read_write::read)),
+            Pattern::new("Scribe's Gambit", "write",  "eeeweeeeede", Box::new(read_write::write)),
+            // Pattern::new("", "",  "", Box::new(read_write::)),
+            // Pattern::new("", "",  "", Box::new(read_write::)),
+
 
             //sentinel
             Pattern::new("waeawae", "sentinel/create",  "Summon Sentinel", Box::new(sentinel::create)),
@@ -152,17 +161,6 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Black Sun's Nadir", "potion/wither", "qqqqqaewawawe", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
             Pattern::new("Red Sun's Nadir", "potion/poison", "qqqqqadwawaww", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
             Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
-
-
-            //read/write
-            Pattern::new("Erase Item", "erase", "qdqawwaww", Box::new(read_write::erase)),
-            Pattern::new("Craft Trinket", "craft/trinket", "wwaqqqqqeaqeaeqqqeaeq", Box::new(read_write::craft_trinket)),
-            Pattern::new("Craft Cypher", "craft/cypher", "waqqqqq", Box::new(read_write::craft_cypher)),
-            Pattern::new("Craft Artifact", "craft/artifact", "wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq", Box::new(read_write::craft_artifact)),
-            // Pattern::new("", "", "", Box::new(read_write::)),
-
-
-
 
             //requires value to be set
             Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number)),

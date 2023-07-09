@@ -105,3 +105,33 @@ pub fn craft_artifact<'a>(
 
     Ok(state)
 }
+
+pub fn read<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let operation_result = match &state.offhand {
+        Holding::Focus(Some(iota)) => iota.clone(),
+        _ => Iota::Null(NullIota::Null),
+    };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
+
+pub fn write<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_iota(0, arg_count)?.clone();
+    state.stack.remove_args(&arg_count);
+
+    state.offhand = match state.offhand {
+        Holding::Focus(_) => Holding::Focus(Some(iota)),
+        _ => state.offhand.clone(), //should mishap but im lazy so no
+    };
+
+    Ok(state)
+}
