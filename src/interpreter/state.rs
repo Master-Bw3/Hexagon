@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::iota::{
     BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
-    VectorIota,
+    VectorIota, Signature,
 };
 
 use super::mishap::Mishap;
@@ -16,12 +16,17 @@ pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
     pub offhand: Holding,
+    pub entities: Vec<EntityIota>,
+    pub libraries: HashMap<[i32; 3], Library>,
     pub sentinal_location: Option<VectorIota>,
     pub buffer: Option<Vec<(Iota, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub halt: bool,
 }
+
+pub type Library = HashMap<Signature, Iota>;
+
 
 #[derive(Clone, Default)]
 pub enum Holding {

@@ -1,14 +1,14 @@
 use pest::Parser;
 use std::{
-    collections::{hash_map, HashMap},
+    collections::{HashMap},
     vec,
 };
 use toml::{map::Map, Table, Value};
 
 use crate::{
-    iota::{EntityIota, EntityType, Iota, Signature, SignatureExt, VectorIota},
+    iota::{EntityIota, Signature, SignatureExt},
     parser::{parse_entity_type, parse_iota, HexParser, Rule},
-    pattern_registry::{PatternRegistry, PatternRegistryExt},
+    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::state::Library,
 };
 
 #[derive(Debug)]
@@ -17,7 +17,6 @@ struct Config {
     entities: Vec<EntityIota>,
 }
 
-type Library = HashMap<Signature, Iota>;
 
 pub fn parse_config(source: String) {
     let parsed = source.parse::<Table>().unwrap();
