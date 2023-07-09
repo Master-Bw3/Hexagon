@@ -3,7 +3,7 @@ pub mod ops;
 pub mod state;
 
 use crate::{
-    compiler::ops::{compile_op_copy, compile_op_push, compile_op_store, compile_op_embed},
+    compiler::ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     interpreter::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
@@ -19,6 +19,7 @@ pub fn interpret(node: AstNode) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State::default();
     let pattern_registry = PatternRegistry::construct();
 
+    state.ravenmind = Some(Iota::List(vec![]));
     (interpret_node(node, &mut state, &pattern_registry)).map(|state| state.clone())
 }
 
@@ -40,8 +41,9 @@ fn interpret_node<'a>(
             Ok(state)
         }
 
-        AstNode::Action { name, value, line } => interpret_action(name, value, state, pattern_registry)
-            .map_err(|err| (err, line)),
+        AstNode::Action { name, value, line } => {
+            interpret_action(name, value, state, pattern_registry).map_err(|err| (err, line))
+        }
         AstNode::Hex(nodes) => {
             interpret_action("open_paren".to_string(), None, state, pattern_registry)
                 .map_err(|err| (err, (0, 0)))?;
@@ -82,10 +84,7 @@ fn interpret_node<'a>(
             } else {
                 interpret_node(*condition, state, pattern_registry)?;
 
-                let condition = state
-                    .stack
-                    .get_bool(0, 1)
-                    .map_err(|err| (err, line))?;
+                let condition = state.stack.get_bool(0, 1).map_err(|err| (err, line))?;
 
                 state.stack.remove_args(&1);
 
@@ -117,10 +116,18 @@ pub fn interpret_op<'a>(
             }
             crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Embed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Normal),
-            crate::parser::OpName::SmartEmbed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Smart),
-            crate::parser::OpName::ConsiderEmbed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Consider),
-            crate::parser::OpName::IntroEmbed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::IntroRetro),
+            crate::parser::OpName::Embed => {
+                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Normal)
+            }
+            crate::parser::OpName::SmartEmbed => {
+                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Smart)
+            }
+            crate::parser::OpName::ConsiderEmbed => {
+                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Consider)
+            }
+            crate::parser::OpName::IntroEmbed => {
+                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::IntroRetro)
+            }
         }?;
         for iota in compiled {
             push_iota(iota, state, false)
@@ -131,9 +138,15 @@ pub fn interpret_op<'a>(
             crate::parser::OpName::Copy => store(&arg, state, true),
             crate::parser::OpName::Push => push(&arg, state),
             crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
-            crate::parser::OpName::SmartEmbed => embed(&arg, state, pattern_registry, EmbedType::Smart),
-            crate::parser::OpName::ConsiderEmbed => embed(&arg, state, pattern_registry, EmbedType::Consider),
-            crate::parser::OpName::IntroEmbed => embed(&arg, state, pattern_registry, EmbedType::IntroRetro),
+            crate::parser::OpName::SmartEmbed => {
+                embed(&arg, state, pattern_registry, EmbedType::Smart)
+            }
+            crate::parser::OpName::ConsiderEmbed => {
+                embed(&arg, state, pattern_registry, EmbedType::Consider)
+            }
+            crate::parser::OpName::IntroEmbed => {
+                embed(&arg, state, pattern_registry, EmbedType::IntroRetro)
+            }
         }?;
     }
 
