@@ -4,27 +4,27 @@ use crate::{
     interpreter::{
         mishap::Mishap,
         push_pattern,
-        state::{State, StackExt},
+        state::{StackExt, State},
     },
-    iota::{Iota, PatternIota}, pattern_registry::PatternRegistry,
+    iota::{Iota, PatternIota},
+    parser::ActionValue,
+    pattern_registry::PatternRegistry,
 };
-
 
 pub fn escape<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     state.consider_next = true;
     Ok(state)
 }
 
-pub fn introspect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) -> Result<&'a mut State, Mishap> {
+pub fn introspect<'a>(
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
     let new_buffer = match &state.buffer {
         Some(buffer) => {
             let mut new_buffer = buffer.clone();
             new_buffer.push((
-                Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    "open_paren",
-                    None,
-                )),
+                Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None)),
                 false,
             ));
             new_buffer
@@ -37,14 +37,13 @@ pub fn introspect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) 
     Ok(state)
 }
 
-pub fn retrospect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) -> Result<&'a mut State, Mishap> {
+pub fn retrospect<'a>(
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
     let inner_buffer = state.buffer.as_ref().ok_or(Mishap::HastyRetrospection)?;
 
-    let intro_pattern = Iota::Pattern(PatternIota::from_name(
-        pattern_registry,
-        "open_paren",
-        None,
-    ));
+    let intro_pattern = Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None));
     let retro_pattern = Iota::Pattern(PatternIota::from_name(
         pattern_registry,
         "close_paren",
@@ -76,7 +75,13 @@ pub fn retrospect<'a>(state: &'a mut State, pattern_registry: &PatternRegistry) 
         ));
         state.buffer = None
     } else {
-        push_pattern("close_paren".to_string(), None, state, pattern_registry, false)
+        push_pattern(
+            "close_paren".to_string(),
+            None,
+            state,
+            pattern_registry,
+            false,
+        )
     };
     Ok(state)
 }
@@ -93,7 +98,7 @@ pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut Sta
 pub fn print<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
-) -> Result<&'a mut State, Mishap> { 
+) -> Result<&'a mut State, Mishap> {
     let iota = state.stack.get_iota(0, 1)?;
     println!("{:?}", iota);
     Ok(state)
@@ -108,9 +113,40 @@ pub fn beep<'a>(
 
     let notes = ["beep", "boop"];
     let mut rng = thread_rng();
-    
+
     let note = notes.choose(&mut rng).unwrap();
     println!("{note}");
+
+    Ok(state)
+}
+
+pub fn mask<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+    value: &ActionValue,
+) -> Result<&'a mut State, Mishap> {
+    let code = match value {
+        ActionValue::Bookkeeper(code) => code,
+        _ => Err(Mishap::InvalidValue)?,
+    };
+
+    let apply_code = |(iota, char): (&Iota, char)| match char {
+        '-' => Some(iota.clone()),
+        'v' => None,
+        _ => unreachable!(),
+    };
+
+    if state.stack.len() < code.len() {
+        return Err(Mishap::NotEnoughIotas(code.len()));
+    }
+
+    let mut new_stack = state.stack[..state.stack.len() - code.len()].to_vec();
+    let top_stack = state.stack[state.stack.len() - code.len()..].to_vec();
+    let apply_result = &mut top_stack.iter().zip(code.chars()).filter_map(apply_code).collect::<Vec<_>>();
+
+    new_stack.append(apply_result);
+
+    state.stack = new_stack;
 
     Ok(state)
 }
