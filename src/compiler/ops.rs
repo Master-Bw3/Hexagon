@@ -119,12 +119,23 @@ pub fn compile_op_embed(
             }
         })
     } else {
-        1
+        0
+    };
+
+    //handle smart embed
+    let embed_type = match embed_type {
+        EmbedType::Smart => {
+            if intro_count > 0 {
+                EmbedType::IntroRetro
+            } else {
+                EmbedType::Consider
+            }
+        }
+        _ => embed_type,
     };
 
     let compiled = match embed_type {
         EmbedType::Normal => vec![iota],
-        EmbedType::Smart => todo!(),
         EmbedType::Consider => {
             let mut result = vec![
                 Iota::Pattern(PatternIota::from_name(registry, "escape", None,));
@@ -139,6 +150,7 @@ pub fn compile_op_embed(
             Iota::Pattern(PatternIota::from_name(registry, "close_paren", None)),
             Iota::Pattern(PatternIota::from_name(registry, "splat", None)),
         ],
+        EmbedType::Smart => unreachable!(),
     };
 
     Ok(compiled)
