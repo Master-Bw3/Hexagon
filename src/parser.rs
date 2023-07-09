@@ -127,7 +127,7 @@ fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
             }
         },
         value: None,
-        line: line,
+        line,
     }
 }
 
@@ -184,7 +184,7 @@ fn parse_if_block(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> A
                     _ => unreachable!(),
                 })
             },
-            line: line,
+            line
         }
     }
     parse_inner(pair.line_col(), pair.into_inner(), pattern_registry)

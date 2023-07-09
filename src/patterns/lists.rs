@@ -245,7 +245,7 @@ pub fn deconstruct<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let mut iota = state.stack.get_list(0, arg_count)?.clone();
+    let mut iota = state.stack.get_list(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     let taken = iota[0].clone();
