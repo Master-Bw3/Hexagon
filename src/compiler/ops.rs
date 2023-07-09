@@ -95,6 +95,7 @@ pub fn compile_op_push(
 
 pub fn compile_op_embed(
     registry: &PatternRegistry,
+    buffer: &Option<Vec<(Iota, bool)>>,
     arg: &Option<OpValue>,
     embed_type: EmbedType,
 ) -> Result<Vec<Iota>, Mishap> {
@@ -108,10 +109,30 @@ pub fn compile_op_embed(
         }
     };
 
+    let intro_pattern = Iota::Pattern(PatternIota::from_name(registry, "open_paren", None));
+    let intro_count: u32 = if let Some(inner_buffer) = buffer {
+        inner_buffer.iter().fold(0, |acc, x| {
+            if x.0 == intro_pattern && !x.1 {
+                acc + 1
+            } else {
+                acc
+            }
+        })
+    } else {
+        1
+    };
+
     let compiled = match embed_type {
         EmbedType::Normal => vec![iota],
         EmbedType::Smart => todo!(),
-        EmbedType::Consider => todo!(),
+        EmbedType::Consider => {
+            let mut result = vec![
+                Iota::Pattern(PatternIota::from_name(registry, "escape", None,));
+                i32::pow(2, intro_count) as usize
+            ];
+            result.push(iota);
+            result
+        }
         EmbedType::IntroRetro => vec![
             Iota::Pattern(PatternIota::from_name(registry, "open_paren", None)),
             iota,

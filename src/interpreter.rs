@@ -117,10 +117,10 @@ pub fn interpret_op<'a>(
             }
             crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Embed => compile_op_embed(pattern_registry, &arg, EmbedType::Normal),
-            crate::parser::OpName::SmartEmbed => compile_op_embed(pattern_registry, &arg, EmbedType::Smart),
-            crate::parser::OpName::ConsiderEmbed => compile_op_embed(pattern_registry, &arg, EmbedType::Consider),
-            crate::parser::OpName::IntroEmbed => compile_op_embed(pattern_registry, &arg, EmbedType::IntroRetro),
+            crate::parser::OpName::Embed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Normal),
+            crate::parser::OpName::SmartEmbed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Smart),
+            crate::parser::OpName::ConsiderEmbed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Consider),
+            crate::parser::OpName::IntroEmbed => compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::IntroRetro),
         }?;
         for iota in compiled {
             push_iota(iota, state, false)
