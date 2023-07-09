@@ -135,3 +135,37 @@ pub fn write<'a>(
 
     Ok(state)
 }
+
+pub fn readable<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let operation_result = match &state.offhand {
+        Holding::None => Iota::Bool(false),
+        Holding::Focus(_) => Iota::Bool(true),
+        Holding::Trinket(_) => Iota::Bool(false),
+        Holding::Artifact(_) => Iota::Bool(false),
+        Holding::Cypher(_) => Iota::Bool(false),
+    };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
+
+pub fn writable<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let operation_result = match &state.offhand {
+        Holding::None => Iota::Bool(false),
+        Holding::Focus(_) => Iota::Bool(true),
+        Holding::Trinket(_) => Iota::Bool(false),
+        Holding::Artifact(_) => Iota::Bool(false),
+        Holding::Cypher(_) => Iota::Bool(false),
+    };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}

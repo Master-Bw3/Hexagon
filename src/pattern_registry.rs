@@ -105,10 +105,10 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Craft Trinket", "craft/trinket", "wwaqqqqqeaqeaeqqqeaeq", Box::new(read_write::craft_trinket)),
             Pattern::new("Craft Cypher", "craft/cypher", "waqqqqq", Box::new(read_write::craft_cypher)),
             Pattern::new("Craft Artifact", "craft/artifact", "wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq", Box::new(read_write::craft_artifact)),
-            Pattern::new("Scribe's Reflection", "read",  "qqqwqqqqqaq", Box::new(read_write::read)),
-            Pattern::new("Scribe's Gambit", "write",  "eeeweeeeede", Box::new(read_write::write)),
-            // Pattern::new("", "",  "", Box::new(read_write::)),
-            // Pattern::new("", "",  "", Box::new(read_write::)),
+            Pattern::new("Scribe's Reflection", "read",  "aqqqqq", Box::new(read_write::read)),
+            Pattern::new("Scribe's Gambit", "write",  "deeeee", Box::new(read_write::write)),
+            Pattern::new("Auditor's Reflection", "readable",  "aqqqqqe", Box::new(read_write::readable)),
+            Pattern::new("Assessor's Reflection", "writable",  "deeeeeq", Box::new(read_write::writable)),
 
 
             //sentinel
