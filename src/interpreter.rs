@@ -69,9 +69,16 @@ fn interpret_node<'a>(
             }
 
             if state.buffer.is_some() {
-                interpret_node(*condition, state, pattern_registry)?;
-                push_pattern("eval".to_string(), None, state, pattern_registry, false);
+                //push patterns to buffer
+                if let AstNode::Hex(nodes) = *condition {
+                    for node in nodes {
+                        interpret_node(node, state, pattern_registry)?;
+                    }
+                }
+                //push success hex to buffer
                 interpret_node(*succeed, state, pattern_registry)?;
+                
+                //push fail hex to buffer (if there is one)
                 match fail {
                     Some(fail_node) => {
                         interpret_node(*fail_node, state, pattern_registry)?;
@@ -80,6 +87,7 @@ fn interpret_node<'a>(
                         interpret_node(AstNode::Hex(vec![]), state, pattern_registry)?;
                     }
                 }
+                //push augur's to buffer
                 push_pattern("if".to_string(), None, state, pattern_registry, false);
             } else {
                 interpret_node(*condition, state, pattern_registry)?;
