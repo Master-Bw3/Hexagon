@@ -205,11 +205,18 @@ pub fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> I
                     "close_paren",
                     None,
                 )),
-                _ => Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    inner_pair.as_str(),
-                    None,
-                )),
+                _ => match inner_inner_pair.as_rule() {
+                    Rule::ActionName => Iota::Pattern(PatternIota::from_name(
+                        pattern_registry,
+                        inner_pair.as_str(),
+                        None,
+                    )),
+                    Rule::PatternName => Iota::Pattern(PatternIota::from_sig(
+                        inner_inner_pair.into_inner().last().unwrap().as_str(),
+                        None,
+                    )),
+                    _ => unreachable!(),
+                },
             },
             None => unreachable!(),
         },

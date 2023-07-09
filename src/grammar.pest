@@ -26,7 +26,7 @@ Iota = { Number | Vector | Entity | Influence | Bool | Pattern | List}
 
 List = !{"[" ~ ((Iota ~ ",")* ~ Iota)? ~ "]" }
 
-Vector = {"(" ~ Number ~ WHITESPACE? ~ "," ~ Number ~ WHITESPACE? ~ "," ~ WHITESPACE? ~ Number ~ ")" }
+Vector = {"(" ~ Number ~  "," ~ WHITESPACE? ~ Number ~ "," ~ WHITESPACE? ~ Number ~ ")" }
 
 Number = @{ "-"? ~ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
 
