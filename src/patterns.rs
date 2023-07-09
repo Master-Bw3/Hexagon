@@ -7,6 +7,7 @@ pub mod lists;
 pub mod stack;
 pub mod read_write;
 pub mod swizzle;
+pub mod sentinel;
 
 use crate::{
     interpreter::{mishap::Mishap, state::State},

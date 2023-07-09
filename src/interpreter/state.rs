@@ -16,6 +16,7 @@ pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
     pub offhand: Holding,
+    pub sentinal_location: Option<VectorIota>,
     pub buffer: Option<Vec<(Iota, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,

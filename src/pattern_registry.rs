@@ -3,7 +3,7 @@ use std::f32::consts::{E, PI, TAU};
 use crate::interpreter::state::{Stack, StackExt};
 use crate::iota::{Iota, NullIota, VectorIota, EntityType, EntityIota};
 use crate::patterns::constructors::value_0;
-use crate::patterns::{lists, stack, read_write, Pattern, swizzle};
+use crate::patterns::{lists, stack, read_write, Pattern, swizzle, sentinel};
 use crate::patterns::{constructors, eval, math, special};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -97,14 +97,16 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Fisherman's Gambit II", "fisherman/copy", "aada", Box::new(stack::fisherman_copy)),
             Pattern::new("Swindler's Gambit", "swizzle", "qaawdde", Box::new(swizzle::swizzle)),
 
-            // Pattern::new("", "", "", Box::new(stack::)),
-
-
-
 
             //read/write
             Pattern::new("Muninn's Reflection", "read/local",  "qeewdweddw", Box::new(read_write::read_local)),
             Pattern::new("Huginn's Gambit", "write/local",  "eqqwawqaaw", Box::new(read_write::write_local)),
+
+            //sentinel
+            Pattern::new("waeawae", "sentinel/create",  "Summon Sentinel", Box::new(sentinel::create)),
+            Pattern::new("qdwdqdw", "sentinel/destroy",  "Banish Sentinel", Box::new(sentinel::destroy)),
+            Pattern::new("waeawaede", "sentinel/get_pos",  "Locate Sentinel", Box::new(sentinel::get_pos)),
+            Pattern::new("waeawaedwa", "sentinel/wayfind",  "Wayfind Sentinel", Box::new(sentinel::wayfind)),
 
 
             //consts
@@ -145,6 +147,11 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Recharge Item", "recharge", "qqqqqwaeaeaeaeaea", constructors::spell_1(Stack::get_entity)),
             Pattern::new("Edify Sapling", "edify", "wqaqwd", constructors::spell_1(Stack::get_vector)),
             Pattern::new("Make Note", "beep", "adaa", Box::new(special::beep)),
+            Pattern::new("White Sun's Nadir", "potion/weakness", "qqqqqaqwawaw", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+            Pattern::new("Blue Sun's Nadir", "potion/levitation", "qqqqqawwawawd", constructors::spell_2(Stack::get_entity, Stack::get_number)),
+            Pattern::new("Black Sun's Nadir", "potion/wither", "qqqqqaewawawe", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+            Pattern::new("Red Sun's Nadir", "potion/poison", "qqqqqadwawaww", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+            Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
 
 
             //read/write
