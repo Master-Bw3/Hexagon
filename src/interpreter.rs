@@ -23,18 +23,25 @@ pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap
     let mut state = State::default();
     let pattern_registry = PatternRegistry::construct();
     state.ravenmind = Some(Iota::List(vec![]));
-    state.entities.insert(
-        "Caster".to_string(),
-        EntityIota {
-            name: "Caster".to_string(),
-            entity_type: EntityType::Player,
-            holding: Box::new(Holding::None),
-        },
-    );
 
     if let Some(conf) = config {
         state.entities = conf.entities;
         state.libraries = conf.libraries;
+    }
+
+    //if caster is not overriden by config then set default caster values
+    match state.entities.get("Caster") {
+        Some(_) => (),
+        None => {
+            state.entities.insert(
+                "Caster".to_string(),
+                EntityIota {
+                    name: "Caster".to_string(),
+                    entity_type: EntityType::Player,
+                    holding: Box::new(Holding::None),
+                },
+            );
+        }
     }
 
     (interpret_node(node, &mut state, &pattern_registry)).map(|state| state.clone())
