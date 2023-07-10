@@ -28,7 +28,6 @@ pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap
         state.entities = conf.entities;
         state.libraries = conf.libraries;
     }
-
     //if caster is not overriden by config then set default caster values
     match state.entities.get("Caster") {
         Some(_) => (),
