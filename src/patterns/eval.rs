@@ -36,7 +36,6 @@ fn eval_list(
     pattern_registry: &PatternRegistry,
     list: &Vec<Iota>,
 ) -> Result<Halted, Mishap> {
-    
     let mut halted = false;
     for iota in list {
         match iota {
@@ -50,7 +49,8 @@ fn eval_list(
 
             iota => {
                 if state.consider_next || state.buffer.is_some() {
-                    interpreter::push_iota(iota.clone(), state, state.consider_next)
+                    interpreter::push_iota(iota.clone(), state, state.consider_next);
+                    state.consider_next = false;
                 } else {
                     Err(Mishap::ExpectedPattern(iota.clone()))?
                 }
@@ -80,7 +80,6 @@ pub fn for_each<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    
     let arg_count = 2;
     let pattern_list = state.stack.get_list(0, 2)?;
     let iota_list = state.stack.get_list(1, 2)?;

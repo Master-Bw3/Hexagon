@@ -113,7 +113,11 @@ fn interpret_node<'a>(
                 //push augur's to buffer
                 push_pattern("if".to_string(), None, state, pattern_registry, false);
             } else {
-                interpret_node(*condition, state, pattern_registry)?;
+                if let AstNode::Hex(nodes) = *condition {
+                    for node in nodes {
+                        interpret_node(node, state, pattern_registry)?;
+                    }
+                }
 
                 let condition = state.stack.get_bool(0, 1).map_err(|err| (err, line))?;
 
