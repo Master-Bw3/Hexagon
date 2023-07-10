@@ -18,7 +18,7 @@ pub fn run() {
     let parse_result = parser::parse(&source).unwrap();
 
     let config_path = "./test.toml";
-    let config_source = fs::read_to_string(path).expect("Should have been able to read the file");
+    let config_source = fs::read_to_string(config_path).expect("Should have been able to read the file");
 
     let config = parse_config(config_source);
 
