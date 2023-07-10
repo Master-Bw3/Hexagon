@@ -103,9 +103,36 @@ fn interpret_node<'a>(
 
                 //push fail hex to buffer (if there is one)
                 match fail {
-                    Some(fail_node) => {
-                        interpret_node(*fail_node, state, pattern_registry)?;
-                    }
+                    Some(fail_node) => match *fail_node {
+                        AstNode::Hex(_) => {
+                            interpret_node(*fail_node, state, pattern_registry)?;
+                        }
+                        AstNode::IfBlock {
+                            line: _,
+                            condition: _,
+                            succeed: _,
+                            fail: _,
+                        } => {
+                            interpret_action(
+                                "open_paren".to_string(),
+                                None,
+                                state,
+                                pattern_registry,
+                            )
+                            .map_err(|err| (err, (0, 0)))?;
+                            interpret_node(*fail_node, state, pattern_registry)?;
+                            interpret_action(
+                                "close_paren".to_string(),
+                                None,
+                                state,
+                                pattern_registry,
+                            )
+                            .map_err(|err| (err, (0, 0)))?;
+                            interpret_action("eval".to_string(), None, state, pattern_registry)
+                                .map_err(|err| (err, (0, 0)))?;
+                        }
+                        _ => unreachable!(),
+                    },
                     None => {
                         interpret_node(AstNode::Hex(vec![]), state, pattern_registry)?;
                     }
