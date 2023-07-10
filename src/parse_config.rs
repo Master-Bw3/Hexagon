@@ -61,7 +61,6 @@ fn parse_library(mut library: Map<String, Value>, config: &mut Config) {
         let iota = parse_iota(
             HexParser::parse(Rule::Iota, parse_str(val))
                 .unwrap()
-                .into_iter()
                 .next()
                 .unwrap(),
             &PatternRegistry::construct(),
@@ -97,14 +96,13 @@ fn parse_entities(entities: Value, config: &mut Config) {
     }
 }
 
-fn parse_entity(mut entity: Map<String, Value>, config: &mut Config) {
+fn parse_entity(entity: Map<String, Value>, config: &mut Config) {
     let name_value = entity.get("name").unwrap().clone();
     let name = parse_str(&name_value).to_string();
 
     let entity_type_value = entity.get("type").unwrap().clone();
     let entity_type_pair = HexParser::parse(Rule::EntityType, parse_str(&entity_type_value))
         .unwrap()
-        .into_iter()
         .next()
         .unwrap();
     let entity_type = parse_entity_type(entity_type_pair.as_str().to_string());

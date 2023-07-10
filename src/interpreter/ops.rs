@@ -1,6 +1,6 @@
 use crate::{
-    iota::{Iota, PatternIota, SignatureExt},
-    parser::{ActionValue, OpValue},
+    iota::{Iota, SignatureExt},
+    parser::{OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -129,8 +129,7 @@ pub fn embed<'a>(
                         pattern_registry
                             .find(&pat.signature.as_str(), &None)
                             .ok_or(Mishap::InvalidPattern)?
-                            .internal_name
-                            .clone(),
+                            .internal_name,
                         *pat.value.clone(),
                         state,
                         pattern_registry,
@@ -140,7 +139,7 @@ pub fn embed<'a>(
             },
             _ => state.stack.push(iota.clone()),
         },
-        OpValue::Var(var) => Err(Mishap::OpExpectedIota)?,
+        OpValue::Var(_) => Err(Mishap::OpExpectedIota)?,
     };
     Ok(())
 }

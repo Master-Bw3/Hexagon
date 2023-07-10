@@ -294,7 +294,7 @@ impl PatternRegistryExt for PatternRegistry {
     }
 }
 
-fn parse_bookkeeper_code(code: &String) -> String {
+fn parse_bookkeeper_code(code: &str) -> String {
 
     code.chars().fold((' ', vec![]), |mut acc: (char, Vec<&str>), segment| {
         match segment {
