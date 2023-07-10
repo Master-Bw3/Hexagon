@@ -11,8 +11,19 @@ use crate::{
     pattern_registry::PatternRegistry,
 };
 
-pub fn escape<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
-    state.consider_next = true;
+pub fn escape<'a>(
+    state: &'a mut State,
+    _: &PatternRegistry,
+    value: Option<&ActionValue>,
+) -> Result<&'a mut State, Mishap> {
+    match value {
+        Some(ActionValue::Iota(iota)) => state.stack.push(iota.clone()),
+        Some(ActionValue::Bookkeeper(_)) => Err(Mishap::InvalidValue)?,
+        None => {
+            state.consider_next = true;
+        }
+    };
+
     Ok(state)
 }
 

@@ -3,8 +3,9 @@ use crate::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::{Iota},
-    pattern_registry::PatternRegistry, parser::ActionValue,
+    iota::Iota,
+    parser::ActionValue,
+    pattern_registry::PatternRegistry,
 };
 
 pub fn duplicate<'a>(
@@ -301,15 +302,15 @@ mod tests {
     }
 }
 
-
 pub fn mask<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
-    value: &ActionValue,
+    value: Option<&ActionValue>,
 ) -> Result<&'a mut State, Mishap> {
     let code = match value {
-        ActionValue::Bookkeeper(code) => code,
-        _ => Err(Mishap::InvalidValue)?,
+        Some(ActionValue::Bookkeeper(code)) => code,
+        Some(_) => Err(Mishap::InvalidValue)?,
+        None => Err(Mishap::ExpectedValue)?,
     };
 
     let apply_code = |(iota, char): (&Iota, char)| match char {
@@ -324,7 +325,11 @@ pub fn mask<'a>(
 
     let mut new_stack = state.stack[..state.stack.len() - code.len()].to_vec();
     let top_stack = state.stack[state.stack.len() - code.len()..].to_vec();
-    let apply_result = &mut top_stack.iter().zip(code.chars()).filter_map(apply_code).collect::<Vec<_>>();
+    let apply_result = &mut top_stack
+        .iter()
+        .zip(code.chars())
+        .filter_map(apply_code)
+        .collect::<Vec<_>>();
 
     new_stack.append(apply_result);
 

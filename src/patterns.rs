@@ -21,7 +21,7 @@ pub type ActionNoValueType =
     dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>;
 
 pub type ActionWithValueType =
-    dyn for<'a> Fn(&'a mut State, &PatternRegistry, &ActionValue) -> Result<&'a mut State, Mishap>;
+    dyn for<'a> Fn(&'a mut State, &PatternRegistry, Option<&ActionValue>) -> Result<&'a mut State, Mishap>;
 
 #[derive(Clone)]
 pub enum ActionFunction {
@@ -77,7 +77,7 @@ impl Pattern {
             ActionFunction::ActionWithValue(action) => action(
                 state,
                 pattern_registry,
-                value.as_ref().ok_or(Mishap::ExpectedValue)?,
+                value.as_ref(),
             ),
         }
     }

@@ -30,8 +30,6 @@ type GetterType<T> = fn(&Stack, usize, usize) -> Result<T, Mishap>;
 //     })
 // }
 
-
-
 pub fn spell_1<T: 'static>(getter: GetterType<T>) -> Box<ActionNoValueType> {
     Box::new(move |state: &mut State, _: &PatternRegistry| {
         getter(&state.stack, 0, 1)?;
@@ -70,16 +68,17 @@ pub fn spell_3<T: 'static, U: 'static, V: 'static>(
 
 pub fn value_0<U: 'static>(value_type_getter: GetterType<U>) -> Box<ActionWithValueType> {
     Box::new(
-        move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
+        move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             match value {
-                ActionValue::Iota(iota) => {
+                Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
                     value_type_getter(&vec![iota.clone()], 0, 1)
                         .map_err(|_| Mishap::InvalidValue)?;
 
                     state.stack.push(iota.clone())
                 }
-                ActionValue::Bookkeeper(_) => Err(Mishap::InvalidValue)?,
+                Some(ActionValue::Bookkeeper(_)) => Err(Mishap::InvalidValue)?,
+                None => Err(Mishap::ExpectedValue)?,
             }
 
             Ok(state)
@@ -92,19 +91,20 @@ pub fn value_1<T: 'static, U: 'static>(
     value_type_getter: GetterType<U>,
 ) -> Box<ActionWithValueType> {
     Box::new(
-        move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
+        move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             getter(&state.stack, 0, 1)?;
             state.stack.remove_args(&1);
 
             match value {
-                ActionValue::Iota(iota) => {
+                Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
                     value_type_getter(&vec![iota.clone()], 0, 1)
                         .map_err(|_| Mishap::InvalidValue)?;
 
                     state.stack.push(iota.clone())
                 }
-                ActionValue::Bookkeeper(_) => Err(Mishap::InvalidValue)?,
+                Some(ActionValue::Bookkeeper(_)) => Err(Mishap::InvalidValue)?,
+                None => Err(Mishap::ExpectedValue)?,
             }
 
             Ok(state)
@@ -118,20 +118,21 @@ pub fn value_2<T: 'static, U: 'static, V: 'static>(
     value_type_getter: GetterType<V>,
 ) -> Box<ActionWithValueType> {
     Box::new(
-        move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
+        move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             getter1(&state.stack, 0, 2)?;
             getter2(&state.stack, 1, 2)?;
             state.stack.remove_args(&2);
 
             match value {
-                ActionValue::Iota(iota) => {
+                Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
                     value_type_getter(&vec![iota.clone()], 0, 1)
                         .map_err(|_| Mishap::InvalidValue)?;
 
                     state.stack.push(iota.clone())
                 }
-                ActionValue::Bookkeeper(_) => Err(Mishap::InvalidValue)?,
+                Some(ActionValue::Bookkeeper(_)) => Err(Mishap::InvalidValue)?,
+                None => Err(Mishap::ExpectedValue)?,
             }
 
             Ok(state)
@@ -141,20 +142,21 @@ pub fn value_2<T: 'static, U: 'static, V: 'static>(
 
 pub fn get_entity(entity_type: Option<&'static EntityType>) -> Box<ActionWithValueType> {
     Box::new(
-        move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
+        move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             let arg_count = 1;
             let _ = &state.stack.get_vector(0, arg_count)?;
             state.stack.remove_args(&arg_count);
 
             match value {
-                ActionValue::Iota(iota) => {
+                Some(ActionValue::Iota(iota)) => {
                     if iota.is_entity(entity_type) {
                         state.stack.push(iota.clone())
                     } else {
                         Err(Mishap::InvalidValue)?
                     }
                 }
-                ActionValue::Bookkeeper(_) => Err(Mishap::InvalidValue)?,
+                Some(ActionValue::Bookkeeper(_)) => Err(Mishap::InvalidValue)?,
+                None => Err(Mishap::ExpectedValue)?,
             }
 
             Ok(state)
@@ -175,21 +177,22 @@ pub fn zone_entity(
     };
 
     Box::new(
-        move |state: &mut State, _: &PatternRegistry, value: &ActionValue| {
+        move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             let arg_count = 2;
             let _ = &state.stack.get_vector(0, arg_count)?;
             let _ = &state.stack.get_number(1, arg_count)?;
             state.stack.remove_args(&arg_count);
 
             match value {
-                ActionValue::Iota(iota) => {
+                Some(ActionValue::Iota(iota)) => {
                     if conditon(iota) {
                         state.stack.push(iota.clone())
                     } else {
                         Err(Mishap::InvalidValue)?
                     }
                 }
-                ActionValue::Bookkeeper(_) => Err(Mishap::InvalidValue)?,
+                Some(ActionValue::Bookkeeper(_)) => Err(Mishap::InvalidValue)?,
+                None => Err(Mishap::ExpectedValue)?,
             }
 
             Ok(state)

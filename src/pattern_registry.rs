@@ -19,7 +19,7 @@ impl PatternRegistryExt for PatternRegistry {
     fn construct() -> PatternRegistry {
         let registry: PatternRegistry = vec![
             //special patterns
-            Pattern::new("Consideration", "escape", "qqqaw", Box::new(special::escape)),
+            Pattern::new_with_val("Consideration", "escape", "qqqaw", Box::new(special::escape)),
             Pattern::new("Introspection", "open_paren", "qqq", Box::new(special::introspect)),
             Pattern::new("Retrospection", "close_paren", "eee", Box::new(special::retrospect)),
             Pattern::new("Hermes' Gambit", "eval", "deaqq", Box::new(eval::eval)),
