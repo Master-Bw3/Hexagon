@@ -12,13 +12,13 @@ use crate::{
 };
 
 #[derive(Debug)]
-struct Config {
-    libraries: HashMap<[i32; 3], Library>,
-    entities: Vec<EntityIota>,
+pub struct Config {
+    pub libraries: HashMap<[i32; 3], Library>,
+    pub entities: Vec<EntityIota>,
 }
 
 
-pub fn parse_config(source: String) {
+pub fn parse_config(source: String) -> Config{
     let parsed = source.parse::<Table>().unwrap();
 
     let mut config = Config {
@@ -34,7 +34,7 @@ pub fn parse_config(source: String) {
         }
     }
 
-    println!("{:?}", config);
+    config
 }
 
 fn parse_libraries(libraries: Value, config: &mut Config) {

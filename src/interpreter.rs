@@ -9,17 +9,23 @@ use crate::{
         state::StackExt,
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
+    parse_config::Config,
     parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 use self::{mishap::Mishap, state::State};
 
-pub fn interpret(node: AstNode) -> Result<State, (Mishap, (usize, usize))> {
+pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State::default();
     let pattern_registry = PatternRegistry::construct();
-
     state.ravenmind = Some(Iota::List(vec![]));
+
+    if let Some(conf) = config {
+        state.entities = conf.entities;
+        state.libraries = conf.libraries;
+    }
+
     (interpret_node(node, &mut state, &pattern_registry)).map(|state| state.clone())
 }
 
@@ -77,7 +83,7 @@ fn interpret_node<'a>(
                 }
                 //push success hex to buffer
                 interpret_node(*succeed, state, pattern_registry)?;
-                
+
                 //push fail hex to buffer (if there is one)
                 match fail {
                     Some(fail_node) => {
@@ -167,34 +173,24 @@ pub fn interpret_action<'a>(
     mut state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let pattern = pattern_registry.find(&name, &value).ok_or(Mishap::InvalidPattern)?;
+    let pattern = pattern_registry
+        .find(&name, &value)
+        .ok_or(Mishap::InvalidPattern)?;
 
-    let is_escape =
-        Signature::from_sig(&pattern.signature) == Signature::from_name(pattern_registry, "escape", &None);
+    let is_escape = Signature::from_sig(&pattern.signature)
+        == Signature::from_name(pattern_registry, "escape", &None);
 
     let is_retro = Signature::from_sig(&pattern.signature)
         == Signature::from_name(pattern_registry, "close_paren", &None);
 
     if state.consider_next {
-        push_pattern(
-            name,
-            value,
-            state,
-            pattern_registry,
-            true,
-        );
+        push_pattern(name, value, state, pattern_registry, true);
         state.consider_next = false;
         return Ok(state);
     }
 
     if state.buffer.is_some() && !(is_escape || is_retro) {
-        push_pattern(
-            name,
-            value,
-            state,
-            pattern_registry,
-            false,
-        );
+        push_pattern(name, value, state, pattern_registry, false);
         return Ok(state);
     }
 
