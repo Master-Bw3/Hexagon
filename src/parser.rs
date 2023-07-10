@@ -1,6 +1,6 @@
 use crate::{
     iota::{EntityIota, EntityType, GarbageIota, Iota, NullIota, PatternIota},
-    pattern_registry::{PatternRegistry, PatternRegistryExt},
+    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::state::Holding,
 };
 use nalgebra::matrix;
 use pest::{
@@ -243,7 +243,7 @@ pub fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> I
             let name = inner.next().unwrap().as_str().to_string();
             let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
 
-            Iota::Entity(EntityIota { name, entity_type })
+            Iota::Entity(EntityIota { name, entity_type, holding: Box::new(Holding::None) })
         }
         Rule::List => {
             let inner = inner_pair.into_inner();

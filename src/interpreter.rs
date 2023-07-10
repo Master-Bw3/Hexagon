@@ -8,18 +8,26 @@ use crate::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
     },
-    iota::{Iota, PatternIota, Signature, SignatureExt},
+    iota::{EntityIota, EntityType, Iota, PatternIota, Signature, SignatureExt},
     parse_config::Config,
     parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-use self::{mishap::Mishap, state::State};
+use self::{
+    mishap::Mishap,
+    state::{Holding, State},
+};
 
 pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State::default();
     let pattern_registry = PatternRegistry::construct();
     state.ravenmind = Some(Iota::List(vec![]));
+    state.entities.push(EntityIota {
+        name: "Caster".to_string(),
+        entity_type: EntityType::Player,
+        holding: Box::new(Holding::None),
+    });
 
     if let Some(conf) = config {
         state.entities = conf.entities;

@@ -8,7 +8,7 @@ use toml::{map::Map, Table, Value};
 use crate::{
     iota::{EntityIota, Signature, SignatureExt},
     parser::{parse_entity_type, parse_iota, HexParser, Rule},
-    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::state::Library,
+    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::state::{Library, Holding},
 };
 
 #[derive(Debug)]
@@ -107,7 +107,7 @@ fn parse_entity(entity: Map<String, Value>, config: &mut Config) {
         .unwrap();
     let entity_type = parse_entity_type(entity_type_pair.as_str().to_string());
 
-    config.entities.push(EntityIota { name, entity_type })
+    config.entities.push(EntityIota { name, entity_type, holding: Box::new(Holding::None) })
 }
 
 fn parse_int(value: &Value) -> i32 {

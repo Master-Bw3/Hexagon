@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::iota::{
     BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
-    VectorIota, Signature,
+    Signature, VectorIota,
 };
 
 use super::mishap::Mishap;
@@ -27,8 +27,7 @@ pub struct State {
 
 pub type Library = HashMap<Signature, Iota>;
 
-
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug, PartialEq)]
 pub enum Holding {
     #[default]
     None,

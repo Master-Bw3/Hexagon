@@ -1,6 +1,10 @@
 use std::ops::Not;
 
-use crate::{pattern_registry::{PatternRegistry, PatternRegistryExt}, parser::ActionValue};
+use crate::{
+    interpreter::state::Holding,
+    parser::ActionValue,
+    pattern_registry::{PatternRegistry, PatternRegistryExt},
+};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Iota {
@@ -86,6 +90,7 @@ pub enum NullIota {
 pub struct EntityIota {
     pub name: String,
     pub entity_type: EntityType,
+    pub holding: Box<Holding>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -105,7 +110,11 @@ pub struct PatternIota {
 }
 
 impl PatternIota {
-    pub fn from_name(registry: &PatternRegistry, name: &str, value: Option<ActionValue>) -> PatternIota {
+    pub fn from_name(
+        registry: &PatternRegistry,
+        name: &str,
+        value: Option<ActionValue>,
+    ) -> PatternIota {
         PatternIota {
             signature: Signature::from_name(registry, name, &value),
             value: Box::new(value),
@@ -134,7 +143,11 @@ pub enum PatternSigDir {
 
 pub trait SignatureExt {
     fn from_sig(string: &str) -> Signature;
-    fn from_name(registry: &PatternRegistry, string: &str, value: &Option<ActionValue>) -> Signature;
+    fn from_name(
+        registry: &PatternRegistry,
+        string: &str,
+        value: &Option<ActionValue>,
+    ) -> Signature;
     fn as_str(&self) -> String;
 }
 
@@ -154,7 +167,11 @@ impl SignatureExt for Signature {
             .collect()
     }
 
-    fn from_name(registry: &PatternRegistry, string: &str, value: &Option<ActionValue>) -> Signature {
+    fn from_name(
+        registry: &PatternRegistry,
+        string: &str,
+        value: &Option<ActionValue>,
+    ) -> Signature {
         Signature::from_sig(&registry.find(string, value).expect(string).signature)
     }
 
