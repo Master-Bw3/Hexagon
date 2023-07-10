@@ -110,6 +110,8 @@ pub fn compile_op_embed(
     };
 
     let intro_pattern = Iota::Pattern(PatternIota::from_name(registry, "open_paren", None));
+    let retro_pattern = Iota::Pattern(PatternIota::from_name(registry, "close_paren", None));
+
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {
             if x.0 == intro_pattern && !x.1 {
@@ -122,10 +124,24 @@ pub fn compile_op_embed(
         0
     };
 
+    let retro_count: u32 = if let Some(inner_buffer) = buffer {
+        inner_buffer.iter().fold(0, |acc, x| {
+            if x.0 == retro_pattern && !x.1 {
+                acc + 1
+            } else {
+                acc
+            }
+        })
+    } else {
+        0
+    };
+
+    let depth = intro_count - retro_count;
+
     //handle smart embed
     let embed_type = match embed_type {
         EmbedType::Smart => {
-            if intro_count > 0 {
+            if depth > 0 {
                 EmbedType::IntroRetro
             } else {
                 EmbedType::Consider
@@ -139,7 +155,7 @@ pub fn compile_op_embed(
         EmbedType::Consider => {
             let mut result = vec![
                 Iota::Pattern(PatternIota::from_name(registry, "escape", None,));
-                i32::pow(2, intro_count) as usize
+                i32::pow(2, depth) as usize
             ];
             result.push(iota);
             result
