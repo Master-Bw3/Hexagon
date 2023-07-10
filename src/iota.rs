@@ -162,7 +162,7 @@ impl SignatureExt for Signature {
                 'd' => PatternSigDir::D,
                 'e' => PatternSigDir::E,
                 'w' => PatternSigDir::W,
-                _ => panic!("invalid signature"),
+                _ => panic!("invalid signature: {}", string),
             })
             .collect()
     }

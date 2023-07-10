@@ -119,10 +119,10 @@ impl PatternRegistryExt for PatternRegistry {
 
 
             //sentinel
-            Pattern::new("waeawae", "sentinel/create",  "Summon Sentinel", Box::new(sentinel::create)),
-            Pattern::new("qdwdqdw", "sentinel/destroy",  "Banish Sentinel", Box::new(sentinel::destroy)),
-            Pattern::new("waeawaede", "sentinel/get_pos",  "Locate Sentinel", Box::new(sentinel::get_pos)),
-            Pattern::new("waeawaedwa", "sentinel/wayfind",  "Wayfind Sentinel", Box::new(sentinel::wayfind)),
+            Pattern::new( "sentinel/create", "Summon Sentinel", "waeawae", Box::new(sentinel::create)),
+            Pattern::new( "sentinel/destroy", "Banish Sentinel","qdwdqdw", Box::new(sentinel::destroy)),
+            Pattern::new( "sentinel/get_pos", "Locate Sentinel", "waeawaede", Box::new(sentinel::get_pos)),
+            Pattern::new( "sentinel/wayfind", "Wayfind Sentinel","waeawaedwa", Box::new(sentinel::wayfind)),
 
 
             //consts
@@ -246,13 +246,13 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::value_1(Stack::get_entity, Stack::get_number)),
 
             Pattern::new_with_val("Archer's Distillation", "raycast", "wqaawdd",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector)),
 
             Pattern::new_with_val("Architect's Distillation", "raycast/axis", "weddwaa",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector)),
 
             Pattern::new_with_val("Scout's Distillation", "raycast/entity", "weaqa",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_entity)),
 
             Pattern::new_with_val("Waystone Reflection", "circle/impetus_pos", "eaqwqae",
                 constructors::value_1(Stack::get_entity, Stack::get_number)),
