@@ -217,3 +217,95 @@ pub fn akashic_write<'a>(
 
     Ok(state)
 }
+
+pub fn read_entity<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_entity(0, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let operation_result = match state.entities.get(&iota.name) {
+        Some(entity) => match *entity.holding.clone() {
+            Holding::Focus(iota) => iota.unwrap_or(Iota::Null(NullIota::Null)),
+            _ => todo!("handle unreadable item"),
+        },
+        None => todo!("handle entity not existing"),
+    };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
+
+pub fn write_entity<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let iotas = (
+        state.stack.get_entity(0, arg_count)?,
+        state.stack.get_iota(1, arg_count)?.clone(),
+    );
+    state.stack.remove_args(&arg_count);
+
+    match state.entities.get_mut(&(iotas.0).name) {
+        Some(entity) => match *entity.holding.clone() {
+            Holding::Focus(_) => entity.holding = Box::new(Holding::Focus(Some(iotas.1))),
+            _ => todo!("handle unreadable item"),
+        },
+        None => todo!("handle entity not existing"),
+    };
+
+    Ok(state)
+}
+
+pub fn readable_entity<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_entity(0, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let operation_result = match state.entities.get(&iota.name) {
+        Some(entity) => match *entity.holding {
+            Holding::None => Iota::Bool(false),
+            Holding::Focus(_) => Iota::Bool(true),
+            Holding::Trinket(_) => Iota::Bool(false),
+            Holding::Artifact(_) => Iota::Bool(false),
+            Holding::Cypher(_) => Iota::Bool(false),
+        },
+        None => todo!("handle entity not existing"),
+    };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
+
+pub fn writeable_entity<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_entity(0, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let operation_result = match state.entities.get(&iota.name) {
+        Some(entity) => match *entity.holding {
+            Holding::None => Iota::Bool(false),
+            Holding::Focus(_) => Iota::Bool(true),
+            Holding::Trinket(_) => Iota::Bool(false),
+            Holding::Artifact(_) => Iota::Bool(false),
+            Holding::Cypher(_) => Iota::Bool(false),
+        },
+        None => todo!("handle entity not existing"),
+    };
+
+    state.stack.push(operation_result);
+
+    Ok(state)
+}
+

@@ -1,5 +1,5 @@
-    , { signature = "wawqwqwqwqwqw", internalName = "read/entity", action = readChronical, displayName = "Chronicler's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wdwewewewewew", internalName = "write/entity", action = writeChronical, displayName = "Chronicler's Gambit", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wawqwqwqwqwqwew", internalName = "readable/entity", action = makeConstant (Boolean False), displayName = "Auditor's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
-    , { signature = "wdwewewewewewqw", internalName = "writable/entity", action = makeConstant (Boolean False), displayName = "Assessor's Purification", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = readChronical, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = writeChronical, displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = makeConstant (Boolean False), displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
+    , { signature = "", internalName = "", action = makeConstant (Boolean False), displayName = "", outputOptions = [], selectedOutput = Nothing, startDirection = East }
 -- bookkeeper

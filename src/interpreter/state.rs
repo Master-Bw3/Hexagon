@@ -16,7 +16,7 @@ pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
     pub offhand: Holding,
-    pub entities: Vec<EntityIota>,
+    pub entities: HashMap<String, EntityIota>,
     pub libraries: HashMap<[i32; 3], Library>,
     pub sentinal_location: Option<VectorIota>,
     pub buffer: Option<Vec<(Iota, Considered)>>,

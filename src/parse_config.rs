@@ -1,29 +1,26 @@
 use pest::Parser;
-use std::{
-    collections::{HashMap},
-    vec,
-};
+use std::{collections::HashMap, vec};
 use toml::{map::Map, Table, Value};
 
 use crate::{
+    interpreter::state::{Holding, Library},
     iota::{EntityIota, Signature, SignatureExt},
     parser::{parse_entity_type, parse_iota, HexParser, Rule},
-    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::state::{Library, Holding},
+    pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 #[derive(Debug)]
 pub struct Config {
     pub libraries: HashMap<[i32; 3], Library>,
-    pub entities: Vec<EntityIota>,
+    pub entities: HashMap<String, EntityIota>,
 }
 
-
-pub fn parse_config(source: String) -> Config{
+pub fn parse_config(source: String) -> Config {
     let parsed = source.parse::<Table>().unwrap();
 
     let mut config = Config {
         libraries: HashMap::new(),
-        entities: vec![],
+        entities: HashMap::new(),
     };
 
     for (key, val) in parsed {
@@ -111,22 +108,32 @@ fn parse_entity(entity: Map<String, Value>, config: &mut Config) {
     let held_item = held_item.map(|i| &parse_str(i)[..]);
 
     let held_item_contents_value = entity.get("holding.value").clone();
-    let held_item_contents_pair = held_item_contents_value.map(|value| HexParser::parse(Rule::Iota, parse_str(value))
-    .unwrap()
-    .next()
-    .unwrap());
-    let held_item_contents = held_item_contents_pair.map(|pair| parse_iota(pair, &PatternRegistry::construct()));
+    let held_item_contents_pair = held_item_contents_value.map(|value| {
+        HexParser::parse(Rule::Iota, parse_str(value))
+            .unwrap()
+            .next()
+            .unwrap()
+    });
+    let held_item_contents =
+        held_item_contents_pair.map(|pair| parse_iota(pair, &PatternRegistry::construct()));
 
     let holding = match held_item {
         Some("Focus") => Holding::Focus(held_item_contents),
         Some("Trinket") => Holding::Trinket(held_item_contents),
         Some("Artifact") => Holding::Artifact(held_item_contents),
-        Some("Cypher")  => Holding::Cypher(held_item_contents),
+        Some("Cypher") => Holding::Cypher(held_item_contents),
         None => Holding::None,
         _ => unreachable!(),
     };
 
-    config.entities.push(EntityIota { name, entity_type, holding: Box::new(holding) })
+    config.entities.insert(
+        name.clone(),
+        EntityIota {
+            name,
+            entity_type,
+            holding: Box::new(holding),
+        },
+    );
 }
 
 fn parse_int(value: &Value) -> i32 {

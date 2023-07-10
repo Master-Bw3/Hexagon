@@ -112,6 +112,10 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Assessor's Reflection", "writable",  "deeeeeq", Box::new(read_write::writable)),
             Pattern::new("Akasha's Distillation", "akashic/read",  "qqqwqqqqqaq", Box::new(read_write::akashic_read)),
             Pattern::new("Akasha's Gambit", "akashic/write",  "eeeweeeeede", Box::new(read_write::akashic_write)),
+            Pattern::new("Chronicler's Purification", "read/entity",  "wawqwqwqwqwqw", Box::new(read_write::read_entity)),
+            Pattern::new("Chronicler's Gambit", "write/entity",  "wdwewewewewew", Box::new(read_write::write_entity)),
+            Pattern::new("Auditor's Purification", "readable/entity",  "wawqwqwqwqwqwew", Box::new(read_write::readable_entity)),
+            Pattern::new("Assessor's Purification", "writable/entity",  "wdwewewewewewqw", Box::new(read_write::writeable_entity)),
 
 
             //sentinel

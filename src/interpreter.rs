@@ -23,11 +23,14 @@ pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap
     let mut state = State::default();
     let pattern_registry = PatternRegistry::construct();
     state.ravenmind = Some(Iota::List(vec![]));
-    state.entities.push(EntityIota {
-        name: "Caster".to_string(),
-        entity_type: EntityType::Player,
-        holding: Box::new(Holding::None),
-    });
+    state.entities.insert(
+        "Caster".to_string(),
+        EntityIota {
+            name: "Caster".to_string(),
+            entity_type: EntityType::Player,
+            holding: Box::new(Holding::None),
+        },
+    );
 
     if let Some(conf) = config {
         state.entities = conf.entities;
