@@ -120,7 +120,11 @@ pub fn beep<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 3;
-    state.stack.remove_args(&arg_count);
+    if state.stack.len() < arg_count {
+        Err(Mishap::NotEnoughIotas(arg_count))?
+    } else {
+        state.stack.remove_args(&arg_count);
+    }
 
     let notes = ["beep", "boop"];
     let mut rng = thread_rng();
