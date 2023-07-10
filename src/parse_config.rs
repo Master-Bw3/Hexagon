@@ -107,7 +107,26 @@ fn parse_entity(entity: Map<String, Value>, config: &mut Config) {
         .unwrap();
     let entity_type = parse_entity_type(entity_type_pair.as_str().to_string());
 
-    config.entities.push(EntityIota { name, entity_type, holding: Box::new(Holding::None) })
+    let held_item = entity.get("holding.item").clone();
+    let held_item = held_item.map(|i| &parse_str(i)[..]);
+
+    let held_item_contents_value = entity.get("holding.value").clone();
+    let held_item_contents_pair = held_item_contents_value.map(|value| HexParser::parse(Rule::Iota, parse_str(value))
+    .unwrap()
+    .next()
+    .unwrap());
+    let held_item_contents = held_item_contents_pair.map(|pair| parse_iota(pair, &PatternRegistry::construct()));
+
+    let holding = match held_item {
+        Some("Focus") => Holding::Focus(held_item_contents),
+        Some("Trinket") => Holding::Trinket(held_item_contents),
+        Some("Artifact") => Holding::Artifact(held_item_contents),
+        Some("Cypher")  => Holding::Cypher(held_item_contents),
+        None => Holding::None,
+        _ => unreachable!(),
+    };
+
+    config.entities.push(EntityIota { name, entity_type, holding: Box::new(holding) })
 }
 
 fn parse_int(value: &Value) -> i32 {
