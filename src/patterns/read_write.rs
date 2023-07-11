@@ -38,13 +38,15 @@ pub fn erase<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    state.offhand = match state.offhand {
+    let player = state.entities.get_mut("Caster").unwrap();
+
+    player.holding = Box::new(match *player.holding {
         Holding::None => Holding::None,
         Holding::Focus(_) => Holding::Focus(None),
         Holding::Trinket(_) => Holding::Trinket(None),
         Holding::Artifact(_) => Holding::Artifact(None),
         Holding::Cypher(_) => Holding::Cypher(None),
-    };
+    });
 
     Ok(state)
 }
@@ -60,9 +62,11 @@ pub fn craft_trinket<'a>(
     );
     state.stack.remove_args(&arg_count);
 
-    state.offhand = match state.offhand {
-        Holding::Trinket(None) => Holding::Trinket(Some(Iota::List(iotas.1))),
-        _ => state.offhand.clone(), //should mishap but im lazy so no
+    let player = state.entities.get_mut("Caster").unwrap();
+
+    player.holding = match *player.holding {
+        Holding::Trinket(None) => Box::new(Holding::Trinket(Some(Iota::List(iotas.1)))),
+        _ => Err(Mishap::HoldingIncorrectItem)?,
     };
 
     Ok(state)
@@ -79,9 +83,11 @@ pub fn craft_cypher<'a>(
     );
     state.stack.remove_args(&arg_count);
 
-    state.offhand = match state.offhand {
-        Holding::Trinket(None) => Holding::Cypher(Some(Iota::List(iotas.1))),
-        _ => state.offhand.clone(), //should mishap but im lazy so no
+    let player = state.entities.get_mut("Caster").unwrap();
+
+    player.holding = match *player.holding {
+        Holding::Trinket(None) => Box::new(Holding::Cypher(Some(Iota::List(iotas.1)))),
+        _ => Err(Mishap::HoldingIncorrectItem)?,
     };
 
     Ok(state)
@@ -98,9 +104,11 @@ pub fn craft_artifact<'a>(
     );
     state.stack.remove_args(&arg_count);
 
-    state.offhand = match state.offhand {
-        Holding::Trinket(None) => Holding::Artifact(Some(Iota::List(iotas.1))),
-        _ => state.offhand.clone(), //should mishap but im lazy so no
+    let player = state.entities.get_mut("Caster").unwrap();
+
+    player.holding = match *player.holding {
+        Holding::Trinket(None) => Box::new(Holding::Artifact(Some(Iota::List(iotas.1)))),
+        _ => Err(Mishap::HoldingIncorrectItem)?,
     };
 
     Ok(state)
@@ -110,7 +118,9 @@ pub fn read<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let operation_result = match &state.offhand {
+    let player = state.entities.get_mut("Caster").unwrap();
+
+    let operation_result = match player.holding.as_ref() {
         Holding::Focus(Some(iota)) => iota.clone(),
         _ => Iota::Null(NullIota::Null),
     };
@@ -128,9 +138,11 @@ pub fn write<'a>(
     let iota = state.stack.get_iota(0, arg_count)?.clone();
     state.stack.remove_args(&arg_count);
 
-    state.offhand = match state.offhand {
-        Holding::Focus(_) => Holding::Focus(Some(iota)),
-        _ => state.offhand.clone(), //should mishap but im lazy so no
+    let player = state.entities.get_mut("Caster").unwrap();
+
+    player.holding = match player.holding.as_ref() {
+        Holding::Focus(_) => Box::new(Holding::Focus(Some(iota))),
+        _ => Err(Mishap::HoldingIncorrectItem)?,
     };
 
     Ok(state)
@@ -140,7 +152,9 @@ pub fn readable<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let operation_result = match &state.offhand {
+    let player = state.entities.get("Caster").unwrap();
+
+    let operation_result = match player.holding.as_ref() {
         Holding::None => Iota::Bool(false),
         Holding::Focus(_) => Iota::Bool(true),
         Holding::Trinket(_) => Iota::Bool(false),
@@ -157,7 +171,9 @@ pub fn writable<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let operation_result = match &state.offhand {
+    let player = state.entities.get("Caster").unwrap();
+
+    let operation_result = match player.holding.as_ref() {
         Holding::None => Iota::Bool(false),
         Holding::Focus(_) => Iota::Bool(true),
         Holding::Trinket(_) => Iota::Bool(false),
@@ -251,7 +267,7 @@ pub fn write_entity<'a>(
     state.stack.remove_args(&arg_count);
 
     match state.entities.get_mut(&(iotas.0).name) {
-        Some(entity) => match *entity.holding.clone() {
+        Some(entity) => match entity.holding.as_ref() {
             Holding::Focus(_) => entity.holding = Box::new(Holding::Focus(Some(iotas.1))),
             _ => todo!("handle unreadable item"),
         },
@@ -308,4 +324,3 @@ pub fn writeable_entity<'a>(
 
     Ok(state)
 }
-

@@ -18,8 +18,8 @@ pub enum Mishap {
     OpExpectedIota,
     VariableNotAssigned,
     NoIotaAtIndex(usize),
-    NoAkashicRecord(VectorIota)
-
+    NoAkashicRecord(VectorIota),
+    HoldingIncorrectItem
 }
 
 impl Mishap {
@@ -57,6 +57,7 @@ impl Mishap {
             Mishap::OpExpectedIota => todo!(),
             Mishap::NoIotaAtIndex(_) => todo!(),
             Mishap::NoAkashicRecord(_) => todo!(),
+            Mishap::HoldingIncorrectItem => todo!(),
         }
     }
 }
