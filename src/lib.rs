@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, env};
 
 use crate::interpreter::interpret;
 mod compiler;
@@ -15,10 +15,20 @@ use pattern_registry::{PatternRegistry, PatternRegistryExt};
 
 type RunResult = Result<State, (Mishap, (usize, usize))>;
 
-pub fn run(source: &String, opt_config: &Option<&Config>) -> RunResult {
+pub fn run() {
+    let args: Vec<String> = env::args().collect();
+
+    let source_path = &args.get(1).expect("Expected File Path");
+
+    let default_config_path = "config.toml".to_string();
+    let config_path = args.get(1).unwrap_or(&default_config_path);
+
+    let config = fs::read_to_string(config_path).map(parse_config).ok();
+
+    let source = fs::read_to_string(source_path).expect("Should have been able to read the file");
 
 
-    let great_spell_sigs = if let Some(conf) = &opt_config.as_ref() {
+    let great_spell_sigs = if let Some(conf) = &config.as_ref() {
         conf.great_spell_sigs.clone()
     } else {
         PatternRegistry::gen_default_great_sigs()
@@ -26,5 +36,17 @@ pub fn run(source: &String, opt_config: &Option<&Config>) -> RunResult {
 
     let parse_result = parser::parse(&source, &great_spell_sigs).unwrap();
     
-    interpret(parse_result, opt_config)
+    
+
+    let interpreter_result = interpret(parse_result, &config.as_ref());
+
+    match interpreter_result {
+        Ok(result) => println!("\n result: {:?} \n {:?}", result.stack, result.buffer),
+        Err((err, (line, col))) => {
+            eprintln!(
+                "\x1b[31mError:\x1b[0m {:?}, {source_path}:{line}:{col}",
+                err
+            )
+        }
+    };
 }
