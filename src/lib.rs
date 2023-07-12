@@ -1,4 +1,4 @@
-use std::{env, fs};
+use std::{collections::HashMap, env, fs};
 
 use crate::interpreter::interpret;
 mod compiler;
@@ -12,14 +12,14 @@ mod patterns;
 use parse_config::parse_config;
 use pattern_registry::{PatternRegistry, PatternRegistryExt};
 
-struct Args{
+struct Args {
     command: Command,
     source_path: String,
     config_path: String,
 }
 
-impl Args{
-    fn get() -> Args{
+impl Args {
+    fn get() -> Args {
         let args: Vec<String> = env::args().collect();
 
         let command = args.get(1).expect("Expected command");
@@ -46,7 +46,7 @@ impl Args{
 
 enum Command {
     Run,
-    Build
+    Build,
 }
 
 pub fn run() {
@@ -63,8 +63,13 @@ pub fn run() {
         PatternRegistry::gen_default_great_sigs()
     };
 
-    let parse_result = parser::parse(&source, &great_spell_sigs).unwrap();
-    
+    let entities = config
+        .as_ref()
+        .map(|conf| conf.entities.clone())
+        .unwrap_or(HashMap::new());
+
+    let parse_result = parser::parse(&source, &great_spell_sigs, &entities).unwrap();
+
     if let Command::Run = args.command {
         let interpreter_result = interpret(parse_result, &config.as_ref());
 

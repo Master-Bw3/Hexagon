@@ -19,13 +19,14 @@ pub struct HexParser;
 pub fn parse(
     source: &str,
     great_spell_sigs: &HashMap<String, String>,
+    conf_entities: &HashMap<String, EntityIota>,
 ) -> Result<AstNode, Box<Error<Rule>>> {
     let mut ast = vec![];
     let pattern_registry = PatternRegistry::construct(great_spell_sigs);
 
     let pairs = HexParser::parse(Rule::File, source)?;
     for pair in pairs {
-        if let Some(node) = construct_ast_node(pair, &pattern_registry) {
+        if let Some(node) = construct_ast_node(pair, &pattern_registry, conf_entities) {
             ast.push(node);
         }
     }
@@ -33,7 +34,11 @@ pub fn parse(
     Ok(AstNode::File(ast))
 }
 
-fn construct_ast_node(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Option<AstNode> {
+fn construct_ast_node(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &HashMap<String, EntityIota>,
+) -> Option<AstNode> {
     match pair.as_rule() {
         Rule::Action => {
             let mut pair = pair.into_inner();
@@ -41,22 +46,28 @@ fn construct_ast_node(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) 
             let right = pair.next();
             let righter = pair.next();
 
-            Some(parse_action(left, right, righter, pattern_registry))
+            Some(parse_action(
+                left,
+                right,
+                righter,
+                pattern_registry,
+                conf_entities,
+            ))
         }
         Rule::Op => {
             let mut pair = pair.into_inner();
             let name = pair.next().unwrap();
             let arg = pair.next();
 
-            Some(parse_op(name, arg, pattern_registry))
+            Some(parse_op(name, arg, pattern_registry, conf_entities))
         }
         Rule::EscapedIntroRetro => Some(parse_intro_retro(pair)),
         Rule::Var => Some(parse_var(pair)),
-        Rule::Embed => Some(parse_embed(pair, pattern_registry)),
-        Rule::IfBlock => Some(parse_if_block(pair, pattern_registry)),
+        Rule::Embed => Some(parse_embed(pair, pattern_registry, conf_entities)),
+        Rule::IfBlock => Some(parse_if_block(pair, pattern_registry, conf_entities)),
         Rule::Term => Some(AstNode::Hex(
             pair.into_inner()
-                .filter_map(|node| construct_ast_node(node, pattern_registry))
+                .filter_map(|node| construct_ast_node(node, pattern_registry, conf_entities))
                 .collect(),
         )),
         _ => None,
@@ -67,6 +78,7 @@ fn parse_op(
     name: Pair<'_, Rule>,
     arg: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
+    conf_entities: &HashMap<String, EntityIota>,
 ) -> AstNode {
     AstNode::Op {
         name: {
@@ -79,7 +91,7 @@ fn parse_op(
         },
         arg: {
             arg.map(|pair| match pair.as_rule() {
-                Rule::Iota => OpValue::Iota(parse_iota(pair, pattern_registry)),
+                Rule::Iota => OpValue::Iota(parse_iota(pair, pattern_registry, conf_entities)),
                 Rule::Var => OpValue::Var(pair.as_str().to_string()),
                 _ => unreachable!(),
             })
@@ -93,6 +105,7 @@ fn parse_action(
     right: Option<Pair<'_, Rule>>,
     righter: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
+    conf_entities: &HashMap<String, EntityIota>,
 ) -> AstNode {
     right
         .clone()
@@ -102,12 +115,14 @@ fn parse_action(
                 value: Some(ActionValue::Iota(parse_iota(
                     pair.clone(),
                     pattern_registry,
+                    conf_entities,
                 ))),
                 line: pair.line_col(),
             },
             Rule::EntityType => AstNode::Action {
                 name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
-                value: righter.map(|p| ActionValue::Iota(parse_iota(p, pattern_registry))),
+                value: righter
+                    .map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
                 line: pair.line_col(),
             },
             Rule::BookkeeperValue => AstNode::Action {
@@ -148,7 +163,11 @@ fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     }
 }
 
-fn parse_embed(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> AstNode {
+fn parse_embed(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &HashMap<String, EntityIota>,
+) -> AstNode {
     let inner_pair = pair.clone().into_inner().next().unwrap();
     AstNode::Op {
         name: {
@@ -163,43 +182,69 @@ fn parse_embed(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> AstN
         arg: (inner_pair
             .into_inner()
             .next()
-            .map(|iota| OpValue::Iota(parse_iota(iota, pattern_registry)))),
+            .map(|iota| OpValue::Iota(parse_iota(iota, pattern_registry, conf_entities)))),
         line: pair.line_col(),
     }
 }
 
-fn parse_if_block(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> AstNode {
+fn parse_if_block(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &HashMap<String, EntityIota>,
+) -> AstNode {
     fn parse_inner(
         line: (usize, usize),
         mut inner: Pairs<'_, Rule>,
         pattern_registry: &PatternRegistry,
+        conf_entities: &HashMap<String, EntityIota>,
     ) -> AstNode {
         AstNode::IfBlock {
             condition: {
                 let mut condition = inner.next().unwrap().into_inner();
-                Box::new(construct_ast_node(condition.next().unwrap(), pattern_registry).unwrap())
+                Box::new(
+                    construct_ast_node(condition.next().unwrap(), pattern_registry, conf_entities)
+                        .unwrap(),
+                )
             },
             succeed: {
                 let mut succeed = inner.next().unwrap().into_inner();
-                Box::new(construct_ast_node(succeed.next().unwrap(), pattern_registry).unwrap())
+                Box::new(
+                    construct_ast_node(succeed.next().unwrap(), pattern_registry, conf_entities)
+                        .unwrap(),
+                )
             },
             fail: {
                 inner.clone().next().map(|branch| match branch.as_rule() {
                     Rule::Else => Box::new(
-                        construct_ast_node(branch.into_inner().next().unwrap(), pattern_registry)
-                            .unwrap(),
+                        construct_ast_node(
+                            branch.into_inner().next().unwrap(),
+                            pattern_registry,
+                            conf_entities,
+                        )
+                        .unwrap(),
                     ),
-                    Rule::ElseIf => Box::new(parse_inner(line, inner, pattern_registry)),
+                    Rule::ElseIf => {
+                        Box::new(parse_inner(line, inner, pattern_registry, conf_entities))
+                    }
                     _ => unreachable!(),
                 })
             },
             line,
         }
     }
-    parse_inner(pair.line_col(), pair.into_inner(), pattern_registry)
+    parse_inner(
+        pair.line_col(),
+        pair.into_inner(),
+        pattern_registry,
+        conf_entities,
+    )
 }
 
-pub fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> Iota {
+pub fn parse_iota(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &HashMap<String, EntityIota>,
+) -> Iota {
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
         Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
@@ -250,15 +295,15 @@ pub fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> I
             let name = name[1..name.len() - 1].to_string();
             let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
 
-            Iota::Entity(EntityIota {
-                name,
-                entity_type,
-                holding: Box::new(Holding::None),
-            })
+            Iota::Entity(EntityIota::create(conf_entities, name, entity_type))
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
-            Iota::List(inner.map(|x| parse_iota(x, pattern_registry)).collect())
+            Iota::List(
+                inner
+                    .map(|x| parse_iota(x, pattern_registry, conf_entities))
+                    .collect(),
+            )
         }
         _ => unreachable!(),
     }
@@ -354,6 +399,7 @@ mod tests {
             Consideration: Huginn's Gambit
             ",
             &PatternRegistry::gen_default_great_sigs(),
+            &HashMap::new()
         )
         .unwrap();
     }

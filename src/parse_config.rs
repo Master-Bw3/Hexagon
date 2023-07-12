@@ -1,5 +1,5 @@
 use pest::Parser;
-use std::{collections::HashMap};
+use std::collections::HashMap;
 use toml::{map::Map, Table, Value};
 
 use crate::{
@@ -27,7 +27,9 @@ pub fn parse_config(source: String) -> Config {
 
     if let Some(Value::Table(sigs)) = &parsed.get("Great_Spells") {
         for (k, v) in sigs {
-            config.great_spell_sigs.insert(k.clone(), parse_str(v).to_string());
+            config
+                .great_spell_sigs
+                .insert(k.clone(), parse_str(v).to_string());
         }
     };
 
@@ -69,6 +71,7 @@ fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
                 .next()
                 .unwrap(),
             &PatternRegistry::construct(&config.great_spell_sigs),
+            &config.entities,
         );
         contents.insert(Signature::from_sig(key), iota);
     }
@@ -122,8 +125,13 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
             .next()
             .unwrap()
     });
-    let held_item_contents = held_item_contents_pair
-        .map(|pair| parse_iota(pair, &PatternRegistry::construct(&config.great_spell_sigs)));
+    let held_item_contents = held_item_contents_pair.map(|pair| {
+        parse_iota(
+            pair,
+            &PatternRegistry::construct(&config.great_spell_sigs),
+            &config.entities,
+        )
+    });
 
     let holding = match held_item {
         Some("Focus") => Holding::Focus(held_item_contents),

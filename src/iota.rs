@@ -1,7 +1,8 @@
-use std::ops::Not;
+use std::{ops::Not, collections::HashMap};
 
 use crate::{
     interpreter::state::Holding,
+    parse_config::Config,
     parser::ActionValue,
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -91,6 +92,25 @@ pub struct EntityIota {
     pub name: String,
     pub entity_type: EntityType,
     pub holding: Box<Holding>,
+}
+
+impl EntityIota {
+    pub fn create(
+        conf_entities: &HashMap<String, EntityIota>,
+        name: String,
+        entity_type: EntityType,
+    ) -> EntityIota {
+        conf_entities
+            .values()
+            .filter(|entity| entity.name == name && entity.entity_type == entity_type)
+            .next()
+            .cloned()
+            .unwrap_or(EntityIota {
+                name,
+                entity_type,
+                holding: Box::new(Holding::None),
+            })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
