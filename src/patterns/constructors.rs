@@ -5,7 +5,7 @@ use crate::{
         mishap::Mishap,
         state::{Entity, EntityType, Stack, StackExt, State},
     },
-    iota::Iota,
+    iota::{Iota, Display},
     parser::ActionValue,
     pattern_registry::PatternRegistry,
 };
@@ -68,7 +68,7 @@ pub fn spell_3<T: 'static, U: 'static, V: 'static>(
     })
 }
 
-pub fn value_0<U: 'static>(value_type_getter: GetterType<U>) -> Box<ActionWithValueType> {
+pub fn value_0<U: Display + 'static >(value_type_getter: GetterType<U>) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             match value {
@@ -97,7 +97,7 @@ pub fn value_0<U: 'static>(value_type_getter: GetterType<U>) -> Box<ActionWithVa
     )
 }
 
-pub fn value_1<T: 'static, U: 'static>(
+pub fn value_1<T: 'static, U: Display + 'static>(
     getter: GetterType<T>,
     value_type_getter: GetterType<U>,
 ) -> Box<ActionWithValueType> {
@@ -132,7 +132,7 @@ pub fn value_1<T: 'static, U: 'static>(
     )
 }
 
-pub fn value_2<T: 'static, U: 'static, V: 'static>(
+pub fn value_2<T: 'static, U: 'static, V: Display + 'static>(
     getter1: GetterType<T>,
     getter2: GetterType<U>,
     value_type_getter: GetterType<V>,

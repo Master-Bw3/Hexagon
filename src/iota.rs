@@ -92,15 +92,73 @@ impl Iota {
 
     pub fn display(&self) -> String {
         match self {
-            Iota::Number(num) => num.to_string(),
-            Iota::Vector(vec) => format!("({}, {}, {})", vec.x, vec.y, vec.z),
-            Iota::Pattern(pat) => pat.signature.as_str(),
-            Iota::Bool(bool) => bool.to_string(),
-            Iota::Garbage(_) => "Garbage".to_string(),
-            Iota::Null(_) =>"Null".to_string(),
-            Iota::Entity(name) => format!("@{name}"),
-            Iota::List(list) => format!("[{}]", list.iter().map(Iota::display).collect::<Vec<String>>().join(", ")),
+            Iota::Number(num) => num.display(),
+            Iota::Vector(vec) => vec.display(),
+            Iota::Pattern(pat) => pat.display(),
+            Iota::Bool(bool) => bool.display(),
+            Iota::Garbage(garbage) => garbage.display(),
+            Iota::Null(null) => null.display(),
+            Iota::Entity(name) => name.display(),
+            Iota::List(list) => list.display(),
         }
+    }
+}
+
+pub trait Display {
+    fn display(&self) -> String;
+}
+
+impl Display for NumberIota {
+    fn display(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl Display for PatternIota {
+    fn display(&self) -> String {
+        self.signature.as_str()
+    }
+}
+
+impl Display for NullIota {
+    fn display(&self) -> String {
+        "Null".to_string()
+    }
+}
+
+impl Display for GarbageIota {
+    fn display(&self) -> String {
+        "Garbage".to_string()
+    }
+}
+
+impl Display for BoolIota {
+    fn display(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl Display for VectorIota {
+    fn display(&self) -> String {
+        format!("({}, {}, {})", self.x, self.y, self.z)
+    }
+}
+
+impl Display for EntityIota {
+    fn display(&self) -> String {
+        format!("@{self}")
+    }
+}
+
+impl Display for ListIota {
+    fn display(&self) -> String {
+        format!(
+            "[{}]",
+            self.iter()
+                .map(Iota::display)
+                .collect::<Vec<String>>()
+                .join(", ")
+        )
     }
 }
 
