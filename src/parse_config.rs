@@ -13,6 +13,7 @@ use crate::{
 pub struct Config {
     pub libraries: HashMap<[i32; 3], Library>,
     pub entities: HashMap<String, EntityIota>,
+    pub great_spell_sigs: HashMap<&'static str, &'static str>,
 }
 
 pub fn parse_config(source: String) -> Config {
@@ -21,13 +22,20 @@ pub fn parse_config(source: String) -> Config {
     let mut config = Config {
         libraries: HashMap::new(),
         entities: HashMap::new(),
+        great_spell_sigs: PatternRegistry::gen_default_great_sigs(),
+    };
+
+    if let Some(sigs) = parsed.get("Great_Spells") {
+        println!("{:?}", sigs);
+        // config.great_spell_sigs =
+        todo!()
     };
 
     for (key, val) in parsed {
         match &key[..] {
             "libraries" => parse_libraries(val, &mut config),
             "entities" => parse_entities(val, &mut config),
-            _ => unreachable!(),
+            _ => (),
         }
     }
 
@@ -60,7 +68,7 @@ fn parse_library(mut library: Map<String, Value>, config: &mut Config) {
                 .unwrap()
                 .next()
                 .unwrap(),
-            &PatternRegistry::construct(),
+            &PatternRegistry::construct(&config.great_spell_sigs),
         );
         contents.insert(Signature::from_sig(key), iota);
     }
@@ -114,8 +122,8 @@ fn parse_entity(entity: Map<String, Value>, config: &mut Config) {
             .next()
             .unwrap()
     });
-    let held_item_contents =
-        held_item_contents_pair.map(|pair| parse_iota(pair, &PatternRegistry::construct()));
+    let held_item_contents = held_item_contents_pair
+        .map(|pair| parse_iota(pair, &PatternRegistry::construct(&config.great_spell_sigs)));
 
     let holding = match held_item {
         Some("Focus") => Holding::Focus(held_item_contents),

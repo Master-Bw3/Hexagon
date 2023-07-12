@@ -21,13 +21,19 @@ use self::{
 
 pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State::default();
-    let pattern_registry = PatternRegistry::construct();
     state.ravenmind = Some(Iota::List(vec![]));
+    let mut great_sigs;
 
     if let Some(conf) = config {
         state.entities = conf.entities;
         state.libraries = conf.libraries;
+        great_sigs = conf.great_spell_sigs;
+    } else {
+        great_sigs = PatternRegistry::gen_default_great_sigs();
     }
+
+    let pattern_registry = PatternRegistry::construct(&great_sigs);
+
     //if caster is not overriden by config then set default caster values
     match state.entities.get("Caster") {
         Some(_) => (),

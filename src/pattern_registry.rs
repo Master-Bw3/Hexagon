@@ -1,22 +1,49 @@
+use std::collections::{hash_map, HashMap};
 use std::f32::consts::{E, PI, TAU};
 
-use crate::interpreter::state::{Stack, StackExt, Holding};
-use crate::iota::{Iota, NullIota, VectorIota, EntityType, EntityIota, Signature};
+use crate::interpreter::state::{Holding, Stack, StackExt};
+use crate::iota::{EntityIota, EntityType, Iota, NullIota, Signature, VectorIota};
 use crate::parser::ActionValue;
 use crate::patterns::constructors::value_0;
-use crate::patterns::{lists, stack, read_write, Pattern, swizzle, sentinel};
 use crate::patterns::{constructors, eval, math, special};
+use crate::patterns::{lists, read_write, sentinel, stack, swizzle, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
 
 pub trait PatternRegistryExt {
-    fn construct() -> PatternRegistry;
+    fn gen_default_great_sigs() -> HashMap<&'static str, &'static str>;
+
+    fn construct(great_sigs: &HashMap<&str, &str>) -> PatternRegistry;
     fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern>;
 }
 
 impl PatternRegistryExt for PatternRegistry {
+    fn gen_default_great_sigs() -> HashMap<&'static str, &'static str> {
+        let mut hashmap = HashMap::new();
+        hashmap.insert("craft/battery", "aqqqaqwwaqqqqqeqaqqqawwqwqwqwqwqw");
+        hashmap.insert("potion/weakness", "qqqqqaqwawaw");
+        hashmap.insert("potion/levitation", "qqqqqawwawawd");
+        hashmap.insert("potion/wither", "qqqqqaewawawe");
+        hashmap.insert("potion/poison", "qqqqqadwawaww");
+        hashmap.insert("otion/slowness", "qqqqqadwawaw");
+        hashmap.insert("potion/regeneration", "qqqqaawawaedd");
+        hashmap.insert("potion/night_vision", "qqqaawawaeqdd");
+        hashmap.insert("potion/absorption", "qqaawawaeqqdd");
+        hashmap.insert("potion/haste", "qaawawaeqqqdd");
+        hashmap.insert("potion/strength", "aawawaeqqqqdd");
+        hashmap.insert("lightning", "waadwawdaaweewq");
+        hashmap.insert("flight", "eawwaeawawaa");
+        hashmap.insert("create_lava", "eaqawqadaqd");
+        hashmap.insert("teleport", "wwwqqqwwwqqeqqwwwqqwqqdqqqqqdqq");
+        hashmap.insert("sentinel/create/great", "waeawaeqqqwqwqqwq");
+        hashmap.insert("dispel_rain", "eeewwweeewwaqqddqdqd");
+        hashmap.insert("summon_rain", "wwweeewwweewdawdwad");
+        hashmap.insert("brainsweep", "qeqwqwqwqwqeqaeqeaqeqaeqaqded");
+        hashmap
+    }
+
     #[rustfmt::skip]
-    fn construct() -> PatternRegistry {
+    fn construct(great_sigs: &HashMap<&str, &str>) -> PatternRegistry {
         let registry: PatternRegistry = vec![
             //special patterns
             Pattern::new_with_val("Consideration", "escape", "qqqaw", Box::new(special::escape)),
@@ -202,7 +229,7 @@ impl PatternRegistryExt for PatternRegistry {
 
             Pattern::new_with_val("Zone Distillation: Monster",  "zone_entity/monster", "qqqqqwdeddwq",
                 constructors::zone_entity(Some(&EntityType::Monster), &false)),
-           
+
             Pattern::new_with_val("Zone Distillation: Non-Monster",  "zone_entity/not_monster", "eeeeewaqaawq",
                 constructors::zone_entity(Some(&EntityType::Monster), &true)),
 
@@ -276,12 +303,16 @@ impl PatternRegistryExt for PatternRegistry {
 
     fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern> {
         if let Some(ActionValue::Bookkeeper(code)) = value {
-            let mut bookkeeper = Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
+            let mut bookkeeper =
+                Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
             bookkeeper.signature = parse_bookkeeper_code(code);
-            if query == bookkeeper.display_name || query == bookkeeper.internal_name || query == bookkeeper.signature {
-                return Some(bookkeeper);}
-            else {
-                return None
+            if query == bookkeeper.display_name
+                || query == bookkeeper.internal_name
+                || query == bookkeeper.signature
+            {
+                return Some(bookkeeper);
+            } else {
+                return None;
             }
         }
 
@@ -299,33 +330,38 @@ impl PatternRegistryExt for PatternRegistry {
 }
 
 fn parse_bookkeeper_code(code: &str) -> String {
+    code.chars()
+        .fold(
+            (' ', vec![]),
+            |mut acc: (char, Vec<&str>), segment| match segment {
+                '-' => {
+                    if acc.0 == '-' {
+                        acc.1.push("w");
+                        (segment, acc.1)
+                    } else if acc.0 == 'v' {
+                        acc.1.push("e");
+                        (segment, acc.1)
+                    } else {
+                        (segment, acc.1)
+                    }
+                }
 
-    code.chars().fold((' ', vec![]), |mut acc: (char, Vec<&str>), segment| {
-        match segment {
-            '-' => if acc.0 == '-' {
-                acc.1.push("w"); 
-                (segment, acc.1)
-            } else if acc.0 == 'v' {
-                acc.1.push("e"); 
-                (segment, acc.1)
-            } else { 
-                (segment, acc.1)
+                'v' => {
+                    if acc.0 == '-' {
+                        acc.1.push("ea");
+                        (segment, acc.1)
+                    } else if acc.0 == 'v' {
+                        acc.1.push("da");
+                        (segment, acc.1)
+                    } else {
+                        acc.1.push("a");
+                        (segment, acc.1)
+                    }
+                }
+
+                _ => acc,
             },
-
-            'v' => if acc.0 == '-' {
-                acc.1.push("ea"); 
-                (segment, acc.1)
-            } else if acc.0 == 'v' {
-                acc.1.push("da"); 
-                (segment, acc.1)
-            } else { 
-                acc.1.push("a"); 
-                (segment, acc.1)
-            },
-
-            _ => acc
-        }
-    })
-    .1
-    .concat()
+        )
+        .1
+        .concat()
 }

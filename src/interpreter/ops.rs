@@ -1,6 +1,6 @@
 use crate::{
     iota::{Iota, SignatureExt},
-    parser::{OpValue},
+    parser::OpValue,
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 

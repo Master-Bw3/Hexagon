@@ -71,10 +71,10 @@ pub fn swizzle<'a>(
 
 mod tests {
 
-    use crate::{pattern_registry::PatternRegistryExt, iota::Iota};
+    use crate::{iota::Iota, pattern_registry::PatternRegistryExt};
 
     use super::*;
-    
+
     #[test]
     fn swizzle_test() {
         let mut state = State::default();
@@ -88,7 +88,11 @@ mod tests {
 
         let expected = vec![Iota::Number(0.0), Iota::Number(1.0), Iota::Number(2.0)];
 
-        let result = swizzle(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = swizzle(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 }

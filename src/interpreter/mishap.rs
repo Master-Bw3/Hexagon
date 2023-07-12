@@ -19,7 +19,7 @@ pub enum Mishap {
     VariableNotAssigned,
     NoIotaAtIndex(usize),
     NoAkashicRecord(VectorIota),
-    HoldingIncorrectItem
+    HoldingIncorrectItem,
 }
 
 impl Mishap {

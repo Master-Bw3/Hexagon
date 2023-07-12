@@ -222,7 +222,11 @@ mod tests {
 
         let expected = vec![Iota::Number(1.0), Iota::Number(2.0), Iota::Number(0.0)];
 
-        let result = rotate(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = rotate(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -233,7 +237,11 @@ mod tests {
 
         let expected = vec![Iota::Number(2.0), Iota::Number(0.0), Iota::Number(1.0)];
 
-        let result = rotate_reverse(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = rotate_reverse(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -244,7 +252,11 @@ mod tests {
 
         let expected = vec![Iota::Number(0.0), Iota::Number(1.0), Iota::Number(0.0)];
 
-        let result = over(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = over(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -255,7 +267,11 @@ mod tests {
 
         let expected = vec![Iota::Number(1.0), Iota::Number(0.0), Iota::Number(1.0)];
 
-        let result = tuck(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = tuck(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -271,7 +287,11 @@ mod tests {
 
         let expected = vec![Iota::Number(0.0), Iota::Number(2.0), Iota::Number(1.0)];
 
-        let result = fisherman(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = fisherman(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -297,7 +317,11 @@ mod tests {
             Iota::Number(0.0),
         ];
 
-        let result = fisherman_copy(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = fisherman_copy(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 }

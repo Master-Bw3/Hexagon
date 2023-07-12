@@ -764,20 +764,16 @@ pub fn bool_if<'a>(
     Ok(state)
 }
 
-
 pub fn random<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-
     let rand = rand::random::<f32>();
 
     state.stack.push(Iota::Number(rand));
 
     Ok(state)
 }
-
-
 
 #[cfg(test)]
 mod tests {
@@ -800,7 +796,11 @@ mod tests {
 
         let expected = vec![Iota::List(vec![Iota::Number(2.0)])];
 
-        let result = and_bit(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = and_bit(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -830,7 +830,11 @@ mod tests {
             Iota::Number(3.0),
         ])];
 
-        let result = or_bit(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = or_bit(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -853,7 +857,11 @@ mod tests {
 
         let expected = vec![Iota::List(vec![Iota::Number(4.0), Iota::Number(3.0)])];
 
-        let result = xor_bit(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = xor_bit(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 
@@ -874,7 +882,11 @@ mod tests {
             Iota::Number(3.0),
         ])];
 
-        let result = to_set(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = to_set(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 }

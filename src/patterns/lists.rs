@@ -280,7 +280,11 @@ mod tests {
             Iota::Number(2.0),
         ])];
 
-        let result = last_n_list(&mut state, &PatternRegistry::construct()).unwrap();
+        let result = last_n_list(
+            &mut state,
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+        )
+        .unwrap();
         assert_eq!(result.stack, expected)
     }
 }

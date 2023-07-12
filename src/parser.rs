@@ -1,6 +1,9 @@
+use std::collections::HashMap;
+
 use crate::{
+    interpreter::state::Holding,
     iota::{EntityIota, EntityType, GarbageIota, Iota, NullIota, PatternIota},
-    pattern_registry::{PatternRegistry, PatternRegistryExt}, interpreter::state::Holding,
+    pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 use nalgebra::matrix;
 use pest::{
@@ -13,9 +16,12 @@ use pest_derive::Parser;
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
 pub struct HexParser;
-pub fn parse(source: &str) -> Result<AstNode, Box<Error<Rule>>> {
+pub fn parse(
+    source: &str,
+    great_spell_sigs: &HashMap<&str, &str>,
+) -> Result<AstNode, Box<Error<Rule>>> {
     let mut ast = vec![];
-    let pattern_registry = PatternRegistry::construct();
+    let pattern_registry = PatternRegistry::construct(&great_spell_sigs);
 
     let pairs = HexParser::parse(Rule::File, source)?;
     for pair in pairs {
@@ -243,7 +249,11 @@ pub fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> I
             let name = inner.next().unwrap().as_str().to_string();
             let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
 
-            Iota::Entity(EntityIota { name, entity_type, holding: Box::new(Holding::None) })
+            Iota::Entity(EntityIota {
+                name,
+                entity_type,
+                holding: Box::new(Holding::None),
+            })
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
@@ -342,6 +352,7 @@ mod tests {
             }
             Consideration: Huginn's Gambit
             ",
+            &PatternRegistry::gen_default_great_sigs(),
         )
         .unwrap();
     }

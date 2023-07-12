@@ -20,8 +20,11 @@ use crate::{
 pub type ActionNoValueType =
     dyn for<'a> Fn(&'a mut State, &PatternRegistry) -> Result<&'a mut State, Mishap>;
 
-pub type ActionWithValueType =
-    dyn for<'a> Fn(&'a mut State, &PatternRegistry, Option<&ActionValue>) -> Result<&'a mut State, Mishap>;
+pub type ActionWithValueType = dyn for<'a> Fn(
+    &'a mut State,
+    &PatternRegistry,
+    Option<&ActionValue>,
+) -> Result<&'a mut State, Mishap>;
 
 #[derive(Clone)]
 pub enum ActionFunction {
@@ -74,11 +77,9 @@ impl Pattern {
     ) -> Result<&'a mut State, Mishap> {
         match &self.action {
             ActionFunction::ActionNoValue(action) => action(state, pattern_registry),
-            ActionFunction::ActionWithValue(action) => action(
-                state,
-                pattern_registry,
-                value.as_ref(),
-            ),
+            ActionFunction::ActionWithValue(action) => {
+                action(state, pattern_registry, value.as_ref())
+            }
         }
     }
 }
