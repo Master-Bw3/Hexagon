@@ -1,4 +1,4 @@
 /target
 .vscode
 test.hexcasting
-test.toml
+config.toml
