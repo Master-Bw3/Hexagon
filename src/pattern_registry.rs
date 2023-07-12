@@ -201,7 +201,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Blue Sun's Zenith", "potion/night_vision", great_sigs.get("potion/night_vision").unwrap(), 
                 constructors::spell_2(Stack::get_entity, Stack::get_number)),
 
-            Pattern::new("Black Sun's Zenith", "potion/absorption", great_sigs.get("potion/absorptio").unwrap(), 
+            Pattern::new("Black Sun's Zenith", "potion/absorption", great_sigs.get("potion/absorption").unwrap(), 
                 constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
 
             Pattern::new("Red Sun's Zenith", "potion/haste", great_sigs.get("potion/haste").unwrap(), 
@@ -226,7 +226,7 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::spell_1(Stack::get_vector)),
 
             Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
-            Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rai").unwrap(), Box::new(special::no_action)),
+            Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rain").unwrap(), Box::new(special::no_action)),
             Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
 
 

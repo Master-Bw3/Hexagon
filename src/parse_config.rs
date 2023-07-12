@@ -29,7 +29,6 @@ pub fn parse_config(source: String) -> Config {
         for (k, v) in sigs {
             config.great_spell_sigs.insert(k.clone(), parse_str(v).to_string());
         }
-        todo!()
     };
 
     for (key, val) in &parsed {
