@@ -19,7 +19,10 @@ use self::{
     state::{Holding, State},
 };
 
-pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap, (usize, usize))> {
+pub fn interpret(
+    node: AstNode,
+    config: &Option<&Config>,
+) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
         ravenmind: Some(Iota::List(vec![])),
         ..Default::default()
@@ -27,9 +30,9 @@ pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap
     let great_sigs;
 
     if let Some(conf) = config {
-        state.entities = conf.entities;
-        state.libraries = conf.libraries;
-        great_sigs = conf.great_spell_sigs;
+        state.entities = conf.entities.clone();
+        state.libraries = conf.libraries.clone();
+        great_sigs = conf.great_spell_sigs.clone();
     } else {
         great_sigs = PatternRegistry::gen_default_great_sigs();
     }
