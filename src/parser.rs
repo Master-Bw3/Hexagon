@@ -20,7 +20,6 @@ pub fn parse(
     source: &str,
     great_spell_sigs: &HashMap<String, String>,
 ) -> Result<AstNode, Box<Error<Rule>>> {
-
     let mut ast = vec![];
     let pattern_registry = PatternRegistry::construct(great_spell_sigs);
 
@@ -247,7 +246,8 @@ pub fn parse_iota(pair: Pair<'_, Rule>, pattern_registry: &PatternRegistry) -> I
         },
         Rule::Entity => {
             let mut inner = inner_pair.into_inner();
-            let name = inner.next().unwrap().as_str().to_string();
+            let name = inner.next().unwrap().as_str();
+            let name = name[1..name.len() - 1].to_string();
             let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
 
             Iota::Entity(EntityIota {
