@@ -21,11 +21,6 @@ impl PatternRegistryExt for PatternRegistry {
     fn gen_default_great_sigs() -> HashMap<&'static str, &'static str> {
         let mut hashmap = HashMap::new();
         hashmap.insert("craft/battery", "aqqqaqwwaqqqqqeqaqqqawwqwqwqwqwqw");
-        hashmap.insert("potion/weakness", "qqqqqaqwawaw");
-        hashmap.insert("potion/levitation", "qqqqqawwawawd");
-        hashmap.insert("potion/wither", "qqqqqaewawawe");
-        hashmap.insert("potion/poison", "qqqqqadwawaww");
-        hashmap.insert("otion/slowness", "qqqqqadwawaw");
         hashmap.insert("potion/regeneration", "qqqqaawawaedd");
         hashmap.insert("potion/night_vision", "qqqaawawaeqdd");
         hashmap.insert("potion/absorption", "qqaawawaeqqdd");
@@ -196,59 +191,98 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Red Sun's Nadir", "potion/poison", "qqqqqadwawaww", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
             Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
 
+            //great spells
+            Pattern::new("Craft Phial", "craft/battery", great_sigs.get("craft/battery").unwrap(), 
+                constructors::spell_1(Stack::get_entity)),
+
+            Pattern::new("White Sun's Zenith", "potion/regeneration", great_sigs.get("potion/regeneration").unwrap(), 
+                constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+
+            Pattern::new("Blue Sun's Zenith", "potion/night_vision", great_sigs.get("potion/night_vision").unwrap(), 
+                constructors::spell_2(Stack::get_entity, Stack::get_number)),
+
+            Pattern::new("Black Sun's Zenith", "potion/absorption", great_sigs.get("potion/absorptio").unwrap(), 
+                constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+
+            Pattern::new("Red Sun's Zenith", "potion/haste", great_sigs.get("potion/haste").unwrap(), 
+                constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+
+            Pattern::new("Green Sun's Zenith", "potion/strength", great_sigs.get("potion/strength").unwrap(), 
+                constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+
+            Pattern::new("Summon Lightning", "lightning", great_sigs.get("lightning").unwrap(), 
+                constructors::spell_1(Stack::get_vector)),
+
+            Pattern::new("Flight", "flight", great_sigs.get("flight").unwrap(), 
+                constructors::spell_3(Stack::get_entity, Stack::get_number, Stack::get_number)),
+
+            Pattern::new("Create Lava", "create_lava", great_sigs.get("create_lava").unwrap(), 
+                constructors::spell_1(Stack::get_vector)),
+
+            Pattern::new("Greater Teleport", "teleport", great_sigs.get("teleport").unwrap(), 
+                constructors::spell_2(Stack::get_entity, Stack::get_vector)),
+
+            Pattern::new("Summon Greater Sentinel", "sentinel/create/great", great_sigs.get("sentinel/create/great").unwrap(), 
+                constructors::spell_1(Stack::get_vector)),
+
+            Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
+            Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rai").unwrap(), Box::new(special::no_action)),
+            Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
+
+
             //requires value to be set
             Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number)),
 
-            Pattern::new_with_val("Entity Purification",  "get_entity", "qqqqqdaqa",
+            Pattern::new_with_val("Entity Purification", "get_entity", "qqqqqdaqa",
                 constructors::get_entity(None)),
 
-            Pattern::new_with_val("Entity Purification: Animal",  "get_entity/animal", "qqqqqdaqaawa",
+            Pattern::new_with_val("Entity Purification: Animal", "get_entity/animal", "qqqqqdaqaawa",
                 constructors::get_entity(Some(&EntityType::Animal))),
 
 
-            Pattern::new_with_val("Entity Purification: Monster",  "get_entity/monster", "qqqqqdaqaawq",
+            Pattern::new_with_val("Entity Purification: Monster", "get_entity/monster", "qqqqqdaqaawq",
                 constructors::get_entity(Some(&EntityType::Monster))),
 
-            Pattern::new_with_val("Entity Purification: Item",  "get_entity/item", "qqqqqdaqaaww",
+            Pattern::new_with_val("Entity Purification: Item", "get_entity/item", "qqqqqdaqaaww",
                 constructors::get_entity(Some(&EntityType::Item))),
 
-            Pattern::new_with_val("Entity Purification: Player",  "get_entity/player", "qqqqqdaqaawe",
+            Pattern::new_with_val("Entity Purification: Player", "get_entity/player", "qqqqqdaqaawe",
                 constructors::get_entity(Some(&EntityType::Player))),
 
-            Pattern::new_with_val("Entity Purification: Living",  "get_entity/living", "qqqqqdaqaawd",
+            Pattern::new_with_val("Entity Purification: Living", "get_entity/living", "qqqqqdaqaawd",
                 constructors::get_entity(Some(&EntityType::Living))),
 
-            Pattern::new_with_val("Zone Distillation: Any",  "zone_entity", "qqqqqwded",
+            Pattern::new_with_val("Zone Distillation: Any", "zone_entity", "qqqqqwded",
                 constructors::zone_entity(None, &false)),
 
-            Pattern::new_with_val("Zone Distillation: Animal",  "zone_entity/animal", "qqqqqwdeddwa",
+            Pattern::new_with_val("Zone Distillation: Animal", "zone_entity/animal", "qqqqqwdeddwa",
                 constructors::zone_entity(Some(&EntityType::Animal), &false)),
 
-            Pattern::new_with_val("Zone Distillation: Non-Animal",  "zone_entity/not_animal", "eeeeewaqaawa",
+            Pattern::new_with_val("Zone Distillation: Non-Animal", "zone_entity/not_animal", "eeeeewaqaawa",
                 constructors::zone_entity(Some(&EntityType::Animal), &true)),
 
-            Pattern::new_with_val("Zone Distillation: Monster",  "zone_entity/monster", "qqqqqwdeddwq",
+            Pattern::new_with_val("Zone Distillation: Monster", "zone_entity/monster", "qqqqqwdeddwq",
                 constructors::zone_entity(Some(&EntityType::Monster), &false)),
 
-            Pattern::new_with_val("Zone Distillation: Non-Monster",  "zone_entity/not_monster", "eeeeewaqaawq",
+            Pattern::new_with_val("Zone Distillation: Non-Monster", "zone_entity/not_monster", "eeeeewaqaawq",
                 constructors::zone_entity(Some(&EntityType::Monster), &true)),
 
-            Pattern::new_with_val("Zone Distillation: Item",  "zone_entity/item", "qqqqqwdeddww",
+            Pattern::new_with_val("Zone Distillation: Item", "zone_entity/item", "qqqqqwdeddww",
                 constructors::zone_entity(Some(&EntityType::Item), &false)),
 
-            Pattern::new_with_val("Zone Distillation: Non-Item",  "zone_entity/not_item", "eeeeewaqaaww",
+            Pattern::new_with_val("Zone Distillation: Non-Item", "zone_entity/not_item", "eeeeewaqaaww",
                 constructors::zone_entity(Some(&EntityType::Item), &true)),
 
-            Pattern::new_with_val("Zone Distillation: Player",  "zone_entity/player", "qqqqqwdeddwe",
+            Pattern::new_with_val("Zone Distillation: Player", "zone_entity/player", "qqqqqwdeddwe",
                 constructors::zone_entity(Some(&EntityType::Player), &false)),
 
-            Pattern::new_with_val("Zone Distillation: Non-Player",  "zone_entity/not_player", "eeeeewaqaawe",
+            Pattern::new_with_val("Zone Distillation: Non-Player", "zone_entity/not_player", "eeeeewaqaawe",
                 constructors::zone_entity(Some(&EntityType::Player), &true)),
 
-            Pattern::new_with_val("Zone Distillation: Living",  "zone_entity/living", "qqqqqwdeddwd",
+            Pattern::new_with_val("Zone Distillation: Living", "zone_entity/living", "qqqqqwdeddwd",
                 constructors::zone_entity(Some(&EntityType::Living), &false)),
 
-            Pattern::new_with_val("Zone Distillation: Non-Living",  "zone_entity/not_living", "eeeeewaqaawd",
+            Pattern::new_with_val("Zone Distillation: Non-Living", "zone_entity/not_living", "eeeeewaqaawd",
                 constructors::zone_entity(Some(&EntityType::Living), &true)),
 
             Pattern::new_with_val("entity_pos/eye", "Compass' Purification", "aa",
@@ -293,8 +327,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
                 constructors::value_1(Stack::get_entity, Stack::get_number)),
 
-            Pattern::new_with_val("", "", "",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+            
 
         ];
 
