@@ -5,7 +5,7 @@ use crate::{
         mishap::Mishap,
         state::{Entity, EntityType, Stack, StackExt, State},
     },
-    iota::{Iota, Display},
+    iota::{Display, Iota},
     parser::ActionValue,
     pattern_registry::PatternRegistry,
 };
@@ -68,27 +68,27 @@ pub fn spell_3<T: 'static, U: 'static, V: 'static>(
     })
 }
 
-pub fn value_0<U: Display + 'static >(value_type_getter: GetterType<U>) -> Box<ActionWithValueType> {
+pub fn value_0<U: Display + 'static>(
+    value_type_getter: GetterType<U>,
+    getter_type: &'static str,
+) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             match value {
                 Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
                     value_type_getter(&vec![iota.clone()], 0, 1).map_err(|_| {
-                        Mishap::InvalidValue(
-                            std::any::type_name::<U>().to_string(),
-                            iota.display(),
-                        )
+                        Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
                     state.stack.push(iota.clone())
                 }
                 Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(
-                    std::any::type_name::<U>().to_string(),
+                    getter_type.to_string(),
                     val.clone(),
                 ))?,
                 None => Err(Mishap::ExpectedValue(
-                    std::any::type_name::<U>().to_string(),
+                    getter_type.to_string(),
                 ))?,
             }
 
@@ -100,6 +100,7 @@ pub fn value_0<U: Display + 'static >(value_type_getter: GetterType<U>) -> Box<A
 pub fn value_1<T: 'static, U: Display + 'static>(
     getter: GetterType<T>,
     value_type_getter: GetterType<U>,
+    getter_type: &'static str,
 ) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
@@ -110,20 +111,17 @@ pub fn value_1<T: 'static, U: Display + 'static>(
                 Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
                     value_type_getter(&vec![iota.clone()], 0, 1).map_err(|_| {
-                        Mishap::InvalidValue(
-                            std::any::type_name::<U>().to_string(),
-                            iota.display(),
-                        )
+                        Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
                     state.stack.push(iota.clone())
                 }
                 Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(
-                    std::any::type_name::<U>().to_string(),
+                    getter_type.to_string(),
                     val.clone(),
                 ))?,
                 None => Err(Mishap::ExpectedValue(
-                    std::any::type_name::<U>().to_string(),
+                    getter_type.to_string(),
                 ))?,
             }
 
@@ -136,6 +134,7 @@ pub fn value_2<T: 'static, U: 'static, V: Display + 'static>(
     getter1: GetterType<T>,
     getter2: GetterType<U>,
     value_type_getter: GetterType<V>,
+    getter_type: &'static str,
 ) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
@@ -147,20 +146,17 @@ pub fn value_2<T: 'static, U: 'static, V: Display + 'static>(
                 Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
                     value_type_getter(&vec![iota.clone()], 0, 1).map_err(|_| {
-                        Mishap::InvalidValue(
-                            std::any::type_name::<U>().to_string(),
-                            iota.display(),
-                        )
+                        Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
                     state.stack.push(iota.clone())
                 }
                 Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(
-                    std::any::type_name::<U>().to_string(),
+                    getter_type.to_string(),
                     val.clone(),
                 ))?,
                 None => Err(Mishap::ExpectedValue(
-                    std::any::type_name::<U>().to_string(),
+                    getter_type.to_string(),
                 ))?,
             }
 
@@ -182,13 +178,19 @@ pub fn get_entity(entity_type: Option<&'static EntityType>) -> Box<ActionWithVal
                         state.stack.push(iota.clone())
                     } else {
                         Err(Mishap::InvalidValue(
-                            format!("Entity of type {}", entity_type.map_or("Any".to_string(), |t| t.display())),
+                            format!(
+                                "Entity of type {}",
+                                entity_type.map_or("Any".to_string(), |t| t.display())
+                            ),
                             iota.display(),
                         ))?
                     }
                 }
                 Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(
-                    format!("Entity of type {}", entity_type.map_or("Any".to_string(), |t| t.display())),
+                    format!(
+                        "Entity of type {}",
+                        entity_type.map_or("Any".to_string(), |t| t.display())
+                    ),
                     val.clone(),
                 ))?,
                 None => Err(Mishap::ExpectedValue(format!(
@@ -228,13 +230,19 @@ pub fn zone_entity(
                         state.stack.push(iota.clone())
                     } else {
                         Err(Mishap::InvalidValue(
-                            format!("List of Entities of type {}", entity_type.map_or("Any".to_string(), |t| t.display())),
+                            format!(
+                                "List of Entities of type {}",
+                                entity_type.map_or("Any".to_string(), |t| t.display())
+                            ),
                             iota.display(),
                         ))?
                     }
                 }
                 Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(
-                    format!("List of Entities of type {}", entity_type.map_or("Any".to_string(), |t| t.display())),
+                    format!(
+                        "List of Entities of type {}",
+                        entity_type.map_or("Any".to_string(), |t| t.display())
+                    ),
                     val.clone(),
                 ))?,
                 None => Err(Mishap::ExpectedValue(format!(

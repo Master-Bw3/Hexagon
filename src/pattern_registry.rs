@@ -231,7 +231,7 @@ impl PatternRegistryExt for PatternRegistry {
 
 
             //requires value to be set
-            Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number)),
+            Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number, "Number")),
 
             Pattern::new_with_val("Entity Purification", "get_entity", "qqqqqdaqa",
                 constructors::get_entity(None)),
@@ -286,46 +286,46 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::zone_entity(Some(&EntityType::Living), &true)),
 
             Pattern::new_with_val("entity_pos/eye", "Compass' Purification", "aa",
-                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
 
             Pattern::new_with_val("entity_pos/foot", "Compass' Purification II", "dd",
-                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
 
             Pattern::new_with_val("get_entity_look", "Alidade's Purification", "wa",
-                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
 
             Pattern::new_with_val("get_entity_height", "Stadiometer's Purification", "awq",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
 
             Pattern::new_with_val("get_entity_velocity", "Pace Purification", "wq",
-                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
 
             Pattern::new_with_val("interop/gravity/get", "Gravitational Purification", "wawawddew",
-                constructors::value_1(Stack::get_entity, Stack::get_vector)),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
 
             Pattern::new_with_val("interop/pehkui/get", "Gulliver's Purification", "aawawwawwa",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
 
             Pattern::new_with_val("Archer's Distillation", "raycast", "wqaawdd",
-                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector)),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector, "Vector")),
 
             Pattern::new_with_val("Architect's Distillation", "raycast/axis", "weddwaa",
-                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector)),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector, "Vector")),
 
             Pattern::new_with_val("Scout's Distillation", "raycast/entity", "weaqa",
-                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_entity)),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_entity, "Entity")),
 
             Pattern::new_with_val("Waystone Reflection", "circle/impetus_pos", "eaqwqae",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
 
             Pattern::new_with_val("Lodestone Reflection", "circle/impetus_dir", "eaqwqaewede",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
 
             Pattern::new_with_val("Lesser Fold Reflection", "circle/bounds/min", "eaqwqaewdd",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
 
             Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
-                constructors::value_1(Stack::get_entity, Stack::get_number)),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
 
             
 
