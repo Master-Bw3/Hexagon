@@ -77,8 +77,9 @@ pub fn run() {
             Ok(result) => println!("\n result: {:?} \n {:?}", result.stack, result.buffer),
             Err((err, (line, col))) => {
                 eprintln!(
-                    "\x1b[31mError:\x1b[0m {:?}, {}:{line}:{col}",
-                    err, args.source_path
+                    "\x1b[31mError:\x1b[0m [{}:{line}:{col}] {} ",
+                    args.source_path,
+                    err.error_message()
                 )
             }
         };

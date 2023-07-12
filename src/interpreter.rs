@@ -92,8 +92,8 @@ fn interpret_node<'a>(
 
             Ok(state)
         }
-        AstNode::Op { name, arg, line: _ } => {
-            interpret_op(name, arg, state, pattern_registry).map_err(|err| (err, (0, 0)))
+        AstNode::Op { name, arg, line } => {
+            interpret_op(name, arg, state, pattern_registry).map_err(|err| (err, line))
         }
         AstNode::IfBlock {
             condition,
