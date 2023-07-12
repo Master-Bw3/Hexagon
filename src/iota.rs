@@ -99,6 +99,7 @@ impl EntityIota {
         conf_entities: &HashMap<String, EntityIota>,
         name: String,
         entity_type: EntityType,
+        holding: Holding,
     ) -> EntityIota {
         conf_entities
             .values()
@@ -108,7 +109,7 @@ impl EntityIota {
             .unwrap_or(EntityIota {
                 name,
                 entity_type,
-                holding: Box::new(Holding::None),
+                holding: Box::new(holding),
             })
     }
 }

@@ -295,7 +295,7 @@ pub fn parse_iota(
             let name = name[1..name.len() - 1].to_string();
             let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
 
-            Iota::Entity(EntityIota::create(conf_entities, name, entity_type))
+            Iota::Entity(EntityIota::create(conf_entities, name, entity_type, Holding::None))
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
