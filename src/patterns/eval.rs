@@ -5,7 +5,6 @@ use crate::{
         state::{Either, StackExt, State},
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
-    parser::ActionValue,
     pattern_registry::PatternRegistry,
 };
 

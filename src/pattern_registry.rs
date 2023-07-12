@@ -1,8 +1,8 @@
-use std::collections::{hash_map, HashMap};
+use std::collections::{HashMap};
 use std::f32::consts::{E, PI, TAU};
 
 use crate::interpreter::state::{Holding, Stack, StackExt};
-use crate::iota::{EntityIota, EntityType, Iota, NullIota, Signature, VectorIota};
+use crate::iota::{EntityIota, EntityType, Iota, NullIota, VectorIota};
 use crate::parser::ActionValue;
 use crate::patterns::constructors::value_0;
 use crate::patterns::{constructors, eval, math, special};

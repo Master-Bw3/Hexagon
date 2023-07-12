@@ -20,9 +20,11 @@ use self::{
 };
 
 pub fn interpret(node: AstNode, config: Option<Config>) -> Result<State, (Mishap, (usize, usize))> {
-    let mut state = State::default();
-    state.ravenmind = Some(Iota::List(vec![]));
-    let mut great_sigs;
+    let mut state = State {
+        ravenmind: Some(Iota::List(vec![])),
+        ..Default::default()
+    };
+    let great_sigs;
 
     if let Some(conf) = config {
         state.entities = conf.entities;
@@ -84,7 +86,7 @@ fn interpret_node<'a>(
 
             Ok(state)
         }
-        AstNode::Op { name, arg, line } => {
+        AstNode::Op { name, arg, line: _ } => {
             interpret_op(name, arg, state, pattern_registry).map_err(|err| (err, (0, 0)))
         }
         AstNode::IfBlock {

@@ -1,5 +1,5 @@
 use pest::Parser;
-use std::{collections::HashMap, vec};
+use std::{collections::HashMap};
 use toml::{map::Map, Table, Value};
 
 use crate::{
@@ -112,10 +112,10 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
         .unwrap();
     let entity_type = parse_entity_type(entity_type_pair.as_str().to_string());
 
-    let held_item = entity.get("item").clone();
+    let held_item = entity.get("item");
     let held_item = held_item.map(|i| &parse_str(i)[..]);
 
-    let held_item_contents_value = entity.get("iota").clone();
+    let held_item_contents_value = entity.get("iota");
     let held_item_contents_pair = held_item_contents_value.map(|value| {
         HexParser::parse(Rule::Iota, parse_str(value))
             .unwrap()
