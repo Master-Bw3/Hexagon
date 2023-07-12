@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::{collections::HashMap, ops::Not};
 
 use crate::{
@@ -86,6 +87,19 @@ impl Iota {
             Iota::Null(_) => "Null",
             Iota::Entity(_) => "Entity",
             Iota::List(_) => "List",
+        }
+    }
+
+    pub fn display(&self) -> String {
+        match self {
+            Iota::Number(num) => num.to_string(),
+            Iota::Vector(vec) => format!("({}, {}, {})", vec.x, vec.y, vec.z),
+            Iota::Pattern(pat) => pat.signature.as_str(),
+            Iota::Bool(bool) => bool.to_string(),
+            Iota::Garbage(_) => "Garbage".to_string(),
+            Iota::Null(_) =>"Null".to_string(),
+            Iota::Entity(name) => format!("@{name}"),
+            Iota::List(list) => format!("[{}]", list.iter().map(Iota::display).collect::<Vec<String>>().join(", ")),
         }
     }
 }
