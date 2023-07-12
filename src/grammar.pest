@@ -30,7 +30,7 @@ Vector = {"(" ~ Number ~  "," ~ WHITESPACE? ~ Number ~ "," ~ WHITESPACE? ~ Numbe
 
 Number = @{ "-"? ~ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)?  }
 
-Entity = {"{" ~ String ~ "," ~ WHITESPACE? ~ EntityType ~ ("," ~ Uuid)? ~ "}" }
+Entity = {"@" ~ (ASCII_ALPHA | ASCII_DIGIT | "_")+ }
 
 Uuid = ${ UuidStart ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UuidSlice ~ "-" ~ UUIDEnd }
 

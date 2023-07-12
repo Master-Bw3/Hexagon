@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use toml::{map::Map, Table, Value};
 
 use crate::{
-    interpreter::state::{Holding, Library, Entity},
+    interpreter::state::{Holding, Library, Entity, EntityType},
     iota::{EntityIota, Signature, SignatureExt},
-    parser::{parse_entity_type, parse_iota, HexParser, Rule},
+    parser::{parse_iota, HexParser, Rule},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -151,6 +151,19 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
         },
     );
 }
+
+pub fn parse_entity_type(string: String) -> EntityType {
+    match &string[..] {
+        "Animal" => EntityType::Animal,
+        "Monster" => EntityType::Monster,
+        "Living" => EntityType::Living,
+        "Item" => EntityType::Item,
+        "Player" => EntityType::Player,
+        "Misc" => EntityType::Misc,
+        _ => unreachable!(),
+    }
+}
+
 
 fn parse_int(value: &Value) -> i32 {
     match value {

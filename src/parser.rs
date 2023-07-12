@@ -290,11 +290,8 @@ pub fn parse_iota(
             _ => unreachable!(),
         },
         Rule::Entity => {
-            let mut inner = inner_pair.into_inner();
-            let name = inner.next().unwrap().as_str();
-            let name = name[1..name.len() - 1].to_string();
-            let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
-
+            // let mut inner = inner_pair.into_inner();
+            let name = inner_pair.as_str()[1..].to_string();
             Iota::Entity(name)
         }
         Rule::List => {
@@ -309,17 +306,6 @@ pub fn parse_iota(
     }
 }
 
-pub fn parse_entity_type(string: String) -> EntityType {
-    match &string[..] {
-        "Animal" => EntityType::Animal,
-        "Monster" => EntityType::Monster,
-        "Living" => EntityType::Living,
-        "Item" => EntityType::Item,
-        "Player" => EntityType::Player,
-        "Misc" => EntityType::Misc,
-        _ => unreachable!(),
-    }
-}
 
 fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
     pair.as_str().to_string()
