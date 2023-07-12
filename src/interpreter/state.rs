@@ -87,7 +87,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Number(x) => Ok(*x),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Number".to_string(), iota.clone())),
         }
     }
 
@@ -95,7 +95,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Vector(x) => Ok(*x),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Vector".to_string(), iota.clone())),
         }
     }
 
@@ -103,7 +103,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Pattern(x) => Ok(x.clone()),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Pattern".to_string(), iota.clone())),
         }
     }
 
@@ -111,7 +111,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Bool(x) => Ok(*x),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index,"Boolean".to_string(), iota.clone())),
         }
     }
 
@@ -119,7 +119,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Garbage(x) => Ok(x.clone()),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Garbage".to_string(), iota.clone())),
         }
     }
 
@@ -127,7 +127,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Null(x) => Ok(x.clone()),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Null".to_string(), iota.clone())),
         }
     }
 
@@ -135,7 +135,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::Entity(x) => Ok(x.clone()),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Entity".to_string(), iota.clone())),
         }
     }
 
@@ -143,7 +143,7 @@ impl StackExt for Stack {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
             Iota::List(x) => Ok(x.clone()),
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "List".to_string(), iota.clone())),
         }
     }
 
@@ -154,10 +154,10 @@ impl StackExt for Stack {
                 if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round())) {
                     Ok(x.round() as i32)
                 } else {
-                    Err(Mishap::IncorrectIota(index))
+                    Err(Mishap::IncorrectIota(index, "Integer".to_string(), iota.clone()))
                 }
             }
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Integer".to_string(), iota.clone())),
         }
     }
 
@@ -175,10 +175,10 @@ impl StackExt for Stack {
                 {
                     Ok(x.round() as i32)
                 } else {
-                    Err(Mishap::IncorrectIota(index))
+                    Err(Mishap::IncorrectIota(index, "Positive Integer".to_string(), iota.clone()))
                 }
             }
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Positive Integer".to_string(), iota.clone())),
         }
     }
 
@@ -192,7 +192,7 @@ impl StackExt for Stack {
             Iota::Number(x) => Ok(Either::L(*x)),
             Iota::Vector(x) => Ok(Either::R(*x)),
 
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Number or Vector".to_string(), iota.clone())),
         }
     }
 
@@ -206,7 +206,7 @@ impl StackExt for Stack {
             Iota::List(x) => Ok(Either::L(x.clone())),
             Iota::Pattern(x) => Ok(Either::R(x.clone())),
 
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "List or Pattern".to_string(), iota.clone())),
         }
     }
 
@@ -221,19 +221,19 @@ impl StackExt for Stack {
                 if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round())) {
                     Ok(Either::L(x.round() as i32))
                 } else {
-                    Err(Mishap::IncorrectIota(index))
+                    Err(Mishap::IncorrectIota(index, "Integer or List".to_string(), iota.clone()))
                 }
             }
             Iota::List(x) => Ok(Either::R(x.clone())),
 
-            _ => Err(Mishap::IncorrectIota(index)),
+            _ => Err(Mishap::IncorrectIota(index, "Integer or List".to_string(), iota.clone())),
         }
     }
 
     fn get_iota(&self, index: usize, arg_count: usize) -> Result<&Iota, Mishap> {
         {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count - self.len()))
+                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))
             } else {
                 Ok(&self[(self.len() - arg_count) + index])
             }

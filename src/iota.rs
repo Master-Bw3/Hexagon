@@ -1,8 +1,7 @@
 use std::{collections::HashMap, ops::Not};
 
 use crate::{
-    interpreter::state::{Entity, EntityType, Holding},
-    parse_config::Config,
+    interpreter::state::{Entity, EntityType},
     parser::ActionValue,
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -74,6 +73,19 @@ impl Iota {
             },
 
             _ => false,
+        }
+    }
+
+    pub fn display_type(&self) -> &'static str {
+        match self {
+            Iota::Number(_) => "Number",
+            Iota::Vector(_) => "Vector",
+            Iota::Pattern(_) => "Pattern",
+            Iota::Bool(_) => "Bool",
+            Iota::Garbage(_) => "Garbage",
+            Iota::Null(_) => "Null",
+            Iota::Entity(_) => "Entity",
+            Iota::List(_) => "List",
         }
     }
 }

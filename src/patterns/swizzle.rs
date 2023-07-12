@@ -34,7 +34,7 @@ fn ixed_factorial<T: Clone>(mut value: usize, stack: &mut [T]) -> Result<(), Mis
 
     // want only the last few elems of the stack
     if stack.len() < strides.len() {
-        Err(Mishap::NotEnoughIotas(strides.len()))?
+        Err(Mishap::NotEnoughIotas(strides.len(), stack.len()))?
     }
     let stride_offset = stack.len() - strides.len();
     let mut edit_target = &mut stack[stride_offset..];
@@ -55,7 +55,7 @@ pub fn swizzle<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     if state.stack.is_empty() {
-        return Err(Mishap::NotEnoughIotas(1));
+        return Err(Mishap::NotEnoughIotas(1, state.stack.len()));
     }
 
     let arg_count = 1;

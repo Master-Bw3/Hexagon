@@ -157,7 +157,7 @@ pub fn fisherman<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     if state.stack.len() < 2 {
-        return Err(Mishap::NotEnoughIotas(2));
+        return Err(Mishap::NotEnoughIotas(2, state.stack.len()));
     }
 
     let arg_count = 1;
@@ -165,7 +165,7 @@ pub fn fisherman<'a>(
     state.stack.remove_args(&arg_count);
 
     if state.stack.len() < iota as usize {
-        return Err(Mishap::NotEnoughIotas(iota as usize));
+        return Err(Mishap::NotEnoughIotas(iota as usize, state.stack.len()));
     }
 
     if iota >= 0 {
@@ -191,7 +191,7 @@ pub fn fisherman_copy<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     if state.stack.len() < 2 {
-        return Err(Mishap::NotEnoughIotas(2));
+        return Err(Mishap::NotEnoughIotas(2, state.stack.len()));
     }
 
     let arg_count = 1;
@@ -199,7 +199,7 @@ pub fn fisherman_copy<'a>(
     state.stack.remove_args(&arg_count);
 
     if state.stack.len() < iota {
-        return Err(Mishap::NotEnoughIotas(iota));
+        return Err(Mishap::NotEnoughIotas(iota, state.stack.len()));
     }
 
     let operation_result = { state.stack[state.stack.len() - 1 - iota].clone() };
@@ -333,8 +333,8 @@ pub fn mask<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let code = match value {
         Some(ActionValue::Bookkeeper(code)) => code,
-        Some(_) => Err(Mishap::InvalidValue)?,
-        None => Err(Mishap::ExpectedValue)?,
+        Some(val) => Err(Mishap::InvalidValue("Bookeeper Code".to_string(), format!("{:?}", val)))?,
+        None => Err(Mishap::ExpectedValue("Bookeeper Code".to_string()))?,
     };
 
     let apply_code = |(iota, char): (&Iota, char)| match char {
@@ -344,7 +344,7 @@ pub fn mask<'a>(
     };
 
     if state.stack.len() < code.len() {
-        return Err(Mishap::NotEnoughIotas(code.len()));
+        return Err(Mishap::NotEnoughIotas(code.len(), state.stack.len()));
     }
 
     let mut new_stack = state.stack[..state.stack.len() - code.len()].to_vec();

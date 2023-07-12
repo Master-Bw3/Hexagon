@@ -20,9 +20,9 @@ pub fn store<'a>(
         OpValue::Var(var) => {
             let iota = {
                 if copy {
-                    state.stack.last().ok_or(Mishap::NotEnoughIotas(1))?.clone()
+                    state.stack.last().ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?.clone()
                 } else {
-                    state.stack.pop().ok_or(Mishap::NotEnoughIotas(1))?
+                    state.stack.pop().ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?
                 }
             };
 
@@ -135,7 +135,7 @@ pub fn embed<'a>(
                         pattern_registry,
                     )?;
                 }
-                _ => return Err(Mishap::IncorrectIota(0)),
+                _ => return Err(Mishap::ExpectedPattern(iota.clone())),
             },
             _ => state.stack.push(iota.clone()),
         },
