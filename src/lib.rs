@@ -13,15 +13,13 @@ use interpreter::{state::State, mishap::Mishap};
 use parse_config::{parse_config, Config};
 use pattern_registry::{PatternRegistry, PatternRegistryExt};
 
-type RunResult = Result<State, (Mishap, (usize, usize))>;
-
 pub fn run() {
     let args: Vec<String> = env::args().collect();
 
     let source_path = &args.get(1).expect("Expected File Path");
 
     let default_config_path = "config.toml".to_string();
-    let config_path = args.get(1).unwrap_or(&default_config_path);
+    let config_path = args.get(2).unwrap_or(&default_config_path);
 
     let config = fs::read_to_string(config_path).map(parse_config).ok();
 
