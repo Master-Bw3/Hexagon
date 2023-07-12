@@ -16,7 +16,7 @@ use pattern_registry::{PatternRegistry, PatternRegistryExt};
 pub fn run() {
     let args: Vec<String> = env::args().collect();
 
-    let source_path = &args.get(1).expect("Expected File Path");
+    let source_path = args.get(1).expect("Expected File Path");
 
     let default_config_path = "config.toml".to_string();
     let config_path = args.get(2).unwrap_or(&default_config_path);
