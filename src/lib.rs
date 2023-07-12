@@ -7,7 +7,7 @@ mod iota;
 mod parser;
 mod pattern_registry;
 mod patterns;
-pub mod parse_config;
+mod parse_config;
 
 use interpreter::{state::State, mishap::Mishap};
 use parse_config::{parse_config, Config};
