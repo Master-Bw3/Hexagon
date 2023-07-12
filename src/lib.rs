@@ -63,15 +63,15 @@ pub fn run() {
         PatternRegistry::gen_default_great_sigs()
     };
 
-    let entities = config
+    let mut entities = config
         .as_ref()
         .map(|conf| conf.entities.clone())
         .unwrap_or(HashMap::new());
 
-    let parse_result = parser::parse(&source, &great_spell_sigs, &entities).unwrap();
+    let parse_result = parser::parse(&source, &great_spell_sigs, &mut entities).unwrap();
 
     if let Command::Run = args.command {
-        let interpreter_result = interpret(parse_result, &config.as_ref());
+        let interpreter_result = interpret(parse_result, &config.as_ref(), entities);
 
         match interpreter_result {
             Ok(result) => println!("\n result: {:?} \n {:?}", result.stack, result.buffer),

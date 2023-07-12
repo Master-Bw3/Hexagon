@@ -2,13 +2,15 @@ pub mod mishap;
 pub mod ops;
 pub mod state;
 
+use std::collections::HashMap;
+
 use crate::{
     compiler::ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     interpreter::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
     },
-    iota::{EntityIota, EntityType, Iota, PatternIota, Signature, SignatureExt},
+    iota::{EntityIota, Iota, PatternIota, Signature, SignatureExt},
     parse_config::Config,
     parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -16,12 +18,13 @@ use crate::{
 
 use self::{
     mishap::Mishap,
-    state::{Holding, State},
+    state::{Holding, State, Entity, EntityType},
 };
 
 pub fn interpret(
     node: AstNode,
     config: &Option<&Config>,
+    entities: HashMap<String, Entity>
 ) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
         ravenmind: Some(Iota::List(vec![])),
@@ -45,7 +48,7 @@ pub fn interpret(
         None => {
             state.entities.insert(
                 "Caster".to_string(),
-                EntityIota {
+                Entity {
                     name: "Caster".to_string(),
                     entity_type: EntityType::Player,
                     holding: Box::new(Holding::None),

@@ -1,8 +1,8 @@
 use std::collections::{HashMap};
 use std::f32::consts::{E, PI, TAU};
 
-use crate::interpreter::state::{Holding, Stack, StackExt};
-use crate::iota::{EntityIota, EntityType, Iota, NullIota, VectorIota};
+use crate::interpreter::state::{Holding, Stack, StackExt, EntityType};
+use crate::iota::{EntityIota, Iota, NullIota, VectorIota};
 use crate::parser::ActionValue;
 use crate::patterns::constructors::value_0;
 use crate::patterns::{constructors, eval, math, special};
@@ -149,7 +149,7 @@ impl PatternRegistryExt for PatternRegistry {
 
             //consts
             Pattern::new("Mind's Reflection", "get_caster", "qaq", 
-                constructors::push_const(Iota::Entity(EntityIota {name: "Caster".to_string(), entity_type: EntityType::Player, holding: Box::new(Holding::None)}))),
+                constructors::push_const(Iota::Entity("Caster".to_string()))),
             Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Iota::List(vec![]))),
             Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(Iota::Vector(VectorIota::new(1.0, 0.0, 0.0)))),
             Pattern::new("Vector Reflection +Y", "const/vec/py", "qqqqqew", constructors::push_const(Iota::Vector(VectorIota::new(0.0, 1.0, 0.0)))),

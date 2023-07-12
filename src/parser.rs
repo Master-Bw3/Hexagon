@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use crate::{
-    interpreter::state::Holding,
-    iota::{EntityIota, EntityType, GarbageIota, Iota, NullIota, PatternIota},
+    interpreter::state::{Holding, Entity, EntityType},
+    iota::{EntityIota, GarbageIota, Iota, NullIota, PatternIota},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 use nalgebra::matrix;
@@ -19,7 +19,7 @@ pub struct HexParser;
 pub fn parse(
     source: &str,
     great_spell_sigs: &HashMap<String, String>,
-    conf_entities: &HashMap<String, EntityIota>,
+    conf_entities: &mut HashMap<String, Entity>,
 ) -> Result<AstNode, Box<Error<Rule>>> {
     let mut ast = vec![];
     let pattern_registry = PatternRegistry::construct(great_spell_sigs);
@@ -37,7 +37,7 @@ pub fn parse(
 fn construct_ast_node(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
-    conf_entities: &HashMap<String, EntityIota>,
+    conf_entities: &mut HashMap<String, Entity>,
 ) -> Option<AstNode> {
     match pair.as_rule() {
         Rule::Action => {
@@ -78,7 +78,7 @@ fn parse_op(
     name: Pair<'_, Rule>,
     arg: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
-    conf_entities: &HashMap<String, EntityIota>,
+    conf_entities: &mut HashMap<String, Entity>,
 ) -> AstNode {
     AstNode::Op {
         name: {
@@ -105,7 +105,7 @@ fn parse_action(
     right: Option<Pair<'_, Rule>>,
     righter: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
-    conf_entities: &HashMap<String, EntityIota>,
+    conf_entities: &mut HashMap<String, Entity>,
 ) -> AstNode {
     right
         .clone()
@@ -166,7 +166,7 @@ fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
 fn parse_embed(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
-    conf_entities: &HashMap<String, EntityIota>,
+    conf_entities: &mut HashMap<String, Entity>,
 ) -> AstNode {
     let inner_pair = pair.clone().into_inner().next().unwrap();
     AstNode::Op {
@@ -190,13 +190,13 @@ fn parse_embed(
 fn parse_if_block(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
-    conf_entities: &HashMap<String, EntityIota>,
+    conf_entities: &mut HashMap<String, Entity>,
 ) -> AstNode {
     fn parse_inner(
         line: (usize, usize),
         mut inner: Pairs<'_, Rule>,
         pattern_registry: &PatternRegistry,
-        conf_entities: &HashMap<String, EntityIota>,
+        conf_entities: &mut HashMap<String, Entity>,
     ) -> AstNode {
         AstNode::IfBlock {
             condition: {
@@ -243,7 +243,7 @@ fn parse_if_block(
 pub fn parse_iota(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
-    conf_entities: &HashMap<String, EntityIota>,
+    conf_entities: &mut HashMap<String, Entity>,
 ) -> Iota {
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
@@ -295,7 +295,7 @@ pub fn parse_iota(
             let name = name[1..name.len() - 1].to_string();
             let entity_type = parse_entity_type(inner.next().unwrap().as_str().to_string());
 
-            Iota::Entity(EntityIota::create(conf_entities, name, entity_type, Holding::None))
+            Iota::Entity(name)
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
@@ -399,7 +399,7 @@ mod tests {
             Consideration: Huginn's Gambit
             ",
             &PatternRegistry::gen_default_great_sigs(),
-            &HashMap::new()
+            &mut HashMap::new()
         )
         .unwrap();
     }

@@ -15,7 +15,7 @@ pub type Considered = bool;
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Iota>,
-    pub entities: HashMap<String, EntityIota>,
+    pub entities: HashMap<String, Entity>,
     pub libraries: HashMap<[i32; 3], Library>,
     pub sentinal_location: Option<VectorIota>,
     pub buffer: Option<Vec<(Iota, Considered)>>,
@@ -244,3 +244,41 @@ impl StackExt for Stack {
         self.drain((self.len() - arg_count)..);
     }
 }
+
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Entity {
+    pub name: String,
+    pub entity_type: EntityType,
+    pub holding: Box<Holding>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EntityType {
+    Animal,
+    Monster,
+    Living,
+    Item,
+    Player,
+    Misc,
+}
+
+// impl Entity {
+//     pub fn create(
+//         conf_entities: &HashMap<String, EntityIota>,
+//         name: String,
+//         entity_type: EntityType,
+//         holding: Holding,
+//     ) -> Entity {
+//         conf_entities
+//             .values()
+//             .filter(|entity| entity.name == name && entity.entity_type == entity_type)
+//             .next()
+//             .cloned()
+//             .unwrap_or(EntityIota {
+//                 name,
+//                 entity_type,
+//                 holding: Box::new(holding),
+//             })
+//     }
+// }

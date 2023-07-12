@@ -1,7 +1,7 @@
-use std::{ops::Not, collections::HashMap};
+use std::{collections::HashMap, ops::Not};
 
 use crate::{
-    interpreter::state::Holding,
+    interpreter::state::{Entity, EntityType, Holding},
     parse_config::Config,
     parser::ActionValue,
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -42,17 +42,15 @@ impl Iota {
         }
     }
 
-    pub fn is_entity_list(&self, entity_type: Option<&EntityType>) -> bool {
+    pub fn is_entity_list(
+        &self,
+        entity_type: Option<&EntityType>,
+        entities: &HashMap<String, Entity>,
+    ) -> bool {
         match self {
             Iota::List(x) => {
                 x.iter()
-                    .filter(|i| match i {
-                        Iota::Entity(entity) => match entity_type {
-                            Some(t) => entity.entity_type == *t,
-                            None => true,
-                        },
-                        _ => false,
-                    })
+                    .filter(|i| i.is_entity(entity_type, entities))
                     .collect::<Vec<&Iota>>()
                     .len()
                     == x.len()
@@ -61,12 +59,20 @@ impl Iota {
         }
     }
 
-    pub fn is_entity(&self, entity_type: Option<&EntityType>) -> bool {
+    pub fn is_entity(
+        &self,
+        entity_type: Option<&EntityType>,
+        entities: &HashMap<String, Entity>,
+    ) -> bool {
         match self {
-            Iota::Entity(entity) => match entity_type {
-                Some(t) => entity.entity_type == *t,
-                None => true,
+            Iota::Entity(entity_name) => match entities.get(entity_name) {
+                Some(entity) => match entity_type {
+                    Some(t) => entity.entity_type == *t,
+                    None => true,
+                },
+                None => false,
             },
+
             _ => false,
         }
     }
@@ -87,42 +93,8 @@ pub enum NullIota {
     Null,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct EntityIota {
-    pub name: String,
-    pub entity_type: EntityType,
-    pub holding: Box<Holding>,
-}
-
-impl EntityIota {
-    pub fn create(
-        conf_entities: &HashMap<String, EntityIota>,
-        name: String,
-        entity_type: EntityType,
-        holding: Holding,
-    ) -> EntityIota {
-        conf_entities
-            .values()
-            .filter(|entity| entity.name == name && entity.entity_type == entity_type)
-            .next()
-            .cloned()
-            .unwrap_or(EntityIota {
-                name,
-                entity_type,
-                holding: Box::new(holding),
-            })
-    }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum EntityType {
-    Animal,
-    Monster,
-    Living,
-    Item,
-    Player,
-    Misc,
-}
+//reference to an entity
+pub type EntityIota = String;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PatternIota {

@@ -242,7 +242,7 @@ pub fn read_entity<'a>(
     let iota = state.stack.get_entity(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    let operation_result = match state.entities.get(&iota.name) {
+    let operation_result = match state.entities.get(&iota) {
         Some(entity) => match *entity.holding.clone() {
             Holding::Focus(iota) => iota.unwrap_or(Iota::Null(NullIota::Null)),
             _ => todo!("handle unreadable item"),
@@ -266,7 +266,7 @@ pub fn write_entity<'a>(
     );
     state.stack.remove_args(&arg_count);
 
-    match state.entities.get_mut(&(iotas.0).name) {
+    match state.entities.get_mut(&(iotas.0)) {
         Some(entity) => match entity.holding.as_ref() {
             Holding::Focus(_) => entity.holding = Box::new(Holding::Focus(Some(iotas.1))),
             _ => todo!("handle unreadable item"),
@@ -285,7 +285,7 @@ pub fn readable_entity<'a>(
     let iota = state.stack.get_entity(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    let operation_result = match state.entities.get(&iota.name) {
+    let operation_result = match state.entities.get(&iota) {
         Some(entity) => match *entity.holding {
             Holding::None => Iota::Bool(false),
             Holding::Focus(_) => Iota::Bool(true),
@@ -309,7 +309,7 @@ pub fn writeable_entity<'a>(
     let iota = state.stack.get_entity(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    let operation_result = match state.entities.get(&iota.name) {
+    let operation_result = match state.entities.get(&iota) {
         Some(entity) => match *entity.holding {
             Holding::None => Iota::Bool(false),
             Holding::Focus(_) => Iota::Bool(true),

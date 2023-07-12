@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use toml::{map::Map, Table, Value};
 
 use crate::{
-    interpreter::state::{Holding, Library},
+    interpreter::state::{Holding, Library, Entity},
     iota::{EntityIota, Signature, SignatureExt},
     parser::{parse_entity_type, parse_iota, HexParser, Rule},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -12,7 +12,7 @@ use crate::{
 #[derive(Debug)]
 pub struct Config {
     pub libraries: HashMap<[i32; 3], Library>,
-    pub entities: HashMap<String, EntityIota>,
+    pub entities: HashMap<String, Entity>,
     pub great_spell_sigs: HashMap<String, String>,
 }
 
@@ -71,7 +71,7 @@ fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
                 .next()
                 .unwrap(),
             &PatternRegistry::construct(&config.great_spell_sigs),
-            &config.entities,
+            &mut config.entities,
         );
         contents.insert(Signature::from_sig(key), iota);
     }
@@ -129,7 +129,7 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
         parse_iota(
             pair,
             &PatternRegistry::construct(&config.great_spell_sigs),
-            &config.entities,
+            &mut config.entities,
         )
     });
 
@@ -144,7 +144,7 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
 
     config.entities.insert(
         name.clone(),
-        EntityIota {
+        Entity {
             name,
             entity_type,
             holding: Box::new(holding),

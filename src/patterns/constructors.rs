@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{Stack, StackExt, State},
+        state::{Entity, EntityType, Stack, StackExt, State},
     },
-    iota::{EntityType, Iota},
+    iota::Iota,
     parser::ActionValue,
     pattern_registry::PatternRegistry,
 };
@@ -149,7 +151,7 @@ pub fn get_entity(entity_type: Option<&'static EntityType>) -> Box<ActionWithVal
 
             match value {
                 Some(ActionValue::Iota(iota)) => {
-                    if iota.is_entity(entity_type) {
+                    if iota.is_entity(entity_type, &state.entities) {
                         state.stack.push(iota.clone())
                     } else {
                         Err(Mishap::InvalidValue)?
@@ -168,20 +170,21 @@ pub fn zone_entity(
     entity_type: Option<&'static EntityType>,
     inverse: &'static bool,
 ) -> Box<ActionWithValueType> {
-    let conditon = move |iota: &Iota| {
-        if *inverse {
-            iota.is_entity_list(None) && !iota.is_entity_list(entity_type)
-        } else {
-            iota.is_entity_list(entity_type)
-        }
-    };
-
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             let arg_count = 2;
             let _ = &state.stack.get_vector(0, arg_count)?;
             let _ = &state.stack.get_number(1, arg_count)?;
             state.stack.remove_args(&arg_count);
+
+            let conditon = |iota: &Iota| {
+                if *inverse {
+                    iota.is_entity_list(None, &state.entities)
+                        && !iota.is_entity_list(entity_type, &state.entities)
+                } else {
+                    iota.is_entity_list(entity_type, &state.entities)
+                }
+            };
 
             match value {
                 Some(ActionValue::Iota(iota)) => {
