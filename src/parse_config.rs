@@ -13,7 +13,7 @@ use crate::{
 pub struct Config {
     pub libraries: HashMap<[i32; 3], Library>,
     pub entities: HashMap<String, EntityIota>,
-    pub great_spell_sigs: HashMap<&'static str, &'static str>,
+    pub great_spell_sigs: HashMap<String, String>,
 }
 
 pub fn parse_config(source: String) -> Config {
@@ -25,13 +25,14 @@ pub fn parse_config(source: String) -> Config {
         great_spell_sigs: PatternRegistry::gen_default_great_sigs(),
     };
 
-    if let Some(sigs) = parsed.get("Great_Spells") {
-        println!("{:?}", sigs);
-        // config.great_spell_sigs =
+    if let Some(Value::Table(sigs)) = &parsed.get("Great_Spells") {
+        for (k, v) in sigs {
+            config.great_spell_sigs.insert(k.clone(), parse_str(v).to_string());
+        }
         todo!()
     };
 
-    for (key, val) in parsed {
+    for (key, val) in &parsed {
         match &key[..] {
             "libraries" => parse_libraries(val, &mut config),
             "entities" => parse_entities(val, &mut config),
@@ -42,7 +43,7 @@ pub fn parse_config(source: String) -> Config {
     config
 }
 
-fn parse_libraries(libraries: Value, config: &mut Config) {
+fn parse_libraries(libraries: &Value, config: &mut Config) {
     let libraries = match libraries {
         Value::Array(arr) => arr,
         _ => unreachable!(),
@@ -50,19 +51,19 @@ fn parse_libraries(libraries: Value, config: &mut Config) {
 
     for val in libraries {
         match val {
-            Value::Table(library) => parse_library(library, config),
+            Value::Table(library) => parse_library(&mut library.clone(), config),
             _ => unreachable!(),
         }
     }
 }
 
-fn parse_library(mut library: Map<String, Value>, config: &mut Config) {
+fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
     let mut contents = HashMap::new();
 
     let location_value = library.get("location").unwrap().clone();
     library.remove("location");
 
-    for (key, val) in &library {
+    for (key, val) in library {
         let iota = parse_iota(
             HexParser::parse(Rule::Iota, parse_str(val))
                 .unwrap()
@@ -87,7 +88,7 @@ fn parse_library(mut library: Map<String, Value>, config: &mut Config) {
     config.libraries.insert(location, contents);
 }
 
-fn parse_entities(entities: Value, config: &mut Config) {
+fn parse_entities(entities: &Value, config: &mut Config) {
     let entities = match entities {
         Value::Array(arr) => arr,
         _ => unreachable!(),
@@ -101,7 +102,7 @@ fn parse_entities(entities: Value, config: &mut Config) {
     }
 }
 
-fn parse_entity(entity: Map<String, Value>, config: &mut Config) {
+fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
     let name_value = entity.get("name").unwrap().clone();
     let name = parse_str(&name_value).to_string();
 

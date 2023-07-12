@@ -18,7 +18,7 @@ use pest_derive::Parser;
 pub struct HexParser;
 pub fn parse(
     source: &str,
-    great_spell_sigs: &HashMap<&str, &str>,
+    great_spell_sigs: &HashMap<String, String>,
 ) -> Result<AstNode, Box<Error<Rule>>> {
     let mut ast = vec![];
     let pattern_registry = PatternRegistry::construct(&great_spell_sigs);

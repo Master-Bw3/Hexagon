@@ -11,34 +11,34 @@ use crate::patterns::{lists, read_write, sentinel, stack, swizzle, Pattern};
 pub type PatternRegistry = Vec<Pattern>;
 
 pub trait PatternRegistryExt {
-    fn gen_default_great_sigs() -> HashMap<&'static str, &'static str>;
+    fn gen_default_great_sigs() -> HashMap<String, String>;
 
-    fn construct(great_sigs: &HashMap<&str, &str>) -> PatternRegistry;
+    fn construct(great_sigs: &HashMap<String, String>) -> PatternRegistry;
     fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern>;
 }
 
 impl PatternRegistryExt for PatternRegistry {
-    fn gen_default_great_sigs() -> HashMap<&'static str, &'static str> {
+    fn gen_default_great_sigs() -> HashMap<String, String> {
         let mut hashmap = HashMap::new();
-        hashmap.insert("craft/battery", "aqqqaqwwaqqqqqeqaqqqawwqwqwqwqwqw");
-        hashmap.insert("potion/regeneration", "qqqqaawawaedd");
-        hashmap.insert("potion/night_vision", "qqqaawawaeqdd");
-        hashmap.insert("potion/absorption", "qqaawawaeqqdd");
-        hashmap.insert("potion/haste", "qaawawaeqqqdd");
-        hashmap.insert("potion/strength", "aawawaeqqqqdd");
-        hashmap.insert("lightning", "waadwawdaaweewq");
-        hashmap.insert("flight", "eawwaeawawaa");
-        hashmap.insert("create_lava", "eaqawqadaqd");
-        hashmap.insert("teleport", "wwwqqqwwwqqeqqwwwqqwqqdqqqqqdqq");
-        hashmap.insert("sentinel/create/great", "waeawaeqqqwqwqqwq");
-        hashmap.insert("dispel_rain", "eeewwweeewwaqqddqdqd");
-        hashmap.insert("summon_rain", "wwweeewwweewdawdwad");
-        hashmap.insert("brainsweep", "qeqwqwqwqwqeqaeqeaqeqaeqaqded");
+        hashmap.insert("craft/battery".to_string(), "aqqqaqwwaqqqqqeqaqqqawwqwqwqwqwqw".to_string());
+        hashmap.insert("potion/regeneration".to_string(), "qqqqaawawaedd".to_string());
+        hashmap.insert("potion/night_vision".to_string(), "qqqaawawaeqdd".to_string());
+        hashmap.insert("potion/absorption".to_string(), "qqaawawaeqqdd".to_string());
+        hashmap.insert("potion/haste".to_string(), "qaawawaeqqqdd".to_string());
+        hashmap.insert("potion/strength".to_string(), "aawawaeqqqqdd".to_string());
+        hashmap.insert("lightning".to_string(), "waadwawdaaweewq".to_string());
+        hashmap.insert("flight".to_string(), "eawwaeawawaa".to_string());
+        hashmap.insert("create_lava".to_string(), "eaqawqadaqd".to_string());
+        hashmap.insert("teleport".to_string(), "wwwqqqwwwqqeqqwwwqqwqqdqqqqqdqq".to_string());
+        hashmap.insert("sentinel/create/great".to_string(), "waeawaeqqqwqwqqwq".to_string());
+        hashmap.insert("dispel_rain".to_string(), "eeewwweeewwaqqddqdqd".to_string());
+        hashmap.insert("summon_rain".to_string(), "wwweeewwweewdawdwad".to_string());
+        hashmap.insert("brainsweep".to_string(), "qeqwqwqwqwqeqaeqeaqeqaeqaqded".to_string());
         hashmap
     }
 
     #[rustfmt::skip]
-    fn construct(great_sigs: &HashMap<&str, &str>) -> PatternRegistry {
+    fn construct(great_sigs: &HashMap<String, String>) -> PatternRegistry {
         let registry: PatternRegistry = vec![
             //special patterns
             Pattern::new_with_val("Consideration", "escape", "qqqaw", Box::new(special::escape)),
