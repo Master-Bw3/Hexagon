@@ -105,7 +105,8 @@ impl Mishap {
             Mishap::NoIotaAtIndex(_) => Some("This is typically caused by the Ravenmind being overwritten via Huginn's Gambit".to_string()),
             Mishap::NoAkashicRecord(location) => Some("Define an akashic record in a 'config.toml' file".to_string()),
             Mishap::HoldingIncorrectItem => Some("Define held items in a 'config.toml' file".to_string()),
-            Mishap::ExpectedValue(action_name, expected) => Some(format!("Set a value for this action: {action_name}: {expected}")),
+            //todo: make expectedValue show iota instead of type of iota in example
+            Mishap::ExpectedValue(action_name, expected) => Some(format!("Set a value for this action. Example: {action_name}: {expected}")),
             Mishap::InvalidValue(expected, recieved) => None,
             Mishap::EvalMishap(_, _, mishap) => mishap.error_hint(),
         }
