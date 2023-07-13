@@ -77,7 +77,7 @@ pub fn compile_op_push(
     let index = {
         match value {
             OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
-            OpValue::Var(var) => heap.get(var).ok_or(Mishap::VariableNotAssigned)?,
+            OpValue::Var(var) => heap.get(var).ok_or(Mishap::VariableNotAssigned(var.clone()))?,
         }
     };
     let compiled = vec![

@@ -334,7 +334,7 @@ pub fn mask<'a>(
     let code = match value {
         Some(ActionValue::Bookkeeper(code)) => code,
         Some(val) => Err(Mishap::InvalidValue("Bookeeper Code".to_string(), format!("{:?}", val)))?,
-        None => Err(Mishap::ExpectedValue("Bookeeper Code".to_string()))?,
+        None => Err(Mishap::ExpectedValue("Bookkeeper's Gambit".to_string(), "bookkeeper Code".to_string()))?,
     };
 
     let apply_code = |(iota, char): (&Iota, char)| match char {

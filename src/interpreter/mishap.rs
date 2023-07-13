@@ -10,13 +10,13 @@ pub enum Mishap {
     HastyRetrospection,
     InvalidPattern,
     ExpectedPattern(Iota),
-    ExpectedValue(String),
+    ExpectedValue(String, String),
     InvalidValue(String, String),
     OpCannotBeConsidered,
     OpNotEnoughArgs(i32),
     OpExpectedVar(Iota),
     OpExpectedIota,
-    VariableNotAssigned,
+    VariableNotAssigned(String),
     NoIotaAtIndex(usize),
     NoAkashicRecord(VectorIota),
     HoldingIncorrectItem,
@@ -52,12 +52,12 @@ impl Mishap {
             Mishap::OpCannotBeConsidered => todo!(),
             Mishap::OpNotEnoughArgs(_) => todo!(),
             Mishap::OpExpectedVar(_) => todo!(),
-            Mishap::VariableNotAssigned => todo!(),
+            Mishap::VariableNotAssigned(_) => todo!(),
             Mishap::OpExpectedIota => todo!(),
             Mishap::NoIotaAtIndex(_) => todo!(),
             Mishap::NoAkashicRecord(_) => todo!(),
             Mishap::HoldingIncorrectItem => todo!(),
-            Mishap::ExpectedValue(_) => todo!(),
+            Mishap::ExpectedValue(_, _) => todo!(),
             Mishap::InvalidValue(_, _) => todo!(),
         }
     }
@@ -77,12 +77,33 @@ impl Mishap {
             Mishap::OpNotEnoughArgs(arg_count) => format!("Expected {arg_count} arguments"),
             Mishap::OpExpectedVar(iota) => format!("Expected argument to be a variable but got iota {}", iota.display()),
             Mishap::OpExpectedIota => "Expected argument to be an iota".to_string(),
-            Mishap::VariableNotAssigned => "Variable never assigned".to_string(),
+            Mishap::VariableNotAssigned(_) => "Variable never assigned".to_string(),
             Mishap::NoIotaAtIndex(_) => "No iota found at pointed location".to_string(),
             Mishap::NoAkashicRecord(location) => format!("No akashic record found at {location}"),
             Mishap::HoldingIncorrectItem => "Entity is not holding the right item".to_string(),
-            Mishap::ExpectedValue(expected) => format!("Expected {expected} but got Nothing"),
-            Mishap::InvalidValue(expected, recieved) =>  format!("Expected {expected} but got {recieved}"),
+            Mishap::ExpectedValue(_, expected) => format!("Expected {expected} value to be supplied but got Nothing"),
+            Mishap::InvalidValue(expected, recieved) =>  format!("Expected {expected} value to be supplied but got {recieved}"),
+        }
+    }
+
+    pub fn error_hint(&self) -> Option<String> {
+        match self {
+            Mishap::NotEnoughIotas(arg_count, stack_height) => None,
+            Mishap::IncorrectIota(index, expected, recieved) => None,
+            Mishap::MathematicalError() => None,
+            Mishap::HastyRetrospection => None,
+            Mishap::InvalidPattern => None,
+            Mishap::ExpectedPattern(iota) => None,
+            Mishap::OpCannotBeConsidered => None,
+            Mishap::OpNotEnoughArgs(arg_count) => Some("Provide arguments inside the parentheses: Op(arg)".to_string()),
+            Mishap::OpExpectedVar(iota) => Some("Use a variable as the argument: Op($var)".to_string()),
+            Mishap::OpExpectedIota => Some("Use an Iota as the argument: Op(1), Op([1, 1, 1]), ect.".to_string()),
+            Mishap::VariableNotAssigned(varname) => Some(format!("Assign the variable using Store({varname}) or Copy({varname})")),
+            Mishap::NoIotaAtIndex(_) => Some("This is typically caused by the Ravenmind being overwritten via Huginn's Gambit".to_string()),
+            Mishap::NoAkashicRecord(location) => Some("Define an akashic record in a 'config.toml' file".to_string()),
+            Mishap::HoldingIncorrectItem => Some("Define held items in a 'config.toml' file".to_string()),
+            Mishap::ExpectedValue(action_name, expected) => Some(format!("Set a value for this action: {action_name}: {expected}")),
+            Mishap::InvalidValue(expected, recieved) => None
         }
     }
 }

@@ -1,4 +1,6 @@
-use std::{collections::HashMap, env, fs};
+use interpreter::mishap::Mishap;
+use owo_colors::{colors::Red, OwoColorize};
+use std::{collections::HashMap, env, fmt::format, fs};
 
 use crate::interpreter::interpret;
 mod compiler;
@@ -75,15 +77,29 @@ pub fn run() {
 
         match interpreter_result {
             Ok(result) => println!("\n result: {:?} \n {:?}", result.stack, result.buffer),
-            Err((err, (line, col))) => {
-                eprintln!(
-                    "\x1b[31mError:\x1b[0m [{}:{line}:{col}] {} ",
-                    args.source_path,
-                    err.error_message()
-                )
+            Err(err) => {
+                print_interpreter_error(err, &source, &args.source_path);
             }
         };
     } else {
         todo!("build")
     }
+}
+
+fn print_interpreter_error((err, (line, col)): (Mishap, (usize, usize)), source: &str, source_path: &str) {
+    let error_label = "Error:".red().to_string();
+    let error_msg = err.error_message().bold().to_string();
+    let location = format!("{source_path}:{line}:{col}");
+    let line_content = source.lines().collect::<Vec<_>>()[line - 1];
+    let padding = vec![" "; line.to_string().len()].concat();
+
+    eprintln!("{error_label} {error_msg}");
+    eprintln!(" {padding} {} {location}", "@".magenta().bold());
+    eprintln!(" {padding} {}", "|".magenta().bold());
+    eprintln!(
+        " {} {} {line_content}",
+        line.magenta().bold(),
+        "|".magenta().bold()
+    );
+    eprintln!(" {padding} {}", "|".magenta().bold());
 }

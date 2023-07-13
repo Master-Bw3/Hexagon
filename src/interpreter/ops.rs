@@ -91,7 +91,7 @@ pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), 
         Some(val) => match val {
             OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
             OpValue::Var(var) => {
-                let index = *state.heap.get(var).ok_or(Mishap::VariableNotAssigned)? as usize;
+                let index = *state.heap.get(var).ok_or(Mishap::VariableNotAssigned(var.clone()))? as usize;
                 let iota = get_iota_from_ravenmind(state.ravenmind.clone(), index)
                     .ok_or(Mishap::NoIotaAtIndex(index))?;
                 push_iota(iota, state, state.consider_next);

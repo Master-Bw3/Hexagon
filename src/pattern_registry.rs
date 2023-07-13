@@ -231,101 +231,101 @@ impl PatternRegistryExt for PatternRegistry {
 
 
             //requires value to be set
-            Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number, "Number")),
+            Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number, "Number", "Numerical Reflection")),
 
             Pattern::new_with_val("Entity Purification", "get_entity", "qqqqqdaqa",
-                constructors::get_entity(None)),
+                constructors::get_entity(None, "Entity Purification")),
 
             Pattern::new_with_val("Entity Purification: Animal", "get_entity/animal", "qqqqqdaqaawa",
-                constructors::get_entity(Some(&EntityType::Animal))),
+                constructors::get_entity(Some(&EntityType::Animal), "Entity Purification: Animal")),
 
 
             Pattern::new_with_val("Entity Purification: Monster", "get_entity/monster", "qqqqqdaqaawq",
-                constructors::get_entity(Some(&EntityType::Monster))),
+                constructors::get_entity(Some(&EntityType::Monster), "Entity Purification: Monster")),
 
             Pattern::new_with_val("Entity Purification: Item", "get_entity/item", "qqqqqdaqaaww",
-                constructors::get_entity(Some(&EntityType::Item))),
+                constructors::get_entity(Some(&EntityType::Item), "Entity Purification: Item")),
 
             Pattern::new_with_val("Entity Purification: Player", "get_entity/player", "qqqqqdaqaawe",
-                constructors::get_entity(Some(&EntityType::Player))),
+                constructors::get_entity(Some(&EntityType::Player), "Entity Purification: Player")),
 
             Pattern::new_with_val("Entity Purification: Living", "get_entity/living", "qqqqqdaqaawd",
-                constructors::get_entity(Some(&EntityType::Living))),
+                constructors::get_entity(Some(&EntityType::Living), "Entity Purification: Living")),
 
             Pattern::new_with_val("Zone Distillation: Any", "zone_entity", "qqqqqwded",
-                constructors::zone_entity(None, &false)),
+                constructors::zone_entity(None, &false, "Zone Distillation: Any")),
 
             Pattern::new_with_val("Zone Distillation: Animal", "zone_entity/animal", "qqqqqwdeddwa",
-                constructors::zone_entity(Some(&EntityType::Animal), &false)),
+                constructors::zone_entity(Some(&EntityType::Animal), &false, "Zone Distillation: Animal")),
 
             Pattern::new_with_val("Zone Distillation: Non-Animal", "zone_entity/not_animal", "eeeeewaqaawa",
-                constructors::zone_entity(Some(&EntityType::Animal), &true)),
+                constructors::zone_entity(Some(&EntityType::Animal), &true, "Zone Distillation: Non-Animal")),
 
             Pattern::new_with_val("Zone Distillation: Monster", "zone_entity/monster", "qqqqqwdeddwq",
-                constructors::zone_entity(Some(&EntityType::Monster), &false)),
+                constructors::zone_entity(Some(&EntityType::Monster), &false, "Zone Distillation: Monster")),
 
             Pattern::new_with_val("Zone Distillation: Non-Monster", "zone_entity/not_monster", "eeeeewaqaawq",
-                constructors::zone_entity(Some(&EntityType::Monster), &true)),
+                constructors::zone_entity(Some(&EntityType::Monster), &true, "Zone Distillation: Non-Monster")),
 
             Pattern::new_with_val("Zone Distillation: Item", "zone_entity/item", "qqqqqwdeddww",
-                constructors::zone_entity(Some(&EntityType::Item), &false)),
+                constructors::zone_entity(Some(&EntityType::Item), &false, "Zone Distillation: Item")),
 
             Pattern::new_with_val("Zone Distillation: Non-Item", "zone_entity/not_item", "eeeeewaqaaww",
-                constructors::zone_entity(Some(&EntityType::Item), &true)),
+                constructors::zone_entity(Some(&EntityType::Item), &true, "Zone Distillation: Non-Item")),
 
             Pattern::new_with_val("Zone Distillation: Player", "zone_entity/player", "qqqqqwdeddwe",
-                constructors::zone_entity(Some(&EntityType::Player), &false)),
+                constructors::zone_entity(Some(&EntityType::Player), &false, "Zone Distillation: Player")),
 
             Pattern::new_with_val("Zone Distillation: Non-Player", "zone_entity/not_player", "eeeeewaqaawe",
-                constructors::zone_entity(Some(&EntityType::Player), &true)),
+                constructors::zone_entity(Some(&EntityType::Player), &true, "Zone Distillation: Non-Player")),
 
             Pattern::new_with_val("Zone Distillation: Living", "zone_entity/living", "qqqqqwdeddwd",
-                constructors::zone_entity(Some(&EntityType::Living), &false)),
+                constructors::zone_entity(Some(&EntityType::Living), &false, "Zone Distillation: Living")),
 
             Pattern::new_with_val("Zone Distillation: Non-Living", "zone_entity/not_living", "eeeeewaqaawd",
-                constructors::zone_entity(Some(&EntityType::Living), &true)),
+                constructors::zone_entity(Some(&EntityType::Living), &true, "Zone Distillation: Non-Living")),
 
             Pattern::new_with_val("entity_pos/eye", "Compass' Purification", "aa",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "entity_pos/eye")),
 
             Pattern::new_with_val("entity_pos/foot", "Compass' Purification II", "dd",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "entity_pos/foot")),
 
             Pattern::new_with_val("get_entity_look", "Alidade's Purification", "wa",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "get_entity_look")),
 
             Pattern::new_with_val("get_entity_height", "Stadiometer's Purification", "awq",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "get_entity_height")),
 
             Pattern::new_with_val("get_entity_velocity", "Pace Purification", "wq",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "get_entity_velocity")),
 
             Pattern::new_with_val("interop/gravity/get", "Gravitational Purification", "wawawddew",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "interop/gravity/get")),
 
             Pattern::new_with_val("interop/pehkui/get", "Gulliver's Purification", "aawawwawwa",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "interop/pehkui/get")),
 
             Pattern::new_with_val("Archer's Distillation", "raycast", "wqaawdd",
-                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector, "Vector")),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector, "Vector", "Archer's Distillation")),
 
             Pattern::new_with_val("Architect's Distillation", "raycast/axis", "weddwaa",
-                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector, "Vector")),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector, "Vector", "Architect's Distillation")),
 
             Pattern::new_with_val("Scout's Distillation", "raycast/entity", "weaqa",
-                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_entity, "Entity")),
+                constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_entity, "Entity", "Scout's Distillation")),
 
             Pattern::new_with_val("Waystone Reflection", "circle/impetus_pos", "eaqwqae",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "Waystone Reflection")),
 
             Pattern::new_with_val("Lodestone Reflection", "circle/impetus_dir", "eaqwqaewede",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "Lodestone Reflection")),
 
             Pattern::new_with_val("Lesser Fold Reflection", "circle/bounds/min", "eaqwqaewdd",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "Lesser Fold Reflection")),
 
             Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "Greater Fold Reflection")),
 
             
 
