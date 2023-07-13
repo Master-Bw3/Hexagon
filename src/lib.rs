@@ -100,9 +100,8 @@ fn print_interpreter_error(
     eprintln!(" {padding} {}", "|".magenta().bold());
     match err {
         Mishap::EvalMishap(ref stack, index, _) => print_eval_mishap_content(stack, index),
-        _ => print_mishap_content(&err, line, line_content, &padding),
+        _ => print_mishap_content(line, line_content, &padding),
     }
-    eprintln!(" {padding} {}", "|".magenta().bold());
     print_mishap_hint(&err, &padding);
 }
 
@@ -125,13 +124,13 @@ fn print_mishap_hint(err: &Mishap, padding: &String) {
     }
 }
 
-fn print_mishap_content(err: &Mishap, line: usize, line_content: &str, padding: &String) {
-    eprintln!(" {padding} {}", "|".magenta().bold());
+fn print_mishap_content(line: usize, line_content: &str, padding: &String) {
     eprintln!(
         " {} {} {line_content}",
         line.magenta().bold(),
         ">".magenta().bold()
     );
+    eprintln!(" {padding} {}", "|".magenta().bold());
 }
 fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize) {
     let padding = vec![" "; err_index.to_string().len()].concat();
@@ -169,4 +168,9 @@ fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize) {
     for content in &context_post {
         eprintln!(" {padding} {} {content}", "|".magenta().bold());
     }
+
+    eprintln!(" {padding} {}", "|".magenta().bold());
+
+    let note_label = "Note:".yellow().bold().to_string();
+    eprintln!(" {padding} {} {note_label} This error originated from either Hermes' Gambit or Thoth's Gambit. Above is the list that was evaluated and the iota that caused the mishap", "+".magenta().bold(),);
 }
