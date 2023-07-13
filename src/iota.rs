@@ -116,7 +116,13 @@ impl Display for NumberIota {
 
 impl Display for PatternIota {
     fn display(&self) -> String {
-        self.signature.as_str()
+        PatternRegistry::find(
+            //todo: maybe make this not generate the entire registry each time
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+            &self.signature.as_str(),
+            &None,
+        )
+        .map_or(self.signature.as_str(), |pat| pat.display_name)
     }
 }
 

@@ -21,7 +21,9 @@ pub fn eval<'a>(
             eval_list(state, pattern_registry, &list)?;
         }
         Either::R(pattern) => {
-            eval_pattern(state, pattern_registry, &pattern)?;
+            eval_pattern(state, pattern_registry, &pattern).map_err(|err| {
+                Mishap::EvalMishap(vec![Iota::Pattern(pattern)], 0, Box::new(err))
+            })?;
         }
     };
 
@@ -36,14 +38,15 @@ fn eval_list(
     list: &Vec<Iota>,
 ) -> Result<Halted, Mishap> {
     let mut halted = false;
-    for iota in list {
+    for (index, iota) in list.iter().enumerate() {
         match iota {
             Iota::Pattern(pattern) => {
                 if pattern.signature == Signature::from_name(pattern_registry, "halt", &None) {
                     halted = true;
                     break;
                 }
-                eval_pattern(state, pattern_registry, pattern)?;
+                eval_pattern(state, pattern_registry, pattern)
+                    .map_err(|err| Mishap::EvalMishap(list.clone(), index, Box::new(err)))?;
             }
 
             iota => {

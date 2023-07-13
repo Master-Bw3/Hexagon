@@ -1,8 +1,9 @@
 use interpreter::mishap::Mishap;
+use iota::Iota;
 use owo_colors::{colors::Red, OwoColorize};
 use std::{collections::HashMap, env, fmt::format, fs};
 
-use crate::interpreter::interpret;
+use crate::{interpreter::interpret, patterns::Pattern};
 mod compiler;
 mod interpreter;
 mod iota;
@@ -86,28 +87,86 @@ pub fn run() {
     }
 }
 
-fn print_interpreter_error((err, (line, col)): (Mishap, (usize, usize)), source: &str, source_path: &str) {
-    let error_label = "Error:".red().bold().to_string();
-    let error_msg = err.error_message().bold().to_string();
+fn print_interpreter_error(
+    (err, (line, col)): (Mishap, (usize, usize)),
+    source: &str,
+    source_path: &str,
+) {
     let location = format!("{source_path}:{line}:{col}");
     let line_content = source.lines().collect::<Vec<_>>()[line - 1];
     let padding = vec![" "; line.to_string().len()].concat();
-    let hint_label = "Hint:".yellow().bold().to_string();
+
+    print_err_msg(&err, &padding, &location);
+    eprintln!(" {padding} {}", "|".magenta().bold());
+    match err {
+        Mishap::EvalMishap(ref stack, index, _) => print_eval_mishap_content(stack, index),
+        _ => print_mishap_content(&err, line, line_content, &padding),
+    }
+    eprintln!(" {padding} {}", "|".magenta().bold());
+    print_mishap_hint(&err, &padding);
+}
+
+fn print_err_msg(err: &Mishap, padding: &String, location: &String) {
+    let error_label = "Error:".red().bold().to_string();
+    let error_msg = err.error_message().bold().to_string();
 
     eprintln!("{error_label} {error_msg}");
     eprintln!(" {padding} {} {location}", "@".magenta().bold());
+}
+
+fn print_mishap_hint(err: &Mishap, padding: &String) {
+    let hint_label = "Hint:".yellow().bold().to_string();
+
+    match err.error_hint() {
+        Some(hint) => {
+            eprintln!(" {padding} {} {hint_label} {hint}", "+".magenta().bold(),);
+        }
+        None => (),
+    }
+}
+
+fn print_mishap_content(err: &Mishap, line: usize, line_content: &str, padding: &String) {
     eprintln!(" {padding} {}", "|".magenta().bold());
     eprintln!(
         " {} {} {line_content}",
         line.magenta().bold(),
-        "|".magenta().bold()
+        ">".magenta().bold()
     );
-    eprintln!(" {padding} {}", "|".magenta().bold());
-    match err.error_hint() {
-        Some(hint) => {
-                eprintln!(" {padding} {} {hint_label} {hint}", ">".magenta().bold(), );
+}
+fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize) {
+    let padding = vec![" "; err_index.to_string().len()].concat();
+    let context_pre: Vec<_> = if pat_list[..err_index].len() >= 3 {
+        pat_list[(err_index - 3)..err_index].to_vec()
+    } else {
+        pat_list[..err_index].to_vec()
+    }
+    .iter()
+    .map(|iota| iota.display())
+    .collect();
 
-        },
-        None => (),
+    let context_post: Vec<_> = if pat_list[err_index..].len() >= 3 {
+        pat_list[((err_index + 1)..=err_index + 3)].to_vec()
+    } else {
+        pat_list[(err_index + 1)..].to_vec()
+    }
+    .iter()
+    .map(|iota| iota.display())
+    .collect();
+
+    let action = &pat_list[err_index];
+
+    for content in &context_pre {
+        eprintln!(" {padding} {} {content}", "|".magenta().bold());
+    }
+
+    eprintln!(
+        " {} {} {}",
+        err_index.magenta().bold(),
+        ">".magenta().bold(),
+        action.display().bold()
+    );
+
+    for content in &context_post {
+        eprintln!(" {padding} {} {content}", "|".magenta().bold());
     }
 }

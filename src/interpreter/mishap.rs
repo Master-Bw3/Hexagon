@@ -20,6 +20,7 @@ pub enum Mishap {
     NoIotaAtIndex(usize),
     NoAkashicRecord(VectorIota),
     HoldingIncorrectItem,
+    EvalMishap(Vec<Iota>, usize, Box<Mishap>)
 }
 
 impl Mishap {
@@ -59,6 +60,7 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => todo!(),
             Mishap::ExpectedValue(_, _) => todo!(),
             Mishap::InvalidValue(_, _) => todo!(),
+            Mishap::EvalMishap(_, _, _) => todo!(),
         }
     }
 
@@ -83,6 +85,7 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => "Entity is not holding the right item".to_string(),
             Mishap::ExpectedValue(_, expected) => format!("Expected {expected} value to be supplied but got Nothing"),
             Mishap::InvalidValue(expected, recieved) =>  format!("Expected {expected} value to be supplied but got {recieved}"),
+            Mishap::EvalMishap(_, _, mishap) => mishap.error_message(),
         }
     }
 
@@ -103,7 +106,8 @@ impl Mishap {
             Mishap::NoAkashicRecord(location) => Some("Define an akashic record in a 'config.toml' file".to_string()),
             Mishap::HoldingIncorrectItem => Some("Define held items in a 'config.toml' file".to_string()),
             Mishap::ExpectedValue(action_name, expected) => Some(format!("Set a value for this action: {action_name}: {expected}")),
-            Mishap::InvalidValue(expected, recieved) => None
+            Mishap::InvalidValue(expected, recieved) => None,
+            Mishap::EvalMishap(_, _, mishap) => mishap.error_hint(),
         }
     }
 }
