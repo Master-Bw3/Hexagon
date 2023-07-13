@@ -144,7 +144,7 @@ fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize) {
     .map(|iota| iota.display())
     .collect();
 
-    let context_post: Vec<_> = if pat_list[err_index..].len() >= 3 {
+    let context_post: Vec<_> = if pat_list[err_index..].len() > 3 {
         pat_list[((err_index + 1)..=err_index + 3)].to_vec()
     } else {
         pat_list[(err_index + 1)..].to_vec()
