@@ -87,11 +87,12 @@ pub fn run() {
 }
 
 fn print_interpreter_error((err, (line, col)): (Mishap, (usize, usize)), source: &str, source_path: &str) {
-    let error_label = "Error:".red().to_string();
+    let error_label = "Error:".red().bold().to_string();
     let error_msg = err.error_message().bold().to_string();
     let location = format!("{source_path}:{line}:{col}");
     let line_content = source.lines().collect::<Vec<_>>()[line - 1];
     let padding = vec![" "; line.to_string().len()].concat();
+    let hint_label = "Hint:".yellow().bold().to_string();
 
     eprintln!("{error_label} {error_msg}");
     eprintln!(" {padding} {} {location}", "@".magenta().bold());
@@ -102,4 +103,11 @@ fn print_interpreter_error((err, (line, col)): (Mishap, (usize, usize)), source:
         "|".magenta().bold()
     );
     eprintln!(" {padding} {}", "|".magenta().bold());
+    match err.error_hint() {
+        Some(hint) => {
+                eprintln!(" {padding} {} {hint_label} {hint}", ">".magenta().bold(), );
+
+        },
+        None => (),
+    }
 }
