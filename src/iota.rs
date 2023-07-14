@@ -1,6 +1,8 @@
 use std::fmt::Debug;
 use std::{collections::HashMap, ops::Not};
 
+use nalgebra::{DMatrix, Dyn, Matrix};
+
 use crate::{
     interpreter::state::{Entity, EntityType},
     parser::ActionValue,
@@ -9,6 +11,7 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Iota {
+    //Hex Casting
     Number(NumberIota),
     Vector(VectorIota),
     Pattern(PatternIota),
@@ -17,6 +20,8 @@ pub enum Iota {
     Null(NullIota),
     Entity(EntityIota),
     List(ListIota),
+    //MoreIotas
+    Matrix(MatrixIota),
 }
 
 impl Iota {
@@ -87,6 +92,7 @@ impl Iota {
             Iota::Null(_) => "Null",
             Iota::Entity(_) => "Entity",
             Iota::List(_) => "List",
+            Iota::Matrix(_) => "Matrix",
         }
     }
 
@@ -100,6 +106,7 @@ impl Iota {
             Iota::Null(null) => null.display(),
             Iota::Entity(name) => name.display(),
             Iota::List(list) => list.display(),
+            Iota::Matrix(matrix) => matrix.display(),
         }
     }
 }
@@ -108,35 +115,15 @@ pub trait Display {
     fn display(&self) -> String;
 }
 
+pub type NumberIota = f32;
+
 impl Display for NumberIota {
     fn display(&self) -> String {
         self.to_string()
     }
 }
 
-impl Display for PatternIota {
-    fn display(&self) -> String {
-        PatternRegistry::find(
-            //todo: maybe make this not generate the entire registry each time
-            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
-            &self.signature.as_str(),
-            &None,
-        )
-        .map_or(self.signature.as_str(), |pat| pat.display_name)
-    }
-}
-
-impl Display for NullIota {
-    fn display(&self) -> String {
-        "Null".to_string()
-    }
-}
-
-impl Display for GarbageIota {
-    fn display(&self) -> String {
-        "Garbage".to_string()
-    }
-}
+pub type BoolIota = bool;
 
 impl Display for BoolIota {
     fn display(&self) -> String {
@@ -144,17 +131,7 @@ impl Display for BoolIota {
     }
 }
 
-impl Display for VectorIota {
-    fn display(&self) -> String {
-        format!("({}, {}, {})", self.x, self.y, self.z)
-    }
-}
-
-impl Display for EntityIota {
-    fn display(&self) -> String {
-        format!("@{self}")
-    }
-}
+pub type ListIota = std::vec::Vec<Iota>;
 
 impl Display for ListIota {
     fn display(&self) -> String {
@@ -168,14 +145,23 @@ impl Display for ListIota {
     }
 }
 
-pub type NumberIota = f32;
-pub type BoolIota = bool;
-pub type ListIota = std::vec::Vec<Iota>;
 pub type VectorIota = nalgebra::Matrix1x3<NumberIota>;
+
+impl Display for VectorIota {
+    fn display(&self) -> String {
+        format!("({}, {}, {})", self.x, self.y, self.z)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum GarbageIota {
     Garbage,
+}
+
+impl Display for GarbageIota {
+    fn display(&self) -> String {
+        "Garbage".to_string()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -183,8 +169,20 @@ pub enum NullIota {
     Null,
 }
 
+impl Display for NullIota {
+    fn display(&self) -> String {
+        "Null".to_string()
+    }
+}
+
 //reference to an entity
 pub type EntityIota = String;
+
+impl Display for EntityIota {
+    fn display(&self) -> String {
+        format!("@{self}")
+    }
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PatternIota {
@@ -209,6 +207,18 @@ impl PatternIota {
             signature: Signature::from_sig(name),
             value: Box::new(value),
         }
+    }
+}
+
+impl Display for PatternIota {
+    fn display(&self) -> String {
+        PatternRegistry::find(
+            //todo: maybe make this not generate the entire registry each time
+            &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
+            &self.signature.as_str(),
+            &None,
+        )
+        .map_or(self.signature.as_str(), |pat| pat.display_name)
     }
 }
 
@@ -269,5 +279,19 @@ impl SignatureExt for Signature {
                 PatternSigDir::W => 'w',
             })
             .collect()
+    }
+}
+
+pub type MatrixIota = Matrix<NumberIota, Dyn, Dyn, nalgebra::VecStorage<NumberIota, Dyn, Dyn>>;
+
+impl Display for MatrixIota {
+    fn display(&self) -> String {
+        let mut out = vec![];
+        for row in self.row_iter() {
+            let row_out = row.iter().map(f32::to_string).collect::<Vec<_>>();
+            let row_str = format!("[{}]", row_out.join(", "));
+            out.push(row_str)
+        }
+        out.join("\n")
     }
 }
