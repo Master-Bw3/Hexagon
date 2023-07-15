@@ -4,9 +4,8 @@ use std::f32::consts::{E, PI, TAU};
 use crate::interpreter::state::{Holding, Stack, StackExt, EntityType};
 use crate::iota::{EntityIota, Iota, NullIota, VectorIota};
 use crate::parser::ActionValue;
-use crate::patterns::constructors::value_0;
-use crate::patterns::{constructors, eval, math, special};
-use crate::patterns::{lists, read_write, sentinel, stack, swizzle, Pattern};
+use crate::patterns::Pattern;
+use crate::patterns::hex_casting::{constructors, eval, math, special, lists, read_write, sentinel, stack, swizzle};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -231,7 +230,8 @@ impl PatternRegistryExt for PatternRegistry {
 
 
             //requires value to be set
-            Pattern::new_with_val("Numerical Reflection", "number", "", value_0(Stack::get_number, "Number", "Numerical Reflection")),
+            Pattern::new_with_val("Numerical Reflection", "number", "", 
+                constructors::value_0(Stack::get_number, "Number", "Numerical Reflection")),
 
             Pattern::new_with_val("Entity Purification", "get_entity", "qqqqqdaqa",
                 constructors::get_entity(None, "Entity Purification")),

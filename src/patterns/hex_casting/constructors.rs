@@ -7,11 +7,8 @@ use crate::{
     },
     iota::{Display, Iota},
     parser::ActionValue,
-    pattern_registry::PatternRegistry,
+    pattern_registry::PatternRegistry, patterns::{ActionNoValueType, ActionWithValueType},
 };
-
-use super::{ActionNoValueType, ActionWithValueType};
-
 type GetterType<T> = fn(&Stack, usize, usize) -> Result<T, Mishap>;
 
 // pub fn operator<T: 'static>(arg_count: usize, action: &'static ActionNoValueType) -> Box<ActionNoValueType> {
