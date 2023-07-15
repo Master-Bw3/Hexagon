@@ -94,12 +94,13 @@ fn print_interpreter_error(
 ) {
     let location = format!("{source_path}:{line}:{col}");
     let line_content = source.lines().collect::<Vec<_>>()[line - 1];
-    let padding = vec![" "; line.to_string().len()].concat();
+    let pad_len = line.to_string().len();
+    let padding = vec![" "; pad_len].concat();
 
     print_err_msg(&err, &padding, &location);
     eprintln!(" {padding} {}", "|".magenta().bold());
     match err {
-        Mishap::EvalMishap(ref stack, index, _) => print_eval_mishap_content(stack, index),
+        Mishap::EvalMishap(ref stack, index, _) => print_eval_mishap_content(stack, index, pad_len),
         _ => print_mishap_content(line, line_content, &padding),
     }
     print_mishap_hint(&err, &padding);
@@ -132,8 +133,11 @@ fn print_mishap_content(line: usize, line_content: &str, padding: &String) {
     );
     eprintln!(" {padding} {}", "|".magenta().bold());
 }
-fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize) {
-    let padding = vec![" "; err_index.to_string().len()].concat();
+fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize, pad_len: usize) {
+    let err_pad_len = err_index.to_string().len();
+    let padding = vec![" "; pad_len].concat();
+    let extra_padding = vec![" "; (pad_len - err_pad_len)].concat();
+
     let context_pre: Vec<_> = if pat_list[..err_index].len() >= 3 {
         pat_list[(err_index - 3)..err_index].to_vec()
     } else {
@@ -159,7 +163,7 @@ fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize) {
     }
 
     eprintln!(
-        " {} {} {}",
+        "{extra_padding} {} {} {}",
         err_index.magenta().bold(),
         ">".magenta().bold(),
         action.display().bold()
