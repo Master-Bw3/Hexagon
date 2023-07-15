@@ -111,7 +111,7 @@ pub fn print<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let iota = state.stack.get_iota(0, 1)?;
-    println!(iota.display());
+    println!("{}", iota.display());
     Ok(state)
 }
 
