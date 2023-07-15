@@ -292,6 +292,6 @@ impl Display for MatrixIota {
             let row_str = format!("[{}]", row_out.join(", "));
             out.push(row_str)
         }
-        format!("[{}]", out.join("\n"))
+        format!("[{}]", out.join(", "))
     }
 }
