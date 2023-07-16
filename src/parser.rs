@@ -139,6 +139,45 @@ fn parse_action(
         })
 }
 
+fn parse_action_iota(
+    left: Pair<'_, Rule>,
+    right: Option<Pair<'_, Rule>>,
+    righter: Option<Pair<'_, Rule>>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &mut HashMap<String, Entity>,
+) -> PatternIota {
+    right
+        .clone()
+        .map(|pair| match pair.as_rule() {
+            Rule::Iota => PatternIota::from_name(
+                pattern_registry,
+                left.as_str(),
+                Some(ActionValue::Iota(parse_iota(
+                    pair.clone(),
+                    pattern_registry,
+                    conf_entities,
+                ))),
+            ),
+            Rule::EntityType => PatternIota::from_name(
+                pattern_registry,
+                &format!("{}: {}", left.as_str(), right.unwrap().as_str()),
+                righter.map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
+            ),
+            Rule::BookkeeperValue => PatternIota::from_name(
+                pattern_registry,
+                left.as_str(),
+                Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
+            ),
+            _ => unreachable!(),
+        })
+        .unwrap_or(PatternIota::from_name(
+            pattern_registry,
+            left.as_str(),
+            None,
+        ))
+        .unwrap()
+}
+
 fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
     let line = pair.line_col();
     let inner = pair.into_inner().next().unwrap();
@@ -257,10 +296,16 @@ pub fn parse_iota(
                     PatternIota::from_name(pattern_registry, "close_paren", None).unwrap(),
                 ),
                 _ => match inner_inner_pair.as_rule() {
-                    Rule::ActionName => Iota::Pattern(
-                        PatternIota::from_name(pattern_registry, inner_pair.as_str(), None)
-                            .unwrap(),
-                    ),
+                    Rule::Action => {
+                        let mut pairs = inner_inner_pair.into_inner();
+                        Iota::Pattern(parse_action_iota(
+                            pairs.next().unwrap(),
+                            pairs.next(),
+                            pairs.next(),
+                            pattern_registry,
+                            conf_entities,
+                        ))
+                    }
                     Rule::PatternName => Iota::Pattern(PatternIota::from_sig(
                         inner_inner_pair.into_inner().last().unwrap().as_str(),
                         None,

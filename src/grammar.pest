@@ -14,7 +14,7 @@ ElseIf = {"else if" ~ Newline? ~ Term}
 
 Term = {"{" ~ Hex ~ "}"}
 
-Action = { ActionName ~ (":" ~ EntityType)? ~ (":" ~ ( BookkeeperValue | Iota | IntroRetro ))? }
+Action = { ActionName ~ (":" ~ EntityType)? ~ (":" ~ WHITESPACE* ~ ( BookkeeperValue | Iota | IntroRetro ))? }
 
 ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
@@ -46,7 +46,7 @@ Influence = @{("Null" | "Garbage") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
 Bool = @{("True" | "False") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
-Pattern = ${ IntroRetro | PatternName | ActionName }
+Pattern = ${ IntroRetro | PatternName | Action }
 
 String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))+ ~ "\"")}
 
