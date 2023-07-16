@@ -15,7 +15,7 @@ Compile a file
 hexagon build filename.hexcasting
 ```
 
-# Syntax
+## Syntax
 
 Actions are written in the hexpattern format
 
