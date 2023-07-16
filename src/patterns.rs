@@ -1,4 +1,6 @@
 pub mod hex_casting;
+pub mod more_iotas;
+pub mod constructors;
 
 use std::rc::Rc;
 

@@ -1,11 +1,14 @@
-use std::collections::{HashMap};
+use std::collections::HashMap;
 use std::f32::consts::{E, PI, TAU};
 
-use crate::interpreter::state::{Holding, Stack, StackExt, EntityType};
-use crate::iota::{EntityIota, Iota, NullIota, VectorIota};
+use crate::interpreter::state::{EntityType, Stack, StackExt};
+use crate::iota::{Iota, NullIota, VectorIota};
 use crate::parser::ActionValue;
-use crate::patterns::Pattern;
-use crate::patterns::hex_casting::{constructors, eval, math, special, lists, read_write, sentinel, stack, swizzle};
+use crate::patterns::hex_casting::{
+    eval, lists, math, read_write, sentinel, special, stack, swizzle,
+};
+use crate::patterns::more_iotas::matrices;
+use crate::patterns::{constructors, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -17,6 +20,7 @@ pub trait PatternRegistryExt {
 }
 
 impl PatternRegistryExt for PatternRegistry {
+    #[rustfmt::skip]
     fn gen_default_great_sigs() -> HashMap<String, String> {
         let mut hashmap = HashMap::new();
         hashmap.insert("craft/battery".to_string(), "aqqqaqwwaqqqqqeqaqqqawwqwqwqwqwqw".to_string());
@@ -327,7 +331,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
                 constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "Greater Fold Reflection")),
 
-            
+            //MoreIotas
+            Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrices::make)),
 
         ];
 

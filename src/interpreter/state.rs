@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use crate::iota::{
-    BoolIota, EntityIota, GarbageIota, Iota, ListIota, NullIota, NumberIota, PatternIota,
-    Signature, VectorIota,
+    BoolIota, EntityIota, GarbageIota, Iota, ListIota, MatrixIota, NullIota, NumberIota,
+    PatternIota, Signature, VectorIota,
 };
 
 use super::mishap::Mishap;
@@ -41,6 +41,12 @@ pub enum Either<L, R> {
     R(R),
 }
 
+pub enum Either3<L, M, R> {
+    L(L),
+    M(M),
+    R(R),
+}
+
 pub trait StackExt {
     fn get_number(&self, index: usize, arg_count: usize) -> Result<NumberIota, Mishap>;
     fn get_vector(&self, index: usize, arg_count: usize) -> Result<VectorIota, Mishap>;
@@ -50,6 +56,7 @@ pub trait StackExt {
     fn get_null(&self, index: usize, arg_count: usize) -> Result<NullIota, Mishap>;
     fn get_entity(&self, index: usize, arg_count: usize) -> Result<EntityIota, Mishap>;
     fn get_list(&self, index: usize, arg_count: usize) -> Result<ListIota, Mishap>;
+    fn get_matrix(&self, index: usize, arg_count: usize) -> Result<MatrixIota, Mishap>;
 
     fn get_integer(&self, index: usize, arg_count: usize) -> Result<i32, Mishap>;
     fn get_positive_integer_under_inclusive(
@@ -76,6 +83,12 @@ pub trait StackExt {
         index: usize,
         arg_count: usize,
     ) -> Result<Either<i32, ListIota>, Mishap>;
+
+    fn get_num_or_vec_or_list(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either3<NumberIota, VectorIota, ListIota>, Mishap>;
 
     fn get_iota(&self, index: usize, arg_count: usize) -> Result<&Iota, Mishap>;
 
@@ -230,6 +243,18 @@ impl StackExt for Stack {
         }
     }
 
+    fn get_matrix(&self, index: usize, arg_count: usize) -> Result<MatrixIota, Mishap> {
+        let iota = self.get_iota(index, arg_count)?;
+        match iota {
+            Iota::Matrix(x) => Ok(x.clone()),
+            _ => Err(Mishap::IncorrectIota(
+                index,
+                "Matrix".to_string(),
+                iota.clone(),
+            )),
+        }
+    }
+
     fn get_num_or_vec(
         &self,
         index: usize,
@@ -289,6 +314,27 @@ impl StackExt for Stack {
             _ => Err(Mishap::IncorrectIota(
                 index,
                 "Integer or List".to_string(),
+                iota.clone(),
+            )),
+        }
+    }
+
+    fn get_num_or_vec_or_list(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either3<NumberIota, VectorIota, ListIota>, Mishap> {
+        let iota = self.get_iota(index, arg_count)?;
+        match iota {
+            Iota::Number(x) => Ok(Either3::L(*x)),
+
+            Iota::Vector(x) => Ok(Either3::M(x.clone())),
+
+            Iota::List(x) => Ok(Either3::R(x.clone())),
+
+            _ => Err(Mishap::IncorrectIota(
+                index,
+                "Number, Vector, or List".to_string(),
                 iota.clone(),
             )),
         }
