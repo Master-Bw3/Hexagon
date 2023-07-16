@@ -122,9 +122,9 @@ Hermes' Gambit //evaluates the 'then' branch
 ```
 
 ## Config
-By default, Hexagon looks for a `config.toml` file in the current directory. A different file can also be specified.
+By default, Hexagon looks for a `config.toml` file in the current directory. A different file can also be specified:
 ```
-Hexagon run example.hexcasting example.toml
+hexagon run example.hexcasting example.toml
 ```
 
 ### Config Syntax 
