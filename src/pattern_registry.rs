@@ -297,19 +297,19 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("entity_pos/foot", "Compass' Purification II", "dd",
                 constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "entity_pos/foot")),
 
-            Pattern::new_with_val("get_entity_look", "Alidade's Purification", "wa",
+            Pattern::new_with_val("Alidade's Purification", "get_entity_look", "wa",
                 constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "get_entity_look")),
 
-            Pattern::new_with_val("get_entity_height", "Stadiometer's Purification", "awq",
+            Pattern::new_with_val("Stadiometer's Purification", "get_entity_height", "awq",
                 constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "get_entity_height")),
 
-            Pattern::new_with_val("get_entity_velocity", "Pace Purification", "wq",
+            Pattern::new_with_val("Pace Purification", "get_entity_velocity", "wq",
                 constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "get_entity_velocity")),
 
-            Pattern::new_with_val("interop/gravity/get", "Gravitational Purification", "wawawddew",
+            Pattern::new_with_val("Gravitational Purification", "interop/gravity/get", "wawawddew",
                 constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "interop/gravity/get")),
 
-            Pattern::new_with_val("interop/pehkui/get", "Gulliver's Purification", "aawawwawwa",
+            Pattern::new_with_val("Gulliver's Purification", "interop/pehkui/get", "aawawwawwa",
                 constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "interop/pehkui/get")),
 
             Pattern::new_with_val("Archer's Distillation", "raycast", "wqaawdd",
