@@ -18,13 +18,13 @@ use crate::{
 
 use self::{
     mishap::Mishap,
-    state::{Holding, State, Entity, EntityType},
+    state::{Entity, EntityType, Holding, State},
 };
 
 pub fn interpret(
     node: AstNode,
     config: &Option<&Config>,
-    entities: HashMap<String, Entity>
+    entities: HashMap<String, Entity>,
 ) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
         ravenmind: Some(Iota::List(vec![])),
@@ -240,10 +240,10 @@ pub fn interpret_action<'a>(
         .ok_or(Mishap::InvalidPattern)?;
 
     let is_escape = Signature::from_sig(&pattern.signature)
-        == Signature::from_name(pattern_registry, "escape", &None);
+        == Signature::from_name(pattern_registry, "escape", &None).unwrap();
 
     let is_retro = Signature::from_sig(&pattern.signature)
-        == Signature::from_name(pattern_registry, "close_paren", &None);
+        == Signature::from_name(pattern_registry, "close_paren", &None).unwrap();
 
     if state.consider_next {
         push_pattern(name, value, state, pattern_registry, true);
@@ -269,7 +269,7 @@ pub fn push_pattern(
     considered: bool,
 ) {
     push_iota(
-        Iota::Pattern(PatternIota::from_name(pattern_registry, &pattern, value)),
+        Iota::Pattern(PatternIota::from_name(pattern_registry, &pattern, value).unwrap()),
         state,
         considered,
     )

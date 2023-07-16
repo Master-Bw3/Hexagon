@@ -18,7 +18,9 @@ pub fn escape<'a>(
 ) -> Result<&'a mut State, Mishap> {
     match value {
         Some(ActionValue::Iota(iota)) => state.stack.push(iota.clone()),
-        Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(val.clone(), "Iota".to_string()))?,
+        Some(ActionValue::Bookkeeper(val)) => {
+            Err(Mishap::InvalidValue(val.clone(), "Iota".to_string()))?
+        }
         None => {
             state.consider_next = true;
         }
@@ -35,7 +37,9 @@ pub fn introspect<'a>(
         Some(buffer) => {
             let mut new_buffer = buffer.clone();
             new_buffer.push((
-                Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None)),
+                Iota::Pattern(
+                    PatternIota::from_name(pattern_registry, "open_paren", None).unwrap(),
+                ),
                 false,
             ));
             new_buffer
@@ -54,12 +58,10 @@ pub fn retrospect<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let inner_buffer = state.buffer.as_ref().ok_or(Mishap::HastyRetrospection)?;
 
-    let intro_pattern = Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None));
-    let retro_pattern = Iota::Pattern(PatternIota::from_name(
-        pattern_registry,
-        "close_paren",
-        None,
-    ));
+    let intro_pattern =
+        Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None).unwrap());
+    let retro_pattern =
+        Iota::Pattern(PatternIota::from_name(pattern_registry, "close_paren", None).unwrap());
 
     let intro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
         if x.0 == intro_pattern && !x.1 {

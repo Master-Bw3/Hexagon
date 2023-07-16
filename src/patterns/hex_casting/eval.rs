@@ -41,7 +41,7 @@ fn eval_list(
     for (index, iota) in list.iter().enumerate() {
         match iota {
             Iota::Pattern(pattern) => {
-                if pattern.signature == Signature::from_name(pattern_registry, "halt", &None) {
+                if pattern.signature == Signature::from_name(pattern_registry, "halt", &None).unwrap() {
                     halted = true;
                     break;
                 }

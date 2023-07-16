@@ -3,6 +3,7 @@ use std::{collections::HashMap, ops::Not};
 
 use nalgebra::{DMatrix, Dyn, Matrix};
 
+use crate::interpreter::mishap::Mishap;
 use crate::{
     interpreter::state::{Entity, EntityType},
     parser::ActionValue,
@@ -198,11 +199,11 @@ impl PatternIota {
         registry: &PatternRegistry,
         name: &str,
         value: Option<ActionValue>,
-    ) -> PatternIota {
-        PatternIota {
-            signature: Signature::from_name(registry, name, &value),
+    ) -> Result<PatternIota, Mishap> {
+        Ok(PatternIota {
+            signature: Signature::from_name(registry, name, &value).ok_or(Mishap::InvalidPattern)?,
             value: Box::new(value),
-        }
+        })
     }
 
     pub fn from_sig(name: &str, value: Option<ActionValue>) -> PatternIota {
@@ -243,7 +244,7 @@ pub trait SignatureExt {
         registry: &PatternRegistry,
         string: &str,
         value: &Option<ActionValue>,
-    ) -> Signature;
+    ) -> Option<Signature>;
     fn as_str(&self) -> String;
 }
 
@@ -267,8 +268,10 @@ impl SignatureExt for Signature {
         registry: &PatternRegistry,
         string: &str,
         value: &Option<ActionValue>,
-    ) -> Signature {
-        Signature::from_sig(&registry.find(string, value).expect(string).signature)
+    ) -> Option<Signature> {
+        Some(Signature::from_sig(
+            &registry.find(string, value)?.signature,
+        ))
     }
 
     fn as_str(&self) -> String {

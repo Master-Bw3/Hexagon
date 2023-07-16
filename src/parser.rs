@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    interpreter::state::{Holding, Entity, EntityType},
+    interpreter::state::{Entity, EntityType, Holding},
     iota::{EntityIota, GarbageIota, Iota, NullIota, PatternIota},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -250,18 +250,17 @@ pub fn parse_iota(
         Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
         Rule::Pattern => match inner_pair.clone().into_inner().next() {
             Some(inner_inner_pair) => match inner_inner_pair.as_str() {
-                "{" => Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None)),
-                "}" => Iota::Pattern(PatternIota::from_name(
-                    pattern_registry,
-                    "close_paren",
-                    None,
-                )),
+                "{" => Iota::Pattern(
+                    PatternIota::from_name(pattern_registry, "open_paren", None).unwrap(),
+                ),
+                "}" => Iota::Pattern(
+                    PatternIota::from_name(pattern_registry, "close_paren", None).unwrap(),
+                ),
                 _ => match inner_inner_pair.as_rule() {
-                    Rule::ActionName => Iota::Pattern(PatternIota::from_name(
-                        pattern_registry,
-                        inner_pair.as_str(),
-                        None,
-                    )),
+                    Rule::ActionName => Iota::Pattern(
+                        PatternIota::from_name(pattern_registry, inner_pair.as_str(), None)
+                            .unwrap(),
+                    ),
                     Rule::PatternName => Iota::Pattern(PatternIota::from_sig(
                         inner_inner_pair.into_inner().last().unwrap().as_str(),
                         None,
@@ -305,7 +304,6 @@ pub fn parse_iota(
         _ => unreachable!(),
     }
 }
-
 
 fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
     pair.as_str().to_string()
@@ -385,7 +383,7 @@ mod tests {
             Consideration: Huginn's Gambit
             ",
             &PatternRegistry::gen_default_great_sigs(),
-            &mut HashMap::new()
+            &mut HashMap::new(),
         )
         .unwrap();
     }

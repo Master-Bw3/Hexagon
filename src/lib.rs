@@ -1,3 +1,4 @@
+use compiler::compile_to_iotas;
 use interpreter::mishap::Mishap;
 use iota::Iota;
 use owo_colors::{colors::Red, OwoColorize};
@@ -42,6 +43,7 @@ impl Args {
     fn get_cmd(cmd: &str) -> Command {
         match cmd {
             "run" => Command::Run,
+            "build" => Command::Build,
             _ => panic!("invalid command"),
         }
     }
@@ -82,8 +84,14 @@ pub fn run() {
                 print_interpreter_error(err, &source, &args.source_path);
             }
         };
-    } else {
-        todo!("build")
+    } else if let Command::Build = args.command {
+        let compile_result = compile_to_iotas(parse_result, &config.as_ref());
+        match compile_result {
+            Ok(result) => println!("\n result: {:?}", result),
+            Err(err) => {
+                print_interpreter_error(err, &source, &args.source_path);
+            }
+        };
     }
 }
 

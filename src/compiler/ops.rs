@@ -12,11 +12,9 @@ pub fn compile_op_copy(
     pattern_registry: &PatternRegistry,
     arg: &Option<OpValue>,
 ) -> Result<Vec<Iota>, Mishap> {
-    let mut compiled = vec![Iota::Pattern(PatternIota::from_name(
-        pattern_registry,
-        "duplicate",
-        None,
-    ))];
+    let mut compiled = vec![Iota::Pattern(
+        PatternIota::from_name(pattern_registry, "duplicate", None).unwrap(),
+    )];
 
     compiled.append(&mut compile_op_store(heap, pattern_registry, arg)?);
 
@@ -40,15 +38,18 @@ pub fn compile_op_store(
     let compiled = match index {
         Some(index) => {
             vec![
-                Iota::Pattern(PatternIota::from_name(registry, "read/local", None)),
-                Iota::Pattern(PatternIota::from_name(
-                    registry,
-                    "number",
-                    Some(ActionValue::Iota(Iota::Number(*index as f32))),
-                )),
-                Iota::Pattern(PatternIota::from_name(registry, "rotate", None)),
-                Iota::Pattern(PatternIota::from_name(registry, "modify_in_place", None)),
-                Iota::Pattern(PatternIota::from_name(registry, "write/local", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "read/local", None).unwrap()),
+                Iota::Pattern(
+                    PatternIota::from_name(
+                        registry,
+                        "number",
+                        Some(ActionValue::Iota(Iota::Number(*index as f32))),
+                    )
+                    .unwrap(),
+                ),
+                Iota::Pattern(PatternIota::from_name(registry, "rotate", None).unwrap()),
+                Iota::Pattern(PatternIota::from_name(registry, "modify_in_place", None).unwrap()),
+                Iota::Pattern(PatternIota::from_name(registry, "write/local", None).unwrap()),
             ]
         }
         None => {
@@ -56,10 +57,10 @@ pub fn compile_op_store(
             heap.insert(var.clone(), new_index);
 
             vec![
-                Iota::Pattern(PatternIota::from_name(registry, "read/local", None)),
-                Iota::Pattern(PatternIota::from_name(registry, "swap", None)),
-                Iota::Pattern(PatternIota::from_name(registry, "append", None)),
-                Iota::Pattern(PatternIota::from_name(registry, "write/local", None)),
+                Iota::Pattern(PatternIota::from_name(registry, "read/local", None).unwrap()),
+                Iota::Pattern(PatternIota::from_name(registry, "swap", None).unwrap()),
+                Iota::Pattern(PatternIota::from_name(registry, "append", None).unwrap()),
+                Iota::Pattern(PatternIota::from_name(registry, "write/local", None).unwrap()),
             ]
         }
     };
@@ -77,17 +78,22 @@ pub fn compile_op_push(
     let index = {
         match value {
             OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
-            OpValue::Var(var) => heap.get(var).ok_or(Mishap::VariableNotAssigned(var.clone()))?,
+            OpValue::Var(var) => heap
+                .get(var)
+                .ok_or(Mishap::VariableNotAssigned(var.clone()))?,
         }
     };
     let compiled = vec![
-        Iota::Pattern(PatternIota::from_name(registry, "read/local", None)),
-        Iota::Pattern(PatternIota::from_name(
-            registry,
-            "number",
-            Some(ActionValue::Iota(Iota::Number(*index as f32))),
-        )),
-        Iota::Pattern(PatternIota::from_name(registry, "index", None)),
+        Iota::Pattern(PatternIota::from_name(registry, "read/local", None).unwrap()),
+        Iota::Pattern(
+            PatternIota::from_name(
+                registry,
+                "number",
+                Some(ActionValue::Iota(Iota::Number(*index as f32))),
+            )
+            .unwrap(),
+        ),
+        Iota::Pattern(PatternIota::from_name(registry, "index", None).unwrap()),
     ];
 
     Ok(compiled)
@@ -109,8 +115,10 @@ pub fn compile_op_embed(
         }
     };
 
-    let intro_pattern = Iota::Pattern(PatternIota::from_name(registry, "open_paren", None));
-    let retro_pattern = Iota::Pattern(PatternIota::from_name(registry, "close_paren", None));
+    let intro_pattern =
+        Iota::Pattern(PatternIota::from_name(registry, "open_paren", None).unwrap());
+    let retro_pattern =
+        Iota::Pattern(PatternIota::from_name(registry, "close_paren", None).unwrap());
 
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {
@@ -153,18 +161,19 @@ pub fn compile_op_embed(
     let compiled = match embed_type {
         EmbedType::Normal => vec![iota],
         EmbedType::Consider => {
-            let mut result = vec![
-                Iota::Pattern(PatternIota::from_name(registry, "escape", None,));
-                i32::pow(2, depth) as usize
-            ];
+            let mut result =
+                vec![
+                    Iota::Pattern(PatternIota::from_name(registry, "escape", None).unwrap());
+                    i32::pow(2, depth) as usize
+                ];
             result.push(iota);
             result
         }
         EmbedType::IntroRetro => vec![
-            Iota::Pattern(PatternIota::from_name(registry, "open_paren", None)),
+            Iota::Pattern(PatternIota::from_name(registry, "open_paren", None).unwrap()),
             iota,
-            Iota::Pattern(PatternIota::from_name(registry, "close_paren", None)),
-            Iota::Pattern(PatternIota::from_name(registry, "splat", None)),
+            Iota::Pattern(PatternIota::from_name(registry, "close_paren", None).unwrap()),
+            Iota::Pattern(PatternIota::from_name(registry, "splat", None).unwrap()),
         ],
         EmbedType::Smart => unreachable!(),
     };
