@@ -121,13 +121,13 @@ if {<\True>} then {
 Hermes' Gambit //evaluates the 'then' branch
 ```
 
-# Config
+## Config
 By default, Hexagon looks for a `config.toml` file in the current directory. A different file can also be specified.
 ```
 Hexagon run example.hexcasting example.toml
 ```
 
-## Config Syntax 
+### Config Syntax 
 ```
 //register an akashic library
 [[libraries]]
