@@ -20,6 +20,7 @@ pub enum Iota {
     Null(NullIota),
     Entity(EntityIota),
     List(ListIota),
+    Continuation(ListIota),
     //MoreIotas
     Matrix(MatrixIota),
 }
@@ -93,6 +94,7 @@ impl Iota {
             Iota::Entity(_) => "Entity",
             Iota::List(_) => "List",
             Iota::Matrix(_) => "Matrix",
+            Iota::Continuation(_) => "Continuation",
         }
     }
 
@@ -107,6 +109,7 @@ impl Iota {
             Iota::Entity(name) => name.display(),
             Iota::List(list) => list.display(),
             Iota::Matrix(matrix) => matrix.display(),
+            Iota::Continuation(list) => format!("Continuation: {}", list.display()),
         }
     }
 }

@@ -22,6 +22,7 @@ pub struct State {
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub halt: bool,
+    pub continuation: Vec<Iota>
 }
 
 pub type Library = HashMap<Signature, Iota>;
