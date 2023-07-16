@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use crate::iota::{
+use crate::{iota::{
     BoolIota, EntityIota, GarbageIota, Iota, ListIota, MatrixIota, NullIota, NumberIota,
     PatternIota, Signature, VectorIota,
-};
+}, pattern_registry::PatternRegistry};
 
 use super::mishap::Mishap;
 
@@ -385,23 +385,3 @@ impl EntityType {
         }
     }
 }
-
-// impl Entity {
-//     pub fn create(
-//         conf_entities: &HashMap<String, EntityIota>,
-//         name: String,
-//         entity_type: EntityType,
-//         holding: Holding,
-//     ) -> Entity {
-//         conf_entities
-//             .values()
-//             .filter(|entity| entity.name == name && entity.entity_type == entity_type)
-//             .next()
-//             .cloned()
-//             .unwrap_or(EntityIota {
-//                 name,
-//                 entity_type,
-//                 holding: Box::new(holding),
-//             })
-//     }
-// }

@@ -101,7 +101,7 @@ pub fn compile_op_push(
 
 pub fn compile_op_embed(
     registry: &PatternRegistry,
-    buffer: &Option<Vec<(Iota, bool)>>,
+    depth: u32,
     arg: &Option<OpValue>,
     embed_type: EmbedType,
 ) -> Result<Vec<Iota>, Mishap> {
@@ -114,37 +114,6 @@ pub fn compile_op_embed(
             Err(Mishap::OpExpectedIota)?
         }
     };
-
-    let intro_pattern =
-        Iota::Pattern(PatternIota::from_name(registry, "open_paren", None).unwrap());
-    let retro_pattern =
-        Iota::Pattern(PatternIota::from_name(registry, "close_paren", None).unwrap());
-
-    let intro_count: u32 = if let Some(inner_buffer) = buffer {
-        inner_buffer.iter().fold(0, |acc, x| {
-            if x.0 == intro_pattern && !x.1 {
-                acc + 1
-            } else {
-                acc
-            }
-        })
-    } else {
-        0
-    };
-
-    let retro_count: u32 = if let Some(inner_buffer) = buffer {
-        inner_buffer.iter().fold(0, |acc, x| {
-            if x.0 == retro_pattern && !x.1 {
-                acc + 1
-            } else {
-                acc
-            }
-        })
-    } else {
-        0
-    };
-
-    let depth = intro_count - retro_count;
 
     //handle smart embed
     let embed_type = match embed_type {

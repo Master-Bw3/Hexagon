@@ -18,7 +18,7 @@ use crate::{
 
 use self::{
     mishap::Mishap,
-    state::{Entity, EntityType, Holding, State},
+    state::{Considered, Entity, EntityType, Holding, State},
 };
 
 pub fn interpret(
@@ -193,16 +193,16 @@ pub fn interpret_op<'a>(
             crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Embed => {
-                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Normal)
+                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::Normal)
             }
             crate::parser::OpName::SmartEmbed => {
-                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Smart)
+                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::Smart)
             }
             crate::parser::OpName::ConsiderEmbed => {
-                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::Consider)
+                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::Consider)
             }
             crate::parser::OpName::IntroEmbed => {
-                compile_op_embed(pattern_registry, &state.buffer, &arg, EmbedType::IntroRetro)
+                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::IntroRetro)
             }
         }?;
         for iota in compiled {
@@ -280,4 +280,37 @@ pub fn push_iota(iota: Iota, state: &mut State, considered: bool) {
         Some(ref mut buffer) => buffer.push((iota, considered)),
         None => state.stack.push(iota),
     }
+}
+
+fn calc_buffer_depth(registry: &PatternRegistry, buffer: &Option<Vec<(Iota, Considered)>>) -> u32 {
+    let intro_pattern =
+        Iota::Pattern(PatternIota::from_name(registry, "open_paren", None).unwrap());
+    let retro_pattern =
+        Iota::Pattern(PatternIota::from_name(registry, "close_paren", None).unwrap());
+
+    let intro_count: u32 = if let Some(inner_buffer) = buffer {
+        inner_buffer.iter().fold(0, |acc, x| {
+            if x.0 == intro_pattern && !x.1 {
+                acc + 1
+            } else {
+                acc
+            }
+        })
+    } else {
+        0
+    };
+
+    let retro_count: u32 = if let Some(inner_buffer) = buffer {
+        inner_buffer.iter().fold(0, |acc, x| {
+            if x.0 == retro_pattern && !x.1 {
+                acc + 1
+            } else {
+                acc
+            }
+        })
+    } else {
+        0
+    };
+
+    intro_count - retro_count
 }
