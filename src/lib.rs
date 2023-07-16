@@ -79,7 +79,7 @@ pub fn run() {
         let interpreter_result = interpret(parse_result, &config.as_ref(), entities);
 
         match interpreter_result {
-            Ok(result) => println!("\n result: {} \n {:?}", Iota::List(result.stack).display(), result.buffer),
+            Ok(result) => println!("\nresult: {} \n {:?}", Iota::List(result.stack).display(), result.buffer),
             Err(err) => {
                 print_interpreter_error(err, &source, &args.source_path);
             }
@@ -87,7 +87,7 @@ pub fn run() {
     } else if let Command::Build = args.command {
         let compile_result = compile_to_iotas(parse_result, &config.as_ref());
         match compile_result {
-            Ok(result) => println!("\n result: {}", Iota::List(result).display()),
+            Ok(result) => println!("\nresult: {}", Iota::List(result).display()),
             Err(err) => {
                 print_interpreter_error(err, &source, &args.source_path);
             }
