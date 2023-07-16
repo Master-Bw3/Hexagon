@@ -216,13 +216,22 @@ impl PatternIota {
 
 impl Display for PatternIota {
     fn display(&self) -> String {
-        PatternRegistry::find(
+        let mut result = PatternRegistry::find(
             //todo: maybe make this not generate the entire registry each time
             &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
             &self.signature.as_str(),
             &None,
         )
-        .map_or(self.signature.as_str(), |pat| pat.display_name)
+        .map_or(self.signature.as_str(), |pat| pat.display_name);
+    
+        if let Some(value) = *self.value.clone() {
+            match value {
+                ActionValue::Iota(iota) => result = format!("{result}: {}", iota.display()),
+                ActionValue::Bookkeeper(code) => result = format!("{result}: {code}"),
+            }
+        }
+        result
+
     }
 }
 
