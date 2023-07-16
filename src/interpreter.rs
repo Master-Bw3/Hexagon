@@ -106,53 +106,7 @@ fn interpret_node<'a>(
             }
 
             if state.buffer.is_some() {
-                //push patterns to buffer
-                if let AstNode::Hex(nodes) = *condition {
-                    for node in nodes {
-                        interpret_node(node, state, pattern_registry)?;
-                    }
-                }
-                //push success hex to buffer
-                interpret_node(*succeed, state, pattern_registry)?;
-
-                //push fail hex to buffer (if there is one)
-                match fail {
-                    Some(fail_node) => match *fail_node {
-                        AstNode::Hex(_) => {
-                            interpret_node(*fail_node, state, pattern_registry)?;
-                        }
-                        AstNode::IfBlock {
-                            line: _,
-                            condition: _,
-                            succeed: _,
-                            fail: _,
-                        } => {
-                            interpret_action(
-                                "open_paren".to_string(),
-                                None,
-                                state,
-                                pattern_registry,
-                            )
-                            .map_err(|err| (err, (0, 0)))?;
-                            interpret_node(*fail_node, state, pattern_registry)?;
-                            interpret_action(
-                                "close_paren".to_string(),
-                                None,
-                                state,
-                                pattern_registry,
-                            )
-                            .map_err(|err| (err, (0, 0)))?;
-                            interpret_action("eval".to_string(), None, state, pattern_registry)
-                                .map_err(|err| (err, (0, 0)))?;
-                        }
-                        _ => unreachable!(),
-                    },
-                    None => {
-                        interpret_node(AstNode::Hex(vec![]), state, pattern_registry)?;
-                    }
-                }
-                //push augur's to buffer
-                push_pattern("if".to_string(), None, state, pattern_registry, false);
+                
             } else {
                 if let AstNode::Hex(nodes) = *condition {
                     for node in nodes {

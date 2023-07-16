@@ -316,7 +316,7 @@ fn parse_string(pair: Pair<'_, Rule>) -> String {
         .to_string()
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AstNode {
     File(Vec<AstNode>),
     Action {
@@ -338,7 +338,7 @@ pub enum AstNode {
     },
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum OpName {
     Store,
     Copy,
@@ -349,7 +349,7 @@ pub enum OpName {
     IntroEmbed,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum OpValue {
     Iota(Iota),
     Var(String),

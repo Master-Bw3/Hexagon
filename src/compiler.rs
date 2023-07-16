@@ -11,7 +11,7 @@ use crate::{
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-use self::ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store};
+use self::{ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store}, if_block::compile_if_block};
 
 pub mod if_block;
 pub mod ops;
@@ -71,7 +71,7 @@ fn compile_node(
             condition,
             succeed,
             fail,
-        } => todo!(),
+        } => compile_if_block(line, condition, succeed, fail, depth, heap, pattern_registry),
     }
 }
 
