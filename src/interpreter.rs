@@ -74,7 +74,16 @@ fn interpret_node<'a>(
         AstNode::File(mut nodes) => {
             while nodes.len() > 0 {
                 interpret_node(nodes[0].clone(), state, pattern_registry)?;
+                println!("aaa {:?}", nodes[0]);
+
                 nodes.remove(0);
+
+                //prepend continuation to nodes
+                state.continuation.append(&mut nodes);
+                nodes = state.continuation.clone();
+                state.continuation = vec![];
+
+
                 if state.halt {
                     break;
                 }
@@ -83,12 +92,6 @@ fn interpret_node<'a>(
         }
 
         AstNode::Action { name, value, line } => {
-            if let Some(name) = pattern_registry.find(&name, &None) {
-                if name.internal_name == "eval" {
-                    println!("owo")
-                };
-            };
-
             interpret_action(name, value, state, pattern_registry).map_err(|err| (err, line))
         }
         AstNode::Hex(nodes) => {
@@ -287,7 +290,7 @@ fn calc_buffer_depth(registry: &PatternRegistry, buffer: &Option<Vec<(Iota, Cons
         })
     } else {
         0
-    };
+    } + 1;
 
     let retro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

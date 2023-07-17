@@ -5,6 +5,7 @@ use crate::{
         state::{Either, StackExt, State},
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
+    parser::{AstNode, OpName, OpValue},
     pattern_registry::PatternRegistry,
 };
 
@@ -17,16 +18,32 @@ pub fn eval<'a>(
     state.stack.remove_args(&arg_count);
 
     match arg {
-        Either::L(list) => {
-            eval_list(state, pattern_registry, &list)?;
-        }
-        Either::R(pattern) => {
-            eval_pattern(state, pattern_registry, &pattern).map_err(|err| {
-                Mishap::EvalMishap(vec![Iota::Pattern(pattern)], 0, Box::new(err))
-            })?;
-        }
-    };
+        Either::L(list) => state.continuation.append({
+            println!("eval {:?}", Iota::List(list.clone()).display());
 
+            &mut list
+                .iter()
+                .enumerate()
+                .map(|(index, iota)| match iota {
+                    Iota::Pattern(pattern) => AstNode::Action {
+                        line: (index, 0),
+                        name: pattern.signature.as_str(),
+                        value: *pattern.value.clone(),
+                    },
+                    _ => AstNode::Op {
+                        line: (index, 0),
+                        name: OpName::Embed,
+                        arg: Some(OpValue::Iota(iota.clone())),
+                    },
+                })
+                .collect()
+        }),
+        Either::R(pattern) => state.continuation.push(AstNode::Action {
+            line: (0, 0),
+            name: pattern.signature.as_str(),
+            value: *pattern.value,
+        }),
+    };
     Ok(state)
 }
 
@@ -41,7 +58,9 @@ fn eval_list(
     for (index, iota) in list.iter().enumerate() {
         match iota {
             Iota::Pattern(pattern) => {
-                if pattern.signature == Signature::from_name(pattern_registry, "halt", &None).unwrap() {
+                if pattern.signature
+                    == Signature::from_name(pattern_registry, "halt", &None).unwrap()
+                {
                     halted = true;
                     break;
                 }

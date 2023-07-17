@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{iota::{
     BoolIota, EntityIota, GarbageIota, Iota, ListIota, MatrixIota, NullIota, NumberIota,
     PatternIota, Signature, VectorIota,
-}, pattern_registry::PatternRegistry};
+}, pattern_registry::PatternRegistry, parser::AstNode};
 
 use super::mishap::Mishap;
 
@@ -22,7 +22,7 @@ pub struct State {
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub halt: bool,
-    pub continuation: Vec<Iota>
+    pub continuation: Vec<AstNode>
 }
 
 pub type Library = HashMap<Signature, Iota>;
