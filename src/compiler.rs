@@ -5,13 +5,16 @@ use crate::{
         mishap::{self, Mishap},
         ops::EmbedType,
     },
-    iota::{Iota, PatternIota},
+    iota::{Iota, PatternIota, SignatureExt},
     parse_config::Config,
     parser::{AstNode, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-use self::{ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store}, if_block::compile_if_block};
+use self::{
+    if_block::compile_if_block,
+    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+};
 
 pub mod if_block;
 pub mod ops;
@@ -34,7 +37,7 @@ pub fn compile_to_iotas(
 fn compile_node(
     node: &AstNode,
     heap: &mut HashMap<String, i32>,
-    depth:  u32,
+    depth: u32,
     pattern_registry: &PatternRegistry,
 ) -> Result<Vec<Iota>, (Mishap, (usize, usize))> {
     match node {
@@ -46,10 +49,20 @@ fn compile_node(
             Ok(result)
         }
 
-        AstNode::Action { line, name, value } => Ok(vec![Iota::Pattern(
-            PatternIota::from_name(pattern_registry, &name, value.clone())
-                .map_err(|mishap| (mishap, *line))?,
-        )]),
+        AstNode::Action { line, name, value } => Ok(vec![Iota::Pattern({
+            let pattern = pattern_registry
+                .find(&name, &value)
+                .ok_or((Mishap::InvalidPattern, *line))?;
+
+            //remove output values used by the interpreter
+            let new_value = if pattern.internal_name == "number" || pattern.internal_name == "mask"
+            {
+                value.clone()
+            } else {
+                None
+            };
+            PatternIota::from_sig(&pattern.signature, new_value)
+        })]),
 
         AstNode::Hex(hex) => compile_hex_node(hex, heap, depth, pattern_registry),
 
@@ -59,7 +72,9 @@ fn compile_node(
             OpName::Push => compile_op_push(heap, pattern_registry, arg),
             OpName::Embed => compile_op_embed(pattern_registry, depth, arg, EmbedType::Normal),
             OpName::SmartEmbed => compile_op_embed(pattern_registry, depth, arg, EmbedType::Smart),
-            OpName::IntroEmbed => compile_op_embed(pattern_registry, depth, arg, EmbedType::IntroRetro),
+            OpName::IntroEmbed => {
+                compile_op_embed(pattern_registry, depth, arg, EmbedType::IntroRetro)
+            }
             OpName::ConsiderEmbed => {
                 compile_op_embed(pattern_registry, depth, arg, EmbedType::Consider)
             }
@@ -71,7 +86,15 @@ fn compile_node(
             condition,
             succeed,
             fail,
-        } => compile_if_block(line, condition, succeed, fail, depth, heap, pattern_registry),
+        } => compile_if_block(
+            line,
+            condition,
+            succeed,
+            fail,
+            depth,
+            heap,
+            pattern_registry,
+        ),
     }
 }
 
