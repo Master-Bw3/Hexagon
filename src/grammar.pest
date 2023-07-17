@@ -1,6 +1,6 @@
 File = _{ SOI ~ Hex ~ EOI }
 
-Hex = _{ ((EscapedIntroRetro | IfBlock | Embed | Op | Var | Action | Term ) ~ Newline? | Newline)* }
+Hex = _{ (( IfBlock | Embed | Op | Var | Action | Term ) ~ Newline? | Newline)* }
 
 IfBlock = {If ~ Then ~ (ElseIf ~ Then ~ Newline? )* ~ Else?}
 
@@ -55,8 +55,6 @@ PatternName = ${ PatternDirection ~ " " ~ PatternSignature}
 PatternDirection = @{("NORTHEAST" | "EAST" | "SOUTHEAST" | "SOUTHWEST" | "WEST" | "NORTHWEST")}
 
 PatternSignature = @{("q" | "a" | "w" | "e" | "d")+}
-
-EscapedIntroRetro = {"Consideration" ~ Newline? ~ IntroRetro}
 
 IntroRetro = { "{" | "}" }
 
