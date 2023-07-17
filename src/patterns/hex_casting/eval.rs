@@ -5,7 +5,7 @@ use crate::{
         state::{Either, Either3, StackExt, State},
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
-    parser::{AstNode, OpName, OpValue},
+    parser::{AstNode, OpName, OpValue, Instruction},
     pattern_registry::PatternRegistry,
 };
 use owo_colors::OwoColorize;
@@ -22,6 +22,7 @@ pub fn eval<'a>(
 
     match arg {
         Either3::L(list) => {
+            state.continuation.push(AstNode::Instruction(Instruction::MetaEvalEnd));
             state.continuation.append(
                 &mut list
                     .iter()
@@ -51,7 +52,7 @@ pub fn eval<'a>(
                 },
             );
         }
-        Either3::R(continuation) => state.continuation = continuation,
+        Either3::R(continuation) => state.continuation = dbg![continuation],
     };
 
     Ok(state)

@@ -21,7 +21,6 @@ pub struct State {
     pub buffer: Option<Vec<(Iota, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
-    pub halt: bool,
     pub continuation: Vec<AstNode>,
 }
 

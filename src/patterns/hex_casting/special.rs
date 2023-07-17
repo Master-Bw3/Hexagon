@@ -7,7 +7,7 @@ use crate::{
         state::{StackExt, State},
     },
     iota::{Iota, PatternIota},
-    parser::ActionValue,
+    parser::{ActionValue, AstNode, Instruction},
     pattern_registry::PatternRegistry,
 };
 
@@ -105,7 +105,8 @@ pub fn no_action<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mu
 }
 
 pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
-    state.halt = true;
+    let exit_pos = state.continuation.iter().position(|x| x == &AstNode::Instruction(Instruction::MetaEvalEnd)).unwrap_or(0);
+    state.continuation = state.continuation[..exit_pos].to_vec();
     Ok(state)
 }
 

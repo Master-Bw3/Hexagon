@@ -15,7 +15,7 @@ use crate::{
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
     parse_config::Config,
-    parser::{ActionValue, AstNode, OpName, OpValue},
+    parser::{ActionValue, AstNode, Instruction, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -76,14 +76,9 @@ fn interpret_node<'a>(
             state.continuation = nodes;
 
             while state.continuation.len() > 0 {
-
                 let node = state.continuation.pop().unwrap();
 
                 interpret_node(node, state, pattern_registry)?;
-
-                if state.halt {
-                    break;
-                }
             }
             Ok(state)
         }
@@ -149,6 +144,12 @@ fn interpret_node<'a>(
             }
             Ok(state)
         }
+        AstNode::Instruction(instruction) => match instruction {
+            Instruction::MetaEvalEnd => {
+                state.consider_next = false;
+                Ok(state)
+            }
+        },
     }
 }
 

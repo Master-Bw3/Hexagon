@@ -380,6 +380,12 @@ pub enum AstNode {
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
     },
+    Instruction(Instruction)
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Instruction {
+    MetaEvalEnd
 }
 
 #[derive(Debug, Clone, PartialEq)]
