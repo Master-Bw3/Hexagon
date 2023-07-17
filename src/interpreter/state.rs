@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{iota::{
     BoolIota, EntityIota, GarbageIota, Iota, ListIota, MatrixIota, NullIota, NumberIota,
-    PatternIota, Signature, VectorIota,
+    PatternIota, Signature, VectorIota, ContinuationIota,
 }, pattern_registry::PatternRegistry, parser::AstNode};
 
 use super::mishap::Mishap;
@@ -22,7 +22,7 @@ pub struct State {
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub halt: bool,
-    pub continuation: Vec<AstNode>
+    pub continuation: Vec<AstNode>,
 }
 
 pub type Library = HashMap<Signature, Iota>;
@@ -73,11 +73,11 @@ pub trait StackExt {
         arg_count: usize,
     ) -> Result<Either<NumberIota, VectorIota>, Mishap>;
 
-    fn get_list_or_pattern(
+    fn get_list_or_pattern_or_continuation(
         &self,
         index: usize,
         arg_count: usize,
-    ) -> Result<Either<ListIota, PatternIota>, Mishap>;
+    ) ->Result<Either3<ListIota, PatternIota, ContinuationIota>, Mishap>;
 
     fn get_integer_or_list(
         &self,
@@ -274,15 +274,16 @@ impl StackExt for Stack {
         }
     }
 
-    fn get_list_or_pattern(
+    fn get_list_or_pattern_or_continuation(
         &self,
         index: usize,
         arg_count: usize,
-    ) -> Result<Either<ListIota, PatternIota>, Mishap> {
+    ) -> Result<Either3<ListIota, PatternIota, ContinuationIota>, Mishap> {
         let iota = self.get_iota(index, arg_count)?;
         match iota {
-            Iota::List(x) => Ok(Either::L(x.clone())),
-            Iota::Pattern(x) => Ok(Either::R(x.clone())),
+            Iota::List(x) => Ok(Either3::L(x.clone())),
+            Iota::Pattern(x) => Ok(Either3::M(x.clone())),
+            Iota::Continuation(x) => Ok(Either3::R(x.clone())),
 
             _ => Err(Mishap::IncorrectIota(
                 index,

@@ -1,9 +1,11 @@
 use std::fmt::Debug;
+use std::mem;
 use std::{collections::HashMap, ops::Not};
 
 use nalgebra::{DMatrix, Dyn, Matrix};
 
 use crate::interpreter::mishap::Mishap;
+use crate::parser::AstNode;
 use crate::{
     interpreter::state::{Entity, EntityType},
     parser::ActionValue,
@@ -21,7 +23,7 @@ pub enum Iota {
     Null(NullIota),
     Entity(EntityIota),
     List(ListIota),
-    Continuation(ListIota),
+    Continuation(ContinuationIota),
     //MoreIotas
     Matrix(MatrixIota),
 }
@@ -110,7 +112,7 @@ impl Iota {
             Iota::Entity(name) => name.display(),
             Iota::List(list) => list.display(),
             Iota::Matrix(matrix) => matrix.display(),
-            Iota::Continuation(list) => format!("Continuation: {}", list.display()),
+            Iota::Continuation(_) => format!("Continuation"),
         }
     }
 }
@@ -201,7 +203,8 @@ impl PatternIota {
         value: Option<ActionValue>,
     ) -> Result<PatternIota, Mishap> {
         Ok(PatternIota {
-            signature: Signature::from_name(registry, name, &value).ok_or(Mishap::InvalidPattern)?,
+            signature: Signature::from_name(registry, name, &value)
+                .ok_or(Mishap::InvalidPattern)?,
             value: Box::new(value),
         })
     }
@@ -223,7 +226,7 @@ impl Display for PatternIota {
             &self.value,
         )
         .map_or(self.signature.as_str(), |pat| pat.display_name);
-    
+
         if let Some(value) = *self.value.clone() {
             match value {
                 ActionValue::Iota(iota) => result = format!("{result}: {}", iota.display()),
@@ -231,7 +234,6 @@ impl Display for PatternIota {
             }
         }
         result
-
     }
 }
 
@@ -296,6 +298,8 @@ impl SignatureExt for Signature {
             .collect()
     }
 }
+
+pub type ContinuationIota = Vec<AstNode>;
 
 pub type MatrixIota = Matrix<NumberIota, Dyn, Dyn, nalgebra::VecStorage<NumberIota, Dyn, Dyn>>;
 

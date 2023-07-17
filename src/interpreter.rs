@@ -13,7 +13,7 @@ use crate::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
     },
-    iota::{EntityIota, Iota, PatternIota, Signature, SignatureExt},
+    iota::{ContinuationIota, EntityIota, Iota, PatternIota, Signature, SignatureExt},
     parse_config::Config,
     parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -73,16 +73,14 @@ fn interpret_node<'a>(
     match node {
         AstNode::File(mut nodes) => {
             while nodes.len() > 0 {
-                interpret_node(nodes[0].clone(), state, pattern_registry)?;
-                println!("aaa {:?}", nodes[0]);
 
+                let node = nodes[0].clone();
                 nodes.remove(0);
+                state.continuation = nodes.clone();
 
-                //prepend continuation to nodes
-                state.continuation.append(&mut nodes);
+                interpret_node(node.clone(), state, pattern_registry)?;
+                
                 nodes = state.continuation.clone();
-                state.continuation = vec![];
-
 
                 if state.halt {
                     break;

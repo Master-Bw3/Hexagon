@@ -33,7 +33,6 @@ pub fn introspect<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    println!("hii");
     let new_buffer = match &state.buffer {
         Some(buffer) => {
             let mut new_buffer = buffer.clone();
@@ -56,7 +55,6 @@ pub fn retrospect<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    println!("hii");
 
     let inner_buffer = state.buffer.as_ref().ok_or(Mishap::HastyRetrospection)?;
 

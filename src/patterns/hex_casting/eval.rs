@@ -2,31 +2,32 @@ use crate::{
     interpreter::{
         self,
         mishap::Mishap,
-        state::{Either, StackExt, State},
+        state::{Either, Either3, StackExt, State},
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
     parser::{AstNode, OpName, OpValue},
     pattern_registry::PatternRegistry,
 };
+use owo_colors::OwoColorize;
 
 pub fn eval<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let arg = state.stack.get_list_or_pattern(0, arg_count)?;
+    let arg = state
+        .stack
+        .get_list_or_pattern_or_continuation(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     match arg {
-        Either::L(list) => state.continuation.append({
-            println!("eval {:?}", Iota::List(list.clone()).display());
-
-            &mut list
+        Either3::L(list) => {
+            let mut new: Vec<_> = list
                 .iter()
                 .enumerate()
                 .map(|(index, iota)| match iota {
                     Iota::Pattern(pattern) => AstNode::Action {
-                        line: (index, 0),
+                        line: (index + 1, 0),
                         name: pattern.signature.as_str(),
                         value: *pattern.value.clone(),
                     },
@@ -36,14 +37,34 @@ pub fn eval<'a>(
                         arg: Some(OpValue::Iota(iota.clone())),
                     },
                 })
-                .collect()
-        }),
-        Either::R(pattern) => state.continuation.push(AstNode::Action {
-            line: (0, 0),
-            name: pattern.signature.as_str(),
-            value: *pattern.value,
-        }),
+                .collect();
+            new.append(&mut state.continuation);
+            state.continuation = new;
+        }
+        Either3::M(pattern) => {
+            state.continuation.insert(
+                0,
+                AstNode::Action {
+                    line: (1, 0),
+                    name: pattern.signature.as_str(),
+                    value: *pattern.value,
+                },
+            );
+        }
+        Either3::R(continuation) => state.continuation = continuation,
     };
+
+    Ok(state)
+}
+
+pub fn eval_cc<'a>(
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let continuation_iota = Iota::Continuation(state.continuation.clone());
+    eval(state, pattern_registry)?;
+    state.stack.push(continuation_iota);
+    
     Ok(state)
 }
 
