@@ -55,6 +55,7 @@ fn compile_node(
                 .ok_or((Mishap::InvalidPattern, *line))?;
 
             //remove output values used by the interpreter
+            //once signature generation exists for number, all values can be ignored
             let new_value = if pattern.internal_name == "number" || pattern.internal_name == "mask"
             {
                 value.clone()
