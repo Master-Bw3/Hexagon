@@ -5,7 +5,10 @@ pub mod state;
 use std::collections::HashMap;
 
 use crate::{
-    compiler::ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+    compiler::{
+        if_block::compile_if_block,
+        ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+    },
     interpreter::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
@@ -68,9 +71,10 @@ fn interpret_node<'a>(
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
 
     match node {
-        AstNode::File(nodes) => {
-            for node in nodes {
-                interpret_node(node, state, pattern_registry)?;
+        AstNode::File(mut nodes) => {
+            while nodes.len() > 0 {
+                interpret_node(nodes[0].clone(), state, pattern_registry)?;
+                nodes.remove(0);
                 if state.halt {
                     break;
                 }
@@ -79,6 +83,12 @@ fn interpret_node<'a>(
         }
 
         AstNode::Action { name, value, line } => {
+            if let Some(name) = pattern_registry.find(&name, &None) {
+                if name.internal_name == "eval" {
+                    println!("owo")
+                };
+            };
+
             interpret_action(name, value, state, pattern_registry).map_err(|err| (err, line))
         }
         AstNode::Hex(nodes) => {
@@ -105,8 +115,21 @@ fn interpret_node<'a>(
                 return Err((Mishap::OpCannotBeConsidered, line));
             }
 
-            if state.buffer.is_some() {
-                
+            if let Some(buffer) = &mut state.buffer {
+                buffer.append(
+                    &mut compile_if_block(
+                        &line,
+                        &condition,
+                        &succeed,
+                        &fail,
+                        calc_buffer_depth(pattern_registry, &Some(buffer.clone())),
+                        &mut state.heap,
+                        pattern_registry,
+                    )?
+                    .iter()
+                    .map(|x| (x.clone(), false))
+                    .collect(),
+                )
             } else {
                 if let AstNode::Hex(nodes) = *condition {
                     for node in nodes {
@@ -146,18 +169,30 @@ pub fn interpret_op<'a>(
             }
             crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
             crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Embed => {
-                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::Normal)
-            }
-            crate::parser::OpName::SmartEmbed => {
-                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::Smart)
-            }
-            crate::parser::OpName::ConsiderEmbed => {
-                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::Consider)
-            }
-            crate::parser::OpName::IntroEmbed => {
-                compile_op_embed(pattern_registry, calc_buffer_depth(pattern_registry, &state.buffer), &arg, EmbedType::IntroRetro)
-            }
+            crate::parser::OpName::Embed => compile_op_embed(
+                pattern_registry,
+                calc_buffer_depth(pattern_registry, &state.buffer),
+                &arg,
+                EmbedType::Normal,
+            ),
+            crate::parser::OpName::SmartEmbed => compile_op_embed(
+                pattern_registry,
+                calc_buffer_depth(pattern_registry, &state.buffer),
+                &arg,
+                EmbedType::Smart,
+            ),
+            crate::parser::OpName::ConsiderEmbed => compile_op_embed(
+                pattern_registry,
+                calc_buffer_depth(pattern_registry, &state.buffer),
+                &arg,
+                EmbedType::Consider,
+            ),
+            crate::parser::OpName::IntroEmbed => compile_op_embed(
+                pattern_registry,
+                calc_buffer_depth(pattern_registry, &state.buffer),
+                &arg,
+                EmbedType::IntroRetro,
+            ),
         }?;
         for iota in compiled {
             push_iota(iota, state, false)
@@ -186,7 +221,7 @@ pub fn interpret_op<'a>(
 pub fn interpret_action<'a>(
     name: String,
     value: Option<ActionValue>,
-    mut state: &'a mut State,
+    state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let pattern = pattern_registry
