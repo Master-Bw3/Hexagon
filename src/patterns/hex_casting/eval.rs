@@ -52,7 +52,7 @@ pub fn eval<'a>(
                 },
             );
         }
-        Either3::R(continuation) => state.continuation = dbg![continuation],
+        Either3::R(continuation) => state.continuation = continuation,
     };
 
     Ok(state)
