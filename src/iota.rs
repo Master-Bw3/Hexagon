@@ -220,7 +220,7 @@ impl Display for PatternIota {
             //todo: maybe make this not generate the entire registry each time
             &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
             &self.signature.as_str(),
-            &None,
+            &self.value,
         )
         .map_or(self.signature.as_str(), |pat| pat.display_name);
     
