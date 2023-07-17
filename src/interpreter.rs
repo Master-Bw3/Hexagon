@@ -13,7 +13,7 @@ use crate::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
     },
-    iota::{ContinuationIota, EntityIota, Iota, PatternIota, Signature, SignatureExt},
+    iota::{Iota, PatternIota, Signature, SignatureExt},
     parse_config::Config,
     parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -36,7 +36,7 @@ pub fn interpret(
     let great_sigs;
 
     if let Some(conf) = config {
-        state.entities = conf.entities.clone();
+        state.entities = entities.clone();
         state.libraries = conf.libraries.clone();
         great_sigs = conf.great_spell_sigs.clone();
     } else {
@@ -72,15 +72,14 @@ fn interpret_node<'a>(
 
     match node {
         AstNode::File(mut nodes) => {
-            while nodes.len() > 0 {
+            nodes.reverse();
+            state.continuation = nodes;
 
-                let node = nodes[0].clone();
-                nodes.remove(0);
-                state.continuation = nodes.clone();
+            while state.continuation.len() > 0 {
 
-                interpret_node(node.clone(), state, pattern_registry)?;
-                
-                nodes = state.continuation.clone();
+                let node = state.continuation.pop().unwrap();
+
+                interpret_node(node, state, pattern_registry)?;
 
                 if state.halt {
                     break;

@@ -68,6 +68,7 @@ pub fn run() {
         PatternRegistry::gen_default_great_sigs()
     };
 
+    //no idea if this actually does anything
     let mut entities = config
         .as_ref()
         .map(|conf| conf.entities.clone())

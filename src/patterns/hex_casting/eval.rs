@@ -22,28 +22,28 @@ pub fn eval<'a>(
 
     match arg {
         Either3::L(list) => {
-            let mut new: Vec<_> = list
-                .iter()
-                .enumerate()
-                .map(|(index, iota)| match iota {
-                    Iota::Pattern(pattern) => AstNode::Action {
-                        line: (index + 1, 0),
-                        name: pattern.signature.as_str(),
-                        value: *pattern.value.clone(),
-                    },
-                    _ => AstNode::Op {
-                        line: (index, 0),
-                        name: OpName::Embed,
-                        arg: Some(OpValue::Iota(iota.clone())),
-                    },
-                })
-                .collect();
-            new.append(&mut state.continuation);
-            state.continuation = new;
+            state.continuation.append(
+                &mut list
+                    .iter()
+                    .rev()
+                    .enumerate()
+                    .map(|(index, iota)| match iota {
+                        Iota::Pattern(pattern) => AstNode::Action {
+                            line: (index + 1, 0),
+                            name: pattern.signature.as_str(),
+                            value: *pattern.value.clone(),
+                        },
+                        _ => AstNode::Op {
+                            line: (index, 0),
+                            name: OpName::Embed,
+                            arg: Some(OpValue::Iota(iota.clone())),
+                        },
+                    })
+                    .collect(),
+            );
         }
         Either3::M(pattern) => {
-            state.continuation.insert(
-                0,
+            state.continuation.push(
                 AstNode::Action {
                     line: (1, 0),
                     name: pattern.signature.as_str(),
@@ -64,7 +64,7 @@ pub fn eval_cc<'a>(
     let continuation_iota = Iota::Continuation(state.continuation.clone());
     eval(state, pattern_registry)?;
     state.stack.push(continuation_iota);
-    
+
     Ok(state)
 }
 
