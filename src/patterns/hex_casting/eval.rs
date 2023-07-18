@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::{
     interpreter::{
         self,
-        continuation::{FrameEndEval, FrameEvaluate},
+        continuation::{iota_list_to_ast_node_list, FrameEndEval, FrameEvaluate, FrameForEach},
         mishap::Mishap,
         state::{Either, Either3, StackExt, State},
     },
@@ -27,23 +27,7 @@ pub fn eval<'a>(
         Either3::L(list) => {
             state.continuation.push(Rc::new(FrameEndEval {}));
             state.continuation.push(Rc::new(FrameEvaluate {
-                nodes: list
-                    .iter()
-                    .rev()
-                    .enumerate()
-                    .map(|(index, iota)| match iota {
-                        Iota::Pattern(pattern) => AstNode::Action {
-                            line: (index + 1, 0),
-                            name: pattern.signature.as_str(),
-                            value: *pattern.value.clone(),
-                        },
-                        _ => AstNode::Op {
-                            line: (index, 0),
-                            name: OpName::Embed,
-                            arg: Some(OpValue::Iota(iota.clone())),
-                        },
-                    })
-                    .collect(),
+                nodes: iota_list_to_ast_node_list(&list),
             }));
         }
         Either3::M(pattern) => {
@@ -122,33 +106,20 @@ fn eval_pattern(
     Ok(())
 }
 
-pub fn for_each<'a>(
-    state: &'a mut State,
-    pattern_registry: &PatternRegistry,
-) -> Result<&'a mut State, Mishap> {
+pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let pattern_list = state.stack.get_list(0, 2)?;
-    let iota_list = state.stack.get_list(1, 2)?;
+    let mut iota_list = state.stack.get_list(1, 2)?;
     state.stack.remove_args(&arg_count);
 
-    let mut result = vec![];
+    iota_list.reverse();
 
-    for iota in iota_list {
-        let mut temp_state = state.clone();
-        temp_state.stack.push(iota);
-
-        let halted = eval_list(&mut temp_state, pattern_registry, &pattern_list)?;
-
-        if halted {
-            break;
-        }
-
-        result.append(&mut temp_state.stack);
-        //update state
-        temp_state.stack = state.stack.clone();
-        *state = temp_state;
-    }
-    state.stack.push(Iota::List(result));
+    state.continuation.push(Rc::new(FrameForEach {
+        data: iota_list,
+        code: iota_list_to_ast_node_list(&pattern_list),
+        base_stack: None,
+        acc: vec![],
+    }));
 
     Ok(state)
 }
