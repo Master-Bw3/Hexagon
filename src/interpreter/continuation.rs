@@ -101,7 +101,6 @@ impl ContinuationFrame for FrameForEach {
         let stack_top = if !self.data.is_empty() {
             let mut new_data = self.data.clone();
             let top = new_data.pop().unwrap();
-            println!("{}", top.display());
 
             state.continuation.push(Rc::new(FrameForEach {
                 data: new_data,
