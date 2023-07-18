@@ -209,6 +209,7 @@ pub fn fisherman_copy<'a>(
     Ok(state)
 }
 
+#[cfg(test)]
 mod tests {
 
     use crate::pattern_registry::PatternRegistryExt;

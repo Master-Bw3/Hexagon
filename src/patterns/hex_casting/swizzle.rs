@@ -69,6 +69,7 @@ pub fn swizzle<'a>(
     Ok(state)
 }
 
+#[cfg(test)]
 mod tests {
 
     use crate::{pattern_registry::PatternRegistryExt, iota::Iota};
