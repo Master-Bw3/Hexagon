@@ -1,7 +1,10 @@
+use std::rc::Rc;
+
 use rand::{seq::SliceRandom, thread_rng};
 
 use crate::{
     interpreter::{
+        continuation::FrameEndEval,
         mishap::Mishap,
         push_pattern,
         state::{StackExt, State},
@@ -55,7 +58,6 @@ pub fn retrospect<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-
     let inner_buffer = state.buffer.as_ref().ok_or(Mishap::HastyRetrospection)?;
 
     let intro_pattern =
@@ -105,7 +107,11 @@ pub fn no_action<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mu
 }
 
 pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
-    let exit_pos = state.continuation.iter().position(|x| x == &AstNode::Instruction(Instruction::MetaEvalEnd)).unwrap_or(0);
+    let exit_pos = state
+        .continuation
+        .iter()
+        .position(|x| x.is_end_eval())
+        .unwrap_or(0);
     state.continuation = state.continuation[..exit_pos].to_vec();
     Ok(state)
 }

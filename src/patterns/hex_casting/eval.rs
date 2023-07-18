@@ -1,11 +1,14 @@
+use std::rc::Rc;
+
 use crate::{
     interpreter::{
         self,
+        continuation::{FrameEndEval, FrameEvaluate},
         mishap::Mishap,
         state::{Either, Either3, StackExt, State},
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
-    parser::{AstNode, OpName, OpValue, Instruction},
+    parser::{AstNode, Instruction, OpName, OpValue},
     pattern_registry::PatternRegistry,
 };
 use owo_colors::OwoColorize;
@@ -22,9 +25,9 @@ pub fn eval<'a>(
 
     match arg {
         Either3::L(list) => {
-            state.continuation.push(AstNode::Instruction(Instruction::MetaEvalEnd));
-            state.continuation.append(
-                &mut list
+            state.continuation.push(Rc::new(FrameEndEval {}));
+            state.continuation.push(Rc::new(FrameEvaluate {
+                nodes: list
                     .iter()
                     .rev()
                     .enumerate()
@@ -41,16 +44,16 @@ pub fn eval<'a>(
                         },
                     })
                     .collect(),
-            );
+            }));
         }
         Either3::M(pattern) => {
-            state.continuation.push(
-                AstNode::Action {
+            state.continuation.push(Rc::new(FrameEvaluate {
+                nodes: vec![AstNode::Action {
                     line: (1, 0),
                     name: pattern.signature.as_str(),
                     value: *pattern.value,
-                },
-            );
+                }],
+            }));
         }
         Either3::R(continuation) => state.continuation = continuation,
     };

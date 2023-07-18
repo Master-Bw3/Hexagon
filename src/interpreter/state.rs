@@ -1,15 +1,16 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 
 use crate::{iota::{
     BoolIota, EntityIota, GarbageIota, Iota, ListIota, MatrixIota, NullIota, NumberIota,
     PatternIota, Signature, VectorIota, ContinuationIota,
 }, pattern_registry::PatternRegistry, parser::AstNode};
 
-use super::mishap::Mishap;
+use super::{mishap::Mishap, continuation::ContinuationFrame};
 
 pub type Stack = Vec<Iota>;
 
 pub type Considered = bool;
+
 
 #[derive(Clone, Default)]
 pub struct State {
@@ -21,7 +22,7 @@ pub struct State {
     pub buffer: Option<Vec<(Iota, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
-    pub continuation: Vec<AstNode>,
+    pub continuation: Vec<Rc<dyn ContinuationFrame>>,
 }
 
 pub type Library = HashMap<Signature, Iota>;

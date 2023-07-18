@@ -1,8 +1,9 @@
+pub mod continuation;
 pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     compiler::{
@@ -20,6 +21,7 @@ use crate::{
 };
 
 use self::{
+    continuation::FrameEvaluate,
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -73,12 +75,17 @@ fn interpret_node<'a>(
     match node {
         AstNode::File(mut nodes) => {
             nodes.reverse();
-            state.continuation = nodes;
+            state
+                .continuation
+                .push(Rc::new(FrameEvaluate { nodes: nodes }));
+
 
             while state.continuation.len() > 0 {
-                let node = state.continuation.pop().unwrap();
+                let frame = state.continuation.pop().unwrap().clone();
 
-                interpret_node(node, state, pattern_registry)?;
+                frame.evaluate(state, pattern_registry)?;
+                // println!("{:?}", state.continuation);
+
             }
             Ok(state)
         }

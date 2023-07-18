@@ -1,9 +1,11 @@
 use std::fmt::Debug;
 use std::mem;
+use std::rc::Rc;
 use std::{collections::HashMap, ops::Not};
 
 use nalgebra::{DMatrix, Dyn, Matrix};
 
+use crate::interpreter::continuation::{ContinuationFrame, self, Continuation};
 use crate::interpreter::mishap::Mishap;
 use crate::parser::AstNode;
 use crate::{
@@ -12,7 +14,7 @@ use crate::{
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone)]
 pub enum Iota {
     //Hex Casting
     Number(NumberIota),
@@ -112,7 +114,30 @@ impl Iota {
             Iota::Entity(name) => name.display(),
             Iota::List(list) => list.display(),
             Iota::Matrix(matrix) => matrix.display(),
-            Iota::Continuation(_) => format!("Continuation"),
+            Iota::Continuation(continuation) => continuation.display(),
+        }
+    }
+}
+
+impl std::cmp::PartialEq for Iota {
+    fn eq(&self, other: &Self) -> bool {
+        self.check_equality(other)
+    }
+}
+
+impl std::fmt::Debug for Iota {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Number(arg0) => f.debug_tuple("Number").field(&arg0.display()).finish(),
+            Self::Vector(arg0) => f.debug_tuple("Vector").field(&arg0.display()).finish(),
+            Self::Pattern(arg0) => f.debug_tuple("Pattern").field(&arg0.display()).finish(),
+            Self::Bool(arg0) => f.debug_tuple("Bool").field(&arg0.display()).finish(),
+            Self::Garbage(arg0) => f.debug_tuple("Garbage").field(&arg0.display()).finish(),
+            Self::Null(arg0) => f.debug_tuple("Null").field(&arg0.display()).finish(),
+            Self::Entity(arg0) => f.debug_tuple("Entity").field(&arg0.display()).finish(),
+            Self::List(arg0) => f.debug_tuple("List").field(&arg0.display()).finish(),
+            Self::Continuation(arg0) => f.debug_tuple("Continuation").field(&arg0.display()).finish(),
+            Self::Matrix(arg0) => f.debug_tuple("Matrix").field(&arg0.display()).finish(),
         }
     }
 }
@@ -299,7 +324,13 @@ impl SignatureExt for Signature {
     }
 }
 
-pub type ContinuationIota = Vec<AstNode>;
+pub type ContinuationIota = Continuation;
+
+impl Display for ContinuationIota {
+    fn display(&self) -> String {
+        "Continuation".to_string()
+    }
+}
 
 pub type MatrixIota = Matrix<NumberIota, Dyn, Dyn, nalgebra::VecStorage<NumberIota, Dyn, Dyn>>;
 
