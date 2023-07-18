@@ -21,7 +21,7 @@ use crate::{
 };
 
 use self::{
-    continuation::FrameEvaluate,
+    continuation::{FrameEndEval, FrameEvaluate},
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
