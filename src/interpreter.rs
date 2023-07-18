@@ -74,18 +74,19 @@ fn interpret_node<'a>(
 
     match node {
         AstNode::File(mut nodes) => {
+            //initialize the vm
             nodes.reverse();
             state
                 .continuation
                 .push(Rc::new(FrameEvaluate { nodes: nodes }));
 
-
+            //loop through every frame until there aren't any more
             while state.continuation.len() > 0 {
+                //get top fram and remove it from the stack
                 let frame = state.continuation.pop().unwrap().clone();
 
+                //evaluate the top frame (mutates state)
                 frame.evaluate(state, pattern_registry)?;
-                // println!("{:?}", state.continuation);
-
             }
             Ok(state)
         }

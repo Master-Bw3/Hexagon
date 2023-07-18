@@ -36,13 +36,15 @@ impl ContinuationFrame for FrameEvaluate {
         let node = new_frame.nodes.pop();
 
         match node {
+            //if there are still nodes left in the frame:
             Some(n) => {
+                //push a new frame to the continuation containing the rest of this frame
                 state.continuation.push(Rc::new(new_frame));
 
                 interpret_node(n.clone(), state, pattern_registry)?;
                 Ok(())
             }
-
+            //else, don't push any new frames
             None => Ok(()),
         }
     }
