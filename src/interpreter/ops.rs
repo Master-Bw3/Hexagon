@@ -8,7 +8,7 @@ use super::{interpret_action, mishap::Mishap, push_iota, state::State};
 
 pub fn store<'a>(
     value: &'a Option<OpValue>,
-    mut state: &'a mut State,
+    state: &'a mut State,
     copy: bool,
 ) -> Result<(), Mishap> {
     let val = match value {

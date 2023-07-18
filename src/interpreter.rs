@@ -21,7 +21,7 @@ use crate::{
 };
 
 use self::{
-    continuation::{FrameEndEval, FrameEvaluate},
+    continuation::{FrameEvaluate},
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -78,10 +78,10 @@ fn interpret_node<'a>(
             nodes.reverse();
             state
                 .continuation
-                .push(Rc::new(FrameEvaluate { nodes: nodes }));
+                .push(Rc::new(FrameEvaluate { nodes }));
 
             //loop through every frame until there aren't any more
-            while state.continuation.len() > 0 {
+            while !state.continuation.is_empty() {
                 //get top fram and remove it from the stack
                 let frame = state.continuation.pop().unwrap().clone();
 

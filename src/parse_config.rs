@@ -4,7 +4,7 @@ use toml::{map::Map, Table, Value};
 
 use crate::{
     interpreter::state::{Holding, Library, Entity, EntityType},
-    iota::{EntityIota, Signature, SignatureExt},
+    iota::{Signature, SignatureExt},
     parser::{parse_iota, HexParser, Rule},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };

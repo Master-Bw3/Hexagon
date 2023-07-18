@@ -71,9 +71,11 @@ pub fn swizzle<'a>(
 
 mod tests {
 
-    use crate::{iota::Iota, pattern_registry::PatternRegistryExt};
+    use crate::{pattern_registry::PatternRegistryExt, iota::Iota};
 
     use super::*;
+
+    
 
     #[test]
     fn swizzle_test() {

@@ -1,10 +1,10 @@
 use compiler::compile_to_iotas;
 use interpreter::mishap::Mishap;
 use iota::Iota;
-use owo_colors::{colors::Red, OwoColorize};
-use std::{collections::HashMap, env, fmt::format, fs};
+use owo_colors::OwoColorize;
+use std::{collections::HashMap, env, fs};
 
-use crate::{interpreter::interpret, patterns::Pattern};
+use crate::interpreter::interpret;
 mod compiler;
 mod interpreter;
 mod iota;
@@ -80,7 +80,11 @@ pub fn run() {
         let interpreter_result = interpret(parse_result, &config.as_ref(), entities);
 
         match interpreter_result {
-            Ok(result) => println!("\nresult: {} \n {:?}", Iota::List(result.stack).display(), result.buffer),
+            Ok(result) => println!(
+                "\nresult: {} \n {:?}",
+                Iota::List(result.stack).display(),
+                result.buffer
+            ),
             Err(err) => {
                 print_interpreter_error(err, &source, &args.source_path);
             }
@@ -109,7 +113,7 @@ fn print_interpreter_error(
     print_err_msg(&err, &padding, &location);
     eprintln!(" {padding} {}", "|".magenta().bold());
     match err {
-        Mishap::EvalMishap(ref stack, index, _) => print_eval_mishap_content(stack, index, pad_len),
+        Mishap::EvalError(ref stack, index, _) => print_eval_mishap_content(stack, index, pad_len),
         _ => print_mishap_content(line, line_content, &padding),
     }
     print_mishap_hint(&err, &padding);
@@ -126,11 +130,8 @@ fn print_err_msg(err: &Mishap, padding: &String, location: &String) {
 fn print_mishap_hint(err: &Mishap, padding: &String) {
     let hint_label = "Hint:".yellow().bold().to_string();
 
-    match err.error_hint() {
-        Some(hint) => {
-            eprintln!(" {padding} {} {hint_label} {hint}", "+".magenta().bold(),);
-        }
-        None => (),
+    if let Some(hint) = err.error_hint() {
+        eprintln!(" {padding} {} {hint_label} {hint}", "+".magenta().bold(),);
     }
 }
 
@@ -142,10 +143,10 @@ fn print_mishap_content(line: usize, line_content: &str, padding: &String) {
     );
     eprintln!(" {padding} {}", "|".magenta().bold());
 }
-fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize, pad_len: usize) {
+fn print_eval_mishap_content(pat_list: &[Iota], err_index: usize, pad_len: usize) {
     let err_pad_len = err_index.to_string().len();
     let padding = vec![" "; pad_len].concat();
-    let extra_padding = vec![" "; (pad_len - err_pad_len)].concat();
+    let extra_padding = vec![" "; pad_len - err_pad_len].concat();
 
     let context_pre: Vec<_> = if pat_list[..err_index].len() >= 3 {
         pat_list[(err_index - 3)..err_index].to_vec()
@@ -157,7 +158,7 @@ fn print_eval_mishap_content(pat_list: &Vec<Iota>, err_index: usize, pad_len: us
     .collect();
 
     let context_post: Vec<_> = if pat_list[err_index..].len() > 3 {
-        pat_list[((err_index + 1)..=err_index + 3)].to_vec()
+        pat_list[(err_index + 1)..=err_index + 3].to_vec()
     } else {
         pat_list[(err_index + 1)..].to_vec()
     }

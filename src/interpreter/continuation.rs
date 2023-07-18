@@ -1,10 +1,10 @@
 use crate::{
     iota::{Iota, SignatureExt},
     parser::{AstNode, OpName, OpValue},
-    pattern_registry::{self, PatternRegistry},
+    pattern_registry::{PatternRegistry},
 };
 use std::{
-    fmt::{self, Debug},
+    fmt::{Debug},
     rc::Rc,
 };
 
@@ -69,7 +69,7 @@ impl ContinuationFrame for FrameEndEval {
         Ok(())
     }
 
-    fn break_out(&self, state: &mut State) -> bool {
+    fn break_out(&self, _state: &mut State) -> bool {
         true
     }
 }
@@ -137,7 +137,7 @@ impl ContinuationFrame for FrameForEach {
     }
 }
 
-pub fn iota_list_to_ast_node_list(list: &Vec<Iota>) -> Vec<AstNode> {
+pub fn iota_list_to_ast_node_list(list: &[Iota]) -> Vec<AstNode> {
     list.iter()
         .rev()
         .enumerate()

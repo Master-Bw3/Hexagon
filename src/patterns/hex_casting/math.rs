@@ -605,9 +605,9 @@ pub fn and_bit<'a>(
                 .collect(),
         ),
 
-        (Either::L(num), Either::R(list)) => Err(Mishap::IncorrectIota(0, "Integer".to_string(), Iota::List(list)))?,
+        (Either::L(_num), Either::R(list)) => Err(Mishap::IncorrectIota(0, "Integer".to_string(), Iota::List(list)))?,
 
-        (Either::R(list), Either::L(num)) => Err(Mishap::IncorrectIota(0, "List".to_string(), Iota::Number(num as f32)))?,
+        (Either::R(_list), Either::L(num)) => Err(Mishap::IncorrectIota(0, "List".to_string(), Iota::Number(num as f32)))?,
     };
 
     state.stack.push(operation_result);
@@ -643,9 +643,9 @@ pub fn or_bit<'a>(
             list1
         }),
 
-        (Either::L(num), Either::R(list)) => Err(Mishap::IncorrectIota(0, "Integer".to_string(), Iota::List(list)))?,
+        (Either::L(_num), Either::R(list)) => Err(Mishap::IncorrectIota(0, "Integer".to_string(), Iota::List(list)))?,
 
-        (Either::R(list), Either::L(num)) => Err(Mishap::IncorrectIota(0, "List".to_string(), Iota::Number(num as f32)))?,
+        (Either::R(_list), Either::L(num)) => Err(Mishap::IncorrectIota(0, "List".to_string(), Iota::Number(num as f32)))?,
     };
 
     state.stack.push(operation_result);
@@ -697,9 +697,9 @@ pub fn xor_bit<'a>(
             );
             new_list
         }),
-        (Either::L(num), Either::R(list)) => Err(Mishap::IncorrectIota(0, "Integer".to_string(), Iota::List(list)))?,
+        (Either::L(_num), Either::R(list)) => Err(Mishap::IncorrectIota(0, "Integer".to_string(), Iota::List(list)))?,
 
-        (Either::R(list), Either::L(num)) => Err(Mishap::IncorrectIota(0, "List".to_string(), Iota::Number(num as f32)))?,
+        (Either::R(_list), Either::L(num)) => Err(Mishap::IncorrectIota(0, "List".to_string(), Iota::Number(num as f32)))?,
     };
 
     state.stack.push(operation_result);

@@ -5,17 +5,17 @@ use crate::{
         self,
         continuation::{iota_list_to_ast_node_list, FrameEndEval, FrameEvaluate, FrameForEach},
         mishap::Mishap,
-        state::{Either, Either3, StackExt, State},
+        state::{Either3, StackExt, State},
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
-    parser::{AstNode, Instruction, OpName, OpValue},
+    parser::{AstNode},
     pattern_registry::PatternRegistry,
 };
-use owo_colors::OwoColorize;
+
 
 pub fn eval<'a>(
     state: &'a mut State,
-    pattern_registry: &PatternRegistry,
+    _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
     let arg = state
@@ -61,7 +61,7 @@ type Halted = bool;
 fn eval_list(
     state: &mut State,
     pattern_registry: &PatternRegistry,
-    list: &Vec<Iota>,
+    list: &[Iota],
 ) -> Result<Halted, Mishap> {
     let mut halted = false;
     for (index, iota) in list.iter().enumerate() {
@@ -74,7 +74,7 @@ fn eval_list(
                     break;
                 }
                 eval_pattern(state, pattern_registry, pattern)
-                    .map_err(|err| Mishap::EvalMishap(list.clone(), index, Box::new(err)))?;
+                    .map_err(|err| Mishap::EvalError(list.to_owned(), index, Box::new(err)))?;
             }
 
             iota => {

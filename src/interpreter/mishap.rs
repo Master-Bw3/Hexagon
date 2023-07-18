@@ -20,7 +20,7 @@ pub enum Mishap {
     NoIotaAtIndex(usize),
     NoAkashicRecord(VectorIota),
     HoldingIncorrectItem,
-    EvalMishap(Vec<Iota>, usize, Box<Mishap>)
+    EvalError(Vec<Iota>, usize, Box<Mishap>)
 }
 
 impl Mishap {
@@ -60,7 +60,7 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => todo!(),
             Mishap::ExpectedValue(_, _) => todo!(),
             Mishap::InvalidValue(_, _) => todo!(),
-            Mishap::EvalMishap(_, _, _) => todo!(),
+            Mishap::EvalError(_, _, _) => todo!(),
         }
     }
 
@@ -85,30 +85,30 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => "Entity is not holding the right item".to_string(),
             Mishap::ExpectedValue(_, expected) => format!("Expected {expected} value to be supplied but got Nothing"),
             Mishap::InvalidValue(expected, recieved) =>  format!("Expected {expected} value to be supplied but got {recieved}"),
-            Mishap::EvalMishap(_, _, mishap) => mishap.error_message(),
+            Mishap::EvalError(_, _, mishap) => mishap.error_message(),
         }
     }
 
     pub fn error_hint(&self) -> Option<String> {
         match self {
-            Mishap::NotEnoughIotas(arg_count, stack_height) => None,
-            Mishap::IncorrectIota(index, expected, recieved) => None,
+            Mishap::NotEnoughIotas(_arg_count, _stack_height) => None,
+            Mishap::IncorrectIota(_index, _expected, _recieved) => None,
             Mishap::MathematicalError() => None,
             Mishap::HastyRetrospection => None,
             Mishap::InvalidPattern => None,
-            Mishap::ExpectedPattern(iota) => None,
+            Mishap::ExpectedPattern(_iota) => None,
             Mishap::OpCannotBeConsidered => None,
-            Mishap::OpNotEnoughArgs(arg_count) => Some("Provide arguments inside the parentheses: Op(arg)".to_string()),
-            Mishap::OpExpectedVar(iota) => Some("Use a variable as the argument: Op($var)".to_string()),
+            Mishap::OpNotEnoughArgs(_arg_count) => Some("Provide arguments inside the parentheses: Op(arg)".to_string()),
+            Mishap::OpExpectedVar(_iota) => Some("Use a variable as the argument: Op($var)".to_string()),
             Mishap::OpExpectedIota => Some("Use an Iota as the argument: Op(1), Op([1, 1, 1]), ect.".to_string()),
             Mishap::VariableNotAssigned(varname) => Some(format!("Assign the variable using Store({varname}) or Copy({varname})")),
             Mishap::NoIotaAtIndex(_) => Some("This is typically caused by the Ravenmind being overwritten via Huginn's Gambit".to_string()),
-            Mishap::NoAkashicRecord(location) => Some("Define an akashic record in a 'config.toml' file".to_string()),
+            Mishap::NoAkashicRecord(_location) => Some("Define an akashic record in a 'config.toml' file".to_string()),
             Mishap::HoldingIncorrectItem => Some("Define held items in a 'config.toml' file".to_string()),
             //todo: make expectedValue show iota instead of type of iota in example
             Mishap::ExpectedValue(action_name, expected) => Some(format!("Set a value for this action. Example: {action_name}: {expected}")),
-            Mishap::InvalidValue(expected, recieved) => None,
-            Mishap::EvalMishap(_, _, mishap) => mishap.error_hint(),
+            Mishap::InvalidValue(_expected, _recieved) => None,
+            Mishap::EvalError(_, _, mishap) => mishap.error_hint(),
         }
     }
 }

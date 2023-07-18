@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use crate::{
     interpreter::{
-        mishap::{self, Mishap},
-        ops::EmbedType, state,
+        mishap::{Mishap},
+        ops::EmbedType,
     },
     iota::{Iota, PatternIota, SignatureExt},
     parse_config::Config,
@@ -51,7 +51,7 @@ fn compile_node(
 
         AstNode::Action { line, name, value } => Ok(vec![Iota::Pattern({
             let pattern = pattern_registry
-                .find(&name, &value)
+                .find(name, value)
                 .ok_or((Mishap::InvalidPattern, *line))?;
 
             //remove output values used by the interpreter

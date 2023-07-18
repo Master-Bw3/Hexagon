@@ -1,16 +1,15 @@
-use std::rc::Rc;
+
 
 use rand::{seq::SliceRandom, thread_rng};
 
 use crate::{
     interpreter::{
-        continuation::FrameEndEval,
         mishap::Mishap,
         push_pattern,
         state::{StackExt, State},
     },
     iota::{Iota, PatternIota},
-    parser::{ActionValue, AstNode, Instruction},
+    parser::{ActionValue},
     pattern_registry::PatternRegistry,
 };
 

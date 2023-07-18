@@ -1,13 +1,13 @@
 use nalgebra::{
-    coordinates::X, dmatrix, DMatrix, Dyn, Matrix, Matrix1x3, Matrix1xX, RowVector, VecStorage,
+    dmatrix, DMatrix, Matrix1xX,
 };
 
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{Either, StackExt, State},
+        state::{StackExt, State},
     },
-    iota::{Iota, ListIota, MatrixIota, NumberIota, VectorIota},
+    iota::{Iota, MatrixIota, NumberIota},
     pattern_registry::PatternRegistry,
 };
 
@@ -26,7 +26,7 @@ pub fn make<'a>(
         }
     }
 
-    fn matrix_from_vec_list(list: &Vec<Iota>) -> Result<MatrixIota, ()> {
+    fn matrix_from_vec_list(list: &[Iota]) -> Result<MatrixIota, ()> {
         let row_list = list
             .iter()
             .map(|element| match element {
@@ -38,19 +38,19 @@ pub fn make<'a>(
         Ok(DMatrix::from_rows(&row_list[..]))
     }
 
-    fn matrix_from_num_list(list: &Vec<Iota>) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list(list: &[Iota]) -> Result<MatrixIota, ()> {
         let row = row_from_num_list(list)?;
 
         Ok(DMatrix::from_rows(&[row]))
     }
 
-    fn row_from_num_list(list: &Vec<Iota>) -> Result<Matrix1xX<NumberIota>, ()> {
+    fn row_from_num_list(list: &[Iota]) -> Result<Matrix1xX<NumberIota>, ()> {
         let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>()?;
 
         Ok(Matrix1xX::from_vec(num_list))
     }
 
-    fn matrix_from_num_list_list(list: &Vec<Iota>) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list_list(list: &[Iota]) -> Result<MatrixIota, ()> {
         let empty_vec = Iota::List(vec![]);
         let first_row = list.get(0).unwrap_or(&empty_vec);
 

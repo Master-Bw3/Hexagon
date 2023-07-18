@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+
 
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{Entity, EntityType, Stack, StackExt, State},
+        state::{EntityType, Stack, StackExt, State},
     },
     iota::{Display, Iota},
     parser::ActionValue,

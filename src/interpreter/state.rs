@@ -3,7 +3,7 @@ use std::{collections::HashMap, rc::Rc};
 use crate::{iota::{
     BoolIota, EntityIota, GarbageIota, Iota, ListIota, MatrixIota, NullIota, NumberIota,
     PatternIota, Signature, VectorIota, ContinuationIota,
-}, pattern_registry::PatternRegistry, parser::AstNode};
+}};
 
 use super::{mishap::Mishap, continuation::ContinuationFrame};
 
@@ -330,7 +330,7 @@ impl StackExt for Stack {
         match iota {
             Iota::Number(x) => Ok(Either3::L(*x)),
 
-            Iota::Vector(x) => Ok(Either3::M(x.clone())),
+            Iota::Vector(x) => Ok(Either3::M(*x)),
 
             Iota::List(x) => Ok(Either3::R(x.clone())),
 

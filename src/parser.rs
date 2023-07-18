@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use crate::{
-    interpreter::state::{Entity, EntityType, Holding},
-    iota::{EntityIota, GarbageIota, Iota, NullIota, PatternIota},
+    interpreter::state::{Entity},
+    iota::{GarbageIota, Iota, NullIota, PatternIota},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 use nalgebra::matrix;

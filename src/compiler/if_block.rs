@@ -4,15 +4,15 @@ use crate::{
     interpreter::mishap::Mishap,
     iota::{Iota, PatternIota},
     parser::AstNode,
-    pattern_registry::{self, PatternRegistry},
+    pattern_registry::{PatternRegistry},
 };
 
 use super::compile_node;
 
 pub fn compile_if_block(
-    line: &(usize, usize),
-    condition: &Box<AstNode>,
-    succeed: &Box<AstNode>,
+    _line: &(usize, usize),
+    condition: &AstNode,
+    succeed: &AstNode,
     fail: &Option<Box<AstNode>>,
     depth: u32,
     heap: &mut HashMap<String, i32>,
@@ -21,21 +21,21 @@ pub fn compile_if_block(
     let mut result = vec![];
 
     //append condition to result
-    if let AstNode::Hex(condition_hex) = (**condition).clone() {
+    if let AstNode::Hex(condition_hex) = (*condition).clone() {
         for node in condition_hex {
             result.append(&mut compile_node(&node, heap, depth, pattern_registry)?)
         }
     };
 
     //push success hex to result
-    result.append(&mut compile_node(&succeed, heap, depth, pattern_registry)?);
+    result.append(&mut compile_node(succeed, heap, depth, pattern_registry)?);
     //push fail hex to result (if there is one)
     match fail {
         Some(fail_node) => match **fail_node {
             AstNode::Hex(_) => {
                 // "else"
                 result.append(&mut compile_node(
-                    &fail_node,
+                    fail_node,
                     heap,
                     depth,
                     pattern_registry,
