@@ -1,8 +1,9 @@
+pub mod continuation;
 pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     compiler::{
@@ -13,13 +14,14 @@ use crate::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
     },
-    iota::{EntityIota, Iota, PatternIota, Signature, SignatureExt},
+    iota::{Iota, PatternIota, Signature, SignatureExt},
     parse_config::Config,
-    parser::{ActionValue, AstNode, OpName, OpValue},
+    parser::{ActionValue, AstNode, Instruction, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 use self::{
+    continuation::{FrameEndEval, FrameEvaluate},
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -36,7 +38,7 @@ pub fn interpret(
     let great_sigs;
 
     if let Some(conf) = config {
-        state.entities = conf.entities.clone();
+        state.entities = entities.clone();
         state.libraries = conf.libraries.clone();
         great_sigs = conf.great_spell_sigs.clone();
     } else {
@@ -72,23 +74,24 @@ fn interpret_node<'a>(
 
     match node {
         AstNode::File(mut nodes) => {
-            while nodes.len() > 0 {
-                interpret_node(nodes[0].clone(), state, pattern_registry)?;
-                nodes.remove(0);
-                if state.halt {
-                    break;
-                }
+            //initialize the vm
+            nodes.reverse();
+            state
+                .continuation
+                .push(Rc::new(FrameEvaluate { nodes: nodes }));
+
+            //loop through every frame until there aren't any more
+            while state.continuation.len() > 0 {
+                //get top fram and remove it from the stack
+                let frame = state.continuation.pop().unwrap().clone();
+
+                //evaluate the top frame (mutates state)
+                frame.evaluate(state, pattern_registry)?;
             }
             Ok(state)
         }
 
         AstNode::Action { name, value, line } => {
-            if let Some(name) = pattern_registry.find(&name, &None) {
-                if name.internal_name == "eval" {
-                    println!("owo")
-                };
-            };
-
             interpret_action(name, value, state, pattern_registry).map_err(|err| (err, line))
         }
         AstNode::Hex(nodes) => {
@@ -149,6 +152,12 @@ fn interpret_node<'a>(
             }
             Ok(state)
         }
+        AstNode::Instruction(instruction) => match instruction {
+            Instruction::MetaEvalEnd => {
+                state.consider_next = false;
+                Ok(state)
+            }
+        },
     }
 }
 
@@ -287,7 +296,7 @@ fn calc_buffer_depth(registry: &PatternRegistry, buffer: &Option<Vec<(Iota, Cons
         })
     } else {
         0
-    };
+    } + 1;
 
     let retro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

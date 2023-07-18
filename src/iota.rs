@@ -1,16 +1,20 @@
 use std::fmt::Debug;
+use std::mem;
+use std::rc::Rc;
 use std::{collections::HashMap, ops::Not};
 
 use nalgebra::{DMatrix, Dyn, Matrix};
 
+use crate::interpreter::continuation::{ContinuationFrame, self, Continuation};
 use crate::interpreter::mishap::Mishap;
+use crate::parser::AstNode;
 use crate::{
     interpreter::state::{Entity, EntityType},
     parser::ActionValue,
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone)]
 pub enum Iota {
     //Hex Casting
     Number(NumberIota),
@@ -21,7 +25,7 @@ pub enum Iota {
     Null(NullIota),
     Entity(EntityIota),
     List(ListIota),
-    Continuation(ListIota),
+    Continuation(ContinuationIota),
     //MoreIotas
     Matrix(MatrixIota),
 }
@@ -110,7 +114,30 @@ impl Iota {
             Iota::Entity(name) => name.display(),
             Iota::List(list) => list.display(),
             Iota::Matrix(matrix) => matrix.display(),
-            Iota::Continuation(list) => format!("Continuation: {}", list.display()),
+            Iota::Continuation(continuation) => continuation.display(),
+        }
+    }
+}
+
+impl std::cmp::PartialEq for Iota {
+    fn eq(&self, other: &Self) -> bool {
+        self.check_equality(other)
+    }
+}
+
+impl std::fmt::Debug for Iota {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Number(arg0) => f.debug_tuple("Number").field(&arg0.display()).finish(),
+            Self::Vector(arg0) => f.debug_tuple("Vector").field(&arg0.display()).finish(),
+            Self::Pattern(arg0) => f.debug_tuple("Pattern").field(&arg0.display()).finish(),
+            Self::Bool(arg0) => f.debug_tuple("Bool").field(&arg0.display()).finish(),
+            Self::Garbage(arg0) => f.debug_tuple("Garbage").field(&arg0.display()).finish(),
+            Self::Null(arg0) => f.debug_tuple("Null").field(&arg0.display()).finish(),
+            Self::Entity(arg0) => f.debug_tuple("Entity").field(&arg0.display()).finish(),
+            Self::List(arg0) => f.debug_tuple("List").field(&arg0.display()).finish(),
+            Self::Continuation(arg0) => f.debug_tuple("Continuation").field(&arg0.display()).finish(),
+            Self::Matrix(arg0) => f.debug_tuple("Matrix").field(&arg0.display()).finish(),
         }
     }
 }
@@ -201,7 +228,8 @@ impl PatternIota {
         value: Option<ActionValue>,
     ) -> Result<PatternIota, Mishap> {
         Ok(PatternIota {
-            signature: Signature::from_name(registry, name, &value).ok_or(Mishap::InvalidPattern)?,
+            signature: Signature::from_name(registry, name, &value)
+                .ok_or(Mishap::InvalidPattern)?,
             value: Box::new(value),
         })
     }
@@ -223,7 +251,7 @@ impl Display for PatternIota {
             &self.value,
         )
         .map_or(self.signature.as_str(), |pat| pat.display_name);
-    
+
         if let Some(value) = *self.value.clone() {
             match value {
                 ActionValue::Iota(iota) => result = format!("{result}: {}", iota.display()),
@@ -231,7 +259,6 @@ impl Display for PatternIota {
             }
         }
         result
-
     }
 }
 
@@ -294,6 +321,14 @@ impl SignatureExt for Signature {
                 PatternSigDir::W => 'w',
             })
             .collect()
+    }
+}
+
+pub type ContinuationIota = Continuation;
+
+impl Display for ContinuationIota {
+    fn display(&self) -> String {
+        "Continuation".to_string()
     }
 }
 

@@ -1,31 +1,57 @@
+use std::rc::Rc;
+
 use crate::{
     interpreter::{
         self,
+        continuation::{iota_list_to_ast_node_list, FrameEndEval, FrameEvaluate, FrameForEach},
         mishap::Mishap,
-        state::{Either, StackExt, State},
+        state::{Either, Either3, StackExt, State},
     },
     iota::{Iota, PatternIota, Signature, SignatureExt},
+    parser::{AstNode, Instruction, OpName, OpValue},
     pattern_registry::PatternRegistry,
 };
+use owo_colors::OwoColorize;
 
 pub fn eval<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let arg = state.stack.get_list_or_pattern(0, arg_count)?;
+    let arg = state
+        .stack
+        .get_list_or_pattern_or_continuation(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     match arg {
-        Either::L(list) => {
-            eval_list(state, pattern_registry, &list)?;
+        Either3::L(list) => {
+            state.continuation.push(Rc::new(FrameEndEval {}));
+            state.continuation.push(Rc::new(FrameEvaluate {
+                nodes: iota_list_to_ast_node_list(&list),
+            }));
         }
-        Either::R(pattern) => {
-            eval_pattern(state, pattern_registry, &pattern).map_err(|err| {
-                Mishap::EvalMishap(vec![Iota::Pattern(pattern)], 0, Box::new(err))
-            })?;
+        Either3::M(pattern) => {
+            state.continuation.push(Rc::new(FrameEvaluate {
+                nodes: vec![AstNode::Action {
+                    line: (1, 0),
+                    name: pattern.signature.as_str(),
+                    value: *pattern.value,
+                }],
+            }));
         }
+        Either3::R(continuation) => state.continuation = continuation,
     };
+
+    Ok(state)
+}
+
+pub fn eval_cc<'a>(
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let continuation_iota = Iota::Continuation(state.continuation.clone());
+    eval(state, pattern_registry)?;
+    state.stack.push(continuation_iota);
 
     Ok(state)
 }
@@ -41,7 +67,9 @@ fn eval_list(
     for (index, iota) in list.iter().enumerate() {
         match iota {
             Iota::Pattern(pattern) => {
-                if pattern.signature == Signature::from_name(pattern_registry, "halt", &None).unwrap() {
+                if pattern.signature
+                    == Signature::from_name(pattern_registry, "halt", &None).unwrap()
+                {
                     halted = true;
                     break;
                 }
@@ -78,33 +106,28 @@ fn eval_pattern(
     Ok(())
 }
 
-pub fn for_each<'a>(
-    state: &'a mut State,
-    pattern_registry: &PatternRegistry,
-) -> Result<&'a mut State, Mishap> {
+pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let pattern_list = state.stack.get_list(0, 2)?;
-    let iota_list = state.stack.get_list(1, 2)?;
+    let mut iota_list = state.stack.get_list(1, 2)?;
     state.stack.remove_args(&arg_count);
 
-    let mut result = vec![];
+    iota_list.reverse();
 
-    for iota in iota_list {
-        let mut temp_state = state.clone();
-        temp_state.stack.push(iota);
+    state.continuation.push(Rc::new(FrameForEach {
+        data: iota_list,
+        code: iota_list_to_ast_node_list(&pattern_list),
+        base_stack: None,
+        acc: vec![],
+    }));
 
-        let halted = eval_list(&mut temp_state, pattern_registry, &pattern_list)?;
+    Ok(state)
+}
 
-        if halted {
-            break;
-        }
-
-        result.append(&mut temp_state.stack);
-        //update state
-        temp_state.stack = state.stack.clone();
-        *state = temp_state;
+pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
+    let mut done = false;
+    while !(done || state.continuation.is_empty()) {
+        done = state.continuation.last().unwrap().clone().break_out(state);
     }
-    state.stack.push(Iota::List(result));
-
     Ok(state)
 }

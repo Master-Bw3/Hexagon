@@ -61,7 +61,6 @@ fn construct_ast_node(
 
             Some(parse_op(name, arg, pattern_registry, conf_entities))
         }
-        Rule::EscapedIntroRetro => Some(parse_intro_retro(pair)),
         Rule::Var => Some(parse_var(pair)),
         Rule::Embed => Some(parse_embed(pair, pattern_registry, conf_entities)),
         Rule::IfBlock => Some(parse_if_block(pair, pattern_registry, conf_entities)),
@@ -361,7 +360,7 @@ fn parse_string(pair: Pair<'_, Rule>) -> String {
         .to_string()
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum AstNode {
     File(Vec<AstNode>),
     Action {
@@ -381,9 +380,15 @@ pub enum AstNode {
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
     },
+    Instruction(Instruction)
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
+pub enum Instruction {
+    MetaEvalEnd
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum OpName {
     Store,
     Copy,
@@ -394,7 +399,7 @@ pub enum OpName {
     IntroEmbed,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum OpValue {
     Iota(Iota),
     Var(String),

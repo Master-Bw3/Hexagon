@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{
     interpreter::{
         mishap::{self, Mishap},
-        ops::EmbedType,
+        ops::EmbedType, state,
     },
     iota::{Iota, PatternIota, SignatureExt},
     parse_config::Config,
@@ -96,6 +96,7 @@ fn compile_node(
             heap,
             pattern_registry,
         ),
+        AstNode::Instruction(_) => Ok(vec![]),
     }
 }
 

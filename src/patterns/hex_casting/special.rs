@@ -1,13 +1,16 @@
+use std::rc::Rc;
+
 use rand::{seq::SliceRandom, thread_rng};
 
 use crate::{
     interpreter::{
+        continuation::FrameEndEval,
         mishap::Mishap,
         push_pattern,
         state::{StackExt, State},
     },
     iota::{Iota, PatternIota},
-    parser::ActionValue,
+    parser::{ActionValue, AstNode, Instruction},
     pattern_registry::PatternRegistry,
 };
 
@@ -48,7 +51,6 @@ pub fn introspect<'a>(
     };
 
     state.buffer = Some(new_buffer);
-
     Ok(state)
 }
 
@@ -96,15 +98,11 @@ pub fn retrospect<'a>(
             false,
         )
     };
+
     Ok(state)
 }
 
 pub fn no_action<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
-    Ok(state)
-}
-
-pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
-    state.halt = true;
     Ok(state)
 }
 
