@@ -106,16 +106,6 @@ pub fn no_action<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mu
     Ok(state)
 }
 
-pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
-    let exit_pos = state
-        .continuation
-        .iter()
-        .position(|x| x.is_end_eval())
-        .unwrap_or(0);
-    state.continuation = state.continuation[..exit_pos].to_vec();
-    Ok(state)
-}
-
 pub fn print<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,

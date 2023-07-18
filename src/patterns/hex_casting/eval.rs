@@ -123,3 +123,11 @@ pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut
 
     Ok(state)
 }
+
+pub fn halt<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
+    let mut done = false;
+    while !done {
+        done = state.continuation.last().unwrap().clone().break_out(state);
+    }
+    Ok(state)
+}

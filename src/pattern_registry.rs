@@ -49,7 +49,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Retrospection", "close_paren", "eee", Box::new(special::retrospect)),
             Pattern::new("Hermes' Gambit", "eval", "deaqq", Box::new(eval::eval)),
             Pattern::new("Thoth's Gambit", "for_each", "dadad", Box::new(eval::for_each)),
-            Pattern::new("Charon's Gambit", "halt", "aqdee", Box::new(special::halt)),
+            Pattern::new("Charon's Gambit", "halt", "aqdee", Box::new(eval::halt)),
             Pattern::new("Reveal", "print", "de", Box::new(special::print)),
             Pattern::new("Iris' Gambit", "eval/cc", "qwaqde", Box::new(eval::eval_cc)),
 

@@ -19,9 +19,7 @@ pub trait ContinuationFrame: Debug {
         pattern_registry: &PatternRegistry,
     ) -> Result<(), (Mishap, (usize, usize))>;
 
-    fn break_out(&mut self, state: &mut State);
-
-    fn is_end_eval(&self) -> bool;
+    fn break_out(&self, state: &mut State) -> bool;
 }
 
 #[derive(Clone, Debug)]
@@ -52,17 +50,9 @@ impl ContinuationFrame for FrameEvaluate {
         }
     }
 
-    fn is_end_eval(&self) -> bool {
+    fn break_out(&self, state: &mut State) -> bool {
+        state.continuation.pop();
         false
-    }
-
-    fn break_out(&mut self, state: &mut State) {
-        let exit_pos = state
-            .continuation
-            .iter()
-            .position(|x| x.is_end_eval())
-            .unwrap_or(0);
-        state.continuation = state.continuation[..exit_pos].to_vec();
     }
 }
 
@@ -79,12 +69,8 @@ impl ContinuationFrame for FrameEndEval {
         Ok(())
     }
 
-    fn is_end_eval(&self) -> bool {
+    fn break_out(&self, state: &mut State) -> bool {
         true
-    }
-
-    fn break_out(&mut self, state: &mut State) {
-        ()
     }
 }
 
@@ -138,17 +124,16 @@ impl ContinuationFrame for FrameForEach {
         Ok(())
     }
 
-    fn is_end_eval(&self) -> bool {
-        false
-    }
-
-    fn break_out(&mut self, state: &mut State) {
+    fn break_out(&self, state: &mut State) -> bool {
         state.continuation.pop();
 
         let mut new_stack = self.base_stack.clone().unwrap_or(vec![]);
-        self.acc.append(&mut state.stack.clone());
-        new_stack.push(Iota::List(self.acc.clone()));
+
+        let mut new_acc = self.acc.clone();
+        new_acc.append(&mut state.stack.clone());
+        new_stack.push(Iota::List(new_acc));
         state.stack = new_stack;
+        true
     }
 }
 
