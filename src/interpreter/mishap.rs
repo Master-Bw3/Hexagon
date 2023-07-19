@@ -1,26 +1,26 @@
-use crate::iota::GarbageIota::Garbage;
-use crate::iota::{PatternIota, VectorIota};
-use crate::{interpreter::state::Stack, iota::Iota};
+use std::rc::Rc;
+
+use crate::{interpreter::state::Stack, iota::{Iota, hex_casting::vector::VectorIota, hex_casting::{garbage::GarbageIota, pattern::PatternIota}}};
 
 #[derive(Debug)]
 pub enum Mishap {
     NotEnoughIotas(usize, usize),
-    IncorrectIota(usize, String, Iota),
+    IncorrectIota(usize, String, Rc<dyn Iota>),
     MathematicalError(),
     HastyRetrospection,
     InvalidPattern,
-    ExpectedPattern(Iota),
+    ExpectedPattern(Rc<dyn Iota>),
     ExpectedValue(String, String),
     InvalidValue(String, String),
     OpCannotBeConsidered,
     OpNotEnoughArgs(i32),
-    OpExpectedVar(Iota),
+    OpExpectedVar(Rc<dyn Iota>),
     OpExpectedIota,
     VariableNotAssigned(String),
     NoIotaAtIndex(usize),
     NoAkashicRecord(VectorIota),
     HoldingIncorrectItem,
-    EvalError(Vec<Iota>, usize, Box<Mishap>)
+    EvalError(Vec<Rc<dyn Iota>>, usize, Rc<Mishap>)
 }
 
 impl Mishap {
@@ -28,24 +28,24 @@ impl Mishap {
         match self {
             Mishap::NotEnoughIotas(_, num) => {
                 let mut new_stack = stack;
-                new_stack.append(&mut vec![Iota::Garbage(Garbage); num]);
+                new_stack.append(&mut vec![Rc::new(GarbageIota::Garbage); num]);
                 new_stack
             }
             Mishap::IncorrectIota(index, _, _) => {
                 let mut new_stack = stack;
-                new_stack[index] = Iota::Garbage(Garbage);
+                new_stack[index] = Rc::new(GarbageIota::Garbage);
                 new_stack
             }
             Mishap::MathematicalError() => todo!(),
             Mishap::HastyRetrospection => {
                 let retro_sig: &str = "eee";
                 let mut new_stack = stack;
-                new_stack.push(Iota::Pattern(PatternIota::from_sig(retro_sig, None)));
+                new_stack.push(Rc::new(PatternIota::from_sig(retro_sig, None)));
                 new_stack
             }
             Mishap::InvalidPattern => {
                 let mut new_stack = stack;
-                new_stack.push(Iota::Garbage(Garbage));
+                new_stack.push(Rc::new(GarbageIota::Garbage));
                 new_stack
             }
             Mishap::ExpectedPattern(_) => todo!(),

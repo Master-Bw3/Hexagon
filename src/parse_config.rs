@@ -1,12 +1,11 @@
 use pest::Parser;
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 use toml::{map::Map, Table, Value};
 
 use crate::{
     interpreter::state::{Holding, Library, Entity, EntityType},
-    iota::{Signature, SignatureExt},
     parser::{parse_iota, HexParser, Rule},
-    pattern_registry::{PatternRegistry, PatternRegistryExt},
+    pattern_registry::{PatternRegistry, PatternRegistryExt}, iota::{hex_casting::pattern::{Signature, SignatureExt}, Iota},
 };
 
 #[derive(Debug)]
@@ -59,7 +58,7 @@ fn parse_libraries(libraries: &Value, config: &mut Config) {
 }
 
 fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
-    let mut contents = HashMap::new();
+    let mut contents: HashMap<_, Rc<dyn Iota>> = HashMap::new();
 
     let location_value = library.get("location").unwrap().clone();
     library.remove("location");
@@ -73,7 +72,7 @@ fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
             &PatternRegistry::construct(&config.great_spell_sigs),
             &mut config.entities,
         );
-        contents.insert(Signature::from_sig(key), iota);
+        contents.insert(Signature::from_sig(key), Rc::new(iota));
     }
 
     let location = {

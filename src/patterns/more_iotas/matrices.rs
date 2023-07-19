@@ -7,7 +7,7 @@ use crate::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::{Iota, MatrixIota, NumberIota},
+    iota::{Iota, more_iotas::matrix::MatrixIota, hex_casting::number::NumberIota},
     pattern_registry::PatternRegistry,
 };
 
@@ -19,14 +19,14 @@ pub fn make<'a>(
     let iota = state.stack.get_num_or_vec_or_list(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    fn map_num(element: &Iota) -> Result<f32, ()> {
+    fn map_num(element: &dyn Iota) -> Result<f32, ()> {
         match element {
             Iota::Number(num) => Ok(*num),
             _ => Err(()),
         }
     }
 
-    fn matrix_from_vec_list(list: &[Iota]) -> Result<MatrixIota, ()> {
+    fn matrix_from_vec_list(list: &[Box<dyn Iota>]) -> Result<MatrixIota, ()> {
         let row_list = list
             .iter()
             .map(|element| match element {
@@ -38,19 +38,19 @@ pub fn make<'a>(
         Ok(DMatrix::from_rows(&row_list[..]))
     }
 
-    fn matrix_from_num_list(list: &[Iota]) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list(list: &[Box<dyn Iota>]) -> Result<MatrixIota, ()> {
         let row = row_from_num_list(list)?;
 
         Ok(DMatrix::from_rows(&[row]))
     }
 
-    fn row_from_num_list(list: &[Iota]) -> Result<Matrix1xX<NumberIota>, ()> {
+    fn row_from_num_list(list: &[Box<dyn Iota>]) -> Result<Matrix1xX<NumberIota>, ()> {
         let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>()?;
 
         Ok(Matrix1xX::from_vec(num_list))
     }
 
-    fn matrix_from_num_list_list(list: &[Iota]) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list_list(list: &[Box<dyn Iota>]) -> Result<MatrixIota, ()> {
         let empty_vec = Iota::List(vec![]);
         let first_row = list.get(0).unwrap_or(&empty_vec);
 

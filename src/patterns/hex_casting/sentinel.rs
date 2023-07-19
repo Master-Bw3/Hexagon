@@ -5,7 +5,7 @@ use crate::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::{Iota, NullIota},
+    iota::{Iota, hex_casting::null::NullIota},
     pattern_registry::PatternRegistry,
 };
 

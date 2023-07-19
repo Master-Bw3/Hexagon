@@ -3,7 +3,7 @@ use crate::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::{Iota, NullIota::Null},
+    iota::{Iota, hex_casting::null::NullIota},
     pattern_registry::PatternRegistry,
 };
 
@@ -54,7 +54,7 @@ pub fn index<'a>(
 
     let operaton_result = (iotas.0)
         .get((iotas.1).round() as usize)
-        .unwrap_or(&Iota::Null(Null));
+        .unwrap_or(&Iota::Null(NullIota::Null));
 
     state.stack.push(operaton_result.clone());
 

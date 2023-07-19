@@ -1,18 +1,19 @@
+use im::Vector;
+
 use crate::{
-    iota::{Iota, SignatureExt},
-    parser::{AstNode, OpName, OpValue},
-    pattern_registry::{PatternRegistry},
+    iota::{
+        hex_casting::pattern::{PatternIota, SignatureExt},
+        Iota,
+    },
+    parser::{AstNode, OpName, OpValue}, pattern_registry::PatternRegistry,
 };
-use std::{
-    fmt::{Debug},
-    rc::Rc,
-};
+use std::rc::Rc;
 
 use super::{interpret_node, mishap::Mishap, state::State};
 
 pub type Continuation = Vec<Rc<dyn ContinuationFrame>>;
 
-pub trait ContinuationFrame: Debug {
+pub trait ContinuationFrame: std::fmt::Debug {
     fn evaluate(
         &self,
         state: &mut State,
@@ -76,10 +77,10 @@ impl ContinuationFrame for FrameEndEval {
 
 #[derive(Clone, Debug)]
 pub struct FrameForEach {
-    pub data: Vec<Iota>,
+    pub data: Vec<Rc<dyn Iota>>,
     pub code: Vec<AstNode>,
-    pub base_stack: Option<Vec<Iota>>,
-    pub acc: Vec<Iota>,
+    pub base_stack: Option<Vector<Rc<dyn Iota>>>,
+    pub acc: Vector<Rc<dyn Iota>>,
 }
 
 impl ContinuationFrame for FrameForEach {
@@ -90,12 +91,12 @@ impl ContinuationFrame for FrameForEach {
     ) -> Result<(), (Mishap, (usize, usize))> {
         let (stack, new_acc) = match &self.base_stack {
             //thoth entry point
-            None => (state.stack.clone(), self.acc.clone()),
+            None => (Vector::from(state.stack.clone()), self.acc.clone()),
 
             //thoth iteration
             Some(base) => (base.clone(), {
                 let mut new_acc = self.acc.clone();
-                new_acc.append(&mut state.stack.clone());
+                new_acc.append(Vector::from(state.stack.clone()));
                 new_acc
             }),
         };
@@ -117,10 +118,10 @@ impl ContinuationFrame for FrameForEach {
 
             top
         } else {
-            Iota::List(new_acc)
+            Rc::new(new_acc)
         };
 
-        state.stack = stack;
+        state.stack = stack.into_iter().collect();
         state.stack.push(stack_top);
 
         Ok(())
@@ -129,27 +130,27 @@ impl ContinuationFrame for FrameForEach {
     fn break_out(&self, state: &mut State) -> bool {
         state.continuation.pop();
 
-        let mut new_stack = self.base_stack.clone().unwrap_or(vec![]);
+        let mut new_stack = self.base_stack.clone().unwrap_or(Vector::new());
 
         let mut new_acc = self.acc.clone();
-        new_acc.append(&mut state.stack.clone());
-        new_stack.push(Iota::List(new_acc));
-        state.stack = new_stack;
+        new_acc.append(Vector::from(state.stack.clone()));
+        new_stack.push_back(Rc::new(new_acc));
+        state.stack = new_stack.into_iter().collect();
         true
     }
 }
 
-pub fn iota_list_to_ast_node_list(list: &[Iota]) -> Vec<AstNode> {
+pub fn iota_list_to_ast_node_list(list: &[Rc<dyn Iota>]) -> Vec<AstNode> {
     list.iter()
         .rev()
         .enumerate()
-        .map(|(index, iota)| match iota {
-            Iota::Pattern(pattern) => AstNode::Action {
+        .map(|(index, iota)| match iota.downcast_rc::<PatternIota>() {
+            Ok(pattern) => AstNode::Action {
                 line: (index + 1, 0),
                 name: pattern.signature.as_str(),
                 value: *pattern.value.clone(),
             },
-            _ => AstNode::Op {
+            Err(_) => AstNode::Op {
                 line: (index, 0),
                 name: OpName::Embed,
                 arg: Some(OpValue::Iota(iota.clone())),

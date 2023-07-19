@@ -1,5 +1,9 @@
+use std::rc::Rc;
+
+use im::Vector;
+
 use crate::{
-    iota::{Iota, SignatureExt},
+    iota::{hex_casting::{list::ListIota, pattern::{PatternIota, SignatureExt}}, Iota},
     parser::OpValue,
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -20,9 +24,16 @@ pub fn store<'a>(
         OpValue::Var(var) => {
             let iota = {
                 if copy {
-                    state.stack.last().ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?.clone()
+                    state
+                        .stack
+                        .last()
+                        .ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?
+                        .clone()
                 } else {
-                    state.stack.pop().ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?
+                    state
+                        .stack
+                        .pop()
+                        .ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?
                 }
             };
 
@@ -42,20 +53,20 @@ pub fn store<'a>(
 }
 
 fn insert_iota_into_ravenmind(
-    ravenmind: Option<Iota>,
-    iota: Iota,
+    ravenmind: Option<Rc<dyn Iota>>,
+    iota: Rc<dyn Iota>,
     index: usize,
-) -> (Option<Iota>, i32) {
-    let mut unwrapped_ravenmind: Vec<Iota> = match ravenmind {
-        Some(Iota::List(ref list)) => list.clone(),
-        _ => Vec::new(),
+) -> (Option<Rc<dyn Iota>>, i32) {
+    let mut unwrapped_ravenmind: Rc<ListIota> = match ravenmind {
+        Some(list) => list.downcast_rc::<ListIota>().unwrap_or(Rc::new(Vector::new())),
+        _ => Rc::new(Vector::new()),
     };
 
     if unwrapped_ravenmind.len() > index {
         unwrapped_ravenmind.remove(index);
         unwrapped_ravenmind.insert(index, iota);
         (
-            Some(Iota::List(unwrapped_ravenmind)),
+            Some(unwrapped_ravenmind),
             index.try_into().unwrap(),
         )
     } else {
@@ -63,24 +74,29 @@ fn insert_iota_into_ravenmind(
     }
 }
 
-fn add_iota_to_ravenmind(ravenmind: Option<Iota>, iota: Iota) -> (Option<Iota>, i32) {
-    let unwrapped_ravenmind: &mut Vec<Iota> = &mut match ravenmind {
-        Some(Iota::List(list)) => list,
-        _ => Vec::new(),
+fn add_iota_to_ravenmind(
+    ravenmind: Option<Rc<dyn Iota>>,
+    iota: Rc<dyn Iota>,
+) -> (Option<Rc<dyn Iota>>, i32) {
+    let unwrapped_ravenmind: &mut Rc<Vector<Rc<dyn Iota>>> = &mut match ravenmind {
+        Some(r) => r
+            .downcast_rc::<ListIota>()
+            .unwrap_or(Rc::new(Vector::new())),
+        _ => Rc::new(Vector::new()),
     };
-    let index = unwrapped_ravenmind.len();
-    unwrapped_ravenmind.push(iota);
 
-    (
-        Some(Iota::List(unwrapped_ravenmind.clone())),
-        index.try_into().unwrap(),
-    )
+    let index = unwrapped_ravenmind.len();
+    unwrapped_ravenmind.push_back(iota);
+
+    (Some(unwrapped_ravenmind.clone()), index.try_into().unwrap())
 }
 
-fn get_iota_from_ravenmind(ravenmind: Option<Iota>, index: usize) -> Option<Iota> {
-    let unwrapped_ravenmind: &mut Vec<Iota> = &mut match ravenmind {
-        Some(Iota::List(list)) => list,
-        _ => Vec::new(),
+fn get_iota_from_ravenmind(ravenmind: Option<Rc<dyn Iota>>, index: usize) -> Option<Rc<dyn Iota>> {
+    let unwrapped_ravenmind: &mut Rc<ListIota> = &mut match ravenmind {
+        Some(iota) => iota
+            .downcast_rc::<ListIota>()
+            .unwrap_or(Rc::new(Vector::new())),
+        _ => Rc::new(Vector::new()),
     };
 
     unwrapped_ravenmind.get(index).cloned()
@@ -91,7 +107,11 @@ pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), 
         Some(val) => match val {
             OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
             OpValue::Var(var) => {
-                let index = *state.heap.get(var).ok_or(Mishap::VariableNotAssigned(var.clone()))? as usize;
+                let index = *state
+                    .heap
+                    .get(var)
+                    .ok_or(Mishap::VariableNotAssigned(var.clone()))?
+                    as usize;
                 let iota = get_iota_from_ravenmind(state.ravenmind.clone(), index)
                     .ok_or(Mishap::NoIotaAtIndex(index))?;
                 push_iota(iota, state, state.consider_next);
@@ -123,8 +143,8 @@ pub fn embed<'a>(
 
     match val {
         OpValue::Iota(iota) => match embed_type {
-            EmbedType::Normal => match iota {
-                Iota::Pattern(pat) => {
+            EmbedType::Normal => match (*iota).downcast_rc::<PatternIota>() {
+                Ok(pat) => {
                     interpret_action(
                         pattern_registry
                             .find(&pat.signature.as_str(), &None)

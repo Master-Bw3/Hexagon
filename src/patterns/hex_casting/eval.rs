@@ -7,9 +7,8 @@ use crate::{
         mishap::Mishap,
         state::{Either3, StackExt, State},
     },
-    iota::{Iota, PatternIota, Signature, SignatureExt},
     parser::{AstNode},
-    pattern_registry::PatternRegistry,
+    pattern_registry::PatternRegistry, iota::{Iota, hex_casting::pattern::{Signature, PatternIota}},
 };
 
 
@@ -61,8 +60,8 @@ type Halted = bool;
 fn eval_list(
     state: &mut State,
     pattern_registry: &PatternRegistry,
-    list: &[Iota],
-) -> Result<Halted, Mishap> {
+    list: &[Box<dyn Iota>],
+) -> Result<Halted, Box<Mishap>> {
     let mut halted = false;
     for (index, iota) in list.iter().enumerate() {
         match iota {

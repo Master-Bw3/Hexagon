@@ -8,7 +8,7 @@ use crate::{
         push_pattern,
         state::{StackExt, State},
     },
-    iota::{Iota, PatternIota},
+    iota::{Iota, hex_casting::pattern::PatternIota},
     parser::{ActionValue},
     pattern_registry::PatternRegistry,
 };
@@ -46,7 +46,7 @@ pub fn introspect<'a>(
             ));
             new_buffer
         }
-        None => vec![],
+        None => &vec![],
     };
 
     state.buffer = Some(new_buffer);

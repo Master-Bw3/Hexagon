@@ -1,10 +1,10 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     interpreter::mishap::Mishap,
-    iota::{Iota, PatternIota},
+    iota::{Iota, hex_casting::pattern::PatternIota},
     parser::AstNode,
-    pattern_registry::{PatternRegistry},
+    pattern_registry::PatternRegistry,
 };
 
 use super::compile_node;
@@ -17,8 +17,8 @@ pub fn compile_if_block(
     depth: u32,
     heap: &mut HashMap<String, i32>,
     pattern_registry: &PatternRegistry,
-) -> Result<Vec<Iota>, (Mishap, (usize, usize))> {
-    let mut result = vec![];
+) -> Result<Vec<Rc<dyn Iota>>, (Mishap, (usize, usize))> {
+    let mut result: Vec<Rc<dyn Iota>> = vec![];
 
     //append condition to result
     if let AstNode::Hex(condition_hex) = (*condition).clone() {
@@ -54,9 +54,9 @@ pub fn compile_if_block(
                     depth,
                     pattern_registry,
                 )?);
-                result.push(Iota::Pattern(
-                    PatternIota::from_name(pattern_registry, "eval", None).unwrap(),
-                ));
+                result.push(
+                    Rc::new(PatternIota::from_name(pattern_registry, "eval", None).unwrap()),
+                );
             }
             _ => unreachable!(),
         },
@@ -65,9 +65,9 @@ pub fn compile_if_block(
         }
     }
     //push augur's to buffer
-    result.push(Iota::Pattern(
-        PatternIota::from_name(pattern_registry, "if", None).unwrap(),
-    ));
+    result.push(
+        Rc::new(PatternIota::from_name(pattern_registry, "if", None).unwrap()),
+    );
 
     Ok(result)
 }

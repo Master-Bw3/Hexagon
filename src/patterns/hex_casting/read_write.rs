@@ -3,7 +3,7 @@ use crate::{
         mishap::Mishap,
         state::{Holding, StackExt, State},
     },
-    iota::{Iota, NullIota},
+    iota::{Iota, hex_casting::null::NullIota},
     pattern_registry::PatternRegistry,
 };
 

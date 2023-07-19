@@ -5,7 +5,7 @@ use crate::{
         mishap::Mishap,
         state::{Either, StackExt, State},
     },
-    iota::{Iota, VectorIota},
+    iota::{Iota, hex_casting::vector::VectorIota},
     pattern_registry::PatternRegistry,
 };
 
