@@ -89,8 +89,10 @@ impl ContinuationFrame for FrameForEach {
         _: &PatternRegistry,
     ) -> Result<(), (Mishap, (usize, usize))> {
         let (stack, new_acc) = match &self.base_stack {
+            //thoth entry point
             None => (state.stack.clone(), self.acc.clone()),
 
+            //thoth iteration
             Some(base) => (base.clone(), {
                 let mut new_acc = self.acc.clone();
                 new_acc.append(&mut state.stack.clone());
