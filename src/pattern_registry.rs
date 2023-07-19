@@ -292,25 +292,25 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::zone_entity(Some(&EntityType::Living), &true, "Zone Distillation: Non-Living")),
 
             Pattern::new_with_val("Compass' Purification", "entity_pos/eye",  "aa",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "entity_pos/eye")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "Compass' Purification")),
 
             Pattern::new_with_val("Compass' Purification II", "entity_pos/foot", "dd",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "entity_pos/foot")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "Compass' Purification II")),
 
             Pattern::new_with_val("Alidade's Purification", "get_entity_look", "wa",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "get_entity_look")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "Alidade's Purification")),
 
             Pattern::new_with_val("Stadiometer's Purification", "get_entity_height", "awq",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "get_entity_height")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "Stadiometer's Purification")),
 
             Pattern::new_with_val("Pace Purification", "get_entity_velocity", "wq",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "get_entity_velocity")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "Pace Purification")),
 
             Pattern::new_with_val("Gravitational Purification", "interop/gravity/get", "wawawddew",
-                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "interop/gravity/get")),
+                constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "Gravitational Purification")),
 
             Pattern::new_with_val("Gulliver's Purification", "interop/pehkui/get", "aawawwawwa",
-                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "interop/pehkui/get")),
+                constructors::value_1(Stack::get_entity, Stack::get_number, "Number", "Gulliver's Purification")),
 
             Pattern::new_with_val("Archer's Distillation", "raycast", "wqaawdd",
                 constructors::value_2(Stack::get_vector, Stack::get_vector, Stack::get_vector, "Vector", "Archer's Distillation")),
