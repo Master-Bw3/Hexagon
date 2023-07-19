@@ -291,10 +291,10 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("Zone Distillation: Non-Living", "zone_entity/not_living", "eeeeewaqaawd",
                 constructors::zone_entity(Some(&EntityType::Living), &true, "Zone Distillation: Non-Living")),
 
-            Pattern::new_with_val("entity_pos/eye", "Compass' Purification", "aa",
+            Pattern::new_with_val("Compass' Purification", "entity_pos/eye",  "aa",
                 constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "entity_pos/eye")),
 
-            Pattern::new_with_val("entity_pos/foot", "Compass' Purification II", "dd",
+            Pattern::new_with_val("Compass' Purification II", "entity_pos/foot", "dd",
                 constructors::value_1(Stack::get_entity, Stack::get_vector, "Vector", "entity_pos/foot")),
 
             Pattern::new_with_val("Alidade's Purification", "get_entity_look", "wa",
