@@ -3,18 +3,18 @@ use std::f32::consts::{E, PI, TAU};
 use std::rc::Rc;
 
 use crate::interpreter::state::{EntityType, Stack, StackExt};
-use crate::iota::Iota;
 use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::list::ListIota;
 use crate::iota::hex_casting::null::NullIota;
 use crate::iota::hex_casting::number::NumberIota;
 use crate::iota::hex_casting::vector::VectorIota;
+use crate::iota::Iota;
 use crate::parser::ActionValue;
-use crate::patterns::hex_casting::{math};
-// use crate::patterns::hex_casting::{
-//     eval, lists, math, read_write, sentinel, special, stack, swizzle,
-// };
-// use crate::patterns::more_iotas::matrices;
+use crate::patterns::hex_casting::{
+    eval, lists, math, read_write, sentinel, special, stack, swizzle,
+};
+use crate::patterns::hex_casting::{math, special};
+use crate::patterns::more_iotas::matrices;
 use crate::patterns::{constructors, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -51,14 +51,14 @@ impl PatternRegistryExt for PatternRegistry {
     fn construct(great_sigs: &HashMap<String, String>) -> PatternRegistry {
         let registry: PatternRegistry = vec![
             //special patterns
-            // Pattern::new_with_val("Consideration", "escape", "qqqaw", Box::new(special::escape)),
-            // Pattern::new("Introspection", "open_paren", "qqq", Box::new(special::introspect)),
-            // Pattern::new("Retrospection", "close_paren", "eee", Box::new(special::retrospect)),
-            // Pattern::new("Hermes' Gambit", "eval", "deaqq", Box::new(eval::eval)),
-            // Pattern::new("Thoth's Gambit", "for_each", "dadad", Box::new(eval::for_each)),
-            // Pattern::new("Charon's Gambit", "halt", "aqdee", Box::new(eval::halt)),
-            // Pattern::new("Reveal", "print", "de", Box::new(special::print)),
-            // Pattern::new("Iris' Gambit", "eval/cc", "qwaqde", Box::new(eval::eval_cc)),
+            Pattern::new_with_val("Consideration", "escape", "qqqaw", Box::new(special::escape)),
+            Pattern::new("Introspection", "open_paren", "qqq", Box::new(special::introspect)),
+            Pattern::new("Retrospection", "close_paren", "eee", Box::new(special::retrospect)),
+            Pattern::new("Hermes' Gambit", "eval", "deaqq", Box::new(eval::eval)),
+            Pattern::new("Thoth's Gambit", "for_each", "dadad", Box::new(eval::for_each)),
+            Pattern::new("Charon's Gambit", "halt", "aqdee", Box::new(eval::halt)),
+            Pattern::new("Reveal", "print", "de", Box::new(special::print)),
+            Pattern::new("Iris' Gambit", "eval/cc", "qwaqde", Box::new(eval::eval_cc)),
 
 
 
@@ -96,86 +96,86 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Intersection Distillation", "and_bit", "wdweaqa", Box::new(math::and_bit)),
             Pattern::new("Unifying Distillation", "or_bit", "waweaqa", Box::new(math::or_bit)),
             Pattern::new("Exclusionary Distillation", "xor_bit", "dwaeaqa", Box::new(math::xor_bit)),
-            // Pattern::new("Inversion Purification", "not_bit", "dweaqa", Box::new(math::not_bit)),
-            // Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
-            // Pattern::new("Augur's Exaltation", "if", "awdd",  Box::new(math::bool_if)),
-            // Pattern::new("Entropy Reflection", "random", "eqqq",  Box::new(math::random)),
+            Pattern::new("Inversion Purification", "not_bit", "dweaqa", Box::new(math::not_bit)),
+            Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
+            Pattern::new("Augur's Exaltation", "if", "awdd",  Box::new(math::bool_if)),
+            Pattern::new("Entropy Reflection", "random", "eqqq",  Box::new(math::random)),
 
 
-            //lists
-            // Pattern::new("Integration Distillation", "append", "edqde", Box::new(lists::append)),
-            // Pattern::new("Combination Distillation", "concat", "qaeaq", Box::new(lists::concat)),
-            // Pattern::new("Selection Distillation", "index", "deeed", Box::new(lists::index)),
-            // Pattern::new("Abacus Purification", "list_size", "aqaeaq", Box::new(lists::list_size)),
-            // Pattern::new("Single's Purification", "singleton", "adeeed", Box::new(lists::singleton)),
-            // Pattern::new("Retrograde Purification", "reverse_list", "qqqaede", Box::new(lists::reverse_list)),
-            // Pattern::new("Flock's Gambit", "last_n_list", "ewdqdwe", Box::new(lists::last_n_list)),
-            // Pattern::new("Flock's Disintegration", "splat", "qwaeawq", Box::new(lists::splat)),
-            // Pattern::new("Locator's Distillation", "index_of", "dedqde", Box::new(lists::index_of)),
-            // Pattern::new("Excisor's Distillation", "list_remove", "edqdewaqa", Box::new(lists::list_remove)),
-            // Pattern::new("Selection Exaltation", "slice", "qaeaqwded", Box::new(lists::slice)),
-            // Pattern::new("Surgeon's Exaltation", "modify_in_place", "wqaeaqw", Box::new(lists::modify_in_place)),
-            // Pattern::new("Speaker's Distillation", "construct", "ddewedd", Box::new(lists::construct)),
-            // Pattern::new("Speaker's Decomposition", "deconstruct", "aaqwqaa", Box::new(lists::deconstruct)),
+            lists
+            Pattern::new("Integration Distillation", "append", "edqde", Box::new(lists::append)),
+            Pattern::new("Combination Distillation", "concat", "qaeaq", Box::new(lists::concat)),
+            Pattern::new("Selection Distillation", "index", "deeed", Box::new(lists::index)),
+            Pattern::new("Abacus Purification", "list_size", "aqaeaq", Box::new(lists::list_size)),
+            Pattern::new("Single's Purification", "singleton", "adeeed", Box::new(lists::singleton)),
+            Pattern::new("Retrograde Purification", "reverse_list", "qqqaede", Box::new(lists::reverse_list)),
+            Pattern::new("Flock's Gambit", "last_n_list", "ewdqdwe", Box::new(lists::last_n_list)),
+            Pattern::new("Flock's Disintegration", "splat", "qwaeawq", Box::new(lists::splat)),
+            Pattern::new("Locator's Distillation", "index_of", "dedqde", Box::new(lists::index_of)),
+            Pattern::new("Excisor's Distillation", "list_remove", "edqdewaqa", Box::new(lists::list_remove)),
+            Pattern::new("Selection Exaltation", "slice", "qaeaqwded", Box::new(lists::slice)),
+            Pattern::new("Surgeon's Exaltation", "modify_in_place", "wqaeaqw", Box::new(lists::modify_in_place)),
+            Pattern::new("Speaker's Distillation", "construct", "ddewedd", Box::new(lists::construct)),
+            Pattern::new("Speaker's Decomposition", "deconstruct", "aaqwqaa", Box::new(lists::deconstruct)),
 
-            // //stack manipulation
-            // Pattern::new("Gemini Decomposition", "duplicate", "aadaa", Box::new(stack::duplicate)),
-            // Pattern::new("Dioscuri Gambit", "two_dup", "aadadaaw", Box::new(stack::two_dup)),
-            // Pattern::new("Gemini Gambit", "duplicate_n", "aadaadaa", Box::new(stack::duplicate_n)),
-            // Pattern::new("Jester's Gambit", "swap", "aawdd", Box::new(stack::swap)),
-            // Pattern::new("Rotation Gambit", "rotate", "aaeaa", Box::new(stack::rotate)),
-            // Pattern::new("Rotation Gambit II", "rotate_reverse", "ddqdd", Box::new(stack::rotate_reverse)),
-            // Pattern::new("Prospector's Gambit", "over", "aaedd", Box::new(stack::over)),
-            // Pattern::new("Undertaker's Gambit", "tuck", "ddqaa", Box::new(stack::tuck)),
-            // Pattern::new("Flock's Reflection", "stack_len", "qwaeawqaeaqa", Box::new(stack::stack_len)),
-            // Pattern::new("Fisherman's Gambit", "fisherman", "ddad", Box::new(stack::fisherman)),
-            // Pattern::new("Fisherman's Gambit II", "fisherman/copy", "aada", Box::new(stack::fisherman_copy)),
-            // Pattern::new("Swindler's Gambit", "swizzle", "qaawdde", Box::new(swizzle::swizzle)),
-
-
-            // //read/write
-            // Pattern::new("Muninn's Reflection", "read/local",  "qeewdweddw", Box::new(read_write::read_local)),
-            // Pattern::new("Huginn's Gambit", "write/local",  "eqqwawqaaw", Box::new(read_write::write_local)),
-            // Pattern::new("Erase Item", "erase", "qdqawwaww", Box::new(read_write::erase)),
-            // Pattern::new("Craft Trinket", "craft/trinket", "wwaqqqqqeaqeaeqqqeaeq", Box::new(read_write::craft_trinket)),
-            // Pattern::new("Craft Cypher", "craft/cypher", "waqqqqq", Box::new(read_write::craft_cypher)),
-            // Pattern::new("Craft Artifact", "craft/artifact", "wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq", Box::new(read_write::craft_artifact)),
-            // Pattern::new("Scribe's Reflection", "read",  "aqqqqq", Box::new(read_write::read)),
-            // Pattern::new("Scribe's Gambit", "write",  "deeeee", Box::new(read_write::write)),
-            // Pattern::new("Auditor's Reflection", "readable",  "aqqqqqe", Box::new(read_write::readable)),
-            // Pattern::new("Assessor's Reflection", "writable",  "deeeeeq", Box::new(read_write::writable)),
-            // Pattern::new("Akasha's Distillation", "akashic/read",  "qqqwqqqqqaq", Box::new(read_write::akashic_read)),
-            // Pattern::new("Akasha's Gambit", "akashic/write",  "eeeweeeeede", Box::new(read_write::akashic_write)),
-            // Pattern::new("Chronicler's Purification", "read/entity",  "wawqwqwqwqwqw", Box::new(read_write::read_entity)),
-            // Pattern::new("Chronicler's Gambit", "write/entity",  "wdwewewewewew", Box::new(read_write::write_entity)),
-            // Pattern::new("Auditor's Purification", "readable/entity",  "wawqwqwqwqwqwew", Box::new(read_write::readable_entity)),
-            // Pattern::new("Assessor's Purification", "writable/entity",  "wdwewewewewewqw", Box::new(read_write::writeable_entity)),
+            //stack manipulation
+            Pattern::new("Gemini Decomposition", "duplicate", "aadaa", Box::new(stack::duplicate)),
+            Pattern::new("Dioscuri Gambit", "two_dup", "aadadaaw", Box::new(stack::two_dup)),
+            Pattern::new("Gemini Gambit", "duplicate_n", "aadaadaa", Box::new(stack::duplicate_n)),
+            Pattern::new("Jester's Gambit", "swap", "aawdd", Box::new(stack::swap)),
+            Pattern::new("Rotation Gambit", "rotate", "aaeaa", Box::new(stack::rotate)),
+            Pattern::new("Rotation Gambit II", "rotate_reverse", "ddqdd", Box::new(stack::rotate_reverse)),
+            Pattern::new("Prospector's Gambit", "over", "aaedd", Box::new(stack::over)),
+            Pattern::new("Undertaker's Gambit", "tuck", "ddqaa", Box::new(stack::tuck)),
+            Pattern::new("Flock's Reflection", "stack_len", "qwaeawqaeaqa", Box::new(stack::stack_len)),
+            Pattern::new("Fisherman's Gambit", "fisherman", "ddad", Box::new(stack::fisherman)),
+            Pattern::new("Fisherman's Gambit II", "fisherman/copy", "aada", Box::new(stack::fisherman_copy)),
+            Pattern::new("Swindler's Gambit", "swizzle", "qaawdde", Box::new(swizzle::swizzle)),
 
 
-            // //sentinel
-            // Pattern::new( "sentinel/create", "Summon Sentinel", "waeawae", Box::new(sentinel::create)),
-            // Pattern::new( "sentinel/destroy", "Banish Sentinel","qdwdqdw", Box::new(sentinel::destroy)),
-            // Pattern::new( "sentinel/get_pos", "Locate Sentinel", "waeawaede", Box::new(sentinel::get_pos)),
-            // Pattern::new( "sentinel/wayfind", "Wayfind Sentinel","waeawaedwa", Box::new(sentinel::wayfind)),
+            //read/write
+            Pattern::new("Muninn's Reflection", "read/local",  "qeewdweddw", Box::new(read_write::read_local)),
+            Pattern::new("Huginn's Gambit", "write/local",  "eqqwawqaaw", Box::new(read_write::write_local)),
+            Pattern::new("Erase Item", "erase", "qdqawwaww", Box::new(read_write::erase)),
+            Pattern::new("Craft Trinket", "craft/trinket", "wwaqqqqqeaqeaeqqqeaeq", Box::new(read_write::craft_trinket)),
+            Pattern::new("Craft Cypher", "craft/cypher", "waqqqqq", Box::new(read_write::craft_cypher)),
+            Pattern::new("Craft Artifact", "craft/artifact", "wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq", Box::new(read_write::craft_artifact)),
+            Pattern::new("Scribe's Reflection", "read",  "aqqqqq", Box::new(read_write::read)),
+            Pattern::new("Scribe's Gambit", "write",  "deeeee", Box::new(read_write::write)),
+            Pattern::new("Auditor's Reflection", "readable",  "aqqqqqe", Box::new(read_write::readable)),
+            Pattern::new("Assessor's Reflection", "writable",  "deeeeeq", Box::new(read_write::writable)),
+            Pattern::new("Akasha's Distillation", "akashic/read",  "qqqwqqqqqaq", Box::new(read_write::akashic_read)),
+            Pattern::new("Akasha's Gambit", "akashic/write",  "eeeweeeeede", Box::new(read_write::akashic_write)),
+            Pattern::new("Chronicler's Purification", "read/entity",  "wawqwqwqwqwqw", Box::new(read_write::read_entity)),
+            Pattern::new("Chronicler's Gambit", "write/entity",  "wdwewewewewew", Box::new(read_write::write_entity)),
+            Pattern::new("Auditor's Purification", "readable/entity",  "wawqwqwqwqwqwew", Box::new(read_write::readable_entity)),
+            Pattern::new("Assessor's Purification", "writable/entity",  "wdwewewewewewqw", Box::new(read_write::writeable_entity)),
+
+
+            //sentinel
+            Pattern::new( "sentinel/create", "Summon Sentinel", "waeawae", Box::new(sentinel::create)),
+            Pattern::new( "sentinel/destroy", "Banish Sentinel","qdwdqdw", Box::new(sentinel::destroy)),
+            Pattern::new( "sentinel/get_pos", "Locate Sentinel", "waeawaede", Box::new(sentinel::get_pos)),
+            Pattern::new( "sentinel/wayfind", "Wayfind Sentinel","waeawaedwa", Box::new(sentinel::wayfind)),
 
 
             // //consts
-            // Pattern::new("Mind's Reflection", "get_caster", "qaq", 
-            //     constructors::push_const(&EntityIota {name: Rc::from("Caster")})),
-            // Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(&vec![])),
-            // Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(&VectorIota::new(1.0, 0.0, 0.0))),
-            // Pattern::new("Vector Reflection +Y", "const/vec/py", "qqqqqew", constructors::push_const(&VectorIota::new(0.0, 1.0, 0.0))),
-            // Pattern::new("Vector Reflection +Z", "const/vec/pz", "qqqqqed", constructors::push_const(&VectorIota::new(0.0, 0.0, 1.0))),
-            // Pattern::new("Vector Reflection -X", "const/vec/nx", "eeeeeqa", constructors::push_const(&VectorIota::new(-1.0, 0.0, 0.0))),
-            // Pattern::new("Vector Reflection -Y", "const/vec/ny", "eeeeeqw", constructors::push_const(&VectorIota::new(0.0, -1.0, 0.0))),
-            // Pattern::new("Vector Reflection -Z", "const/vec/nz", "eeeeeqd", constructors::push_const(&VectorIota::new(0.0, 0.0, -1.0))),
-            // Pattern::new("Vector Reflection Zero", "const/vec/0", "qqqqq", constructors::push_const(&VectorIota::new(0.0, 0.0, 0.0))),
-            // Pattern::new("Arc's Reflection", "const/double/pi", "qdwdq", constructors::push_const(&PI)),
-            // Pattern::new("Circle's Reflection", "const/double/tau", "eawae", constructors::push_const(&TAU)),
-            // Pattern::new("Euler's Reflection", "const/double/e", "aaq", constructors::push_const(&E)),
-            // Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(&NullIota::Null)),
-            // Pattern::new("True Reflection", "const/true", "aqae",constructors::push_const(&true)),
-            // Pattern::new("False Reflection", "const/false", "dedq",constructors::push_const(&false)),
+            Pattern::new("Mind's Reflection", "get_caster", "qaq", 
+                constructors::push_const(Rc::new(EntityIota {name: Rc::from("Caster")}))),
+            Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Rc::new(vec![]))),
+            Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(Rc::new(VectorIota::new(1.0, 0.0, 0.0)))),
+            Pattern::new("Vector Reflection +Y", "const/vec/py", "qqqqqew", constructors::push_const(Rc::new(VectorIota::new(0.0, 1.0, 0.0)))),
+            Pattern::new("Vector Reflection +Z", "const/vec/pz", "qqqqqed", constructors::push_const(Rc::new(VectorIota::new(0.0, 0.0, 1.0)))),
+            Pattern::new("Vector Reflection -X", "const/vec/nx", "eeeeeqa", constructors::push_const(Rc::new(VectorIota::new(-1.0, 0.0, 0.0)))),
+            Pattern::new("Vector Reflection -Y", "const/vec/ny", "eeeeeqw", constructors::push_const(Rc::new(VectorIota::new(0.0, -1.0, 0.0)))),
+            Pattern::new("Vector Reflection -Z", "const/vec/nz", "eeeeeqd", constructors::push_const(Rc::new(VectorIota::new(0.0, 0.0, -1.0)))),
+            Pattern::new("Vector Reflection Zero", "const/vec/0", "qqqqq", constructors::push_const(Rc::new(VectorIota::new(0.0, 0.0, 0.0)))),
+            Pattern::new("Arc's Reflection", "const/double/pi", "qdwdq", constructors::push_const(Rc::new(PI))),
+            Pattern::new("Circle's Reflection", "const/double/tau", "eawae", constructors::push_const(Rc::new(TAU))),
+            Pattern::new("Euler's Reflection", "const/double/e", "aaq", constructors::push_const(Rc::new(E))),
+            Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(Rc::new(NullIota::Null))),
+            Pattern::new("True Reflection", "const/true", "aqae",constructors::push_const(Rc::new(true))),
+            Pattern::new("False Reflection", "const/false", "dedq",constructors::push_const(Rc::new(false))),
 
             //spells
             Pattern::new("Alter Gravity", "interop/gravity/set", "wdwdwaaqw", constructors::spell_2::<EntityIota, VectorIota>()),
@@ -237,9 +237,9 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Summon Greater Sentinel", "sentinel/create/great", great_sigs.get("sentinel/create/great").unwrap(), 
                 constructors::spell_1::<VectorIota>()),
 
-            // Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
-            // Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rain").unwrap(), Box::new(special::no_action)),
-            // Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
+            Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
+            Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rain").unwrap(), Box::new(special::no_action)),
+            Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
 
 
             //requires value to be set
@@ -341,7 +341,7 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::value_1::<EntityIota, NumberIota>("Number", "Greater Fold Reflection")),
 
             //MoreIotas
-            // Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrices::make)),
+            Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrices::make)),
 
         ];
 

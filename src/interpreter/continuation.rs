@@ -77,7 +77,7 @@ impl ContinuationFrame for FrameEndEval {
 
 #[derive(Clone, Debug)]
 pub struct FrameForEach {
-    pub data: Vec<Rc<dyn Iota>>,
+    pub data: Vector<Rc<dyn Iota>>,
     pub code: Vec<AstNode>,
     pub base_stack: Option<Vector<Rc<dyn Iota>>>,
     pub acc: Vector<Rc<dyn Iota>>,
@@ -103,7 +103,7 @@ impl ContinuationFrame for FrameForEach {
 
         let stack_top = if !self.data.is_empty() {
             let mut new_data = self.data.clone();
-            let top = new_data.pop().unwrap();
+            let top = new_data.pop_back().unwrap();
 
             state.continuation.push(Rc::new(FrameForEach {
                 data: new_data,
@@ -140,7 +140,7 @@ impl ContinuationFrame for FrameForEach {
     }
 }
 
-pub fn iota_list_to_ast_node_list(list: &[Rc<dyn Iota>]) -> Vec<AstNode> {
+pub fn iota_list_to_ast_node_list(list: Rc<Vector<Rc<dyn Iota>>>) -> Vec<AstNode> {
     list.iter()
         .rev()
         .enumerate()

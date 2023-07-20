@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use nalgebra::{
     dmatrix, DMatrix, Matrix1xX,
 };
@@ -7,7 +9,7 @@ use crate::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::{Iota, more_iotas::matrix::MatrixIota, hex_casting::number::NumberIota},
+    iota::{Iota, more_iotas::matrix::MatrixIota, hex_casting::{number::NumberIota, vector::VectorIota, list::ListIota}},
     pattern_registry::PatternRegistry,
 };
 
@@ -16,17 +18,14 @@ pub fn make<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_num_or_vec_or_list(0, arg_count)?;
+    let iota = state.stack.get_iota_a_b_or_c::<NumberIota, VectorIota, ListIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    fn map_num(element: &dyn Iota) -> Result<f32, ()> {
-        match element {
-            Iota::Number(num) => Ok(*num),
-            _ => Err(()),
-        }
+    fn map_num(element: &dyn Iota) -> Result<&f32, ()> {
+        element.downcast_ref::<NumberIota>().ok_or(())
     }
 
-    fn matrix_from_vec_list(list: &[Box<dyn Iota>]) -> Result<MatrixIota, ()> {
+    fn matrix_from_vec_list(list: &[Rc<dyn Iota>]) -> Result<MatrixIota, ()> {
         let row_list = list
             .iter()
             .map(|element| match element {
@@ -38,19 +37,19 @@ pub fn make<'a>(
         Ok(DMatrix::from_rows(&row_list[..]))
     }
 
-    fn matrix_from_num_list(list: &[Box<dyn Iota>]) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list(list: &[Rc<dyn Iota>]) -> Result<MatrixIota, ()> {
         let row = row_from_num_list(list)?;
 
         Ok(DMatrix::from_rows(&[row]))
     }
 
-    fn row_from_num_list(list: &[Box<dyn Iota>]) -> Result<Matrix1xX<NumberIota>, ()> {
+    fn row_from_num_list(list: &[Rc<dyn Iota>]) -> Result<Matrix1xX<NumberIota>, ()> {
         let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>()?;
 
         Ok(Matrix1xX::from_vec(num_list))
     }
 
-    fn matrix_from_num_list_list(list: &[Box<dyn Iota>]) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list_list(list: &[Rc<dyn Iota>]) -> Result<MatrixIota, ()> {
         let empty_vec = Iota::List(vec![]);
         let first_row = list.get(0).unwrap_or(&empty_vec);
 
