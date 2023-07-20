@@ -122,7 +122,7 @@ impl ContinuationFrame for FrameForEach {
         };
 
         state.stack = stack.into_iter().collect();
-        state.stack.push(stack_top);
+        state.stack.push_back(stack_top);
 
         Ok(())
     }

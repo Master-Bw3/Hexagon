@@ -38,7 +38,7 @@ pub fn store<'a>(
                 } else {
                     state
                         .stack
-                        .pop()
+                        .pop_back()
                         .ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?
                 }
             };
@@ -171,7 +171,7 @@ pub fn embed<'a>(
                 }
                 _ => return Err(Mishap::ExpectedPattern(iota.clone())),
             },
-            _ => state.stack.push(iota.clone()),
+            _ => state.stack.push_back(iota.clone()),
         },
         OpValue::Var(_) => Err(Mishap::OpExpectedIota)?,
     };

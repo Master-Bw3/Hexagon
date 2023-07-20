@@ -13,7 +13,7 @@ use crate::iota::{
 
 use super::{continuation::ContinuationFrame, mishap::Mishap};
 
-pub type Stack = Vec<Rc<dyn Iota>>;
+pub type Stack = Vector<Rc<dyn Iota>>;
 
 pub type Considered = bool;
 
@@ -118,7 +118,7 @@ impl StackExt for Stack {
     }
 
     fn remove_args(&mut self, arg_count: &usize) {
-        self.drain((self.len() - arg_count)..);
+        self.slice((self.len() - arg_count)..);
     }
 
     fn get_iota_a_or_b<T: Iota, U: Iota>(

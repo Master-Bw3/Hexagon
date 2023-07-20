@@ -52,7 +52,7 @@ pub fn eval_cc<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let continuation_iota = state.continuation.clone();
     eval(state, pattern_registry)?;
-    state.stack.push(Rc::new(continuation_iota));
+    state.stack.push_back(Rc::new(continuation_iota));
 
     Ok(state)
 }

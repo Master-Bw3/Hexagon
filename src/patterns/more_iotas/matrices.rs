@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+use im::{vector, Vector};
 use nalgebra::{
     dmatrix, DMatrix, Matrix1xX,
 };
@@ -21,55 +22,55 @@ pub fn make<'a>(
     let iota = state.stack.get_iota_a_b_or_c::<NumberIota, VectorIota, ListIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    fn map_num(element: &dyn Iota) -> Result<&f32, ()> {
-        element.downcast_ref::<NumberIota>().ok_or(())
+    fn map_num(element: &Rc<dyn Iota>) -> Result<f32, ()> {
+        element.downcast_ref::<NumberIota>().ok_or(()).cloned()
     }
 
-    fn matrix_from_vec_list(list: &[Rc<dyn Iota>]) -> Result<MatrixIota, ()> {
+    fn matrix_from_vec_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
         let row_list = list
             .iter()
-            .map(|element| match element {
-                Iota::Vector(vec) => Ok(Matrix1xX::from_vec(vec![vec.x, vec.y, vec.z])),
-                _ => Err(()),
+            .map(|element| match element.downcast_rc::<VectorIota>() {
+                Ok(vec) => Ok(Matrix1xX::from_vec(vec![vec.x, vec.y, vec.z])),
+                Err(_) => Err(()),
             })
             .collect::<Result<Vec<_>, _>>()?;
 
         Ok(DMatrix::from_rows(&row_list[..]))
     }
 
-    fn matrix_from_num_list(list: &[Rc<dyn Iota>]) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
         let row = row_from_num_list(list)?;
 
         Ok(DMatrix::from_rows(&[row]))
     }
 
-    fn row_from_num_list(list: &[Rc<dyn Iota>]) -> Result<Matrix1xX<NumberIota>, ()> {
+    fn row_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Result<Matrix1xX<NumberIota>, ()> {
         let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>()?;
 
         Ok(Matrix1xX::from_vec(num_list))
     }
 
-    fn matrix_from_num_list_list(list: &[Rc<dyn Iota>]) -> Result<MatrixIota, ()> {
-        let empty_vec = Iota::List(vec![]);
+    fn matrix_from_num_list_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
+        let empty_vec: Rc<dyn Iota> = Rc::new(vector![]);
         let first_row = list.get(0).unwrap_or(&empty_vec);
 
         //used to ensure all rows have same length
-        let row_len = match first_row {
-            Iota::List(x) => Ok(x.len()),
-            _ => Err(()),
+        let row_len = match first_row.downcast_rc::<ListIota>() {
+            Ok(x) => Ok(x.len()),
+            Err(_) => Err(()),
         }?;
 
         let num_num_list = list
             .iter()
-            .map(|row| match row {
-                Iota::List(inner_list) => {
+            .map(|row| match row.downcast_rc::<ListIota>() {
+                Ok(inner_list) => {
                     if inner_list.len() == row_len {
-                        row_from_num_list(inner_list)
+                        row_from_num_list(&inner_list)
                     } else {
                         Err(())
                     }
                 }
-                _ => Err(()),
+                Err(_) => Err(()),
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -77,17 +78,17 @@ pub fn make<'a>(
     }
 
     let operation_result = match iota {
-        crate::interpreter::state::Either3::L(num) => dmatrix![num],
+        crate::interpreter::state::Either3::L(num) => dmatrix![*num],
         crate::interpreter::state::Either3::M(vec) => dmatrix![vec.x; vec.y; vec.z;],
         crate::interpreter::state::Either3::R(list) => matrix_from_num_list(&list)
             .or_else(|_| matrix_from_num_list_list(&list))
             .or_else(|_| matrix_from_vec_list(&list))
             .map_err(|_| {
-                Mishap::IncorrectIota(1, "Number, Vector, or List".to_string(), Iota::List(list))
+                Mishap::IncorrectIota(1, "Number, Vector, or List".to_string(), list)
             })?,
     };
 
-    state.stack.push(Iota::Matrix(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }

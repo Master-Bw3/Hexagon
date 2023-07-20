@@ -1,9 +1,11 @@
+use std::rc::Rc;
+
 use crate::{
     interpreter::{
         mishap::Mishap,
         state::{Holding, StackExt, State},
     },
-    iota::{Iota, hex_casting::null::NullIota},
+    iota::{Iota, hex_casting::{null::NullIota, entity::EntityIota, list::ListIota, vector::VectorIota, pattern::PatternIota}},
     pattern_registry::PatternRegistry,
 };
 
@@ -11,11 +13,11 @@ pub fn read_local<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    state.stack.push(
+    state.stack.push_back_back(
         state
             .ravenmind
             .clone()
-            .unwrap_or(Iota::Null(NullIota::Null)),
+            .unwrap_or(Rc::new(NullIota::Null)),
     );
 
     Ok(state)
@@ -26,7 +28,7 @@ pub fn write_local<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_iota(0, arg_count)?.clone();
+    let iota = state.stack.get_any_iota(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     state.ravenmind = Some(iota);
@@ -57,15 +59,15 @@ pub fn craft_trinket<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_entity(0, arg_count)?,
-        state.stack.get_list(1, arg_count)?,
+        state.stack.get_iota::<EntityIota>(0, arg_count)?,
+        state.stack.get_iota::<ListIota>(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
     let player = state.entities.get_mut("Caster").unwrap();
 
     player.holding = match *player.holding {
-        Holding::Trinket(None) => Box::new(Holding::Trinket(Some(Iota::List(iotas.1)))),
+        Holding::Trinket(None) => Box::new(Holding::Trinket(Some(iotas.1))),
         _ => Err(Mishap::HoldingIncorrectItem)?,
     };
 
@@ -78,15 +80,15 @@ pub fn craft_cypher<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_entity(0, arg_count)?,
-        state.stack.get_list(1, arg_count)?,
+        state.stack.get_iota::<EntityIota>(0, arg_count)?,
+        state.stack.get_iota::<ListIota>(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
     let player = state.entities.get_mut("Caster").unwrap();
 
     player.holding = match *player.holding {
-        Holding::Trinket(None) => Box::new(Holding::Cypher(Some(Iota::List(iotas.1)))),
+        Holding::Trinket(None) => Box::new(Holding::Cypher(Some(iotas.1))),
         _ => Err(Mishap::HoldingIncorrectItem)?,
     };
 
@@ -99,15 +101,15 @@ pub fn craft_artifact<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_entity(0, arg_count)?,
-        state.stack.get_list(1, arg_count)?,
+        state.stack.get_iota::<EntityIota>(0, arg_count)?,
+        state.stack.get_iota::<ListIota>(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
     let player = state.entities.get_mut("Caster").unwrap();
 
     player.holding = match *player.holding {
-        Holding::Trinket(None) => Box::new(Holding::Artifact(Some(Iota::List(iotas.1)))),
+        Holding::Trinket(None) => Box::new(Holding::Artifact(Some(iotas.1))),
         _ => Err(Mishap::HoldingIncorrectItem)?,
     };
 
@@ -122,10 +124,10 @@ pub fn read<'a>(
 
     let operation_result = match player.holding.as_ref() {
         Holding::Focus(Some(iota)) => iota.clone(),
-        _ => Iota::Null(NullIota::Null),
+        _ => Rc::new(NullIota::Null),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -135,7 +137,7 @@ pub fn write<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_iota(0, arg_count)?.clone();
+    let iota = state.stack.get_any_iota(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     let player = state.entities.get_mut("Caster").unwrap();
@@ -155,14 +157,14 @@ pub fn readable<'a>(
     let player = state.entities.get("Caster").unwrap();
 
     let operation_result = match player.holding.as_ref() {
-        Holding::None => Iota::Bool(false),
-        Holding::Focus(_) => Iota::Bool(true),
-        Holding::Trinket(_) => Iota::Bool(false),
-        Holding::Artifact(_) => Iota::Bool(false),
-        Holding::Cypher(_) => Iota::Bool(false),
+        Holding::None => false,
+        Holding::Focus(_) => true,
+        Holding::Trinket(_) => false,
+        Holding::Artifact(_) => false,
+        Holding::Cypher(_) => false,
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -174,14 +176,14 @@ pub fn writable<'a>(
     let player = state.entities.get("Caster").unwrap();
 
     let operation_result = match player.holding.as_ref() {
-        Holding::None => Iota::Bool(false),
-        Holding::Focus(_) => Iota::Bool(true),
-        Holding::Trinket(_) => Iota::Bool(false),
-        Holding::Artifact(_) => Iota::Bool(false),
-        Holding::Cypher(_) => Iota::Bool(false),
+        Holding::None => false,
+        Holding::Focus(_) => true,
+        Holding::Trinket(_) => false,
+        Holding::Artifact(_) => false,
+        Holding::Cypher(_) => false,
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -192,22 +194,24 @@ pub fn akashic_read<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_vector(0, arg_count)?,
-        state.stack.get_pattern(1, arg_count)?,
+        state.stack.get_iota::<VectorIota>(0, arg_count)?,
+        state.stack.get_iota::<PatternIota>(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
 
     let location = &[(iotas.0).x as i32, (iotas.0).y as i32, (iotas.0).z as i32];
 
+    let null: Rc<dyn Iota> = Rc::new(NullIota::Null);
+
     let operation_result = match state.libraries.get(location) {
         Some(library) => library
             .get(&iotas.1.signature)
-            .unwrap_or(&Iota::Null(NullIota::Null))
+            .unwrap_or(&null)
             .clone(),
         None => Err(Mishap::NoAkashicRecord(iotas.0))?,
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -218,9 +222,9 @@ pub fn akashic_write<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 3;
     let iotas = (
-        state.stack.get_vector(0, arg_count)?,
-        state.stack.get_pattern(1, arg_count)?,
-        state.stack.get_iota(2, arg_count)?.clone(),
+        state.stack.get_iota::<VectorIota>(0, arg_count)?,
+        state.stack.get_iota::<PatternIota>(1, arg_count)?,
+        state.stack.get_any_iota(2, arg_count)?.clone(),
     );
     state.stack.remove_args(&arg_count);
 
@@ -239,7 +243,7 @@ pub fn read_entity<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_entity(0, arg_count)?;
+    let iota = state.stack.get_iota::<EntityIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     let operation_result = match state.entities.get(&iota) {
@@ -250,7 +254,7 @@ pub fn read_entity<'a>(
         None => todo!("handle entity not existing"),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -261,7 +265,7 @@ pub fn write_entity<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_entity(0, arg_count)?,
+        state.stack.get_iota::<EntityIota>(0, arg_count)?,
         state.stack.get_iota(1, arg_count)?.clone(),
     );
     state.stack.remove_args(&arg_count);
@@ -282,7 +286,7 @@ pub fn readable_entity<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_entity(0, arg_count)?;
+    let iota = state.stack.get_iota::<EntityIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     let operation_result = match state.entities.get(&iota) {
@@ -296,7 +300,7 @@ pub fn readable_entity<'a>(
         None => todo!("handle entity not existing"),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -306,7 +310,7 @@ pub fn writeable_entity<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_entity(0, arg_count)?;
+    let iota = state.stack.get_iota::<EntityIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     let operation_result = match state.entities.get(&iota) {
@@ -320,7 +324,7 @@ pub fn writeable_entity<'a>(
         None => todo!("handle entity not existing"),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }

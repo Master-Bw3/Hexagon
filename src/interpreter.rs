@@ -278,7 +278,7 @@ pub fn push_pattern(
 pub fn push_iota(iota: Rc<dyn Iota>, state: &mut State, considered: bool) {
     match state.buffer {
         Some(ref mut buffer) => buffer.push_back((iota, considered)),
-        None => state.stack.push(iota),
+        None => state.stack.push_back(iota),
     }
 }
 

@@ -6,6 +6,7 @@ pub type NumberIota = f32;
 
 pub trait NumberIotaExt {
     fn int(self, index: usize) -> Result<i32, Mishap>;
+    fn int_under_inclusive(self, index: usize, len: usize) -> Result<i32, Mishap>;
 }
 
 impl NumberIotaExt for NumberIota {
@@ -15,6 +16,16 @@ impl NumberIotaExt for NumberIota {
         } else {
             Err(Mishap::IncorrectIota(index, "Integer".to_string(), Rc::new(self)))
         }
+    }
+
+    fn int_under_inclusive(self, index: usize, len: usize) -> Result<i32, Mishap> {
+        let int = self.int(index).map_err(|_| Mishap::IncorrectIota(index, format!("Integer between 0 and {}", len), Rc::new(self)))?;
+        if int >= len as i32 {
+            Ok(int)
+        } else {
+            Err(Mishap::IncorrectIota(index, format!("Integer between 0 and {}", len), Rc::new(self)))
+        }
+
     }
 }
 

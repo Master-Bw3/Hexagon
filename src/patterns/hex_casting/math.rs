@@ -1,4 +1,4 @@
-use im::Vector;
+use im::{Vector, vector};
 use std::ops::Deref;
 use std::{f32::consts::PI, ops::Not, rc::Rc};
 
@@ -41,7 +41,7 @@ pub fn add<'a>(
         (Either::R(vec1), Either::R(vec2)) => Rc::new(*vec1 + *vec2),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -68,7 +68,7 @@ pub fn subtract<'a>(
         (Either::R(vec1), Either::R(vec2)) => Rc::new(*vec1 - *vec2),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -95,7 +95,7 @@ pub fn mul_dot<'a>(
         (Either::R(vec1), Either::R(vec2)) => Rc::new(vec1.dot(&vec2)),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -122,7 +122,7 @@ pub fn div_cross<'a>(
         (Either::R(vec1), Either::R(vec2)) => Rc::new(vec1.cross(&vec2)),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -142,7 +142,7 @@ pub fn abs_len<'a>(
         Either::R(vec) => Rc::new(vec.norm()),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -180,7 +180,7 @@ pub fn pow_proj<'a>(
         }
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -200,7 +200,7 @@ pub fn floor<'a>(
         Either::R(vec) => Rc::new(vec.map(f32::floor)),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -220,7 +220,7 @@ pub fn ceil<'a>(
         Either::R(vec) => Rc::new(vec.map(f32::ceil)),
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -239,7 +239,7 @@ pub fn construct_vec<'a>(
 
     state
         .stack
-        .push(Rc::new(VectorIota::new(iotas.0, iotas.1, iotas.2)));
+        .push_back(Rc::new(VectorIota::new(iotas.0, iotas.1, iotas.2)));
 
     Ok(state)
 }
@@ -252,9 +252,9 @@ pub fn deconstruct_vec<'a>(
     let iota = state.stack.get_iota::<VectorIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    state.stack.push(Rc::new(iota.x));
-    state.stack.push(Rc::new(iota.y));
-    state.stack.push(Rc::new(iota.z));
+    state.stack.push_back(Rc::new(iota.x));
+    state.stack.push_back(Rc::new(iota.y));
+    state.stack.push_back(Rc::new(iota.z));
 
     Ok(state)
 }
@@ -281,7 +281,7 @@ pub fn coerce_axial<'a>(
         )
     };
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -299,7 +299,7 @@ pub fn and<'a>(
 
     let operation_result = iotas.0 & iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -317,7 +317,7 @@ pub fn or<'a>(
 
     let operation_result = iotas.0 | iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -335,7 +335,7 @@ pub fn xor<'a>(
 
     let operation_result = iotas.0 ^ iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -353,7 +353,7 @@ pub fn greater<'a>(
 
     let operation_result = iotas.0 > iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -371,7 +371,7 @@ pub fn less<'a>(
 
     let operation_result = iotas.0 < iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -389,7 +389,7 @@ pub fn greater_eq<'a>(
 
     let operation_result = iotas.0 >= iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -407,7 +407,7 @@ pub fn less_eq<'a>(
 
     let operation_result = iotas.0 <= iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -425,7 +425,7 @@ pub fn equals<'a>(
 
     let operation_result = (*iotas.0).tolerates_other(&*iotas.1);
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -443,7 +443,7 @@ pub fn not_equals<'a>(
 
     let operation_result = !((*iotas.0).tolerates_other(&*iotas.1));
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -458,7 +458,7 @@ pub fn not<'a>(
 
     let operation_result = !iota;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -484,7 +484,7 @@ pub fn bool_coerce<'a>(
         false
     };
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -499,7 +499,7 @@ pub fn sin<'a>(
 
     let operation_result = iota.sin();
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -514,7 +514,7 @@ pub fn cos<'a>(
 
     let operation_result = iota.cos();
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -529,7 +529,7 @@ pub fn tan<'a>(
 
     let operation_result = iota.tan();
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -544,7 +544,7 @@ pub fn arcsin<'a>(
 
     let operation_result = iota.asin();
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -559,7 +559,7 @@ pub fn arccos<'a>(
 
     let operation_result = iota.acos();
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -574,7 +574,7 @@ pub fn arctan<'a>(
 
     let operation_result = iota.atan();
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -593,7 +593,7 @@ pub fn logarithm<'a>(
 
     let operation_result = (iotas.0).log(iotas.1);
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -612,7 +612,7 @@ pub fn modulo<'a>(
 
     let operation_result = iotas.0 % iotas.1;
 
-    state.stack.push(Rc::new(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
     Ok(state)
 }
@@ -656,7 +656,7 @@ pub fn and_bit<'a>(
         }
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -705,7 +705,7 @@ pub fn or_bit<'a>(
         }
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
@@ -766,80 +766,80 @@ pub fn xor_bit<'a>(
         }
     };
 
-    state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
 
-// pub fn not_bit<'a>(
-//     state: &'a mut State,
-//     _pattern_registry: &PatternRegistry,
-// ) -> Result<&'a mut State, Mishap> {
-//     let arg_count = 1;
-//     let iota = state.stack.get_integer(0, arg_count)?;
+pub fn not_bit<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_iota::<NumberIota>(0, arg_count)?.int(0)?;
 
-//     state.stack.remove_args(&arg_count);
+    state.stack.remove_args(&arg_count);
 
-//     let operation_result: Rc<dyn Iota> = !iota;
+    let operation_result = !iota;
 
-//     state.stack.push((operation_result as f32));
+    state.stack.push_back(Rc::new(operation_result as f32));
 
-//     Ok(state)
-// }
+    Ok(state)
+}
 
-// pub fn to_set<'a>(
-//     state: &'a mut State,
-//     _pattern_registry: &PatternRegistry,
-// ) -> Result<&'a mut State, Mishap> {
-//     let arg_count = 1;
-//     let list = state.stack.get_list(0, arg_count)?;
+pub fn to_set<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let list = state.stack.get_iota::<ListIota>(0, arg_count)?;
 
-//     state.stack.remove_args(&arg_count);
+    state.stack.remove_args(&arg_count);
 
-//     let operation_result: Rc<dyn Iota> = list.iter().fold(vec![], |acc, iota| {
-//         if acc.contains(iota) {
-//             acc
-//         } else {
-//             let mut new_acc = acc;
-//             new_acc.push(iota.clone());
-//             new_acc
-//         }
-//     });
+    let operation_result = list.iter().fold(vector![], |acc, iota| {
+        if acc.clone().iter().map(|x: &Rc<dyn Iota>| iota.tolerates_other(x.as_ref())).collect::<Vec<bool>>().contains(&true) {
+            acc
+        } else {
+            let mut new_acc = acc;
+            new_acc.push_back(iota.clone());
+            new_acc
+        }
+    });
 
-//     state.stack.push(Iota::List(operation_result));
+    state.stack.push_back(Rc::new(operation_result));
 
-//     Ok(state)
-// }
+    Ok(state)
+}
 
-// pub fn bool_if<'a>(
-//     state: &'a mut State,
-//     _pattern_registry: &PatternRegistry,
-// ) -> Result<&'a mut State, Mishap> {
-//     let arg_count = 3;
-//     let iotas = (
-//         state.stack.get_iota::<BooleanIota>(0, arg_count)?,
-//         state.stack.get_iota(1, arg_count)?.clone(),
-//         state.stack.get_iota(2, arg_count)?.clone(),
-//     );
-//     state.stack.remove_args(&arg_count);
+pub fn bool_if<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 3;
+    let iotas = (
+        state.stack.get_iota::<BooleanIota>(0, arg_count)?,
+        state.stack.get_any_iota(1, arg_count)?,
+        state.stack.get_any_iota(2, arg_count)?,
+    );
+    state.stack.remove_args(&arg_count);
 
-//     let operation_result: Rc<dyn Iota> = if iotas.0 { iotas.1 } else { iotas.2 };
+    let operation_result: Rc<dyn Iota> = if *iotas.0 { iotas.1 } else { iotas.2 };
 
-//     state.stack.push(operation_result);
+    state.stack.push_back(operation_result);
 
-//     Ok(state)
-// }
+    Ok(state)
+}
 
-// pub fn random<'a>(
-//     state: &'a mut State,
-//     _pattern_registry: &PatternRegistry,
-// ) -> Result<&'a mut State, Mishap> {
-//     let rand = rand::random::<f32>();
+pub fn random<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let rand = rand::random::<f32>();
 
-//     state.stack.push((rand));
+    state.stack.push_back(Rc::new(rand));
 
-//     Ok(state)
-// }
+    Ok(state)
+}
 
 // #[cfg(test)]
 // mod tests {
