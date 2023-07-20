@@ -1,10 +1,16 @@
+use std::rc::Rc;
+
 use crate::{
     interpreter::{
         mishap::Mishap,
         state::{EntityType, Stack, StackExt, State},
     },
     iota::{
-        hex_casting::{entity::EntityIota, list::ListIota, vector::VectorIota},
+        hex_casting::{
+            entity::EntityIota,
+            list::{ListIota, ListIotaExt},
+            vector::VectorIota,
+        },
         Iota,
     },
     parser::ActionValue,
@@ -69,11 +75,11 @@ pub fn value_0<U: Iota + 'static>(
             match value {
                 Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
-                    value_type_getter(&vec![iota.clone()], 0, 1).map_err(|_| {
+                    let iota = iota.clone().downcast_rc::<U>().map_err(|_| {
                         Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
-                    state.stack.push(iota.clone())
+                    state.stack.push(iota)
                 }
                 Some(ActionValue::Bookkeeper(val)) => {
                     Err(Mishap::InvalidValue(getter_type.to_string(), val.clone()))?
@@ -89,7 +95,7 @@ pub fn value_0<U: Iota + 'static>(
     )
 }
 
-pub fn value_1<T: 'static, U: Iota + 'static>(
+pub fn value_1<T: Iota + 'static, U: Iota + 'static>(
     getter_type: &'static str,
     display_name: &'static str,
 ) -> Box<ActionWithValueType> {
@@ -101,7 +107,7 @@ pub fn value_1<T: 'static, U: Iota + 'static>(
             match value {
                 Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
-                    let iota = iota.downcast::<U>().map_err(|_| {
+                    let iota = iota.clone().downcast_rc::<U>().map_err(|_| {
                         Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
@@ -134,7 +140,7 @@ pub fn value_2<T: Iota, U: Iota, V: Iota>(
             match value {
                 Some(ActionValue::Iota(iota)) => {
                     //return early with an error if iota is of an invalid type
-                    let iota = iota.downcast::<V>().map_err(|_| {
+                    let iota = iota.clone().downcast_rc::<V>().map_err(|_| {
                         Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
@@ -172,6 +178,7 @@ pub fn get_entity(
             match value {
                 Some(ActionValue::Iota(iota)) => {
                     if iota
+                    .clone()
                         .downcast_rc::<EntityIota>()
                         .map(|e| e.is_of_type(entity_type, &state.entities))
                         .unwrap_or(false)
@@ -211,20 +218,24 @@ pub fn zone_entity(
             let _ = &state.stack.get_iota::<VectorIota>(1, arg_count)?;
             state.stack.remove_args(&arg_count);
 
-            let conditon = |iota: &dyn Iota| {
+            let conditon = |iota: Rc<dyn Iota>| {
                 if *inverse {
+                    iota.downcast_ref::<ListIota>()
+                        .map(|e| {
+                            e.is_entity_list(None, &state.entities)
+                                && !e.is_entity_list(entity_type, &state.entities)
+                        })
+                        .unwrap_or(false)
+                } else {
                     iota.downcast_ref::<ListIota>()
                         .map(|e| e.is_entity_list(entity_type, &state.entities))
                         .unwrap_or(false)
-                        && !iota.is_entity_list(entity_type, &state.entities)
-                } else {
-                    iota.is_entity_list(entity_type, &state.entities)
                 }
             };
 
             match value {
                 Some(ActionValue::Iota(iota)) => {
-                    if conditon(iota) {
+                    if conditon(Rc::clone(iota)) {
                         state.stack.push(iota.clone())
                     } else {
                         Err(Mishap::InvalidValue(
@@ -257,7 +268,7 @@ pub fn zone_entity(
     )
 }
 
-pub fn push_const(iota: &dyn Iota) -> Box<ActionNoValueType> {
+pub fn push_const(iota: Rc<dyn Iota>) -> Box<ActionNoValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry| -> Result<&mut State, Mishap> {
             state.stack.push(iota.clone());

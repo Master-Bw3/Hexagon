@@ -1,9 +1,15 @@
-use std::rc::Rc;
+use std::{ops::Deref, rc::Rc};
 
 use im::Vector;
 
 use crate::{
-    iota::{hex_casting::{list::ListIota, pattern::{PatternIota, SignatureExt}}, Iota},
+    iota::{
+        hex_casting::{
+            list::ListIota,
+            pattern::{PatternIota, SignatureExt},
+        },
+        Iota,
+    },
     parser::OpValue,
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -57,16 +63,20 @@ fn insert_iota_into_ravenmind(
     iota: Rc<dyn Iota>,
     index: usize,
 ) -> (Option<Rc<dyn Iota>>, i32) {
-    let mut unwrapped_ravenmind: Rc<ListIota> = match ravenmind {
-        Some(list) => list.downcast_rc::<ListIota>().unwrap_or(Rc::new(Vector::new())),
+    let unwrapped_ravenmind: Rc<ListIota> = match ravenmind {
+        Some(ref list) => list
+            .clone()
+            .downcast_rc::<ListIota>()
+            .unwrap_or(Rc::new(Vector::new())),
         _ => Rc::new(Vector::new()),
     };
+    let mut unwrapped_ravenmind = unwrapped_ravenmind.deref().clone();
 
     if unwrapped_ravenmind.len() > index {
         unwrapped_ravenmind.remove(index);
         unwrapped_ravenmind.insert(index, iota);
         (
-            Some(unwrapped_ravenmind),
+            Some(Rc::new(unwrapped_ravenmind)),
             index.try_into().unwrap(),
         )
     } else {
@@ -78,17 +88,21 @@ fn add_iota_to_ravenmind(
     ravenmind: Option<Rc<dyn Iota>>,
     iota: Rc<dyn Iota>,
 ) -> (Option<Rc<dyn Iota>>, i32) {
-    let unwrapped_ravenmind: &mut Rc<Vector<Rc<dyn Iota>>> = &mut match ravenmind {
+    let unwrapped_ravenmind: &Rc<Vector<Rc<dyn Iota>>> = &mut match ravenmind {
         Some(r) => r
             .downcast_rc::<ListIota>()
             .unwrap_or(Rc::new(Vector::new())),
         _ => Rc::new(Vector::new()),
     };
+    let mut unwrapped_ravenmind = unwrapped_ravenmind.deref().clone();
 
     let index = unwrapped_ravenmind.len();
     unwrapped_ravenmind.push_back(iota);
 
-    (Some(unwrapped_ravenmind.clone()), index.try_into().unwrap())
+    (
+        Some(Rc::new(unwrapped_ravenmind.clone())),
+        index.try_into().unwrap(),
+    )
 }
 
 fn get_iota_from_ravenmind(ravenmind: Option<Rc<dyn Iota>>, index: usize) -> Option<Rc<dyn Iota>> {
@@ -143,7 +157,7 @@ pub fn embed<'a>(
 
     match val {
         OpValue::Iota(iota) => match embed_type {
-            EmbedType::Normal => match (*iota).downcast_rc::<PatternIota>() {
+            EmbedType::Normal => match iota.clone().downcast_rc::<PatternIota>() {
                 Ok(pat) => {
                     interpret_action(
                         pattern_registry

@@ -1,4 +1,6 @@
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::HashMap, rc::Rc, ops::Deref};
+
+use im::Vector;
 
 use crate::iota::{
     hex_casting::{
@@ -22,7 +24,7 @@ pub struct State {
     pub entities: HashMap<String, Entity>,
     pub libraries: HashMap<[i32; 3], Library>,
     pub sentinal_location: Option<VectorIota>,
-    pub buffer: Option<Vec<(Rc<dyn Iota>, Considered)>>,
+    pub buffer: Option<Vector<(Rc<dyn Iota>, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub continuation: Vec<Rc<dyn ContinuationFrame>>,
@@ -44,7 +46,7 @@ impl PartialEq for Holding {
     fn eq(&self, other: &Self) -> bool {
         fn eq(lhs: &Option<Rc<dyn Iota>>, rhs: &Option<Rc<dyn Iota>>) -> bool {
             match (lhs, rhs) {
-                (Some(l), Some(r)) => l.tolerates_other(r),
+                (Some(l), Some(r)) => l.tolerates_other(r.deref()),
                 _ => false,
             }
         }
@@ -72,270 +74,104 @@ pub enum Either3<L, M, R> {
 pub trait StackExt {
     fn get_iota<T: Iota>(&self, index: usize, arg_count: usize) -> Result<Rc<T>, Mishap>;
 
+    fn get_any_iota(&self, index: usize, arg_count: usize) -> Result<Rc<dyn Iota>, Mishap>;
+
+    fn get_iota_a_or_b<T: Iota, U: Iota>(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<Rc<T>, Rc<U>>, Mishap>;
+    fn get_iota_a_b_or_c<T: Iota, U: Iota, V: Iota>(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either3<Rc<T>, Rc<U>, Rc<V>>, Mishap>;
+
     fn remove_args(&mut self, arg_count: &usize);
+    
 }
 
 impl StackExt for Stack {
-    // fn get_number(&self, index: usize, arg_count: usize) -> Result<NumberIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Number(x) => Ok(*x),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Number".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_vector(&self, index: usize, arg_count: usize) -> Result<VectorIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Vector(x) => Ok(*x),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Vector".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_pattern(&self, index: usize, arg_count: usize) -> Result<PatternIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Pattern(x) => Ok(x.clone()),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Pattern".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_bool(&self, index: usize, arg_count: usize) -> Result<BoolIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Bool(x) => Ok(*x),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Boolean".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_garbage(&self, index: usize, arg_count: usize) -> Result<GarbageIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Garbage(x) => Ok(x.clone()),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Garbage".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_null(&self, index: usize, arg_count: usize) -> Result<NullIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Null(x) => Ok(x.clone()),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Null".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_entity(&self, index: usize, arg_count: usize) -> Result<EntityIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Entity(x) => Ok(x.clone()),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Entity".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_list(&self, index: usize, arg_count: usize) -> Result<ListIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::List(x) => Ok(x.clone()),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "List".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_integer(&self, index: usize, arg_count: usize) -> Result<i32, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Number(x) => {
-    //             if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round())) {
-    //                 Ok(x.round() as i32)
-    //             } else {
-    //                 Err(Mishap::IncorrectIota(
-    //                     index,
-    //                     "Integer".to_string(),
-    //                     iota.clone(),
-    //                 ))
-    //             }
-    //         }
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Integer".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_positive_integer_under_inclusive(
-    //     &self,
-    //     index: usize,
-    //     list_size: usize,
-    //     arg_count: usize,
-    // ) -> Result<i32, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Number(x) => {
-    //             if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round()))
-    //                 && (0..list_size).contains(&(x.round() as usize))
-    //             {
-    //                 Ok(x.round() as i32)
-    //             } else {
-    //                 Err(Mishap::IncorrectIota(
-    //                     index,
-    //                     "Positive Integer".to_string(),
-    //                     iota.clone(),
-    //                 ))
-    //             }
-    //         }
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Positive Integer".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_matrix(&self, index: usize, arg_count: usize) -> Result<MatrixIota, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Matrix(x) => Ok(x.clone()),
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Matrix".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_num_or_vec(
-    //     &self,
-    //     index: usize,
-    //     arg_count: usize,
-    // ) -> Result<Either<NumberIota, VectorIota>, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Number(x) => Ok(Either::L(*x)),
-    //         Iota::Vector(x) => Ok(Either::R(*x)),
-
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Number or Vector".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_list_or_pattern_or_continuation(
-    //     &self,
-    //     index: usize,
-    //     arg_count: usize,
-    // ) -> Result<Either3<ListIota, PatternIota, ContinuationIota>, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::List(x) => Ok(Either3::L(x.clone())),
-    //         Iota::Pattern(x) => Ok(Either3::M(x.clone())),
-    //         Iota::Continuation(x) => Ok(Either3::R(x.clone())),
-
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "List or Pattern".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_integer_or_list(
-    //     &self,
-    //     index: usize,
-    //     arg_count: usize,
-    // ) -> Result<Either<i32, ListIota>, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Number(x) => {
-    //             if Iota::check_equality(&Iota::Number(*x), &Iota::Number(x.round())) {
-    //                 Ok(Either::L(x.round() as i32))
-    //             } else {
-    //                 Err(Mishap::IncorrectIota(
-    //                     index,
-    //                     "Integer or List".to_string(),
-    //                     iota.clone(),
-    //                 ))
-    //             }
-    //         }
-    //         Iota::List(x) => Ok(Either::R(x.clone())),
-
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Integer or List".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
-    // fn get_num_or_vec_or_list(
-    //     &self,
-    //     index: usize,
-    //     arg_count: usize,
-    // ) -> Result<Either3<NumberIota, VectorIota, ListIota>, Mishap> {
-    //     let iota = self.get_iota(index, arg_count)?;
-    //     match iota {
-    //         Iota::Number(x) => Ok(Either3::L(*x)),
-
-    //         Iota::Vector(x) => Ok(Either3::M(*x)),
-
-    //         Iota::List(x) => Ok(Either3::R(x.clone())),
-
-    //         _ => Err(Mishap::IncorrectIota(
-    //             index,
-    //             "Number, Vector, or List".to_string(),
-    //             iota.clone(),
-    //         )),
-    //     }
-    // }
-
     fn get_iota<T: Iota>(&self, index: usize, arg_count: usize) -> Result<Rc<T>, Mishap> {
         let iota = {
             if self.len() < arg_count {
                 Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
             } else {
-                self[(self.len() - arg_count) + index]
+                self[(self.len() - arg_count) + index].to_owned()
             }
         };
 
-        iota.downcast_rc::<T>()
-            .map_err(|_| Mishap::IncorrectIota(index, "Entity".to_string(), iota.clone()))
+        iota.clone().downcast_rc::<T>()
+            .map_err(|_| Mishap::IncorrectIota(index, "".to_string(), iota.clone()))
+    }
+
+    fn get_any_iota(&self, index: usize, arg_count: usize) -> Result<Rc<dyn Iota>, Mishap> {
+        let iota = {
+            if self.len() < arg_count {
+                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+            } else {
+                self[(self.len() - arg_count) + index].to_owned()
+            }
+        };
+
+        Ok(iota)
     }
 
     fn remove_args(&mut self, arg_count: &usize) {
         self.drain((self.len() - arg_count)..);
+    }
+
+    fn get_iota_a_or_b<T: Iota, U: Iota>(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either<Rc<T>, Rc<U>>, Mishap> {
+        let iota = {
+            if self.len() < arg_count {
+                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+            } else {
+                self[(self.len() - arg_count) + index].to_owned()
+            }
+        };
+
+        let left = iota.clone().downcast_rc::<T>();
+        let right = iota.clone().downcast_rc::<U>();
+
+        match (left, right) {
+            (Ok(l), Err(_)) => Ok(Either::L(l)),
+            (Err(_), Ok(r)) => Ok(Either::R(r)),
+            (Err(_), Err(_)) => Err(Mishap::IncorrectIota(index, "".to_string(), iota.clone())),
+            _ => unreachable!(),
+        }
+    }
+
+    fn get_iota_a_b_or_c<T: Iota, U: Iota, V: Iota>(
+        &self,
+        index: usize,
+        arg_count: usize,
+    ) -> Result<Either3<Rc<T>, Rc<U>, Rc<V>>, Mishap> {
+        let iota = {
+            if self.len() < arg_count {
+                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+            } else {
+                self[(self.len() - arg_count) + index].to_owned()
+            }
+        };
+
+        let left = iota.clone().downcast_rc::<T>();
+        let middle = iota.clone().downcast_rc::<U>();
+
+        let right = iota.clone().downcast_rc::<V>();
+
+        match (left, middle, right) {
+            (Ok(l), Err(_), Err(_)) => Ok(Either3::L(l)),
+            (Err(_), Ok(m), Err(_)) => Ok(Either3::M(m)),
+            (Err(_), Err(_), Ok(r)) => Ok(Either3::R(r)),
+            (Err(_), Err(_), Err(_)) => {
+                Err(Mishap::IncorrectIota(index, "".to_string(), iota.clone()))
+            }
+            _ => unreachable!(),
+        }
     }
 }
 

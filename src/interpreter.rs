@@ -5,6 +5,8 @@ pub mod state;
 
 use std::{collections::HashMap, rc::Rc};
 
+use im::Vector;
+
 use crate::{
     compiler::{
         if_block::compile_if_block,
@@ -120,7 +122,7 @@ fn interpret_node<'a>(
 
             if let Some(buffer) = &mut state.buffer {
                 buffer.append(
-                    &mut compile_if_block(
+                    compile_if_block(
                         &line,
                         &condition,
                         &succeed,
@@ -275,12 +277,12 @@ pub fn push_pattern(
 
 pub fn push_iota(iota: Rc<dyn Iota>, state: &mut State, considered: bool) {
     match state.buffer {
-        Some(ref mut buffer) => buffer.push((iota, considered)),
+        Some(ref mut buffer) => buffer.push_back((iota, considered)),
         None => state.stack.push(iota),
     }
 }
 
-fn calc_buffer_depth(registry: &PatternRegistry, buffer: &Option<Vec<(Rc<dyn Iota>, Considered)>>) -> u32 {
+fn calc_buffer_depth(registry: &PatternRegistry, buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>) -> u32 {
     let intro_pattern =
         PatternIota::from_name(registry, "open_paren", None).unwrap();
     let retro_pattern =

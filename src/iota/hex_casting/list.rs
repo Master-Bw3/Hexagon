@@ -52,7 +52,7 @@ impl Iota for ListIota {
                     && self
                         .iter()
                         .zip(other.iter())
-                        .map(|(rhs, lhs)| Iota::tolerates_other(rhs, lhs))
+                        .map(|(rhs, lhs)| (**rhs).tolerates_other(&**lhs))
                         .collect::<im::Vector<bool>>()
                         .contains(&false)
                         .not()
@@ -62,12 +62,3 @@ impl Iota for ListIota {
     }
 }
 
-impl Iota for Rc<dyn Iota> {
-    fn display(&self) -> String {
-        self.display()
-    }
-
-    fn tolerates_other(&self, other: &dyn Iota) -> bool {
-        self.tolerates_other(other)
-    }
-}

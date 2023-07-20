@@ -144,7 +144,7 @@ pub fn iota_list_to_ast_node_list(list: &[Rc<dyn Iota>]) -> Vec<AstNode> {
     list.iter()
         .rev()
         .enumerate()
-        .map(|(index, iota)| match iota.downcast_rc::<PatternIota>() {
+        .map(|(index, iota)| match iota.clone().downcast_rc::<PatternIota>() {
             Ok(pattern) => AstNode::Action {
                 line: (index + 1, 0),
                 name: pattern.signature.as_str(),

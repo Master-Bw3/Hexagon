@@ -72,7 +72,7 @@ fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
             &PatternRegistry::construct(&config.great_spell_sigs),
             &mut config.entities,
         );
-        contents.insert(Signature::from_sig(key), Rc::new(iota));
+        contents.insert(Signature::from_sig(key), iota);
     }
 
     let location = {

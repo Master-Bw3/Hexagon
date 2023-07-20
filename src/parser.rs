@@ -1,4 +1,4 @@
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::HashMap, rc::Rc, ops::Deref};
 
 use crate::{
     interpreter::state::Entity,
@@ -414,7 +414,7 @@ pub enum OpValue {
 impl PartialEq for OpValue {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::Iota(l0), Self::Iota(r0)) => l0.tolerates_other(r0),
+            (Self::Iota(l0), Self::Iota(r0)) => l0.tolerates_other(r0.deref()),
             (Self::Var(l0), Self::Var(r0)) => l0 == r0,
             _ => false,
         }
@@ -430,7 +430,7 @@ pub enum ActionValue {
 impl PartialEq for ActionValue {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::Iota(l0), Self::Iota(r0)) => l0.tolerates_other(r0),
+            (Self::Iota(l0), Self::Iota(r0)) => l0.tolerates_other(r0.deref()),
             (Self::Bookkeeper(l0), Self::Bookkeeper(r0)) => l0 == r0,
             _ => false,
         }

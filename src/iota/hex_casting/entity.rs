@@ -7,7 +7,7 @@ use crate::{
 
 #[derive(Clone, Debug)]
 pub struct EntityIota {
-    name: Rc<str>,
+    pub name: Rc<str>,
 }
 
 impl EntityIota {
