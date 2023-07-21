@@ -1,11 +1,10 @@
-use std::{collections::HashMap, rc::Rc, ops::Deref, any::Any};
+use std::{collections::HashMap, rc::Rc, ops::Deref};
 
 use im::Vector;
 
 use crate::iota::{
     hex_casting::{
-        number::NumberIota,
-        pattern::{PatternIota, Signature},
+        pattern::Signature,
         vector::VectorIota,
     },
     Iota,

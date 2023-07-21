@@ -1,4 +1,4 @@
-use std::{ops::Deref, rc::Rc};
+use std::rc::Rc;
 
 use im::{vector, Vector};
 
@@ -106,7 +106,7 @@ pub fn reverse_list<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let mut iota = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
+    let iota = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
     state.stack.remove_args(&arg_count);
 
     let reversed_list = iota.into_iter().rev().collect::<Vector<_>>();

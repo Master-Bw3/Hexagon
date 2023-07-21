@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use im::{vector, Vector};
+use im::Vector;
 
 use crate::{
     interpreter::state::Stack,

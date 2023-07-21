@@ -91,12 +91,12 @@ impl ContinuationFrame for FrameForEach {
     ) -> Result<(), (Mishap, (usize, usize))> {
         let (stack, new_acc) = match &self.base_stack {
             //thoth entry point
-            None => (Vector::from(state.stack.clone()), self.acc.clone()),
+            None => (state.stack.clone(), self.acc.clone()),
 
             //thoth iteration
             Some(base) => (base.clone(), {
                 let mut new_acc = self.acc.clone();
-                new_acc.append(Vector::from(state.stack.clone()));
+                new_acc.append(state.stack.clone());
                 new_acc
             }),
         };
@@ -133,7 +133,7 @@ impl ContinuationFrame for FrameForEach {
         let mut new_stack = self.base_stack.clone().unwrap_or(Vector::new());
 
         let mut new_acc = self.acc.clone();
-        new_acc.append(Vector::from(state.stack.clone()));
+        new_acc.append(state.stack.clone());
         new_stack.push_back(Rc::new(new_acc));
         state.stack = new_stack.into_iter().collect();
         true

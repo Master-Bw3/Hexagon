@@ -83,7 +83,7 @@ pub fn run() {
         match interpreter_result {
             Ok(result) => println!(
                 "\nresult: {} \n {:?}",
-                Vector::from(result.stack).display(),
+                result.stack.display(),
                 result.buffer
             ),
             Err(err) => {

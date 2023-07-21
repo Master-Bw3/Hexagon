@@ -18,7 +18,6 @@ impl Iota for MatrixIota {
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
-        let tolerance = 0.001;
         match other.downcast_ref::<MatrixIota>() {
             Some(other) => {
                 self.column(0).len() == other.column(0).len()

@@ -1,13 +1,13 @@
 use std::rc::Rc;
 
-use im::{Vector, vector};
+use im::Vector;
 
 use crate::{
     interpreter::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::{Iota, hex_casting::number::{NumberIota, NumberIotaExt}},
+    iota::hex_casting::number::{NumberIota, NumberIotaExt},
     parser::ActionValue,
     pattern_registry::PatternRegistry,
 };

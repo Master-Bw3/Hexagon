@@ -302,7 +302,7 @@ fn calc_buffer_depth(registry: &PatternRegistry, buffer: &Option<Vector<(Rc<dyn 
 
     let retro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {
-            if x.0.tolerates_other(&intro_pattern) && !x.1 {
+            if x.0.tolerates_other(&retro_pattern) && !x.1 {
                 acc + 1
             } else {
                 acc
