@@ -11,7 +11,8 @@ pub trait NumberIotaExt {
 
 impl NumberIotaExt for NumberIota {
     fn int(self, index: usize) -> Result<i32, Mishap> {
-        if self.round().tolerates_other(&self) {
+        let tolerance =  0.001;
+        if (self - self.round()).abs() < tolerance {
             Ok(self as i32)
         } else {
             Err(Mishap::IncorrectIota(index, "Integer".to_string(), Rc::new(self)))
@@ -20,7 +21,7 @@ impl NumberIotaExt for NumberIota {
 
     fn int_under_inclusive(self, index: usize, len: usize) -> Result<i32, Mishap> {
         let int = self.int(index).map_err(|_| Mishap::IncorrectIota(index, format!("Integer between 0 and {}", len), Rc::new(self)))?;
-        if int >= len as i32 {
+        if int <= len as i32 {
             Ok(int)
         } else {
             Err(Mishap::IncorrectIota(index, format!("Integer between 0 and {}", len), Rc::new(self)))
