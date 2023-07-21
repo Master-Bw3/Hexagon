@@ -20,7 +20,7 @@ pub fn escape<'a>(
     value: Option<&ActionValue>,
 ) -> Result<&'a mut State, Mishap> {
     match value {
-        Some(ActionValue::Iota(iota)) => state.stack.push(iota.clone()),
+        Some(ActionValue::Iota(iota)) => state.stack.push_back(iota.clone()),
         Some(ActionValue::Bookkeeper(val)) => {
             Err(Mishap::InvalidValue(val.clone(), "Iota".to_string()))?
         }
@@ -80,7 +80,7 @@ pub fn retrospect<'a>(
     }) + 1;
 
     if intro_count == retro_count {
-        state.stack.push(Rc::new(
+        state.stack.push_back(Rc::new(
             inner_buffer
                 .iter()
                 .map(|x| x.0.clone())

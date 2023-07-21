@@ -24,13 +24,13 @@ pub fn append<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let mut iotas = (
-        state.stack.get_iota::<ListIota>(0, arg_count)?,
+        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
         state.stack.get_any_iota(1, arg_count)?.clone(),
     );
     state.stack.remove_args(&arg_count);
 
     (iotas.0).push_back(iotas.1);
-    state.stack.push_back(iotas.0);
+    state.stack.push_back(Rc::new(iotas.0));
 
     Ok(state)
 }
@@ -41,13 +41,13 @@ pub fn concat<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let mut iotas = (
-        state.stack.get_iota::<ListIota>(0, arg_count)?,
-        state.stack.get_iota::<ListIota>(1, arg_count)?,
+        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
+        (*state.stack.get_iota::<ListIota>(1, arg_count)?).clone(),
     );
     state.stack.remove_args(&arg_count);
 
-    (iotas.0).append(*iotas.1);
-    state.stack.push_back(iotas.0);
+    (iotas.0).append(iotas.1);
+    state.stack.push_back(Rc::new(iotas.0));
 
     Ok(state)
 }
@@ -58,7 +58,7 @@ pub fn index<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_iota::<ListIota>(0, arg_count)?,
+        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
         state.stack.get_iota::<NumberIota>(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
@@ -78,7 +78,7 @@ pub fn list_size<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_iota::<ListIota>(0, arg_count)?;
+    let iota = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
     state.stack.remove_args(&arg_count);
 
     let operaton_result = iota.len() as f32;
@@ -106,7 +106,7 @@ pub fn reverse_list<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let mut iota = state.stack.get_iota::<ListIota>(0, arg_count)?;
+    let mut iota = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
     state.stack.remove_args(&arg_count);
 
     let reversed_list = iota.into_iter().rev().collect::<Vector<_>>();
@@ -139,10 +139,10 @@ pub fn splat<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let mut iota = state.stack.get_iota::<ListIota>(0, arg_count)?;
+    let iota = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
     state.stack.remove_args(&arg_count);
 
-    state.stack.append(*iota);
+    state.stack.append(iota);
 
     Ok(state)
 }
@@ -153,7 +153,7 @@ pub fn index_of<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        state.stack.get_iota::<ListIota>(0, arg_count)?,
+        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
         state.stack.get_any_iota(1, arg_count)?.clone(),
     );
     state.stack.remove_args(&arg_count);
@@ -177,7 +177,7 @@ pub fn list_remove<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let mut iotas = (
-        state.stack.get_iota::<ListIota>(0, arg_count)?,
+        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
         state.stack.get_iota::<NumberIota>(1, arg_count)?.int(1)?,
     );
     state.stack.remove_args(&arg_count);
@@ -185,7 +185,7 @@ pub fn list_remove<'a>(
     let remove_index = i32::min(iotas.1, ((iotas.0).len() - 1) as i32);
     (iotas.0).remove(remove_index as usize);
 
-    state.stack.push_back(iotas.0);
+    state.stack.push_back(Rc::new(iotas.0));
 
     Ok(state)
 }
@@ -195,7 +195,7 @@ pub fn slice<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 3;
-    let mut list = state.stack.get_iota::<ListIota>(0, arg_count)?;
+    let mut list = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
 
     let iotas = (
         (state.stack)
@@ -217,7 +217,7 @@ pub fn modify_in_place<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 3;
-    let mut list = state.stack.get_iota::<ListIota>(0, arg_count)?;
+    let mut list = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
 
     let iotas = (
         (state.stack)
@@ -230,7 +230,7 @@ pub fn modify_in_place<'a>(
     list.remove(iotas.0);
     list.insert(iotas.0, iotas.1);
 
-    state.stack.push_back(list);
+    state.stack.push_back(Rc::new(list));
 
     Ok(state)
 }
@@ -241,14 +241,14 @@ pub fn construct<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let mut iotas = (
-        state.stack.get_iota::<ListIota>(0, arg_count)?,
+        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
         state.stack.get_any_iota(1, arg_count)?.clone(),
     );
     state.stack.remove_args(&arg_count);
 
     let operation_result = {
         let mut new_list = vector![iotas.1];
-        new_list.append(*iotas.0);
+        new_list.append(iotas.0);
         new_list
     };
 
@@ -262,13 +262,13 @@ pub fn deconstruct<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let mut iota = state.stack.get_iota::<ListIota>(0, arg_count)?;
+    let mut iota = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
     state.stack.remove_args(&arg_count);
 
     let taken = iota[0].clone();
     iota.remove(0);
 
-    state.stack.push_back(iota);
+    state.stack.push_back(Rc::new(iota));
     state.stack.push_back(taken);
 
     Ok(state)

@@ -36,11 +36,11 @@ pub fn eval<'a>(
                 nodes: vec![AstNode::Action {
                     line: (1, 0),
                     name: pattern.signature.as_str(),
-                    value: *pattern.value,
+                    value: *pattern.value.clone(),
                 }],
             }));
         }
-        Either3::R(continuation) => state.continuation = *continuation,
+        Either3::R(continuation) => state.continuation = continuation.to_vec(),
     };
 
     Ok(state)
@@ -67,7 +67,7 @@ fn eval_list(
     let mut halted = false;
     for (index, iota) in list.iter().enumerate() {
         
-        match iota.downcast_rc::<PatternIota>() {
+        match Rc::clone(iota).downcast_rc::<PatternIota>() {
             Ok(pattern) => {
                 if pattern.signature
                     == Signature::from_name(pattern_registry, "halt", &None).unwrap()
@@ -111,13 +111,13 @@ fn eval_pattern(
 pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let pattern_list = state.stack.get_iota::<ListIota>(0, 2)?;
-    let mut iota_list = state.stack.get_iota::<ListIota>(1, 2)?;
+    let iota_list = state.stack.get_iota::<ListIota>(1, 2)?;
     state.stack.remove_args(&arg_count);
 
     
 
     state.continuation.push(Rc::new(FrameForEach {
-        data: iota_list.into_iter().rev().collect(),
+        data: (*iota_list).clone().into_iter().rev().collect(),
         code: iota_list_to_ast_node_list(pattern_list),
         base_stack: None,
         acc: vector![],

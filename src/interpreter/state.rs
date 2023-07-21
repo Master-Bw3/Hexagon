@@ -1,4 +1,4 @@
-use std::{collections::HashMap, rc::Rc, ops::Deref};
+use std::{collections::HashMap, rc::Rc, ops::Deref, any::Any};
 
 use im::Vector;
 
@@ -89,6 +89,10 @@ pub trait StackExt {
 
     fn remove_args(&mut self, arg_count: &usize);
     
+}
+
+fn test<T> (_: T) -> String {
+    std::any::type_name::<T>().to_string()
 }
 
 impl StackExt for Stack {

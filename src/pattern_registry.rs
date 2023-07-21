@@ -2,18 +2,15 @@ use std::collections::HashMap;
 use std::f32::consts::{E, PI, TAU};
 use std::rc::Rc;
 
-use crate::interpreter::state::{EntityType, Stack, StackExt};
+use crate::interpreter::state::{EntityType, };
 use crate::iota::hex_casting::entity::EntityIota;
-use crate::iota::hex_casting::list::ListIota;
 use crate::iota::hex_casting::null::NullIota;
 use crate::iota::hex_casting::number::NumberIota;
 use crate::iota::hex_casting::vector::VectorIota;
-use crate::iota::Iota;
 use crate::parser::ActionValue;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
-use crate::patterns::hex_casting::{math, special};
 use crate::patterns::more_iotas::matrices;
 use crate::patterns::{constructors, Pattern};
 
@@ -102,7 +99,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Entropy Reflection", "random", "eqqq",  Box::new(math::random)),
 
 
-            lists
+            //lists
             Pattern::new("Integration Distillation", "append", "edqde", Box::new(lists::append)),
             Pattern::new("Combination Distillation", "concat", "qaeaq", Box::new(lists::concat)),
             Pattern::new("Selection Distillation", "index", "deeed", Box::new(lists::index)),
@@ -349,19 +346,19 @@ impl PatternRegistryExt for PatternRegistry {
     }
 
     fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern> {
-        // if let Some(ActionValue::Bookkeeper(code)) = value {
-        //     let mut bookkeeper =
-        //         Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
-        //     bookkeeper.signature = parse_bookkeeper_code(code);
-        //     if query == bookkeeper.display_name
-        //         || query == bookkeeper.internal_name
-        //         || query == bookkeeper.signature
-        //     {
-        //         return Some(bookkeeper);
-        //     } else {
-        //         return None;
-        //     }
-        // }
+        if let Some(ActionValue::Bookkeeper(code)) = value {
+            let mut bookkeeper =
+                Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
+            bookkeeper.signature = parse_bookkeeper_code(code);
+            if query == bookkeeper.display_name
+                || query == bookkeeper.internal_name
+                || query == bookkeeper.signature
+            {
+                return Some(bookkeeper);
+            } else {
+                return None;
+            }
+        }
 
         self.iter()
             .filter(|entry| {

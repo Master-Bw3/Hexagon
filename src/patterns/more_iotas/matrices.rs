@@ -29,7 +29,7 @@ pub fn make<'a>(
     fn matrix_from_vec_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
         let row_list = list
             .iter()
-            .map(|element| match element.downcast_rc::<VectorIota>() {
+            .map(|element| match element.clone().downcast_rc::<VectorIota>() {
                 Ok(vec) => Ok(Matrix1xX::from_vec(vec![vec.x, vec.y, vec.z])),
                 Err(_) => Err(()),
             })
@@ -55,14 +55,14 @@ pub fn make<'a>(
         let first_row = list.get(0).unwrap_or(&empty_vec);
 
         //used to ensure all rows have same length
-        let row_len = match first_row.downcast_rc::<ListIota>() {
+        let row_len = match first_row.clone().downcast_rc::<ListIota>() {
             Ok(x) => Ok(x.len()),
             Err(_) => Err(()),
         }?;
 
         let num_num_list = list
             .iter()
-            .map(|row| match row.downcast_rc::<ListIota>() {
+            .map(|row| match row.clone().downcast_rc::<ListIota>() {
                 Ok(inner_list) => {
                     if inner_list.len() == row_len {
                         row_from_num_list(&inner_list)
