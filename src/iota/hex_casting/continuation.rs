@@ -2,7 +2,7 @@ use std::ops::Not;
 
 use crate::{interpreter::continuation::Continuation, iota::Iota};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ContinuationIota {
     pub value: Continuation,
 }

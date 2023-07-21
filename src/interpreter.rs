@@ -80,12 +80,12 @@ fn interpret_node<'a>(
             nodes.reverse();
             state
                 .continuation
-                .push(Rc::new(FrameEvaluate { nodes }));
+                .push_back(Rc::new(FrameEvaluate { nodes }));
 
             //loop through every frame until there aren't any more
             while !state.continuation.is_empty() {
                 //get top fram and remove it from the stack
-                let frame = state.continuation.pop().unwrap().clone();
+                let frame = state.continuation.pop_back().unwrap().clone();
 
                 //evaluate the top frame (mutates state)
                 frame.evaluate(state, pattern_registry)?;

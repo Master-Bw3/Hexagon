@@ -26,13 +26,13 @@ pub fn eval<'a>(
 
     match arg {
         Either3::L(list) => {
-            state.continuation.push(Rc::new(FrameEndEval {}));
-            state.continuation.push(Rc::new(FrameEvaluate {
+            state.continuation.push_back(Rc::new(FrameEndEval {}));
+            state.continuation.push_back(Rc::new(FrameEvaluate {
                 nodes: iota_list_to_ast_node_list(list),
             }));
         }
         Either3::M(pattern) => {
-            state.continuation.push(Rc::new(FrameEvaluate {
+            state.continuation.push_back(Rc::new(FrameEvaluate {
                 nodes: vec![AstNode::Action {
                     line: (1, 0),
                     name: pattern.signature.as_str(),
@@ -40,7 +40,7 @@ pub fn eval<'a>(
                 }],
             }));
         }
-        Either3::R(continuation) => state.continuation = continuation.value.to_vec()
+        Either3::R(continuation) => state.continuation = continuation.value.clone()
     };
 
     Ok(state)
@@ -116,7 +116,7 @@ pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut
 
     
 
-    state.continuation.push(Rc::new(FrameForEach {
+    state.continuation.push_back(Rc::new(FrameForEach {
         data: (*iota_list).clone().into_iter().rev().collect(),
         code: iota_list_to_ast_node_list(pattern_list),
         base_stack: None,

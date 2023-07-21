@@ -11,7 +11,7 @@ use std::rc::Rc;
 
 use super::{interpret_node, mishap::Mishap, state::State};
 
-pub type Continuation = Vec<Rc<dyn ContinuationFrame>>;
+pub type Continuation = Vector<Rc<dyn ContinuationFrame>>;
 
 pub trait ContinuationFrame: std::fmt::Debug {
     fn evaluate(
@@ -41,7 +41,7 @@ impl ContinuationFrame for FrameEvaluate {
             //if there are still nodes left in the frame:
             Some(n) => {
                 //push a new frame to the continuation containing the rest of this frame
-                state.continuation.push(Rc::new(new_frame));
+                state.continuation.push_back(Rc::new(new_frame));
 
                 interpret_node(n.clone(), state, pattern_registry)?;
                 Ok(())
@@ -52,7 +52,7 @@ impl ContinuationFrame for FrameEvaluate {
     }
 
     fn break_out(&self, state: &mut State) -> bool {
-        state.continuation.pop();
+        state.continuation.pop_back();
         false
     }
 }
@@ -105,14 +105,14 @@ impl ContinuationFrame for FrameForEach {
             let mut new_data = self.data.clone();
             let top = new_data.pop_back().unwrap();
 
-            state.continuation.push(Rc::new(FrameForEach {
+            state.continuation.push_back(Rc::new(FrameForEach {
                 data: new_data,
                 code: self.code.clone(),
                 base_stack: Some(stack.clone()),
                 acc: new_acc,
             }));
 
-            state.continuation.push(Rc::new(FrameEvaluate {
+            state.continuation.push_back(Rc::new(FrameEvaluate {
                 nodes: self.code.clone(),
             }));
 
@@ -128,7 +128,7 @@ impl ContinuationFrame for FrameForEach {
     }
 
     fn break_out(&self, state: &mut State) -> bool {
-        state.continuation.pop();
+        state.continuation.pop_back();
 
         let mut new_stack = self.base_stack.clone().unwrap_or(Vector::new());
 
