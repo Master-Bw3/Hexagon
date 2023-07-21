@@ -57,57 +57,6 @@ pub fn eval_cc<'a>(
     Ok(state)
 }
 
-type Halted = bool;
-
-fn eval_list(
-    state: &mut State,
-    pattern_registry: &PatternRegistry,
-    list: &[Rc<dyn Iota>],
-) -> Result<Halted, Box<Mishap>> {
-    let mut halted = false;
-    for (index, iota) in list.iter().enumerate() {
-        
-        match Rc::clone(iota).downcast_rc::<PatternIota>() {
-            Ok(pattern) => {
-                if pattern.signature
-                    == Signature::from_name(pattern_registry, "halt", &None).unwrap()
-                {
-                    halted = true;
-                    break;
-                }
-                eval_pattern(state, pattern_registry, pattern.as_ref())
-                    .map_err(|err| Mishap::EvalError(list.to_owned(), index, Rc::new(err)))?;
-            }
-
-            Err(_) => {
-                if state.consider_next || state.buffer.is_some() {
-                    interpreter::push_iota(iota.clone(), state, state.consider_next);
-                    state.consider_next = false;
-                } else {
-                    Err(Mishap::ExpectedPattern(iota.clone()))?
-                }
-            }
-        }
-    }
-
-    state.buffer = None;
-    Ok(halted)
-}
-
-fn eval_pattern(
-    state: &mut State,
-    pattern_registry: &PatternRegistry,
-    pattern: &PatternIota,
-) -> Result<(), Mishap> {
-    interpreter::interpret_action(
-        pattern.signature.as_str(),
-        *pattern.value.clone(),
-        state,
-        pattern_registry,
-    )?;
-    Ok(())
-}
-
 pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let pattern_list = state.stack.get_iota::<ListIota>(0, 2)?;

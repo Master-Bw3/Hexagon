@@ -17,7 +17,6 @@ use crate::{
     pattern_registry::PatternRegistry,
     patterns::{ActionNoValueType, ActionWithValueType},
 };
-type GetterType<T> = fn(&Stack, usize, usize) -> Result<T, Mishap>;
 
 // pub fn operator<T: 'static>(arg_count: usize, action: &'static ActionNoValueType) -> Box<ActionNoValueType> {
 //     Box::new(move |state: &mut State, pattern_registry: &PatternRegistry| {

@@ -18,7 +18,7 @@ use crate::{
     },
     iota::{Iota, hex_casting::{pattern::{Signature, PatternIota, SignatureExt}, bool::BooleanIota}},
     parse_config::Config,
-    parser::{ActionValue, AstNode, Instruction, OpName, OpValue},
+    parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -154,12 +154,6 @@ fn interpret_node<'a>(
             }
             Ok(state)
         }
-        AstNode::Instruction(instruction) => match instruction {
-            Instruction::MetaEvalEnd => {
-                state.consider_next = false;
-                Ok(state)
-            }
-        },
     }
 }
 

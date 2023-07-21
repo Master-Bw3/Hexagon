@@ -183,21 +183,21 @@ fn parse_action_iota(
         .unwrap()
 }
 
-fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
-    let line = pair.line_col();
-    let inner = pair.into_inner().next().unwrap();
-    AstNode::Action {
-        name: {
-            match inner.as_str() {
-                "{" => "open_paren".to_string(),
-                "}" => "close_paren".to_string(),
-                _ => unreachable!(),
-            }
-        },
-        value: None,
-        line,
-    }
-}
+// fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
+//     let line = pair.line_col();
+//     let inner = pair.into_inner().next().unwrap();
+//     AstNode::Action {
+//         name: {
+//             match inner.as_str() {
+//                 "{" => "open_paren".to_string(),
+//                 "}" => "close_paren".to_string(),
+//                 _ => unreachable!(),
+//             }
+//         },
+//         value: None,
+//         line,
+//     }
+// }
 
 fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     AstNode::Op {
@@ -359,12 +359,12 @@ fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
     pair.as_str().to_string()
 }
 
-fn parse_string(pair: Pair<'_, Rule>) -> String {
-    pair.as_str()
-        .trim_start_matches('\"')
-        .trim_end_matches('\"')
-        .to_string()
-}
+// fn parse_string(pair: Pair<'_, Rule>) -> String {
+//     pair.as_str()
+//         .trim_start_matches('\"')
+//         .trim_end_matches('\"')
+//         .to_string()
+// }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AstNode {
@@ -386,13 +386,8 @@ pub enum AstNode {
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
     },
-    Instruction(Instruction),
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Instruction {
-    MetaEvalEnd,
-}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpName {

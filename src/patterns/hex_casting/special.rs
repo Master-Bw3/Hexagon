@@ -9,7 +9,7 @@ use crate::{
         push_pattern,
         state::{StackExt, State},
     },
-    iota::{hex_casting::pattern::PatternIota, Iota},
+    iota::hex_casting::pattern::PatternIota,
     parser::ActionValue,
     pattern_registry::PatternRegistry,
 };

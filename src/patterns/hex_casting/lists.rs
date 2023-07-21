@@ -7,13 +7,10 @@ use crate::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::{
-        hex_casting::{
-            list::ListIota,
-            null::NullIota,
-            number::{NumberIota, NumberIotaExt},
-        },
-        Iota,
+    iota::hex_casting::{
+        list::ListIota,
+        null::NullIota,
+        number::{NumberIota, NumberIotaExt},
     },
     pattern_registry::PatternRegistry,
 };
@@ -277,7 +274,7 @@ pub fn deconstruct<'a>(
 #[cfg(test)]
 mod tests {
 
-    use crate::pattern_registry::PatternRegistryExt;
+    use crate::{pattern_registry::PatternRegistryExt, iota::Iota};
 
     use super::*;
 
@@ -289,12 +286,10 @@ mod tests {
             .map(|x: f32| -> Rc<dyn Iota> { Rc::new(x) })
             .collect();
 
-        let expected: Vector<Rc<dyn Iota>> = 
-            vector![1.0, 1.0, 2.0,]
-                .into_iter()
-                .map(|x: f32| -> Rc<dyn Iota> { Rc::new(x) })
-                .collect()
-        ;
+        let expected: Vector<Rc<dyn Iota>> = vector![1.0, 1.0, 2.0,]
+            .into_iter()
+            .map(|x: f32| -> Rc<dyn Iota> { Rc::new(x) })
+            .collect();
 
         let result = last_n_list(
             &mut state,

@@ -1,8 +1,8 @@
-use std::{collections::HashMap, vec, rc::Rc};
+use std::{collections::HashMap, rc::Rc, vec};
 
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
-    iota::{Iota, hex_casting::pattern::PatternIota},
+    iota::{hex_casting::pattern::PatternIota, Iota},
     parser::{ActionValue, OpValue},
     pattern_registry::PatternRegistry,
 };
@@ -130,11 +130,9 @@ pub fn compile_op_embed(
     let compiled = match embed_type {
         EmbedType::Normal => vec![iota],
         EmbedType::Consider => {
-            let mut result: Vec<Rc<dyn Iota>> =
-                vec![
-                    Rc::new(PatternIota::from_name(registry, "escape", None).unwrap());
-                    i32::pow(2, depth) as usize
-                ];
+            let consideration = Rc::new(PatternIota::from_name(registry, "escape", None).unwrap());
+
+            let mut result: Vec<Rc<dyn Iota>> = vec![consideration; i32::pow(2, depth) as usize];
             result.push(iota);
             result
         }

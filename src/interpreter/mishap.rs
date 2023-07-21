@@ -37,7 +37,8 @@ impl Mishap {
         match self {
             Mishap::NotEnoughIotas(_, num) => {
                 let mut new_stack = stack;
-                let garbages: Vec<Rc<dyn Iota>> = vec![Rc::new(GarbageIota::Garbage); num];
+                let garbage = Rc::new(GarbageIota::Garbage);
+                let garbages: Vec<Rc<dyn Iota>> = vec![garbage; num];
                 new_stack.append(Vector::from(garbages));
                 new_stack
             }

@@ -70,6 +70,8 @@ pub enum Either3<L, M, R> {
     R(R),
 }
 
+type Either3Rc<L, M, R> = Either3<Rc<L>, Rc<M>, Rc<R>>;
+
 pub trait StackExt {
     fn get_iota<T: Iota>(&self, index: usize, arg_count: usize) -> Result<Rc<T>, Mishap>;
 
@@ -84,14 +86,10 @@ pub trait StackExt {
         &self,
         index: usize,
         arg_count: usize,
-    ) -> Result<Either3<Rc<T>, Rc<U>, Rc<V>>, Mishap>;
+    ) -> Result<Either3Rc<T, U, V>, Mishap>;
 
     fn remove_args(&mut self, arg_count: &usize);
     
-}
-
-fn test<T> (_: T) -> String {
-    std::any::type_name::<T>().to_string()
 }
 
 impl StackExt for Stack {

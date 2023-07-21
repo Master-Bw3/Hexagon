@@ -19,7 +19,7 @@ pub mod ops;
 pub fn compile_to_iotas(
     node: AstNode,
     config: &Option<&Config>,
-) -> Result<Vec<Rc<dyn Iota>>, (Mishap, (usize, usize))> {
+) -> CompileResult {
     let mut heap: HashMap<String, i32> = HashMap::new();
 
     let great_sigs = config.map_or_else(PatternRegistry::gen_default_great_sigs, |conf| {
@@ -36,7 +36,7 @@ fn compile_node(
     heap: &mut HashMap<String, i32>,
     depth: u32,
     pattern_registry: &PatternRegistry,
-) -> Result<Vec<Rc<dyn Iota>>, (Mishap, (usize, usize))> {
+) -> CompileResult {
     match node {
         AstNode::File(file) => {
             let mut result = vec![];
@@ -93,16 +93,17 @@ fn compile_node(
             heap,
             pattern_registry,
         ),
-        AstNode::Instruction(_) => Ok(vec![]),
     }
 }
+
+pub type CompileResult = Result<Vec<Rc<dyn Iota>>, (Mishap, (usize, usize))>;
 
 fn compile_hex_node(
     hex: &Vec<AstNode>,
     heap: &mut HashMap<String, i32>,
     mut depth: u32,
     pattern_registry: &PatternRegistry,
-) -> Result<Vec<Rc<dyn Iota>>, (Mishap, (usize, usize))> {
+) -> CompileResult {
     depth += 1;
 
     let mut result: Vec<Rc<dyn Iota>> = vec![];
