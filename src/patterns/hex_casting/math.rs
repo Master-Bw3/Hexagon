@@ -1,4 +1,4 @@
-use im::{Vector, vector};
+use im::{vector, Vector};
 use std::ops::Deref;
 use std::{f32::consts::PI, ops::Not, rc::Rc};
 
@@ -477,9 +477,6 @@ pub fn bool_coerce<'a>(
         *x
     } else if let Ok(x) = iota.clone().downcast_rc::<ListIota>() {
         !x.is_empty()
-    } else if iota.clone().downcast_rc::<NullIota>().is_ok() {
-        //redundant I think
-        false
     } else {
         false
     };
@@ -682,7 +679,6 @@ pub fn or_bit<'a>(
             let mut new_list1 = list1.deref().clone();
             let mut new_list2 = list2.deref().clone();
 
-
             new_list2.retain(|iota| {
                 list1
                     .iter()
@@ -797,7 +793,13 @@ pub fn to_set<'a>(
     state.stack.remove_args(&arg_count);
 
     let operation_result = list.iter().fold(vector![], |acc, iota| {
-        if acc.clone().iter().map(|x: &Rc<dyn Iota>| iota.tolerates_other(x.as_ref())).collect::<Vec<bool>>().contains(&true) {
+        if acc
+            .clone()
+            .iter()
+            .map(|x: &Rc<dyn Iota>| iota.tolerates_other(x.as_ref()))
+            .collect::<Vec<bool>>()
+            .contains(&true)
+        {
             acc
         } else {
             let mut new_acc = acc;
