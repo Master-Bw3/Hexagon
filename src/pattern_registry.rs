@@ -339,8 +339,9 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
                 constructors::value_1::<EntityIota, NumberIota>("Number", "Greater Fold Reflection")),
 
-            //MoreIotas
+            //MoreIotas - Matrices
             Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrices::make)),
+            Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrices::unmake)),
 
         ];
 

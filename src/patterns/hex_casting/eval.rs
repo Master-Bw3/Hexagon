@@ -4,15 +4,18 @@ use im::vector;
 
 use crate::{
     interpreter::{
-        self,
         continuation::{iota_list_to_ast_node_list, FrameEndEval, FrameEvaluate, FrameForEach},
         mishap::Mishap,
         state::{Either3, StackExt, State},
     },
-    parser::{AstNode},
-    pattern_registry::PatternRegistry, iota::{Iota, hex_casting::{pattern::{Signature, PatternIota, SignatureExt}, list::ListIota, continuation::ContinuationIota}},
+    iota::hex_casting::{
+        continuation::ContinuationIota,
+        list::ListIota,
+        pattern::{PatternIota, SignatureExt},
+    },
+    parser::AstNode,
+    pattern_registry::PatternRegistry,
 };
-
 
 pub fn eval<'a>(
     state: &'a mut State,
@@ -40,7 +43,7 @@ pub fn eval<'a>(
                 }],
             }));
         }
-        Either3::R(continuation) => state.continuation = continuation.value.clone()
+        Either3::R(continuation) => state.continuation = continuation.value.clone(),
     };
 
     Ok(state)
@@ -50,7 +53,9 @@ pub fn eval_cc<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let continuation_iota = ContinuationIota {value: state.continuation.clone()};
+    let continuation_iota = ContinuationIota {
+        value: state.continuation.clone(),
+    };
     eval(state, pattern_registry)?;
     state.stack.push_back(Rc::new(continuation_iota));
 
@@ -62,8 +67,6 @@ pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut
     let pattern_list = state.stack.get_iota::<ListIota>(0, 2)?;
     let iota_list = state.stack.get_iota::<ListIota>(1, 2)?;
     state.stack.remove_args(&arg_count);
-
-    
 
     state.continuation.push_back(Rc::new(FrameForEach {
         data: (*iota_list).clone().into_iter().rev().collect(),
