@@ -6,6 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+downcast-rs = "1.2.0"
+im = "15.1.0"
 nalgebra = "0.32.2"
 owo-colors = "3.5.0"
 pest = "2.6"

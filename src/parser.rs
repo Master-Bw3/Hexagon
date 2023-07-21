@@ -1,8 +1,14 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc, ops::Deref};
 
 use crate::{
-    interpreter::state::{Entity},
-    iota::{GarbageIota, Iota, NullIota, PatternIota},
+    interpreter::state::Entity,
+    iota::{
+        hex_casting::{
+            entity::EntityIota, garbage::GarbageIota, null::NullIota, number::NumberIota,
+            pattern::PatternIota, list::ListIota,
+        },
+        Iota,
+    },
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 use nalgebra::matrix;
@@ -177,21 +183,21 @@ fn parse_action_iota(
         .unwrap()
 }
 
-fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
-    let line = pair.line_col();
-    let inner = pair.into_inner().next().unwrap();
-    AstNode::Action {
-        name: {
-            match inner.as_str() {
-                "{" => "open_paren".to_string(),
-                "}" => "close_paren".to_string(),
-                _ => unreachable!(),
-            }
-        },
-        value: None,
-        line,
-    }
-}
+// fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
+//     let line = pair.line_col();
+//     let inner = pair.into_inner().next().unwrap();
+//     AstNode::Action {
+//         name: {
+//             match inner.as_str() {
+//                 "{" => "open_paren".to_string(),
+//                 "}" => "close_paren".to_string(),
+//                 _ => unreachable!(),
+//             }
+//         },
+//         value: None,
+//         line,
+//     }
+// }
 
 fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     AstNode::Op {
@@ -282,22 +288,20 @@ pub fn parse_iota(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
-) -> Iota {
+) -> Rc<dyn Iota> {
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
-        Rule::Number => Iota::Number(inner_pair.as_str().parse().unwrap()),
+        Rule::Number => Rc::new(inner_pair.as_str().parse::<NumberIota>().unwrap()),
         Rule::Pattern => match inner_pair.clone().into_inner().next() {
             Some(inner_inner_pair) => match inner_inner_pair.as_str() {
-                "{" => Iota::Pattern(
-                    PatternIota::from_name(pattern_registry, "open_paren", None).unwrap(),
-                ),
-                "}" => Iota::Pattern(
-                    PatternIota::from_name(pattern_registry, "close_paren", None).unwrap(),
-                ),
+                "{" => Rc::new(PatternIota::from_name(pattern_registry, "open_paren", None).unwrap()),
+
+                "}" => Rc::new(PatternIota::from_name(pattern_registry, "close_paren", None).unwrap()),
+
                 _ => match inner_inner_pair.as_rule() {
                     Rule::Action => {
                         let mut pairs = inner_inner_pair.into_inner();
-                        Iota::Pattern(parse_action_iota(
+                        Rc::new(parse_action_iota(
                             pairs.next().unwrap(),
                             pairs.next(),
                             pairs.next(),
@@ -305,7 +309,7 @@ pub fn parse_iota(
                             conf_entities,
                         ))
                     }
-                    Rule::PatternName => Iota::Pattern(PatternIota::from_sig(
+                    Rule::PatternName => Rc::new(PatternIota::from_sig(
                         inner_inner_pair.into_inner().last().unwrap().as_str(),
                         None,
                     )),
@@ -316,33 +320,35 @@ pub fn parse_iota(
         },
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();
-            Iota::Vector(matrix![
+            Rc::new(matrix![
                 inner.next().unwrap().as_str().parse().unwrap(),
                 inner.next().unwrap().as_str().parse().unwrap(),
                 inner.next().unwrap().as_str().parse().unwrap();
             ])
         }
         Rule::Bool => match inner_pair.as_str() {
-            "True" => Iota::Bool(true),
-            "False" => Iota::Bool(false),
+            "True" => Rc::new(true),
+            "False" => Rc::new(false),
             _ => unreachable!(),
         },
         Rule::Influence => match inner_pair.as_str() {
-            "Garbage" => Iota::Garbage(GarbageIota::Garbage),
-            "Null" => Iota::Null(NullIota::Null),
+            "Garbage" => Rc::new(GarbageIota::Garbage),
+            "Null" => Rc::new(NullIota::Null),
             _ => unreachable!(),
         },
         Rule::Entity => {
             // let mut inner = inner_pair.into_inner();
             let name = inner_pair.as_str()[1..].to_string();
-            Iota::Entity(name)
+            Rc::new(EntityIota {
+                name: Rc::from(name),
+            })
         }
         Rule::List => {
             let inner = inner_pair.into_inner();
-            Iota::List(
+            Rc::new(
                 inner
                     .map(|x| parse_iota(x, pattern_registry, conf_entities))
-                    .collect(),
+                    .collect::<ListIota>(),
             )
         }
         _ => unreachable!(),
@@ -353,12 +359,12 @@ fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
     pair.as_str().to_string()
 }
 
-fn parse_string(pair: Pair<'_, Rule>) -> String {
-    pair.as_str()
-        .trim_start_matches('\"')
-        .trim_end_matches('\"')
-        .to_string()
-}
+// fn parse_string(pair: Pair<'_, Rule>) -> String {
+//     pair.as_str()
+//         .trim_start_matches('\"')
+//         .trim_end_matches('\"')
+//         .to_string()
+// }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AstNode {
@@ -380,13 +386,8 @@ pub enum AstNode {
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
     },
-    Instruction(Instruction)
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Instruction {
-    MetaEvalEnd
-}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpName {
@@ -399,16 +400,36 @@ pub enum OpName {
     IntroEmbed,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum OpValue {
-    Iota(Iota),
+    Iota(Rc<dyn Iota>),
     Var(String),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+impl PartialEq for OpValue {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Iota(l0), Self::Iota(r0)) => l0.tolerates_other(r0.deref()),
+            (Self::Var(l0), Self::Var(r0)) => l0 == r0,
+            _ => false,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum ActionValue {
-    Iota(Iota),
+    Iota(Rc<dyn Iota>),
     Bookkeeper(String),
+}
+
+impl PartialEq for ActionValue {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Iota(l0), Self::Iota(r0)) => l0.tolerates_other(r0.deref()),
+            (Self::Bookkeeper(l0), Self::Bookkeeper(r0)) => l0 == r0,
+            _ => false,
+        }
+    }
 }
 
 #[cfg(test)]

@@ -1,8 +1,9 @@
 use compiler::compile_to_iotas;
+use im::Vector;
 use interpreter::mishap::Mishap;
 use iota::Iota;
 use owo_colors::OwoColorize;
-use std::{collections::HashMap, env, fs};
+use std::{collections::HashMap, env, fs, rc::Rc};
 
 use crate::interpreter::interpret;
 mod compiler;
@@ -82,7 +83,7 @@ pub fn run() {
         match interpreter_result {
             Ok(result) => println!(
                 "\nresult: {} \n {:?}",
-                Iota::List(result.stack).display(),
+                result.stack.display(),
                 result.buffer
             ),
             Err(err) => {
@@ -92,7 +93,7 @@ pub fn run() {
     } else if let Command::Build = args.command {
         let compile_result = compile_to_iotas(parse_result, &config.as_ref());
         match compile_result {
-            Ok(result) => println!("\nresult: {}", Iota::List(result).display()),
+            Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
             Err(err) => {
                 print_interpreter_error(err, &source, &args.source_path);
             }
@@ -143,24 +144,24 @@ fn print_mishap_content(line: usize, line_content: &str, padding: &String) {
     );
     eprintln!(" {padding} {}", "|".magenta().bold());
 }
-fn print_eval_mishap_content(pat_list: &[Iota], err_index: usize, pad_len: usize) {
+fn print_eval_mishap_content(pat_list: &[Rc<dyn Iota>], err_index: usize, pad_len: usize) {
     let err_pad_len = err_index.to_string().len();
     let padding = vec![" "; pad_len].concat();
     let extra_padding = vec![" "; pad_len - err_pad_len].concat();
 
     let context_pre: Vec<_> = if pat_list[..err_index].len() >= 3 {
-        pat_list[(err_index - 3)..err_index].to_vec()
+        pat_list[(err_index - 3)..err_index].to_owned()
     } else {
-        pat_list[..err_index].to_vec()
+        pat_list[..err_index].to_owned()
     }
     .iter()
-    .map(|iota| iota.display())
+    .map(|iota: &Rc<dyn Iota>| iota.display())
     .collect();
 
     let context_post: Vec<_> = if pat_list[err_index..].len() > 3 {
-        pat_list[(err_index + 1)..=err_index + 3].to_vec()
+        pat_list[(err_index + 1)..=err_index + 3].to_owned()
     } else {
-        pat_list[(err_index + 1)..].to_vec()
+        pat_list[(err_index + 1)..].to_owned()
     }
     .iter()
     .map(|iota| iota.display())

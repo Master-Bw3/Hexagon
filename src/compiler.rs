@@ -1,11 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 
 use crate::{
-    interpreter::{
-        mishap::{Mishap},
-        ops::EmbedType,
-    },
-    iota::{Iota, PatternIota, SignatureExt},
+    interpreter::{mishap::Mishap, ops::EmbedType},
+    iota::{hex_casting::pattern::PatternIota, Iota},
     parse_config::Config,
     parser::{AstNode, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -22,7 +19,7 @@ pub mod ops;
 pub fn compile_to_iotas(
     node: AstNode,
     config: &Option<&Config>,
-) -> Result<Vec<Iota>, (Mishap, (usize, usize))> {
+) -> CompileResult {
     let mut heap: HashMap<String, i32> = HashMap::new();
 
     let great_sigs = config.map_or_else(PatternRegistry::gen_default_great_sigs, |conf| {
@@ -39,7 +36,7 @@ fn compile_node(
     heap: &mut HashMap<String, i32>,
     depth: u32,
     pattern_registry: &PatternRegistry,
-) -> Result<Vec<Iota>, (Mishap, (usize, usize))> {
+) -> CompileResult {
     match node {
         AstNode::File(file) => {
             let mut result = vec![];
@@ -49,7 +46,7 @@ fn compile_node(
             Ok(result)
         }
 
-        AstNode::Action { line, name, value } => Ok(vec![Iota::Pattern({
+        AstNode::Action { line, name, value } => Ok(vec![{
             let pattern = pattern_registry
                 .find(name, value)
                 .ok_or((Mishap::InvalidPattern, *line))?;
@@ -62,8 +59,8 @@ fn compile_node(
             } else {
                 None
             };
-            PatternIota::from_sig(&pattern.signature, new_value)
-        })]),
+            Rc::new(PatternIota::from_sig(&pattern.signature, new_value))
+        }]),
 
         AstNode::Hex(hex) => compile_hex_node(hex, heap, depth, pattern_registry),
 
@@ -96,32 +93,33 @@ fn compile_node(
             heap,
             pattern_registry,
         ),
-        AstNode::Instruction(_) => Ok(vec![]),
     }
 }
+
+pub type CompileResult = Result<Vec<Rc<dyn Iota>>, (Mishap, (usize, usize))>;
 
 fn compile_hex_node(
     hex: &Vec<AstNode>,
     heap: &mut HashMap<String, i32>,
     mut depth: u32,
     pattern_registry: &PatternRegistry,
-) -> Result<Vec<Iota>, (Mishap, (usize, usize))> {
+) -> CompileResult {
     depth += 1;
 
-    let mut result = vec![];
+    let mut result: Vec<Rc<dyn Iota>> = vec![];
 
     let mut inner = vec![];
     for node in hex {
         inner.append(&mut compile_node(node, heap, depth, pattern_registry)?)
     }
 
-    result.push(Iota::Pattern(
+    result.push(Rc::new(
         PatternIota::from_name(pattern_registry, "open_paren", None).unwrap(),
     ));
 
     result.append(&mut inner);
 
-    result.push(Iota::Pattern(
+    result.push(Rc::new(
         PatternIota::from_name(pattern_registry, "close_paren", None).unwrap(),
     ));
 

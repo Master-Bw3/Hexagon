@@ -1,5 +1,6 @@
+use std::rc::Rc;
 
-
+use im::{vector, Vector};
 use rand::{seq::SliceRandom, thread_rng};
 
 use crate::{
@@ -8,8 +9,8 @@ use crate::{
         push_pattern,
         state::{StackExt, State},
     },
-    iota::{Iota, PatternIota},
-    parser::{ActionValue},
+    iota::hex_casting::pattern::PatternIota,
+    parser::ActionValue,
     pattern_registry::PatternRegistry,
 };
 
@@ -19,7 +20,7 @@ pub fn escape<'a>(
     value: Option<&ActionValue>,
 ) -> Result<&'a mut State, Mishap> {
     match value {
-        Some(ActionValue::Iota(iota)) => state.stack.push(iota.clone()),
+        Some(ActionValue::Iota(iota)) => state.stack.push_back(iota.clone()),
         Some(ActionValue::Bookkeeper(val)) => {
             Err(Mishap::InvalidValue(val.clone(), "Iota".to_string()))?
         }
@@ -38,15 +39,13 @@ pub fn introspect<'a>(
     let new_buffer = match &state.buffer {
         Some(buffer) => {
             let mut new_buffer = buffer.clone();
-            new_buffer.push((
-                Iota::Pattern(
-                    PatternIota::from_name(pattern_registry, "open_paren", None).unwrap(),
-                ),
+            new_buffer.push_back((
+                Rc::new(PatternIota::from_name(pattern_registry, "open_paren", None).unwrap()),
                 false,
             ));
             new_buffer
         }
-        None => vec![],
+        None => vector![],
     };
 
     state.buffer = Some(new_buffer);
@@ -60,12 +59,12 @@ pub fn retrospect<'a>(
     let inner_buffer = state.buffer.as_ref().ok_or(Mishap::HastyRetrospection)?;
 
     let intro_pattern =
-        Iota::Pattern(PatternIota::from_name(pattern_registry, "open_paren", None).unwrap());
+        PatternIota::from_name(pattern_registry, "open_paren", None).unwrap();
     let retro_pattern =
-        Iota::Pattern(PatternIota::from_name(pattern_registry, "close_paren", None).unwrap());
+        PatternIota::from_name(pattern_registry, "close_paren", None).unwrap();
 
     let intro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
-        if x.0 == intro_pattern && !x.1 {
+        if x.0.tolerates_other(&intro_pattern) && !x.1 {
             acc + 1
         } else {
             acc
@@ -73,7 +72,7 @@ pub fn retrospect<'a>(
     }) + 1;
 
     let retro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
-        if x.0 == retro_pattern && !x.1 {
+        if x.0.tolerates_other(&retro_pattern) && !x.1 {
             acc + 1
         } else {
             acc
@@ -81,11 +80,11 @@ pub fn retrospect<'a>(
     }) + 1;
 
     if intro_count == retro_count {
-        state.stack.push(Iota::List(
+        state.stack.push_back(Rc::new(
             inner_buffer
                 .iter()
                 .map(|x| x.0.clone())
-                .collect::<Vec<Iota>>(),
+                .collect::<Vector<_>>(),
         ));
         state.buffer = None
     } else {
@@ -109,7 +108,7 @@ pub fn print<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let iota = state.stack.get_iota(0, 1)?;
+    let iota = state.stack.get_any_iota(0, 1)?;
     println!("{}", iota.display());
     Ok(state)
 }
