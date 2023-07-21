@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::f32::consts::{E, PI, TAU};
 use std::rc::Rc;
 
+use im::vector;
+
 use crate::interpreter::state::{EntityType, };
 use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::null::NullIota;
@@ -159,7 +161,7 @@ impl PatternRegistryExt for PatternRegistry {
             // //consts
             Pattern::new("Mind's Reflection", "get_caster", "qaq", 
                 constructors::push_const(Rc::new(EntityIota {name: Rc::from("Caster")}))),
-            Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Rc::new(vec![]))),
+            Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Rc::new(vector![]))),
             Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(Rc::new(VectorIota::new(1.0, 0.0, 0.0)))),
             Pattern::new("Vector Reflection +Y", "const/vec/py", "qqqqqew", constructors::push_const(Rc::new(VectorIota::new(0.0, 1.0, 0.0)))),
             Pattern::new("Vector Reflection +Z", "const/vec/pz", "qqqqqed", constructors::push_const(Rc::new(VectorIota::new(0.0, 0.0, 1.0)))),

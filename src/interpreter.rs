@@ -34,7 +34,7 @@ pub fn interpret(
     entities: HashMap<String, Entity>,
 ) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
-        ravenmind: Some(Rc::new(vec![])),
+        ravenmind: Some(Rc::new(im::vector![])),
         ..Default::default()
     };
     let great_sigs;

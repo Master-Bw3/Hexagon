@@ -40,7 +40,7 @@ pub fn eval<'a>(
                 }],
             }));
         }
-        Either3::R(continuation) => state.continuation = continuation.to_vec(),
+        Either3::R(continuation) => state.continuation = continuation.value.to_vec()
     };
 
     Ok(state)
@@ -50,7 +50,7 @@ pub fn eval_cc<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let continuation_iota = state.continuation.clone();
+    let continuation_iota = ContinuationIota {value: state.continuation.clone()};
     eval(state, pattern_registry)?;
     state.stack.push_back(Rc::new(continuation_iota));
 

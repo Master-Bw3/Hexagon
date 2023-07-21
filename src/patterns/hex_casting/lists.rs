@@ -240,7 +240,7 @@ pub fn construct<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
-    let mut iotas = (
+    let iotas = (
         (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
         state.stack.get_any_iota(1, arg_count)?.clone(),
     );
