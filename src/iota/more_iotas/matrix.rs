@@ -14,7 +14,7 @@ impl Iota for MatrixIota {
             let row_str = format!("{}", row_out.join(", "));
             out.push(row_str)
         }
-        format!("({}, {}) | {}", self.row_iter().len(), self.column_iter().len(), out.join("; "))
+        format!("[({}, {}) | {}]", self.row_iter().len(), self.column_iter().len(), out.join("; "))
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
