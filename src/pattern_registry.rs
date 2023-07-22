@@ -343,7 +343,9 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),
             Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrix::unmake)),
             Pattern::new("Identity Purification", "matrix/identity", "awwaeawwaqw", Box::new(matrix::identity)),
-            // Pattern::new("", "", "", Box::new(matrices::)),
+            Pattern::new("Zero Distillation", "matrix/zero", "awwaeawwa", Box::new(matrix::zero)),
+
+            // Pattern::new("", "", "", Box::new(matrix::)),
 
 
 

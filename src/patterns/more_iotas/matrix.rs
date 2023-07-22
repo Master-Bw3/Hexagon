@@ -160,10 +160,27 @@ pub fn identity<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_iota::<NumberIota>(0, arg_count)?.int(0)? as usize;
+    let iota = state.stack.get_iota::<NumberIota>(0, arg_count)?.positive_int(0)? as usize;
     state.stack.remove_args(&arg_count);
 
     let identity_matrix: Rc<dyn Iota> = Rc::new(MatrixIota::identity(iota, iota));
+
+    state.stack.push_back(identity_matrix);
+
+    Ok(state)
+}
+
+pub fn zero<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let n = state.stack.get_iota::<NumberIota>(0, arg_count)?.positive_int(0)? as usize;
+    let m = state.stack.get_iota::<NumberIota>(1, arg_count)?.positive_int(0)? as usize;
+
+    state.stack.remove_args(&arg_count);
+
+    let identity_matrix: Rc<dyn Iota> = Rc::new(MatrixIota::zeros(n, m));
 
     state.stack.push_back(identity_matrix);
 
