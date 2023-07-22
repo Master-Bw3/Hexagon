@@ -8,6 +8,7 @@ use crate::iota::Iota;
 pub struct PatternIota {
     pub signature: Signature,
     pub value: Box<Option<ActionValue>>,
+    pub line: Option<(usize, usize)>
 }
 
 impl PatternIota {
@@ -15,18 +16,21 @@ impl PatternIota {
         registry: &PatternRegistry,
         name: &str,
         value: Option<ActionValue>,
+        line: Option<(usize, usize)>
     ) -> Result<PatternIota, Mishap> {
         Ok(PatternIota {
             signature: Signature::from_name(registry, name, &value)
                 .ok_or(Mishap::InvalidPattern)?,
             value: Box::new(value),
+            line
         })
     }
 
-    pub fn from_sig(name: &str, value: Option<ActionValue>) -> PatternIota {
+    pub fn from_sig(name: &str, value: Option<ActionValue>, line: Option<(usize, usize)>) -> PatternIota {
         PatternIota {
             signature: Signature::from_sig(name),
             value: Box::new(value),
+            line
         }
     }
 }

@@ -1,10 +1,13 @@
-use std::rc::Rc;
+use std::{rc::Rc, cell::RefCell};
 
 use im::vector;
 
 use crate::{
     interpreter::{
-        continuation::{iota_list_to_ast_node_list, FrameEndEval, FrameEvaluate, FrameForEach},
+        continuation::{
+            iota_list_to_ast_node_list, ContinuationFrame, FrameEndEval, FrameEvaluate,
+            FrameForEach, ContinuationFrameTrait,
+        },
         mishap::Mishap,
         state::{Either3, StackExt, State},
     },
@@ -29,14 +32,18 @@ pub fn eval<'a>(
 
     match arg {
         Either3::L(list) => {
-            state.continuation.push_back(Rc::new(FrameEndEval {}));
-            state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes: iota_list_to_ast_node_list(list),
-            }));
+            state
+                .continuation
+                .push_back(ContinuationFrame::EndEval(FrameEndEval {}));
+            state
+                .continuation
+                .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                    nodes_queue: iota_list_to_ast_node_list(list),
+                }));
         }
         Either3::M(pattern) => {
-            state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes: vec![AstNode::Action {
+            state.continuation.push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                nodes_queue: vector![AstNode::Action {
                     line: (1, 0),
                     name: pattern.signature.as_str(),
                     value: *pattern.value.clone(),
@@ -68,11 +75,11 @@ pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut
     let iota_list = state.stack.get_iota::<ListIota>(1, 2)?;
     state.stack.remove_args(&arg_count);
 
-    state.continuation.push_back(Rc::new(FrameForEach {
-        data: (*iota_list).clone().into_iter().rev().collect(),
+    state.continuation.push_back(ContinuationFrame::ForEach(FrameForEach {
+        data: (*iota_list).clone(),
         code: iota_list_to_ast_node_list(pattern_list),
         base_stack: None,
-        acc: vector![],
+        acc: Rc::new(RefCell::new(vector![])),
     }));
 
     Ok(state)

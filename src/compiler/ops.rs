@@ -13,7 +13,7 @@ pub fn compile_op_copy(
     arg: &Option<OpValue>,
 ) -> Result<Vec<Rc<dyn Iota>>, Mishap> {
     let mut compiled: Vec<Rc<dyn Iota>> = vec![Rc::new(
-        PatternIota::from_name(pattern_registry, "duplicate", None).unwrap(),
+        PatternIota::from_name(pattern_registry, "duplicate", None, None).unwrap(),
     )];
 
     compiled.append(&mut compile_op_store(heap, pattern_registry, arg)?);
@@ -38,18 +38,19 @@ pub fn compile_op_store(
     let compiled: Vec<Rc<dyn Iota>> = match index {
         Some(index) => {
             vec![
-                Rc::new(PatternIota::from_name(registry, "read/local", None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "read/local", None, None).unwrap()),
                 Rc::new(
                     PatternIota::from_name(
                         registry,
                         "number",
                         Some(ActionValue::Iota(Rc::new(*index as f32))),
+                        None,
                     )
                     .unwrap(),
                 ),
-                Rc::new(PatternIota::from_name(registry, "rotate", None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "modify_in_place", None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "write/local", None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "rotate", None, None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "modify_in_place", None, None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "write/local", None, None).unwrap()),
             ]
         }
         None => {
@@ -57,10 +58,10 @@ pub fn compile_op_store(
             heap.insert(var.clone(), new_index);
 
             vec![
-                Rc::new(PatternIota::from_name(registry, "read/local", None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "swap", None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "append", None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "write/local", None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "read/local", None, None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "swap", None, None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "append", None, None).unwrap()),
+                Rc::new(PatternIota::from_name(registry, "write/local", None, None).unwrap()),
             ]
         }
     };
@@ -84,16 +85,17 @@ pub fn compile_op_push(
         }
     };
     let compiled: Vec<Rc<dyn Iota>> = vec![
-        Rc::new(PatternIota::from_name(registry, "read/local", None).unwrap()),
+        Rc::new(PatternIota::from_name(registry, "read/local", None, None).unwrap()),
         Rc::new(
             PatternIota::from_name(
                 registry,
                 "number",
                 Some(ActionValue::Iota(Rc::new(*index as f32))),
+                None
             )
             .unwrap(),
         ),
-        Rc::new(PatternIota::from_name(registry, "index", None).unwrap()),
+        Rc::new(PatternIota::from_name(registry, "index", None, None).unwrap()),
     ];
 
     Ok(compiled)
@@ -130,17 +132,18 @@ pub fn compile_op_embed(
     let compiled = match embed_type {
         EmbedType::Normal => vec![iota],
         EmbedType::Consider => {
-            let consideration = Rc::new(PatternIota::from_name(registry, "escape", None).unwrap());
+            let consideration =
+                Rc::new(PatternIota::from_name(registry, "escape", None, None).unwrap());
 
             let mut result: Vec<Rc<dyn Iota>> = vec![consideration; i32::pow(2, depth) as usize];
             result.push(iota);
             result
         }
         EmbedType::IntroRetro => vec![
-            Rc::new(PatternIota::from_name(registry, "open_paren", None).unwrap()),
+            Rc::new(PatternIota::from_name(registry, "open_paren", None, None).unwrap()),
             iota,
-            Rc::new(PatternIota::from_name(registry, "close_paren", None).unwrap()),
-            Rc::new(PatternIota::from_name(registry, "splat", None).unwrap()),
+            Rc::new(PatternIota::from_name(registry, "close_paren", None, None).unwrap()),
+            Rc::new(PatternIota::from_name(registry, "splat", None, None).unwrap()),
         ],
         EmbedType::Smart => unreachable!(),
     };

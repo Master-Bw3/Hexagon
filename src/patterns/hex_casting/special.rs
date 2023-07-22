@@ -40,7 +40,7 @@ pub fn introspect<'a>(
         Some(buffer) => {
             let mut new_buffer = buffer.clone();
             new_buffer.push_back((
-                Rc::new(PatternIota::from_name(pattern_registry, "open_paren", None).unwrap()),
+                Rc::new(PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap()),
                 false,
             ));
             new_buffer
@@ -59,9 +59,9 @@ pub fn retrospect<'a>(
     let inner_buffer = state.buffer.as_ref().ok_or(Mishap::HastyRetrospection)?;
 
     let intro_pattern =
-        PatternIota::from_name(pattern_registry, "open_paren", None).unwrap();
+        PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap();
     let retro_pattern =
-        PatternIota::from_name(pattern_registry, "close_paren", None).unwrap();
+        PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap();
 
     let intro_count: i32 = inner_buffer.iter().fold(0, |acc, x| {
         if x.0.tolerates_other(&intro_pattern) && !x.1 {
@@ -94,6 +94,7 @@ pub fn retrospect<'a>(
             state,
             pattern_registry,
             false,
+            None
         )
     };
 

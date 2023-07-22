@@ -51,7 +51,7 @@ impl Mishap {
             Mishap::HastyRetrospection => {
                 let retro_sig: &str = "eee";
                 let mut new_stack = stack;
-                new_stack.push_back(Rc::new(PatternIota::from_sig(retro_sig, None)));
+                new_stack.push_back(Rc::new(PatternIota::from_sig(retro_sig, None, None)));
                 new_stack
             }
             Mishap::InvalidPattern => {

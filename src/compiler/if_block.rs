@@ -1,7 +1,6 @@
 use std::{collections::HashMap, rc::Rc};
 
 use crate::{
-    interpreter::mishap::Mishap,
     iota::{Iota, hex_casting::pattern::PatternIota},
     parser::AstNode,
     pattern_registry::PatternRegistry,
@@ -55,7 +54,7 @@ pub fn compile_if_block(
                     pattern_registry,
                 )?);
                 result.push(
-                    Rc::new(PatternIota::from_name(pattern_registry, "eval", None).unwrap()),
+                    Rc::new(PatternIota::from_name(pattern_registry, "eval", None, None).unwrap()),
                 );
             }
             _ => unreachable!(),
@@ -66,7 +65,7 @@ pub fn compile_if_block(
     }
     //push augur's to buffer
     result.push(
-        Rc::new(PatternIota::from_name(pattern_registry, "if", None).unwrap()),
+        Rc::new(PatternIota::from_name(pattern_registry, "if", None, None).unwrap()),
     );
 
     Ok(result)

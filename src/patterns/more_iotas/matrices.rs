@@ -9,11 +9,7 @@ use crate::{
         state::{StackExt, State},
     },
     iota::{
-        hex_casting::{
-            list::{self, ListIota},
-            number::NumberIota,
-            vector::VectorIota,
-        },
+        hex_casting::{list::ListIota, number::NumberIota, vector::VectorIota},
         more_iotas::matrix::MatrixIota,
         Iota,
     },
@@ -50,7 +46,7 @@ pub fn make<'a>(
 
     fn matrix_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
         let row = row_from_num_list(list)?;
-        
+
         Ok(DMatrix::from_rows(&[row]))
     }
 
@@ -115,7 +111,11 @@ pub fn unmake<'a>(
     let matrix = state.stack.get_iota::<MatrixIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    println!("{}, {}", matrix.column_iter().len(), matrix.row_iter().len());
+    println!(
+        "{}, {}",
+        matrix.column_iter().len(),
+        matrix.row_iter().len()
+    );
 
     let operation_result: Rc<dyn Iota> = if matrix.len() == 1 {
         Rc::new(matrix[0])
@@ -139,7 +139,7 @@ pub fn unmake<'a>(
                 for (r, _) in matrix.row_iter().enumerate() {
                     to_add.push_back(Rc::new(matrix.row(r)[c]))
                 }
-                
+
                 list.push_back(Rc::new(to_add))
             }
         }

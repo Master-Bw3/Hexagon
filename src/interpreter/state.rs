@@ -26,7 +26,7 @@ pub struct State {
     pub buffer: Option<Vector<(Rc<dyn Iota>, Considered)>>,
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
-    pub continuation: Vector<Rc<dyn ContinuationFrame>>,
+    pub continuation: Vector<ContinuationFrame>,
 }
 
 pub type Library = HashMap<Signature, Rc<dyn Iota>>;

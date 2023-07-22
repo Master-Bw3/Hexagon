@@ -3,7 +3,6 @@ use std::{collections::HashMap, rc::Rc};
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parse_config::Config,
     parser::{AstNode, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -18,15 +17,11 @@ pub mod ops;
 
 pub fn compile_to_iotas(
     node: AstNode,
-    config: &Option<&Config>,
+    great_sigs: &HashMap<String, String>,
 ) -> CompileResult {
     let mut heap: HashMap<String, i32> = HashMap::new();
 
-    let great_sigs = config.map_or_else(PatternRegistry::gen_default_great_sigs, |conf| {
-        conf.great_spell_sigs.clone()
-    });
-
-    let pattern_registry = PatternRegistry::construct(&great_sigs);
+    let pattern_registry = PatternRegistry::construct(great_sigs);
 
     compile_node(&node, &mut heap, 0, &pattern_registry)
 }
@@ -59,7 +54,7 @@ fn compile_node(
             } else {
                 None
             };
-            Rc::new(PatternIota::from_sig(&pattern.signature, new_value))
+            Rc::new(PatternIota::from_sig(&pattern.signature, new_value, None))
         }]),
 
         AstNode::Hex(hex) => compile_hex_node(hex, heap, depth, pattern_registry),
@@ -114,13 +109,13 @@ fn compile_hex_node(
     }
 
     result.push(Rc::new(
-        PatternIota::from_name(pattern_registry, "open_paren", None).unwrap(),
+        PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap(),
     ));
 
     result.append(&mut inner);
 
     result.push(Rc::new(
-        PatternIota::from_name(pattern_registry, "close_paren", None).unwrap(),
+        PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap(),
     ));
 
     Ok(result)
