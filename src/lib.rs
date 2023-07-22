@@ -14,7 +14,7 @@ mod parser;
 mod pattern_registry;
 mod patterns;
 
-use parse_config::parse_config;
+use parse_config::{parse_config, Config};
 use pattern_registry::{PatternRegistry, PatternRegistryExt};
 
 struct Args {
@@ -58,27 +58,22 @@ enum Command {
 pub fn run() {
     let args = Args::get();
 
-    let config = fs::read_to_string(args.config_path).map(parse_config).ok();
+    let mut config = fs::read_to_string(args.config_path)
+        .map(parse_config)
+        .unwrap_or_else(|_| Config {
+            libraries: HashMap::new(),
+            entities: HashMap::new(),
+            great_spell_sigs: PatternRegistry::gen_default_great_sigs(),
+        });
 
     let source =
         fs::read_to_string(&args.source_path).expect("Should have been able to read the file");
 
-    let great_spell_sigs = if let Some(conf) = &config.as_ref() {
-        conf.great_spell_sigs.clone()
-    } else {
-        PatternRegistry::gen_default_great_sigs()
-    };
-
-    //no idea if this actually does anything
-    let mut entities = config
-        .as_ref()
-        .map(|conf| conf.entities.clone())
-        .unwrap_or(HashMap::new());
-
-    let parse_result = parser::parse(&source, &great_spell_sigs, &mut entities).unwrap();
+    let parse_result =
+        parser::parse(&source, &config.great_spell_sigs, &mut config.entities).unwrap();
 
     if let Command::Run = args.command {
-        let interpreter_result = interpret(parse_result, &config.as_ref(), entities);
+        let interpreter_result = interpret(parse_result, &config);
 
         match interpreter_result {
             Ok(result) => println!(
@@ -91,7 +86,7 @@ pub fn run() {
             }
         };
     } else if let Command::Build = args.command {
-        let compile_result = compile_to_iotas(parse_result, &config.as_ref());
+        let compile_result = compile_to_iotas(parse_result, &config.great_spell_sigs);
         match compile_result {
             Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
             Err(err) => {

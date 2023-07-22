@@ -18,13 +18,9 @@ pub mod ops;
 
 pub fn compile_to_iotas(
     node: AstNode,
-    config: &Option<&Config>,
+    great_sigs: &HashMap<String, String>,
 ) -> CompileResult {
     let mut heap: HashMap<String, i32> = HashMap::new();
-
-    let great_sigs = config.map_or_else(PatternRegistry::gen_default_great_sigs, |conf| {
-        conf.great_spell_sigs.clone()
-    });
 
     let pattern_registry = PatternRegistry::construct(&great_sigs);
 

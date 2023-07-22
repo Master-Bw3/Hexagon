@@ -34,26 +34,15 @@ use self::{
     state::{Considered, Entity, EntityType, Holding, State},
 };
 
-pub fn interpret(
-    node: AstNode,
-    config: &Option<&Config>,
-    entities: HashMap<String, Entity>,
-) -> Result<State, (Mishap, (usize, usize))> {
+pub fn interpret(node: AstNode, config: &Config) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
         ravenmind: Some(Rc::new(im::vector![])),
         ..Default::default()
     };
-    let great_sigs;
+    state.entities = config.entities.clone();
+    state.libraries = config.libraries.clone();
 
-    if let Some(conf) = config {
-        state.entities = entities.clone();
-        state.libraries = conf.libraries.clone();
-        great_sigs = conf.great_spell_sigs.clone();
-    } else {
-        great_sigs = PatternRegistry::gen_default_great_sigs();
-    }
-
-    let pattern_registry = PatternRegistry::construct(&great_sigs);
+    let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
 
     //if caster is not overriden by config then set default caster values
     match state.entities.get("Caster") {
