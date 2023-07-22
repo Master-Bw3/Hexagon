@@ -1,11 +1,10 @@
 use im::Vector;
 
-
 #[derive(Debug, Clone)]
 pub enum ContinuationFrame {
     Evaluate(FrameEvaluate),
     EndEval(FrameEndEval),
-    ForEach(FrameForEach)    
+    ForEach(FrameForEach),
 }
 
 impl ContinuationFrameTrait for ContinuationFrame {
@@ -35,9 +34,10 @@ use crate::{
         hex_casting::pattern::{PatternIota, SignatureExt},
         Iota,
     },
-    parser::{AstNode, OpName, OpValue}, pattern_registry::PatternRegistry,
+    parser::{AstNode, OpName, OpValue},
+    pattern_registry::PatternRegistry,
 };
-use std::rc::Rc;
+use std::{cell::RefCell, rc::Rc};
 
 use super::{interpret_node, mishap::Mishap, state::State};
 
@@ -71,7 +71,9 @@ impl ContinuationFrameTrait for FrameEvaluate {
             //if there are still nodes left in the frame:
             Some(n) => {
                 //push a new frame to the continuation containing the rest of this frame
-                state.continuation.push_back(ContinuationFrame::Evaluate(new_frame));
+                state
+                    .continuation
+                    .push_back(ContinuationFrame::Evaluate(new_frame));
 
                 interpret_node(n.clone(), state, pattern_registry)?;
                 Ok(())
@@ -110,7 +112,7 @@ pub struct FrameForEach {
     pub data: Vector<Rc<dyn Iota>>,
     pub code: Vector<AstNode>,
     pub base_stack: Option<Vector<Rc<dyn Iota>>>,
-    pub acc: Vector<Rc<dyn Iota>>,
+    pub acc: Rc<RefCell<Vector<Rc<dyn Iota>>>>,
 }
 
 impl ContinuationFrameTrait for FrameForEach {
@@ -119,37 +121,39 @@ impl ContinuationFrameTrait for FrameForEach {
         state: &mut State,
         _: &PatternRegistry,
     ) -> Result<(), (Mishap, (usize, usize))> {
-
-        let (stack, new_acc) = match &self.base_stack {
+        let stack = match &self.base_stack {
             //thoth entry point
-            None => (state.stack.clone(), self.acc.clone()),
+            None => state.stack.clone(),
 
             //thoth iteration
-            Some(base) => (base.clone(), {
-                let mut new_acc = self.acc.clone();
-                new_acc.append(state.stack.clone());
-                new_acc
-            }),
+            Some(base) => {
+                self.acc.borrow_mut().append(state.stack.clone());
+                base.clone()
+            }
         };
 
         let stack_top = if !self.data.is_empty() {
             let mut new_data = self.data.clone();
             let top = new_data.pop_front().unwrap();
 
-            state.continuation.push_back(ContinuationFrame::ForEach(FrameForEach {
-                data: new_data,
-                code: self.code.clone(),
-                base_stack: Some(stack.clone()),
-                acc: new_acc,
-            }));
+            state
+                .continuation
+                .push_back(ContinuationFrame::ForEach(FrameForEach {
+                    data: new_data,
+                    code: self.code.clone(),
+                    base_stack: Some(stack.clone()),
+                    acc: self.acc.clone(),
+                }));
 
-            state.continuation.push_back(ContinuationFrame::Evaluate(FrameEvaluate {
-                nodes_queue: self.code.clone(),
-            }));
+            state
+                .continuation
+                .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                    nodes_queue: self.code.clone(),
+                }));
 
             top
         } else {
-            Rc::new(new_acc)
+            Rc::new(self.acc.borrow().clone())
         };
 
         state.stack = stack.into_iter().collect();
@@ -164,8 +168,8 @@ impl ContinuationFrameTrait for FrameForEach {
         let mut new_stack = self.base_stack.clone().unwrap_or(Vector::new());
 
         let mut new_acc = self.acc.clone();
-        new_acc.append(state.stack.clone());
-        new_stack.push_back(Rc::new(new_acc));
+        new_acc.borrow_mut().append(state.stack.clone());
+        new_stack.push_back(Rc::new(new_acc.borrow().clone()));
         state.stack = new_stack.into_iter().collect();
         true
     }
@@ -174,17 +178,19 @@ impl ContinuationFrameTrait for FrameForEach {
 pub fn iota_list_to_ast_node_list(list: Rc<Vector<Rc<dyn Iota>>>) -> Vector<AstNode> {
     list.iter()
         .enumerate()
-        .map(|(index, iota)| match iota.clone().downcast_rc::<PatternIota>() {
-            Ok(pattern) => AstNode::Action {
-                line: pattern.line.unwrap_or((1, 0)),
-                name: pattern.signature.as_str(),
-                value: *pattern.value.clone(),
+        .map(
+            |(index, iota)| match iota.clone().downcast_rc::<PatternIota>() {
+                Ok(pattern) => AstNode::Action {
+                    line: pattern.line.unwrap_or((1, 0)),
+                    name: pattern.signature.as_str(),
+                    value: *pattern.value.clone(),
+                },
+                Err(_) => AstNode::Op {
+                    line: (1, 0),
+                    name: OpName::Embed,
+                    arg: Some(OpValue::Iota(iota.clone())),
+                },
             },
-            Err(_) => AstNode::Op {
-                line: (1, 0),
-                name: OpName::Embed,
-                arg: Some(OpValue::Iota(iota.clone())),
-            },
-        })
+        )
         .collect()
 }

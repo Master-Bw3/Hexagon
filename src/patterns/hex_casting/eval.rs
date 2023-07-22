@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{rc::Rc, cell::RefCell};
 
 use im::vector;
 
@@ -79,7 +79,7 @@ pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut
         data: (*iota_list).clone(),
         code: iota_list_to_ast_node_list(pattern_list),
         base_stack: None,
-        acc: vector![],
+        acc: Rc::new(RefCell::new(vector![])),
     }));
 
     Ok(state)
