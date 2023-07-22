@@ -84,7 +84,7 @@ fn interpret_node<'a>(
         AstNode::File(nodes) => {
             //initialize the vm
             state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes: Vector::from(nodes),
+                nodes_queue: Vector::from(nodes),
             }));
 
             //loop through every frame until there aren't any more

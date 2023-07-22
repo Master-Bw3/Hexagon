@@ -25,7 +25,7 @@ pub trait ContinuationFrame: std::fmt::Debug {
 
 #[derive(Clone, Debug)]
 pub struct FrameEvaluate {
-    pub nodes: Vector<AstNode>,
+    pub nodes_queue: Vector<AstNode>,
 }
 
 impl ContinuationFrame for FrameEvaluate {
@@ -35,7 +35,7 @@ impl ContinuationFrame for FrameEvaluate {
         pattern_registry: &PatternRegistry,
     ) -> Result<(), (Mishap, (usize, usize))> {
         let mut new_frame = self.clone();
-        let node = new_frame.nodes.pop_front();
+        let node = new_frame.nodes_queue.pop_front();
 
         match node {
             //if there are still nodes left in the frame:
@@ -114,7 +114,7 @@ impl ContinuationFrame for FrameForEach {
             }));
 
             state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes: self.code.clone(),
+                nodes_queue: self.code.clone(),
             }));
 
             top

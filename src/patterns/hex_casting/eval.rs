@@ -31,12 +31,12 @@ pub fn eval<'a>(
         Either3::L(list) => {
             state.continuation.push_back(Rc::new(FrameEndEval {}));
             state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes: iota_list_to_ast_node_list(list),
+                nodes_queue: iota_list_to_ast_node_list(list),
             }));
         }
         Either3::M(pattern) => {
             state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes: vector![AstNode::Action {
+                nodes_queue: vector![AstNode::Action {
                     line: (1, 0),
                     name: pattern.signature.as_str(),
                     value: *pattern.value.clone(),
