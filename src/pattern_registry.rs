@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use im::vector;
 
-use crate::interpreter::state::{EntityType, };
+use crate::interpreter::state::EntityType;
 use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::null::NullIota;
 use crate::iota::hex_casting::number::NumberIota;
@@ -344,6 +344,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrix::unmake)),
             Pattern::new("Identity Purification", "matrix/identity", "awwaeawwaqw", Box::new(matrix::identity)),
             Pattern::new("Zero Distillation", "matrix/zero", "awwaeawwa", Box::new(matrix::zero)),
+            Pattern::new("Rotation Distillation", "matrix/rotation", "awwaeawwawawddw", Box::new(matrix::rotate)),
+            Pattern::new("Addition Distillation: Matrix", "matrix/add", "waawawaeawwaea", Box::new(matrix::add)),
 
             // Pattern::new("", "", "", Box::new(matrix::)),
 

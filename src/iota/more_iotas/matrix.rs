@@ -1,8 +1,15 @@
-use std::ops::Not;
+use std::{ops::Not, rc::Rc};
 
-use nalgebra::{Dyn, Matrix};
+use downcast_rs::{impl_downcast, Downcast};
+use nalgebra::{DMatrix, Dyn, Matrix, dmatrix};
 
-use crate::iota::{hex_casting::number::NumberIota, Iota};
+use crate::{
+    interpreter::state::Either3,
+    iota::{
+        hex_casting::{number::NumberIota, vector::VectorIota},
+        Iota,
+    },
+};
 
 pub type MatrixIota = Matrix<NumberIota, Dyn, Dyn, nalgebra::VecStorage<NumberIota, Dyn, Dyn>>;
 
@@ -14,7 +21,12 @@ impl Iota for MatrixIota {
             let row_str = format!("{}", row_out.join(", "));
             out.push(row_str)
         }
-        format!("[({}, {}) | {}]", self.row_iter().len(), self.column_iter().len(), out.join("; "))
+        format!(
+            "[({}, {}) | {}]",
+            self.row_iter().len(),
+            self.column_iter().len(),
+            out.join("; ")
+        )
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
@@ -32,6 +44,20 @@ impl Iota for MatrixIota {
                         .not()
             }
             None => false,
+        }
+    }
+}
+
+pub trait AsMatrix {
+    fn as_matrix(self) -> MatrixIota;
+}
+
+impl AsMatrix for Either3<Rc<NumberIota>, Rc<VectorIota>, Rc<MatrixIota>> {
+    fn as_matrix(self) -> MatrixIota {
+        match self {
+            Either3::L(num) => dmatrix![*num],
+            Either3::M(vec) => DMatrix::from_vec(3, 1, vec.data.as_slice().to_vec()),
+            Either3::R(matrix) => (*matrix).clone(),
         }
     }
 }

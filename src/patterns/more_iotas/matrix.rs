@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use im::{vector, Vector};
-use nalgebra::{dmatrix, DMatrix, Matrix, Matrix1xX, MatrixXx1};
+use nalgebra::{dmatrix, matrix, DMatrix, Matrix, Matrix1xX, MatrixXx1, Rotation3};
 
 use crate::{
     interpreter::{
@@ -14,7 +14,7 @@ use crate::{
             number::{NumberIota, NumberIotaExt},
             vector::VectorIota,
         },
-        more_iotas::matrix::MatrixIota,
+        more_iotas::matrix::{MatrixIota, AsMatrix},
         Iota,
     },
     pattern_registry::PatternRegistry,
@@ -160,7 +160,10 @@ pub fn identity<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let iota = state.stack.get_iota::<NumberIota>(0, arg_count)?.positive_int(0)? as usize;
+    let iota = state
+        .stack
+        .get_iota::<NumberIota>(0, arg_count)?
+        .positive_int(0)? as usize;
     state.stack.remove_args(&arg_count);
 
     let identity_matrix: Rc<dyn Iota> = Rc::new(MatrixIota::identity(iota, iota));
@@ -175,14 +178,58 @@ pub fn zero<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
-    let n = state.stack.get_iota::<NumberIota>(0, arg_count)?.positive_int(0)? as usize;
-    let m = state.stack.get_iota::<NumberIota>(1, arg_count)?.positive_int(0)? as usize;
-
+    let n = state
+        .stack
+        .get_iota::<NumberIota>(0, arg_count)?
+        .positive_int(0)? as usize;
+    let m = state
+        .stack
+        .get_iota::<NumberIota>(1, arg_count)?
+        .positive_int(0)? as usize;
     state.stack.remove_args(&arg_count);
 
     let identity_matrix: Rc<dyn Iota> = Rc::new(MatrixIota::zeros(n, m));
 
     state.stack.push_back(identity_matrix);
+
+    Ok(state)
+}
+
+pub fn rotate<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let axis = state.stack.get_iota::<VectorIota>(0, arg_count)?;
+    let theta = state.stack.get_iota::<NumberIota>(1, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let (x, y, z) = (axis.x, axis.y, axis.z);
+    let c = theta.cos();
+    let s = theta.sin();
+    let nc = 1.0 - c;
+
+    let matrix: MatrixIota = dmatrix![c + x*x*nc, x*y*nc - z*s, x*z*nc + y*s; 
+                                      y*x*nc + z*s, c + y*y*nc, y*z*nc - x*s; 
+                                      z*x*nc - y*s, z*y*nc + x*s, c + z*z*nc];
+
+    let identity_matrix: Rc<dyn Iota> = Rc::new(matrix);
+
+    state.stack.push_back(identity_matrix);
+
+    Ok(state)
+}
+
+pub fn add<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let lhs = state.stack.get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?.as_matrix();
+    let rhs = state.stack.get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?.as_matrix();
+    state.stack.remove_args(&arg_count);
+
+    state.stack.push_back(Rc::new(lhs + rhs));
 
     Ok(state)
 }

@@ -124,18 +124,19 @@ fn parse_action(
                 ))),
                 line: pair.line_col(),
             },
-            Rule::EntityType => AstNode::Action {
-                name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
-                value: righter
-                    .map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
-                line: pair.line_col(),
-            },
+
             Rule::BookkeeperValue => AstNode::Action {
                 name: left.as_str().to_string(),
                 value: Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
                 line: pair.line_col(),
             },
-            _ => unreachable!(),
+
+            _ => AstNode::Action {
+                name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
+                value: righter
+                    .map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
+                line: pair.line_col(),
+            },
         })
         .unwrap_or(AstNode::Action {
             name: left.as_str().to_string(),

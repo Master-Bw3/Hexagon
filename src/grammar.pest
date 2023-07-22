@@ -14,7 +14,9 @@ ElseIf = {"else if" ~ Newline? ~ Term}
 
 Term = {"{" ~ Hex ~ "}"}
 
-Action = { ActionName ~ (":" ~ EntityType)? ~ (":" ~ WHITESPACE* ~ ( BookkeeperValue | Iota | IntroRetro ))? }
+Action = { ActionName ~ (":" ~ ActionDiscriminator)? ~ (":" ~ WHITESPACE* ~ ( BookkeeperValue | Iota | IntroRetro ))? }
+
+ActionDiscriminator = {EntityType | "Matrix"}
 
 ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
