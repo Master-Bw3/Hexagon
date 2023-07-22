@@ -11,10 +11,10 @@ impl Iota for MatrixIota {
         let mut out = vec![];
         for row in self.row_iter() {
             let row_out = row.iter().map(f32::to_string).collect::<Vec<_>>();
-            let row_str = format!("[{}]", row_out.join(", "));
+            let row_str = format!("{}", row_out.join(", "));
             out.push(row_str)
         }
-        format!("[{}]", out.join(", "))
+        format!("({}, {}) | {}", self.row_iter().len(), self.column_iter().len(), out.join("; "))
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
