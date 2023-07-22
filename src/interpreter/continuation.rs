@@ -107,12 +107,14 @@ impl ContinuationFrameTrait for FrameEndEval {
     }
 }
 
+type ThothAcc = Rc<RefCell<Vector<Rc<dyn Iota>>>>;
+
 #[derive(Clone, Debug)]
 pub struct FrameForEach {
     pub data: Vector<Rc<dyn Iota>>,
     pub code: Vector<AstNode>,
     pub base_stack: Option<Vector<Rc<dyn Iota>>>,
-    pub acc: Rc<RefCell<Vector<Rc<dyn Iota>>>>,
+    pub acc: ThothAcc,
 }
 
 impl ContinuationFrameTrait for FrameForEach {
