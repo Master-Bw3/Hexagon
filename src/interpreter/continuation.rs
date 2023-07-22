@@ -1,5 +1,35 @@
 use im::Vector;
 
+
+#[derive(Debug, Clone)]
+pub enum ContinuationFrame {
+    Evaluate(FrameEvaluate),
+    EndEval(FrameEndEval),
+    ForEach(FrameForEach)    
+}
+
+impl ContinuationFrameTrait for ContinuationFrame {
+    fn evaluate(
+        &self,
+        state: &mut State,
+        pattern_registry: &PatternRegistry,
+    ) -> Result<(), (Mishap, (usize, usize))> {
+        match self {
+            ContinuationFrame::Evaluate(frame) => frame.evaluate(state, pattern_registry),
+            ContinuationFrame::EndEval(frame) => frame.evaluate(state, pattern_registry),
+            ContinuationFrame::ForEach(frame) => frame.evaluate(state, pattern_registry),
+        }
+    }
+
+    fn break_out(&self, state: &mut State) -> bool {
+        match self {
+            ContinuationFrame::Evaluate(frame) => frame.break_out(state),
+            ContinuationFrame::EndEval(frame) => frame.break_out(state),
+            ContinuationFrame::ForEach(frame) => frame.break_out(state),
+        }
+    }
+}
+
 use crate::{
     iota::{
         hex_casting::pattern::{PatternIota, SignatureExt},
@@ -11,9 +41,9 @@ use std::rc::Rc;
 
 use super::{interpret_node, mishap::Mishap, state::State};
 
-pub type Continuation = Vector<Rc<dyn ContinuationFrame>>;
+pub type Continuation = Vector<ContinuationFrame>;
 
-pub trait ContinuationFrame: std::fmt::Debug {
+pub trait ContinuationFrameTrait: std::fmt::Debug {
     fn evaluate(
         &self,
         state: &mut State,
@@ -28,7 +58,7 @@ pub struct FrameEvaluate {
     pub nodes_queue: Vector<AstNode>,
 }
 
-impl ContinuationFrame for FrameEvaluate {
+impl ContinuationFrameTrait for FrameEvaluate {
     fn evaluate(
         &self,
         state: &mut State,
@@ -41,7 +71,7 @@ impl ContinuationFrame for FrameEvaluate {
             //if there are still nodes left in the frame:
             Some(n) => {
                 //push a new frame to the continuation containing the rest of this frame
-                state.continuation.push_back(Rc::new(new_frame));
+                state.continuation.push_back(ContinuationFrame::Evaluate(new_frame));
 
                 interpret_node(n.clone(), state, pattern_registry)?;
                 Ok(())
@@ -60,7 +90,7 @@ impl ContinuationFrame for FrameEvaluate {
 #[derive(Clone, Debug)]
 pub struct FrameEndEval {}
 
-impl ContinuationFrame for FrameEndEval {
+impl ContinuationFrameTrait for FrameEndEval {
     fn evaluate(
         &self,
         state: &mut State,
@@ -83,7 +113,7 @@ pub struct FrameForEach {
     pub acc: Vector<Rc<dyn Iota>>,
 }
 
-impl ContinuationFrame for FrameForEach {
+impl ContinuationFrameTrait for FrameForEach {
     fn evaluate(
         &self,
         state: &mut State,
@@ -106,14 +136,14 @@ impl ContinuationFrame for FrameForEach {
             let mut new_data = self.data.clone();
             let top = new_data.pop_front().unwrap();
 
-            state.continuation.push_back(Rc::new(FrameForEach {
+            state.continuation.push_back(ContinuationFrame::ForEach(FrameForEach {
                 data: new_data,
                 code: self.code.clone(),
                 base_stack: Some(stack.clone()),
                 acc: new_acc,
             }));
 
-            state.continuation.push_back(Rc::new(FrameEvaluate {
+            state.continuation.push_back(ContinuationFrame::Evaluate(FrameEvaluate {
                 nodes_queue: self.code.clone(),
             }));
 

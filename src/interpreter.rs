@@ -29,7 +29,7 @@ use crate::{
 };
 
 use self::{
-    continuation::FrameEvaluate,
+    continuation::{ContinuationFrame, ContinuationFrameTrait, FrameEvaluate},
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -83,14 +83,16 @@ fn interpret_node<'a>(
     match node {
         AstNode::File(nodes) => {
             //initialize the vm
-            state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes_queue: Vector::from(nodes),
-            }));
+            state
+                .continuation
+                .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                    nodes_queue: Vector::from(nodes),
+                }));
 
             //loop through every frame until there aren't any more
             while !state.continuation.is_empty() {
                 //get top fram and remove it from the stack
-                let frame = state.continuation.pop_back().unwrap().clone();
+                let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)
                 frame.evaluate(state, pattern_registry)?;
