@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use im::{vector, Vector};
-use nalgebra::{dmatrix, DMatrix, Matrix1xX, MatrixXx1};
+use nalgebra::{dmatrix, DMatrix, Matrix, Matrix1xX, MatrixXx1};
 
 use crate::{
     interpreter::{
@@ -9,7 +9,11 @@ use crate::{
         state::{StackExt, State},
     },
     iota::{
-        hex_casting::{list::ListIota, number::NumberIota, vector::VectorIota},
+        hex_casting::{
+            list::ListIota,
+            number::{NumberIota, NumberIotaExt},
+            vector::VectorIota,
+        },
         more_iotas::matrix::MatrixIota,
         Iota,
     },
@@ -148,5 +152,20 @@ pub fn unmake<'a>(
     };
 
     state.stack.push_back(operation_result);
+    Ok(state)
+}
+
+pub fn identity<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_iota::<NumberIota>(0, arg_count)?.int(0)? as usize;
+    state.stack.remove_args(&arg_count);
+
+    let identity_matrix: Rc<dyn Iota> = Rc::new(MatrixIota::identity(iota, iota));
+
+    state.stack.push_back(identity_matrix);
+
     Ok(state)
 }

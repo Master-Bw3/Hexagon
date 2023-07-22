@@ -13,7 +13,7 @@ use crate::parser::ActionValue;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
-use crate::patterns::more_iotas::matrices;
+use crate::patterns::more_iotas::matrix;
 use crate::patterns::{constructors, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -340,8 +340,12 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::value_1::<EntityIota, NumberIota>("Number", "Greater Fold Reflection")),
 
             //MoreIotas - Matrices
-            Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrices::make)),
-            Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrices::unmake)),
+            Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),
+            Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrix::unmake)),
+            Pattern::new("Identity Purification", "matrix/identity", "awwaeawwaqw", Box::new(matrix::identity)),
+            // Pattern::new("", "", "", Box::new(matrices::)),
+
+
 
         ];
 
