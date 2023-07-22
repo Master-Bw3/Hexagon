@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{EntityType, Stack, StackExt, State},
+        state::{EntityType, StackExt, State},
     },
     iota::{
         hex_casting::{

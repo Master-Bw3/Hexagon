@@ -3,7 +3,6 @@ use std::{collections::HashMap, rc::Rc};
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parse_config::Config,
     parser::{AstNode, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -22,7 +21,7 @@ pub fn compile_to_iotas(
 ) -> CompileResult {
     let mut heap: HashMap<String, i32> = HashMap::new();
 
-    let pattern_registry = PatternRegistry::construct(&great_sigs);
+    let pattern_registry = PatternRegistry::construct(great_sigs);
 
     compile_node(&node, &mut heap, 0, &pattern_registry)
 }

@@ -3,7 +3,7 @@ pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::{collections::HashMap, rc::Rc};
+use std::rc::Rc;
 
 use im::{Vector, vector};
 
@@ -230,7 +230,7 @@ pub fn interpret_action<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     line: Option<(usize, usize)>
-) -> Result<&'a mut State, (Mishap)> {
+) -> Result<&'a mut State, Mishap> {
     let pattern = pattern_registry
         .find(&name, &value)
         .ok_or(Mishap::InvalidPattern)?;

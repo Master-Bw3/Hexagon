@@ -1,7 +1,6 @@
 use std::{collections::HashMap, rc::Rc};
 
 use crate::{
-    interpreter::mishap::Mishap,
     iota::{Iota, hex_casting::pattern::PatternIota},
     parser::AstNode,
     pattern_registry::PatternRegistry,

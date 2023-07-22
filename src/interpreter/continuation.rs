@@ -169,7 +169,7 @@ impl ContinuationFrameTrait for FrameForEach {
 
         let mut new_stack = self.base_stack.clone().unwrap_or(Vector::new());
 
-        let mut new_acc = self.acc.clone();
+        let new_acc = self.acc.clone();
         new_acc.borrow_mut().append(state.stack.clone());
         new_stack.push_back(Rc::new(new_acc.borrow().clone()));
         state.stack = new_stack.into_iter().collect();
