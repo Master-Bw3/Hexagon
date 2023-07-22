@@ -36,7 +36,7 @@ pub fn eval<'a>(
         }
         Either3::M(pattern) => {
             state.continuation.push_back(Rc::new(FrameEvaluate {
-                nodes: vec![AstNode::Action {
+                nodes: vector![AstNode::Action {
                     line: (1, 0),
                     name: pattern.signature.as_str(),
                     value: *pattern.value.clone(),
@@ -69,7 +69,7 @@ pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut
     state.stack.remove_args(&arg_count);
 
     state.continuation.push_back(Rc::new(FrameForEach {
-        data: (*iota_list).clone().into_iter().rev().collect(),
+        data: (*iota_list).clone(),
         code: iota_list_to_ast_node_list(pattern_list),
         base_stack: None,
         acc: vector![],

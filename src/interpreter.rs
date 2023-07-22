@@ -16,14 +16,20 @@ use crate::{
         ops::{embed, push, store, EmbedType},
         state::StackExt,
     },
-    iota::{Iota, hex_casting::{pattern::{Signature, PatternIota, SignatureExt}, bool::BooleanIota}},
+    iota::{
+        hex_casting::{
+            bool::BooleanIota,
+            pattern::{PatternIota, Signature, SignatureExt},
+        },
+        Iota,
+    },
     parse_config::Config,
     parser::{ActionValue, AstNode, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 use self::{
-    continuation::{FrameEvaluate},
+    continuation::FrameEvaluate,
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -75,12 +81,11 @@ fn interpret_node<'a>(
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
 
     match node {
-        AstNode::File(mut nodes) => {
+        AstNode::File(nodes) => {
             //initialize the vm
-            nodes.reverse();
-            state
-                .continuation
-                .push_back(Rc::new(FrameEvaluate { nodes }));
+            state.continuation.push_back(Rc::new(FrameEvaluate {
+                nodes: Vector::from(nodes),
+            }));
 
             //loop through every frame until there aren't any more
             while !state.continuation.is_empty() {
@@ -142,7 +147,10 @@ fn interpret_node<'a>(
                     }
                 }
 
-                let condition = state.stack.get_iota::<BooleanIota>(0, 1).map_err(|err| (err, line))?;
+                let condition = state
+                    .stack
+                    .get_iota::<BooleanIota>(0, 1)
+                    .map_err(|err| (err, line))?;
 
                 state.stack.remove_args(&1);
 
@@ -276,11 +284,12 @@ pub fn push_iota(iota: Rc<dyn Iota>, state: &mut State, considered: bool) {
     }
 }
 
-fn calc_buffer_depth(registry: &PatternRegistry, buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>) -> u32 {
-    let intro_pattern =
-        PatternIota::from_name(registry, "open_paren", None).unwrap();
-    let retro_pattern =
-        PatternIota::from_name(registry, "close_paren", None).unwrap();
+fn calc_buffer_depth(
+    registry: &PatternRegistry,
+    buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>,
+) -> u32 {
+    let intro_pattern = PatternIota::from_name(registry, "open_paren", None).unwrap();
+    let retro_pattern = PatternIota::from_name(registry, "close_paren", None).unwrap();
 
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

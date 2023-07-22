@@ -25,7 +25,7 @@ pub trait ContinuationFrame: std::fmt::Debug {
 
 #[derive(Clone, Debug)]
 pub struct FrameEvaluate {
-    pub nodes: Vec<AstNode>,
+    pub nodes: Vector<AstNode>,
 }
 
 impl ContinuationFrame for FrameEvaluate {
@@ -35,7 +35,7 @@ impl ContinuationFrame for FrameEvaluate {
         pattern_registry: &PatternRegistry,
     ) -> Result<(), (Mishap, (usize, usize))> {
         let mut new_frame = self.clone();
-        let node = new_frame.nodes.pop();
+        let node = new_frame.nodes.pop_front();
 
         match node {
             //if there are still nodes left in the frame:
@@ -78,7 +78,7 @@ impl ContinuationFrame for FrameEndEval {
 #[derive(Clone, Debug)]
 pub struct FrameForEach {
     pub data: Vector<Rc<dyn Iota>>,
-    pub code: Vec<AstNode>,
+    pub code: Vector<AstNode>,
     pub base_stack: Option<Vector<Rc<dyn Iota>>>,
     pub acc: Vector<Rc<dyn Iota>>,
 }
@@ -89,6 +89,7 @@ impl ContinuationFrame for FrameForEach {
         state: &mut State,
         _: &PatternRegistry,
     ) -> Result<(), (Mishap, (usize, usize))> {
+
         let (stack, new_acc) = match &self.base_stack {
             //thoth entry point
             None => (state.stack.clone(), self.acc.clone()),
@@ -103,7 +104,7 @@ impl ContinuationFrame for FrameForEach {
 
         let stack_top = if !self.data.is_empty() {
             let mut new_data = self.data.clone();
-            let top = new_data.pop_back().unwrap();
+            let top = new_data.pop_front().unwrap();
 
             state.continuation.push_back(Rc::new(FrameForEach {
                 data: new_data,
@@ -140,9 +141,8 @@ impl ContinuationFrame for FrameForEach {
     }
 }
 
-pub fn iota_list_to_ast_node_list(list: Rc<Vector<Rc<dyn Iota>>>) -> Vec<AstNode> {
+pub fn iota_list_to_ast_node_list(list: Rc<Vector<Rc<dyn Iota>>>) -> Vector<AstNode> {
     list.iter()
-        .rev()
         .enumerate()
         .map(|(index, iota)| match iota.clone().downcast_rc::<PatternIota>() {
             Ok(pattern) => AstNode::Action {
