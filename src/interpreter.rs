@@ -5,7 +5,7 @@ pub mod state;
 
 use std::{collections::HashMap, rc::Rc};
 
-use im::Vector;
+use im::{Vector, vector};
 
 use crate::{
     compiler::{
@@ -90,16 +90,16 @@ fn interpret_node<'a>(
         }
 
         AstNode::Action { name, value, line } => {
-            interpret_action(name, value, state, pattern_registry).map_err(|err| (err, line))
+            interpret_action(name, value, state, pattern_registry, Some(line)).map_err(|err| (err, line))
         }
         AstNode::Hex(nodes) => {
-            interpret_action("open_paren".to_string(), None, state, pattern_registry)
-                .map_err(|err| (err, (0, 0)))?;
+            interpret_action("open_paren".to_string(), None, state, pattern_registry, None)
+                .map_err(|err| (err, (1, 0)))?;
             for node in nodes {
                 interpret_node(node, state, pattern_registry)?;
             }
-            interpret_action("close_paren".to_string(), None, state, pattern_registry)
-                .map_err(|err| (err, (0, 0)))?;
+            interpret_action("close_paren".to_string(), None, state, pattern_registry, None)
+                .map_err(|err| (err, (1, 0)))?;
 
             Ok(state)
         }
@@ -149,6 +149,8 @@ fn interpret_node<'a>(
                     interpret_node(*succeed, state, pattern_registry)?;
                 } else if let Some(node) = fail {
                     interpret_node(*node, state, pattern_registry)?;
+                } else {
+                    push_iota(Rc::new(vector![]), state, false)
                 }
             }
             Ok(state)
@@ -227,7 +229,8 @@ pub fn interpret_action<'a>(
     value: Option<ActionValue>,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
-) -> Result<&'a mut State, Mishap> {
+    line: Option<(usize, usize)>
+) -> Result<&'a mut State, (Mishap)> {
     let pattern = pattern_registry
         .find(&name, &value)
         .ok_or(Mishap::InvalidPattern)?;
@@ -239,13 +242,13 @@ pub fn interpret_action<'a>(
         == Signature::from_name(pattern_registry, "close_paren", &None).unwrap();
 
     if state.consider_next {
-        push_pattern(name, value, state, pattern_registry, true);
+        push_pattern(name, value, state, pattern_registry, true, line);
         state.consider_next = false;
         return Ok(state);
     }
 
     if state.buffer.is_some() && !(is_escape || is_retro) {
-        push_pattern(name, value, state, pattern_registry, false);
+        push_pattern(name, value, state, pattern_registry, false, line);
         return Ok(state);
     }
 
@@ -260,9 +263,10 @@ pub fn push_pattern(
     state: &mut State,
     pattern_registry: &PatternRegistry,
     considered: bool,
+    line: Option<(usize, usize)>
 ) {
     push_iota(
-        Rc::new(PatternIota::from_name(pattern_registry, &pattern, value).unwrap()),
+        Rc::new(PatternIota::from_name(pattern_registry, &pattern, value, line).unwrap()),
         state,
         considered,
     )
@@ -279,8 +283,8 @@ fn calc_buffer_depth(
     registry: &PatternRegistry,
     buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>,
 ) -> u32 {
-    let intro_pattern = PatternIota::from_name(registry, "open_paren", None).unwrap();
-    let retro_pattern = PatternIota::from_name(registry, "close_paren", None).unwrap();
+    let intro_pattern = PatternIota::from_name(registry, "open_paren", None, None).unwrap();
+    let retro_pattern = PatternIota::from_name(registry, "close_paren", None, None).unwrap();
 
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

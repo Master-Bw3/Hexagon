@@ -55,7 +55,7 @@ fn compile_node(
             } else {
                 None
             };
-            Rc::new(PatternIota::from_sig(&pattern.signature, new_value))
+            Rc::new(PatternIota::from_sig(&pattern.signature, new_value, None))
         }]),
 
         AstNode::Hex(hex) => compile_hex_node(hex, heap, depth, pattern_registry),
@@ -110,13 +110,13 @@ fn compile_hex_node(
     }
 
     result.push(Rc::new(
-        PatternIota::from_name(pattern_registry, "open_paren", None).unwrap(),
+        PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap(),
     ));
 
     result.append(&mut inner);
 
     result.push(Rc::new(
-        PatternIota::from_name(pattern_registry, "close_paren", None).unwrap(),
+        PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap(),
     ));
 
     Ok(result)

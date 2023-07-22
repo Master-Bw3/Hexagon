@@ -176,12 +176,12 @@ pub fn iota_list_to_ast_node_list(list: Rc<Vector<Rc<dyn Iota>>>) -> Vector<AstN
         .enumerate()
         .map(|(index, iota)| match iota.clone().downcast_rc::<PatternIota>() {
             Ok(pattern) => AstNode::Action {
-                line: (index + 1, 0),
+                line: pattern.line.unwrap_or((1, 0)),
                 name: pattern.signature.as_str(),
                 value: *pattern.value.clone(),
             },
             Err(_) => AstNode::Op {
-                line: (index, 0),
+                line: (1, 0),
                 name: OpName::Embed,
                 arg: Some(OpValue::Iota(iota.clone())),
             },

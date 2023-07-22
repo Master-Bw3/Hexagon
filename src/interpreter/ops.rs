@@ -167,6 +167,7 @@ pub fn embed<'a>(
                         *pat.value.clone(),
                         state,
                         pattern_registry,
+                        None
                     )?;
                 }
                 _ => return Err(Mishap::ExpectedPattern(iota.clone())),
