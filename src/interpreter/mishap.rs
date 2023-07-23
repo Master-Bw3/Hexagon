@@ -15,6 +15,7 @@ use crate::{
 pub enum MatrixSize {
     N,
     Const(usize),
+    Max(usize),
 }
 
 impl std::fmt::Display for MatrixSize {
@@ -22,6 +23,7 @@ impl std::fmt::Display for MatrixSize {
         match self {
             MatrixSize::N => write!(f, "n"),
             MatrixSize::Const(len) => write!(f, "{len}"),
+            MatrixSize::Max(len) => write!(f, "(max {len})"),
         }
     }
 }
@@ -102,7 +104,7 @@ impl Mishap {
             ),
             Mishap::MathematicalError() => todo!(),
             Mishap::HastyRetrospection => "Expected preceding Introspection".to_string(),
-            Mishap::InvalidPattern => "That pattern isn't associated with any action".to_string(),
+            Mishap::InvalidPattern => "This pattern isn't associated with any action".to_string(),
             Mishap::ExpectedPattern(iota) => format!("Expected Pattern but got {}", iota.display()),
             Mishap::OpCannotBeConsidered => "Ops cannot be considered".to_string(),
             Mishap::OpNotEnoughArgs(arg_count) => format!("Expected {arg_count} arguments"),

@@ -282,7 +282,6 @@ pub fn multiply<'a>(
                     MatrixSize::N,
                 ))?
             }
-
         }
     };
 
@@ -290,3 +289,94 @@ pub fn multiply<'a>(
 
     Ok(state)
 }
+
+pub fn transpose<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let matrix = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    state.stack.remove_args(&arg_count);
+
+    let transpose = Rc::new(matrix.transpose());
+
+    state.stack.push_back(transpose);
+
+    Ok(state)
+}
+
+pub fn inverse<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let matrix = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    state.stack.remove_args(&arg_count);
+
+    let inverse = if matrix.row_iter().len() == matrix.column_iter().len() {
+        Rc::new(matrix.try_inverse().unwrap())
+    } else {
+        let row_len = matrix.row_iter().len();
+        Err(Mishap::MatrixWrongSize(
+            Rc::new(matrix),
+            MatrixSize::Const(row_len),
+            MatrixSize::Const(row_len),
+        ))?
+    };
+
+    state.stack.push_back(inverse);
+
+    Ok(state)
+}
+
+pub fn determinant<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let matrix = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    state.stack.remove_args(&arg_count);
+
+    let determinant = if matrix.row_iter().len() > 4 || matrix.column_iter().len() > 4 {
+        Err(Mishap::MatrixWrongSize(
+            Rc::new(matrix),
+            MatrixSize::Max(4),
+            MatrixSize::Max(4),
+        ))?
+    } else if matrix.row_iter().len() != matrix.column_iter().len() {
+        let row_len = matrix.row_iter().len();
+        Err(Mishap::MatrixWrongSize(
+            Rc::new(matrix),
+            MatrixSize::Const(row_len),
+            MatrixSize::Const(row_len),
+        ))?
+    } else {
+        Rc::new(matrix.determinant())
+    };
+
+    state.stack.push_back(determinant);
+
+    Ok(state)
+}
+
+// pub fn multiply<'a>(
+//     state: &'a mut State,
+//     _pattern_registry: &PatternRegistry,
+// ) -> Result<&'a mut State, Mishap> {
+//     let arg_count = 2;
+//     let lhs = state
+//         .stack
+//         .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?;
+//     let rhs = state
+//         .stack
+//         .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?;
+//     state.stack.remove_args(&arg_count);}
