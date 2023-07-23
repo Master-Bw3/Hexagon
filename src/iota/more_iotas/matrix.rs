@@ -49,15 +49,34 @@ impl Iota for MatrixIota {
 }
 
 pub trait AsMatrix {
-    fn as_matrix(self) -> MatrixIota;
+    fn as_matrix(&self) -> MatrixIota;
 }
 
-impl AsMatrix for Either3<Rc<NumberIota>, Rc<VectorIota>, Rc<MatrixIota>> {
-    fn as_matrix(self) -> MatrixIota {
+impl<T: AsMatrix, U: AsMatrix, V: AsMatrix> AsMatrix for Either3<Rc<T>, Rc<U>, Rc<V>> {
+    fn as_matrix(&self) -> MatrixIota {
         match self {
-            Either3::L(num) => dmatrix![*num],
-            Either3::M(vec) => DMatrix::from_vec(3, 1, vec.data.as_slice().to_vec()),
-            Either3::R(matrix) => (*matrix).clone(),
+            Either3::L(l) => l.as_matrix(),
+            Either3::M(m) => m.as_matrix(),
+            Either3::R(r) => r.as_matrix(),
         }
+    }
+}
+
+
+impl AsMatrix for NumberIota {
+    fn as_matrix(&self) -> MatrixIota {
+        dmatrix![*self]
+    }
+}
+
+impl AsMatrix for VectorIota {
+    fn as_matrix(&self) -> MatrixIota {
+        DMatrix::from_vec(3, 1, self.data.as_slice().to_vec())
+    }
+}
+
+impl AsMatrix for MatrixIota {
+    fn as_matrix(&self) -> MatrixIota {
+        self.clone()
     }
 }
