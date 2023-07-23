@@ -12,6 +12,21 @@ use crate::{
 };
 
 #[derive(Debug)]
+pub enum MatrixSize {
+    N,
+    Const(usize),
+}
+
+impl std::fmt::Display for MatrixSize {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MatrixSize::N => write!(f, "n"),
+            MatrixSize::Const(len) => write!(f, "{len}"),
+        }
+    }
+}
+
+#[derive(Debug)]
 pub enum Mishap {
     NotEnoughIotas(usize, usize),
     IncorrectIota(usize, String, Rc<dyn Iota>),
@@ -29,7 +44,7 @@ pub enum Mishap {
     NoIotaAtIndex(usize),
     NoAkashicRecord(Rc<VectorIota>),
     HoldingIncorrectItem,
-    EvalError(Vec<Rc<dyn Iota>>, usize, Rc<Mishap>),
+    MatrixWrongSize(Rc<dyn Iota>, MatrixSize, MatrixSize),
 }
 
 impl Mishap {
@@ -71,7 +86,7 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => todo!(),
             Mishap::ExpectedValue(_, _) => todo!(),
             Mishap::InvalidValue(_, _) => todo!(),
-            Mishap::EvalError(_, _, _) => todo!(),
+            Mishap::MatrixWrongSize(_, _, _) => todo!(),
         }
     }
 
@@ -106,7 +121,10 @@ impl Mishap {
             Mishap::InvalidValue(expected, recieved) => {
                 format!("Expected {expected} value to be supplied but got {recieved}")
             }
-            Mishap::EvalError(_, _, mishap) => mishap.error_message(),
+            Mishap::MatrixWrongSize(iota, row_count, col_count) => format!(
+                "Expected {row_count} by {col_count} matrix but found {}",
+                iota.display()
+            ),
         }
     }
 
@@ -146,7 +164,7 @@ impl Mishap {
                 "Set a value for this action. Example: {action_name}: {expected}"
             )),
             Mishap::InvalidValue(_expected, _recieved) => None,
-            Mishap::EvalError(_, _, mishap) => mishap.error_hint(),
+            Mishap::MatrixWrongSize(_, _, _) => None,
         }
     }
 }

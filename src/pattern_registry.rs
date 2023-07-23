@@ -346,7 +346,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Zero Distillation", "matrix/zero", "awwaeawwa", Box::new(matrix::zero)),
             Pattern::new("Rotation Distillation", "matrix/rotation", "awwaeawwawawddw", Box::new(matrix::rotate)),
             Pattern::new("Addition Distillation: Matrix", "matrix/add", "waawawaeawwaea", Box::new(matrix::add)),
-
+            Pattern::new("Multiplication Distillation: Matrix", "matrix/mul", "waqawawwaeaww", Box::new(matrix::multiply)),
             // Pattern::new("", "", "", Box::new(matrix::)),
 
 

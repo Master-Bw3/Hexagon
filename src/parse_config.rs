@@ -178,20 +178,3 @@ fn parse_str(value: &Value) -> &String {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use std::fs;
-
-    use super::*;
-
-    #[test]
-    fn config_test() {
-        let path = "./test.toml";
-        let source = fs::read_to_string(path).expect("Should have been able to read the file");
-
-        //let expected = vec![Iota::List(vec![Iota::Number(2.0)])];
-
-        let result = parse_config(source);
-        //assert_eq!(result.stack, expected)
-    }
-}

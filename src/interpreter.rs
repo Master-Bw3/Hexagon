@@ -231,7 +231,6 @@ pub fn interpret_action<'a>(
     pattern_registry: &PatternRegistry,
     line: Option<(usize, usize)>
 ) -> Result<&'a mut State, Mishap> {
-    println!("{:?}", name);
 
     let pattern = pattern_registry
         .find(&name, &value)

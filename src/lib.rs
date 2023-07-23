@@ -108,10 +108,8 @@ fn print_interpreter_error(
 
     print_err_msg(&err, &padding, &location);
     eprintln!(" {padding} {}", "|".magenta().bold());
-    match err {
-        Mishap::EvalError(ref stack, index, _) => print_eval_mishap_content(stack, index, pad_len),
-        _ => print_mishap_content(line, line_content, &padding),
-    }
+    print_mishap_content(line, line_content, &padding);
+
     print_mishap_hint(&err, &padding);
 }
 

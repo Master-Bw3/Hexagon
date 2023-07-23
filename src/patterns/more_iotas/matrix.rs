@@ -1,12 +1,12 @@
 use std::rc::Rc;
 
 use im::{vector, Vector};
-use nalgebra::{dmatrix, DMatrix, Matrix1xX, MatrixXx1, };
+use nalgebra::{dmatrix, DMatrix, Matrix1xX, MatrixXx1};
 
 use crate::{
     interpreter::{
-        mishap::Mishap,
-        state::{StackExt, State},
+        mishap::{MatrixSize, Mishap},
+        state::{Either3, StackExt, State},
     },
     iota::{
         hex_casting::{
@@ -14,7 +14,7 @@ use crate::{
             number::{NumberIota, NumberIotaExt},
             vector::VectorIota,
         },
-        more_iotas::matrix::{MatrixIota, AsMatrix},
+        more_iotas::matrix::{AsMatrix, MatrixIota},
         Iota,
     },
     pattern_registry::PatternRegistry,
@@ -40,7 +40,7 @@ pub fn make<'a>(
             .map(
                 |element| match element.clone().downcast_rc::<VectorIota>() {
                     Ok(vec) => Ok(MatrixXx1::from_vec(vec![vec.x, vec.y, vec.z])),
-                    Err(_) => Err(()),
+                    Err(matrix) => Err(()),
                 },
             )
             .collect::<Result<Vec<_>, _>>()?;
@@ -73,7 +73,7 @@ pub fn make<'a>(
         //used to ensure all rows have same length
         let row_len = match first_row.clone().downcast_rc::<ListIota>() {
             Ok(x) => Ok(x.len()),
-            Err(_) => Err(()),
+            Err(matrix) => Err(()),
         }?;
 
         let num_num_list = list
@@ -86,7 +86,7 @@ pub fn make<'a>(
                         Err(())
                     }
                 }
-                Err(_) => Err(()),
+                Err(matrix) => Err(()),
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -94,9 +94,9 @@ pub fn make<'a>(
     }
 
     let operation_result = match iota {
-        crate::interpreter::state::Either3::L(num) => dmatrix![*num],
-        crate::interpreter::state::Either3::M(vec) => dmatrix![vec.x; vec.y; vec.z;],
-        crate::interpreter::state::Either3::R(list) => matrix_from_num_list(&list)
+        Either3::L(num) => dmatrix![*num],
+        Either3::M(vec) => dmatrix![vec.x; vec.y; vec.z;],
+        Either3::R(list) => matrix_from_num_list(&list)
             .or_else(|_| matrix_from_num_list_list(&list))
             .or_else(|_| matrix_from_vec_list(&list))
             .map_err(|_| Mishap::IncorrectIota(1, "Number, Vector, or List".to_string(), list))?,
@@ -114,12 +114,6 @@ pub fn unmake<'a>(
     let arg_count = 1;
     let matrix = state.stack.get_iota::<MatrixIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
-
-    println!(
-        "{}, {}",
-        matrix.column_iter().len(),
-        matrix.row_iter().len()
-    );
 
     let operation_result: Rc<dyn Iota> = if matrix.len() == 1 {
         Rc::new(matrix[0])
@@ -225,11 +219,74 @@ pub fn add<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
-    let lhs = state.stack.get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?.as_matrix();
-    let rhs = state.stack.get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?.as_matrix();
+    let lhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    let rhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?
+        .as_matrix();
     state.stack.remove_args(&arg_count);
 
-    state.stack.push_back(Rc::new(lhs + rhs));
+    if lhs.row_iter().len() == rhs.row_iter().len()
+        && lhs.column_iter().len() == rhs.row_iter().len()
+    {
+        state.stack.push_back(Rc::new(lhs + rhs));
+        Ok(state)
+    } else {
+        Err(Mishap::MatrixWrongSize(
+            Rc::new(rhs.clone()),
+            MatrixSize::Const(lhs.row_iter().len()),
+            MatrixSize::Const(rhs.row_iter().len()),
+        ))
+    }
+}
+
+pub fn multiply<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let lhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?;
+    let rhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let operation_result: Rc<dyn Iota> = match (lhs, rhs) {
+        (Either3::L(num1), Either3::L(num2)) => Rc::new(*num1 * *num2),
+        (Either3::L(num), Either3::M(vec)) | (Either3::M(vec), Either3::L(num)) => {
+            Rc::new(*vec * *num)
+        }
+        (Either3::L(num), Either3::R(matrix)) | (Either3::R(matrix), Either3::L(num)) => {
+            Rc::new((*matrix).clone() * *num)
+        }
+        (Either3::M(_vec1), Either3::M(vec2)) => Err(Mishap::MatrixWrongSize(
+            vec2,
+            MatrixSize::Const(1),
+            MatrixSize::N,
+        ))?,
+        //if both are vectors/matrices
+        (lhs, rhs) => {
+            let matrix1 = lhs.as_matrix();
+            let matrix2 = rhs.as_matrix();
+            if matrix1.column_iter().len() == matrix2.row_iter().len() {
+                Rc::new(matrix1 * matrix2)
+            } else {
+                Err(Mishap::MatrixWrongSize(
+                    Rc::new(matrix2),
+                    MatrixSize::Const(1),
+                    MatrixSize::N,
+                ))?
+            }
+
+        }
+    };
+
+    state.stack.push_back(operation_result);
 
     Ok(state)
 }
