@@ -96,7 +96,7 @@ impl StackExt for Stack {
     fn get_iota<T: Iota>(&self, index: usize, arg_count: usize) -> Result<Rc<T>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -109,7 +109,7 @@ impl StackExt for Stack {
     fn get_any_iota(&self, index: usize, arg_count: usize) -> Result<Rc<dyn Iota>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
