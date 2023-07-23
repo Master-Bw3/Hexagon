@@ -70,8 +70,13 @@ pub fn run() {
     let source =
         fs::read_to_string(&args.source_path).expect("Should have been able to read the file");
 
-    let parse_result =
-        parser::parse(&source, &config.great_spell_sigs, &mut config.entities).unwrap();
+    let parse_result = parser::parse(&source, &config.great_spell_sigs, &mut config.entities);
+    let parse_result = match parse_result {
+        Ok(result) => result,
+        Err(err) => {eprintln!("{}\n{}", "Parsing Error:".red().bold(), err);
+        return;
+    },
+    };
 
     if let Command::Run = args.command {
         let interpreter_result = interpret(parse_result, &config);
