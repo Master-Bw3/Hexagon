@@ -342,7 +342,7 @@ pub fn parse_iota(
             _ => unreachable!(),
         },
         Rule::Influence => match inner_pair.as_str() {
-            "Garbage" => Rc::new(GarbageIota::Garbage),
+            "Garbage" => Rc::new(GarbageIota),
             "Null" => Rc::new(NullIota),
             _ => unreachable!(),
         },
