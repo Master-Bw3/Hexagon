@@ -4,7 +4,7 @@ pub type StringIota = String;
 
 impl Iota for StringIota {
     fn display(&self) -> String {
-        format!("\"{}\"", self)
+        format!("{:?}", self)
     }
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         match other.downcast_ref::<StringIota>() {
