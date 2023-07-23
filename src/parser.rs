@@ -347,7 +347,6 @@ pub fn parse_iota(
             _ => unreachable!(),
         },
         Rule::Entity => {
-            // let mut inner = inner_pair.into_inner();
             let name = inner_pair.as_str()[1..].to_string();
             Rc::new(EntityIota {
                 name: Rc::from(name),
@@ -360,6 +359,11 @@ pub fn parse_iota(
                     .map(|x| parse_iota(x, pattern_registry, conf_entities))
                     .collect::<ListIota>(),
             )
+        }
+        Rule::String => {
+            let string = inner_pair.as_str();
+            let string = string[1..string.len() - 1].to_string();
+            Rc::new(string)
         }
         _ => unreachable!(),
     }

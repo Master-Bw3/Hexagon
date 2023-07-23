@@ -24,7 +24,7 @@ BookkeeperValue = @{("v" | "-")+ ~ !(ASCII_DIGIT)}
 
 // ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
-Iota = { Number | Vector | Entity | Influence | Bool | Pattern | List}
+Iota = { String | Number | Vector | Entity | Influence | Bool | Pattern | List}
 
 List = !{"[" ~ ((Iota ~ ",")* ~ Iota)? ~ "]" }
 
@@ -50,7 +50,7 @@ Bool = @{("True" | "False") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
 Pattern = ${ IntroRetro | PatternName | Action }
 
-String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))+ ~ "\"")}
+String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))* ~ "\"")}
 
 PatternName = ${ PatternDirection ~ " " ~ PatternSignature}
 

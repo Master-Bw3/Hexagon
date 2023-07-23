@@ -13,7 +13,7 @@ use crate::parser::ActionValue;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
-use crate::patterns::more_iotas::matrix;
+use crate::patterns::more_iotas::{matrix, string};
 use crate::patterns::{constructors, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -354,7 +354,11 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Sprawling Distillation", "matrix/concat/hori", "dwwdqdwwdwdwaqawd", Box::new(matrix::concat_horizontal)),
             Pattern::new("Toppling Gambit", "matrix/split/vert", "awdedwawawwaeawwa", Box::new(matrix::split_vertical)),
             Pattern::new("Mitosis Gambit", "matrix/split/hori", "dwaqawdwdwwdqdwwd", Box::new(matrix::split_horizontal)),
-            // Pattern::new("", "", "", Box::new(matrix::)),
+            
+            //MoreIotas - Strings
+            Pattern::new("Concatenation Distillation", "string/add", "waawaqwawqq", Box::new(string::concat)),
+            Pattern::new("Separation Distillation", "string/split", "aqwaqa", Box::new(string::split)),
+            // Pattern::new("", "", "", Box::new(string::)),
 
             
             
