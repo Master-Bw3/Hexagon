@@ -95,7 +95,7 @@ impl Mishap {
     pub fn error_message(&self) -> String {
         match self {
             Mishap::NotEnoughIotas(arg_count, stack_height) => format!(
-                "Expected {arg_count} or more arguments but the stack was only {stack_height} tall"
+                "Expected {arg_count} arguments but the stack was only {stack_height} tall"
             ),
             Mishap::IncorrectIota(index, expected, recieved) => format!(
                 "expected {} at index {index} of the stack, but got {}",
