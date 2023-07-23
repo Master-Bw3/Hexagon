@@ -358,6 +358,10 @@ impl PatternRegistryExt for PatternRegistry {
             //MoreIotas - Strings
             Pattern::new("Concatenation Distillation", "string/add", "waawaqwawqq", Box::new(string::concat)),
             Pattern::new("Separation Distillation", "string/split", "aqwaqa", Box::new(string::split)),
+            Pattern::new("Input Purification", "string/parse", "aqwaq", Box::new(string::parse)),
+            Pattern::new("Discoverer's Distillation", "string/find", "waqwwaqa", Box::new(string::find)),
+            Pattern::new("Winnowing Distillation", "string/sub", "aqwwaqwaad", Box::new(string::sub)),
+            Pattern::new("Length Distillation: Str", "string/len", "waqaeaq", Box::new(string::len)),
             // Pattern::new("", "", "", Box::new(string::)),
 
             
