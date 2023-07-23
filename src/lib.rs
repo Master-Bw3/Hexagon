@@ -2,10 +2,11 @@ use compiler::compile_to_iotas;
 use im::Vector;
 use interpreter::mishap::Mishap;
 use iota::Iota;
+use nalgebra::dmatrix;
 use owo_colors::OwoColorize;
 use std::{collections::HashMap, env, fs, rc::Rc};
 
-use crate::interpreter::interpret;
+use crate::{interpreter::interpret, iota::more_iotas::matrix::MatrixIota};
 mod compiler;
 mod interpreter;
 mod iota;

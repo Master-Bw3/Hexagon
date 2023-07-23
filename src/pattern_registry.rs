@@ -352,6 +352,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Determinant Purification", "matrix/determinant", "aeawwaeawaw", Box::new(matrix::determinant)),
             Pattern::new("Tower Distillation", "matrix/concat/vert", "awwaeawwawawdedwa", Box::new(matrix::concat_vertical)),
             Pattern::new("Sprawling Distillation", "matrix/concat/hori", "dwwdqdwwdwdwaqawd", Box::new(matrix::concat_horizontal)),
+            Pattern::new("Toppling Gambit", "matrix/split/vert", "awdedwawawwaeawwa", Box::new(matrix::split_vertical)),
+            Pattern::new("Mitosis Gambit", "matrix/split/hori", "dwaqawdwdwwdqdwwd", Box::new(matrix::split_horizontal)),
             // Pattern::new("", "", "", Box::new(matrix::)),
 
             

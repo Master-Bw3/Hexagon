@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use im::{vector, Vector};
-use nalgebra::{dmatrix, DMatrix, Matrix1xX, MatrixXx1};
+use nalgebra::{dmatrix, Const, DMatrix, Dyn, Matrix, Matrix1xX, MatrixXx1, matrix};
 
 use crate::{
     interpreter::{
@@ -34,46 +34,54 @@ pub fn make<'a>(
         element.downcast_ref::<NumberIota>().ok_or(()).cloned()
     }
 
-    fn matrix_from_vec_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
+    fn matrix_from_empty_list(list: &Vector<Rc<dyn Iota>>) -> Option<MatrixIota> {
+        if list.is_empty() {
+            Some(dmatrix!())
+        } else {
+            None
+        }
+        
+    }
+
+    fn matrix_from_vec_list(list: &Vector<Rc<dyn Iota>>) -> Option<MatrixIota> {
         let row_list = list
             .iter()
             .map(
                 |element| match element.clone().downcast_rc::<VectorIota>() {
-                    Ok(vec) => Ok(MatrixXx1::from_vec(vec![vec.x, vec.y, vec.z])),
-                    Err(matrix) => Err(()),
+                    Ok(vec) => Some(MatrixXx1::from_vec(vec![vec.x, vec.y, vec.z])),
+                    Err(_) => None,
                 },
             )
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Option<Vec<_>>>()?;
 
-        Ok(DMatrix::from_columns(&row_list[..]))
+        Some(DMatrix::from_columns(&row_list[..]))
     }
 
-    fn matrix_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Option<MatrixIota> {
         let row = row_from_num_list(list)?;
-
-        Ok(DMatrix::from_rows(&[row]))
+        Some(DMatrix::from_rows(&[row]))
     }
 
-    fn col_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixXx1<NumberIota>, ()> {
-        let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>()?;
+    fn col_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Option<MatrixXx1<NumberIota>> {
+        let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>().ok()?;
 
-        Ok(MatrixXx1::from_vec(num_list))
+        Some(MatrixXx1::from_vec(num_list))
     }
 
-    fn row_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Result<Matrix1xX<NumberIota>, ()> {
-        let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>()?;
+    fn row_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Option<Matrix1xX<NumberIota>> {
+        let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>().ok()?;
 
-        Ok(Matrix1xX::from_vec(num_list))
+        Some(Matrix1xX::from_vec(num_list))
     }
 
-    fn matrix_from_num_list_list(list: &Vector<Rc<dyn Iota>>) -> Result<MatrixIota, ()> {
+    fn matrix_from_num_list_list(list: &Vector<Rc<dyn Iota>>) -> Option<MatrixIota> {
         let empty_vec: Rc<dyn Iota> = Rc::new(vector![]);
         let first_row = list.get(0).unwrap_or(&empty_vec);
 
         //used to ensure all rows have same length
         let row_len = match first_row.clone().downcast_rc::<ListIota>() {
-            Ok(x) => Ok(x.len()),
-            Err(matrix) => Err(()),
+            Ok(x) => Some(x.len()),
+            Err(_) => None,
         }?;
 
         let num_num_list = list
@@ -83,23 +91,26 @@ pub fn make<'a>(
                     if inner_list.len() == row_len {
                         col_from_num_list(&inner_list)
                     } else {
-                        Err(())
+                        None
                     }
                 }
-                Err(matrix) => Err(()),
+                Err(_) => None,
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Option<Vec<_>>>()?;
 
-        Ok(DMatrix::from_columns(&num_num_list[..]))
+        Some(DMatrix::from_columns(&num_num_list[..]))
     }
 
     let operation_result = match iota {
         Either3::L(num) => dmatrix![*num],
         Either3::M(vec) => dmatrix![vec.x; vec.y; vec.z;],
-        Either3::R(list) => matrix_from_num_list(&list)
-            .or_else(|_| matrix_from_num_list_list(&list))
-            .or_else(|_| matrix_from_vec_list(&list))
-            .map_err(|_| Mishap::IncorrectIota(1, "Number, Vector, or List".to_string(), list))?,
+        Either3::R(list) => 
+
+            matrix_from_empty_list(&list)
+            .or_else(|| matrix_from_num_list(&list))
+            .or_else(|| matrix_from_num_list_list(&list))
+            .or_else(|| matrix_from_vec_list(&list))
+            .ok_or_else(|| Mishap::IncorrectIota(1, "Number, Vector, or List".to_string(), list))?,
     };
 
     state.stack.push_back(Rc::new(operation_result));
@@ -424,11 +435,122 @@ pub fn concat_horizontal<'a>(
             Rc::new(rhs.clone()),
             MatrixSize::Const(lhs.nrows()),
             MatrixSize::N,
-
         ))?
     };
 
     state.stack.push_back(Rc::new(operation_result));
+
+    Ok(state)
+}
+
+pub fn split_vertical<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let matrix = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    let split_index = state
+        .stack
+        .get_iota::<NumberIota>(1, arg_count)?
+        .positive_int_under_inclusive(1, matrix.nrows())? as usize;
+    state.stack.remove_args(&arg_count);
+
+    let bottom_matrix: MatrixIota = {
+        let slice = 
+            matrix
+                .row_iter()
+                .enumerate()
+                .filter_map(|(i, x)| if i < split_index { Some(x) } else { None })
+                .collect::<Vec<_>>();
+        let slice = slice.as_slice();
+
+        if slice.is_empty() {
+            MatrixIota::from_vec(0, matrix.ncols(), vec![])
+
+
+        } else {
+            MatrixIota::from_rows(slice)
+        }
+        };
+
+        let top_matrix: MatrixIota = {
+            let slice = 
+                matrix
+                    .row_iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| if i >= split_index { Some(x) } else { None })
+                    .collect::<Vec<_>>();
+            let slice = slice.as_slice();
+    
+            if slice.is_empty() {
+                MatrixIota::from_vec(0, matrix.ncols(), vec![])
+    
+            } else {
+                MatrixIota::from_rows(slice)
+            }
+            };
+
+    state.stack.push_back(Rc::new(bottom_matrix));
+    state.stack.push_back(Rc::new(top_matrix));    
+
+    Ok(state)
+}
+
+pub fn split_horizontal<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let matrix = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    let split_index = state
+        .stack
+        .get_iota::<NumberIota>(1, arg_count)?
+        .positive_int_under_inclusive(1, matrix.ncols())? as usize;
+    state.stack.remove_args(&arg_count);
+
+    let left_matrix: MatrixIota = {
+        let slice = 
+            matrix
+                .column_iter()
+                .enumerate()
+                .filter_map(|(i, x)| if i < split_index { Some(x) } else { None })
+                .collect::<Vec<_>>();
+        let slice = slice.as_slice();
+
+        if slice.is_empty() {
+            MatrixIota::from_vec(matrix.nrows(), 0, vec![])
+
+
+        } else {
+            MatrixIota::from_columns(slice)
+        }
+        };
+
+        let right_matrix: MatrixIota = {
+            let slice = 
+                matrix
+                    .column_iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| if i >= split_index { Some(x) } else { None })
+                    .collect::<Vec<_>>();
+            let slice = slice.as_slice();
+    
+            if slice.is_empty() {
+                MatrixIota::from_vec(matrix.nrows(), 0, vec![])
+    
+            } else {
+                MatrixIota::from_columns(slice)
+            }
+            };
+
+    state.stack.push_back(Rc::new(left_matrix));
+    state.stack.push_back(Rc::new(right_matrix));    
 
     Ok(state)
 }
