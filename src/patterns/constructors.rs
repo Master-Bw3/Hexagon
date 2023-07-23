@@ -102,7 +102,7 @@ pub fn value_1<T: Iota + 'static, U: Iota + 'static>(
 ) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
-            state.stack.get_iota::<T>(0, 2)?;
+            state.stack.get_iota::<T>(0, 1)?;
             state.stack.remove_args(&1);
 
             match value {
@@ -153,7 +153,7 @@ pub fn value_2<T: Iota, U: Iota, V: Iota>(
                     }
 
                     //return early with an error if iota is of an invalid type
-                    iota.clone().downcast_rc::<U>().map_err(|_| {
+                    iota.clone().downcast_rc::<V>().map_err(|_| {
                         Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
