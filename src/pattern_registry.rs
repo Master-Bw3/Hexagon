@@ -9,6 +9,7 @@ use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::null::NullIota;
 use crate::iota::hex_casting::number::NumberIota;
 use crate::iota::hex_casting::vector::VectorIota;
+use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
@@ -345,6 +346,9 @@ impl PatternRegistryExt for PatternRegistry {
 
             Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
                 constructors::value_1::<EntityIota, NumberIota>("Number", false, "Greater Fold Reflection")),
+
+            Pattern::new_with_val("Reader's Purification", "string/block/get", "awqwawqe",
+                constructors::value_1::<VectorIota, StringIota>("String", true, "Reader's Purification")),
 
             //MoreIotas - Matrices
             Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),
