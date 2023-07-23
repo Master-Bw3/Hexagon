@@ -37,14 +37,14 @@ impl Mishap {
         match self {
             Mishap::NotEnoughIotas(_, num) => {
                 let mut new_stack = stack;
-                let garbage = Rc::new(GarbageIota::Garbage);
+                let garbage = Rc::new(GarbageIota);
                 let garbages: Vec<Rc<dyn Iota>> = vec![garbage; num];
                 new_stack.append(Vector::from(garbages));
                 new_stack
             }
             Mishap::IncorrectIota(index, _, _) => {
                 let mut new_stack = stack;
-                new_stack[index] = Rc::new(GarbageIota::Garbage);
+                new_stack[index] = Rc::new(GarbageIota);
                 new_stack
             }
             Mishap::MathematicalError() => todo!(),
@@ -56,7 +56,7 @@ impl Mishap {
             }
             Mishap::InvalidPattern => {
                 let mut new_stack = stack;
-                new_stack.push_back(Rc::new(GarbageIota::Garbage));
+                new_stack.push_back(Rc::new(GarbageIota));
                 new_stack
             }
             Mishap::ExpectedPattern(_) => todo!(),

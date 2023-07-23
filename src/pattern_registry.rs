@@ -172,7 +172,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Arc's Reflection", "const/double/pi", "qdwdq", constructors::push_const(Rc::new(PI))),
             Pattern::new("Circle's Reflection", "const/double/tau", "eawae", constructors::push_const(Rc::new(TAU))),
             Pattern::new("Euler's Reflection", "const/double/e", "aaq", constructors::push_const(Rc::new(E))),
-            Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(Rc::new(NullIota::Null))),
+            Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(Rc::new(NullIota))),
             Pattern::new("True Reflection", "const/true", "aqae",constructors::push_const(Rc::new(true))),
             Pattern::new("False Reflection", "const/false", "dedq",constructors::push_const(Rc::new(false))),
 

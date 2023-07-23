@@ -37,7 +37,7 @@ pub fn get_pos<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let operation_result: Rc<dyn Iota> = match state.sentinal_location {
         Some(vec) => Rc::new(vec),
-        None => Rc::new(NullIota::Null),
+        None => Rc::new(NullIota),
     };
 
     state.stack.push_back(operation_result);
@@ -54,7 +54,7 @@ pub fn wayfind<'a>(
 
     let operation_result: Rc<dyn Iota> = match state.sentinal_location {
         Some(vec) => Rc::new(vec.sub(iota).normalize()),
-        None => Rc::new(NullIota::Null),
+        None => Rc::new(NullIota),
     };
 
     state.stack.push_back(operation_result);

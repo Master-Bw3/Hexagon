@@ -63,7 +63,7 @@ pub fn index<'a>(
     let operaton_result = (iotas.0)
         .get((iotas.1).round() as usize)
         .cloned()
-        .unwrap_or(Rc::new(NullIota::Null));
+        .unwrap_or(Rc::new(NullIota));
 
     state.stack.push_back(operaton_result.clone());
 
