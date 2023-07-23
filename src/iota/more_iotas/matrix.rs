@@ -1,6 +1,5 @@
 use std::{ops::Not, rc::Rc};
 
-use downcast_rs::{impl_downcast, Downcast};
 use nalgebra::{DMatrix, Dyn, Matrix, dmatrix};
 
 use crate::{
@@ -18,7 +17,7 @@ impl Iota for MatrixIota {
         let mut out = vec![];
         for row in self.row_iter() {
             let row_out = row.iter().map(f32::to_string).collect::<Vec<_>>();
-            let row_str = format!("{}", row_out.join(", "));
+            let row_str = row_out.join(", ");
             out.push(row_str)
         }
         format!(

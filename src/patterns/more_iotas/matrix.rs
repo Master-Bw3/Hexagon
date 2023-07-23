@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use im::{vector, Vector};
-use nalgebra::{dmatrix, matrix, DMatrix, Matrix, Matrix1xX, MatrixXx1, Rotation3};
+use nalgebra::{dmatrix, DMatrix, Matrix1xX, MatrixXx1, };
 
 use crate::{
     interpreter::{
