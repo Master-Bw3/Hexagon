@@ -9,6 +9,7 @@ use crate::{
         hex_casting::{
             entity::EntityIota,
             list::{ListIota, ListIotaExt},
+            null::NullIota,
             vector::VectorIota,
         },
         Iota,
@@ -96,6 +97,7 @@ pub fn value_0<U: Iota + 'static>(
 
 pub fn value_1<T: Iota + 'static, U: Iota + 'static>(
     getter_type: &'static str,
+    accept_null: bool,
     display_name: &'static str,
 ) -> Box<ActionWithValueType> {
     Box::new(
@@ -105,12 +107,19 @@ pub fn value_1<T: Iota + 'static, U: Iota + 'static>(
 
             match value {
                 Some(ActionValue::Iota(iota)) => {
+                    //return early if iota is null and action accepts null
+                    if accept_null && iota.clone().downcast_rc::<NullIota>().is_ok() {
+                        state.stack.push_back(iota.clone());
+                        return Ok(state);
+                    }
+
                     //return early with an error if iota is of an invalid type
-                    let iota = iota.clone().downcast_rc::<U>().map_err(|_| {
+                    iota.clone().downcast_rc::<U>().map_err(|_| {
                         Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
-                    state.stack.push_back(iota)
+                    state.stack.push_back(iota.clone());
+                    Ok(state)
                 }
                 Some(ActionValue::Bookkeeper(val)) => {
                     Err(Mishap::InvalidValue(getter_type.to_string(), val.clone()))?
@@ -120,14 +129,13 @@ pub fn value_1<T: Iota + 'static, U: Iota + 'static>(
                     getter_type.to_string(),
                 ))?,
             }
-
-            Ok(state)
         },
     )
 }
 
 pub fn value_2<T: Iota, U: Iota, V: Iota>(
     getter_type: &'static str,
+    accept_null: bool,
     display_name: &'static str,
 ) -> Box<ActionWithValueType> {
     Box::new(
@@ -138,12 +146,19 @@ pub fn value_2<T: Iota, U: Iota, V: Iota>(
 
             match value {
                 Some(ActionValue::Iota(iota)) => {
+                    //return early if iota is null and action accepts null
+                    if accept_null && iota.clone().downcast_rc::<NullIota>().is_ok() {
+                        state.stack.push_back(iota.clone());
+                        return Ok(state);
+                    }
+
                     //return early with an error if iota is of an invalid type
-                    let iota = iota.clone().downcast_rc::<V>().map_err(|_| {
+                    iota.clone().downcast_rc::<U>().map_err(|_| {
                         Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
-                    state.stack.push_back(iota)
+                    state.stack.push_back(iota.clone());
+                    Ok(state)
                 }
                 Some(ActionValue::Bookkeeper(val)) => {
                     Err(Mishap::InvalidValue(getter_type.to_string(), val.clone()))?
@@ -153,8 +168,6 @@ pub fn value_2<T: Iota, U: Iota, V: Iota>(
                     getter_type.to_string(),
                 ))?,
             }
-
-            Ok(state)
         },
     )
 }
@@ -177,7 +190,7 @@ pub fn get_entity(
             match value {
                 Some(ActionValue::Iota(iota)) => {
                     if iota
-                    .clone()
+                        .clone()
                         .downcast_rc::<EntityIota>()
                         .map(|e| e.is_of_type(entity_type, &state.entities))
                         .unwrap_or(false)
