@@ -117,17 +117,17 @@ pub fn unmake<'a>(
 
     let operation_result: Rc<dyn Iota> = if matrix.len() == 1 {
         Rc::new(matrix[0])
-    } else if (matrix.column_iter().len() == 1 && matrix.row_iter().len() == 3)
-        || (matrix.column_iter().len() == 3 && matrix.row_iter().len() == 1)
+    } else if (matrix.ncols() == 1 && matrix.nrows() == 3)
+        || (matrix.ncols() == 3 && matrix.nrows() == 1)
     {
         Rc::new(VectorIota::new(matrix[0], matrix[1], matrix[2]))
     } else {
         let mut list: Vector<Rc<dyn Iota>> = vector![];
-        if matrix.row_iter().len() == 3 {
+        if matrix.nrows() == 3 {
             for row in matrix.column_iter() {
                 list.push_back(Rc::new(VectorIota::new(row[0], row[1], row[2])))
             }
-        } else if matrix.column_iter().len() == 3 {
+        } else if matrix.ncols() == 3 {
             for col in matrix.row_iter() {
                 list.push_back(Rc::new(VectorIota::new(col[0], col[1], col[2])))
             }
@@ -229,16 +229,14 @@ pub fn add<'a>(
         .as_matrix();
     state.stack.remove_args(&arg_count);
 
-    if lhs.row_iter().len() == rhs.row_iter().len()
-        && lhs.column_iter().len() == rhs.row_iter().len()
-    {
+    if lhs.nrows() == rhs.nrows() && lhs.ncols() == rhs.nrows() {
         state.stack.push_back(Rc::new(lhs + rhs));
         Ok(state)
     } else {
         Err(Mishap::MatrixWrongSize(
             Rc::new(rhs.clone()),
-            MatrixSize::Const(lhs.row_iter().len()),
-            MatrixSize::Const(rhs.row_iter().len()),
+            MatrixSize::Const(lhs.nrows()),
+            MatrixSize::Const(rhs.nrows()),
         ))
     }
 }
@@ -273,7 +271,7 @@ pub fn multiply<'a>(
         (lhs, rhs) => {
             let matrix1 = lhs.as_matrix();
             let matrix2 = rhs.as_matrix();
-            if matrix1.column_iter().len() == matrix2.row_iter().len() {
+            if matrix1.ncols() == matrix2.nrows() {
                 Rc::new(matrix1 * matrix2)
             } else {
                 Err(Mishap::MatrixWrongSize(
@@ -319,10 +317,10 @@ pub fn inverse<'a>(
         .as_matrix();
     state.stack.remove_args(&arg_count);
 
-    let inverse = if matrix.row_iter().len() == matrix.column_iter().len() {
+    let inverse = if matrix.nrows() == matrix.ncols() {
         Rc::new(matrix.try_inverse().unwrap())
     } else {
-        let row_len = matrix.row_iter().len();
+        let row_len = matrix.nrows();
         Err(Mishap::MatrixWrongSize(
             Rc::new(matrix),
             MatrixSize::Const(row_len),
@@ -346,14 +344,14 @@ pub fn determinant<'a>(
         .as_matrix();
     state.stack.remove_args(&arg_count);
 
-    let determinant = if matrix.row_iter().len() > 4 || matrix.column_iter().len() > 4 {
+    let determinant = if matrix.nrows() > 4 || matrix.ncols() > 4 {
         Err(Mishap::MatrixWrongSize(
             Rc::new(matrix),
             MatrixSize::Max(4),
             MatrixSize::Max(4),
         ))?
-    } else if matrix.row_iter().len() != matrix.column_iter().len() {
-        let row_len = matrix.row_iter().len();
+    } else if matrix.nrows() != matrix.ncols() {
+        let row_len = matrix.nrows();
         Err(Mishap::MatrixWrongSize(
             Rc::new(matrix),
             MatrixSize::Const(row_len),
@@ -368,15 +366,69 @@ pub fn determinant<'a>(
     Ok(state)
 }
 
-// pub fn multiply<'a>(
-//     state: &'a mut State,
-//     _pattern_registry: &PatternRegistry,
-// ) -> Result<&'a mut State, Mishap> {
-//     let arg_count = 2;
-//     let lhs = state
-//         .stack
-//         .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?;
-//     let rhs = state
-//         .stack
-//         .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?;
-//     state.stack.remove_args(&arg_count);}
+pub fn concat_vertical<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let lhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    let rhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?
+        .as_matrix();
+    state.stack.remove_args(&arg_count);
+
+    let mut new_vec = lhs.data.as_vec().clone();
+    new_vec.append(&mut rhs.data.as_vec().clone());
+
+    let operation_result = if lhs.ncols() == rhs.ncols() {
+        MatrixIota::from_vec(lhs.nrows() + rhs.nrows(), lhs.ncols(), new_vec)
+    } else {
+        Err(Mishap::MatrixWrongSize(
+            Rc::new(rhs.clone()),
+            MatrixSize::N,
+            MatrixSize::Const(lhs.ncols()),
+        ))?
+    };
+
+    state.stack.push_back(Rc::new(operation_result));
+
+    Ok(state)
+}
+
+pub fn concat_horizontal<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let lhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(0, arg_count)?
+        .as_matrix();
+    let rhs = state
+        .stack
+        .get_iota_a_b_or_c::<NumberIota, VectorIota, MatrixIota>(1, arg_count)?
+        .as_matrix();
+    state.stack.remove_args(&arg_count);
+
+    let mut new_vec = lhs.data.as_vec().clone();
+    new_vec.append(&mut rhs.data.as_vec().clone());
+
+    let operation_result = if lhs.nrows() == rhs.nrows() {
+        MatrixIota::from_vec(lhs.nrows(), lhs.ncols() + rhs.ncols(), new_vec)
+    } else {
+        Err(Mishap::MatrixWrongSize(
+            Rc::new(rhs.clone()),
+            MatrixSize::Const(lhs.nrows()),
+            MatrixSize::N,
+
+        ))?
+    };
+
+    state.stack.push_back(Rc::new(operation_result));
+
+    Ok(state)
+}

@@ -22,8 +22,8 @@ impl Iota for MatrixIota {
         }
         format!(
             "[({}, {}) | {}]",
-            self.row_iter().len(),
-            self.column_iter().len(),
+            self.nrows(),
+            self.ncols(),
             out.join("; ")
         )
     }
