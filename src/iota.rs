@@ -8,6 +8,7 @@ pub mod more_iotas;
 pub trait Iota: Downcast + Debug {
     fn display(&self) -> String;
     fn tolerates_other(&self, other: &dyn Iota) -> bool;
+    fn serialize_to_nbt(&self) -> String;
 }
 impl_downcast!(Iota);
 

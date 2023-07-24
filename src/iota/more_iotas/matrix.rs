@@ -16,7 +16,7 @@ impl Iota for MatrixIota {
     fn display(&self) -> String {
         let mut out = vec![];
         for row in self.row_iter() {
-            let row_out = row.iter().map(f32::to_string).collect::<Vec<_>>();
+            let row_out = row.iter().map(f64::to_string).collect::<Vec<_>>();
             let row_str = row_out.join(", ");
             out.push(row_str)
         }
@@ -45,6 +45,10 @@ impl Iota for MatrixIota {
             }
             None => false,
         }
+    }
+
+    fn serialize_to_nbt(&self) -> String {
+        todo!()
     }
 }
 

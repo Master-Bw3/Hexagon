@@ -16,6 +16,10 @@ impl Iota for StringIota {
             None => false,
         }
     }
+
+    fn serialize_to_nbt(&self) -> String {
+        todo!()
+    }
 }
 
 pub trait StringVecExt {

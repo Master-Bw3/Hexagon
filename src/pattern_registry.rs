@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::f32::consts::{E, PI, TAU};
+use std::f64::consts::{E, PI, TAU};
 use std::rc::Rc;
 
 use im::vector;

@@ -11,4 +11,8 @@ impl Iota for NullIota {
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         other.downcast_ref::<NullIota>().is_some()
     }
+
+    fn serialize_to_nbt(&self) -> String {
+        "{\"hexcasting:type\": \"hexcasting:null\", \"hexcasting:data\": {}}".to_string()
+    }
 }

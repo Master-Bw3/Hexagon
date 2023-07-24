@@ -1,0 +1,9 @@
+{hexcasting:type: "hexcasting:list", hexcasting:data: 
+[{hexcasting:type: "hexcasting:boolean", hexcasting:data: 1b}, 
+{hexcasting:type: "hexcasting:boolean", hexcasting:data: 0b}, 
+{hexcasting:type: "hexcasting:vec3", hexcasting:data: [L; 0L, 0L, 0L]}, 
+{hexcasting:type: "hexcasting:null", hexcasting:data: {}}, 
+{hexcasting:type: "hexcasting:entity", hexcasting:data: {name: '{"text":"Master_BW3"}', uuid: [I; 2016041815, -347258549, -1733205453, 430415802]}}, 
+{hexcasting:type: "hexcasting:double", hexcasting:data: 5.0d}]}
+
+{"hexcasting:type": "hexcasting:list", "hexcasting:data": []}

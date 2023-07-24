@@ -1,6 +1,6 @@
 use im::{vector, Vector};
 use std::ops::Deref;
-use std::{f32::consts::PI, ops::Not, rc::Rc};
+use std::{f64::consts::PI, ops::Not, rc::Rc};
 
 use crate::iota::hex_casting::number::NumberIotaExt;
 
@@ -175,7 +175,7 @@ pub fn pow_proj<'a>(
             vec.z.powf(*num),
         )),
         (Either::R(vec1), Either::R(vec2)) => {
-            let projection_piece = |num: f32| num * vec2.dot(&vec1) / vec1.dot(&vec2);
+            let projection_piece = |num: f64| num * vec2.dot(&vec1) / vec1.dot(&vec2);
             Rc::new(vec1.map(projection_piece))
         }
     };
@@ -197,7 +197,7 @@ pub fn floor<'a>(
 
     let operation_result: Rc<dyn Iota> = match iota {
         Either::L(num) => Rc::new(num.floor()),
-        Either::R(vec) => Rc::new(vec.map(f32::floor)),
+        Either::R(vec) => Rc::new(vec.map(f64::floor)),
     };
 
     state.stack.push_back(operation_result);
@@ -217,7 +217,7 @@ pub fn ceil<'a>(
 
     let operation_result: Rc<dyn Iota> = match iota {
         Either::L(num) => Rc::new(num.ceil()),
-        Either::R(vec) => Rc::new(vec.map(f32::ceil)),
+        Either::R(vec) => Rc::new(vec.map(f64::ceil)),
     };
 
     state.stack.push_back(operation_result);
@@ -269,8 +269,8 @@ pub fn coerce_axial<'a>(
 
     let operation_result = {
         let magnitude = iota.norm();
-        let azimuth = f32::acos(iota.z / magnitude);
-        let theta: f32 = f32::atan2(iota.y, iota.x);
+        let azimuth = f64::acos(iota.z / magnitude);
+        let theta: f64 = f64::atan2(iota.y, iota.x);
         let snapped_azimuth = (PI / 2.0) * (azimuth / (PI / 2.0)).round();
         let snapped_theta = (PI / 2.0) * (theta / (PI / 2.0)).round();
 
@@ -630,7 +630,7 @@ pub fn and_bit<'a>(
     state.stack.remove_args(&arg_count);
 
     let operation_result: Rc<dyn Iota> = match iotas {
-        (Either::L(num1), Either::L(num2)) => Rc::new(((*num1).int(0)? & (*num2).int(1)?) as f32),
+        (Either::L(num1), Either::L(num2)) => Rc::new(((*num1).int(0)? & (*num2).int(1)?) as f64),
         (Either::R(list1), Either::R(list2)) => Rc::new(
             list1
                 .iter()
@@ -674,7 +674,7 @@ pub fn or_bit<'a>(
     state.stack.remove_args(&arg_count);
 
     let operation_result: Rc<dyn Iota> = match iotas {
-        (Either::L(num1), Either::L(num2)) => Rc::new(((*num1).int(0)? | (*num2).int(1)?) as f32),
+        (Either::L(num1), Either::L(num2)) => Rc::new(((*num1).int(0)? | (*num2).int(1)?) as f64),
         (Either::R(list1), Either::R(list2)) => {
             let mut new_list1 = list1.deref().clone();
             let mut new_list2 = list2.deref().clone();
@@ -722,7 +722,7 @@ pub fn xor_bit<'a>(
     state.stack.remove_args(&arg_count);
 
     let operation_result: Rc<dyn Iota> = match iotas {
-        (Either::L(num1), Either::L(num2)) => Rc::new((num1.int(0)? ^ num2.int(1)?) as f32),
+        (Either::L(num1), Either::L(num2)) => Rc::new((num1.int(0)? ^ num2.int(1)?) as f64),
         (Either::R(list1), Either::R(list2)) => Rc::new({
             let mut new_list: Vector<_> = list1
                 .iter()
@@ -778,7 +778,7 @@ pub fn not_bit<'a>(
 
     let operation_result = !iota;
 
-    state.stack.push_back(Rc::new(operation_result as f32));
+    state.stack.push_back(Rc::new(operation_result as f64));
 
     Ok(state)
 }
@@ -836,7 +836,7 @@ pub fn random<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    let rand = rand::random::<f32>();
+    let rand = rand::random::<f64>();
 
     state.stack.push_back(Rc::new(rand));
 

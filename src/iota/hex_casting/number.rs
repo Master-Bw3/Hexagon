@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use crate::{interpreter::mishap::Mishap, iota::Iota};
 
-pub type NumberIota = f32;
+pub type NumberIota = f64;
 
 pub trait NumberIotaExt {
     fn int(self, index: usize) -> Result<i32, Mishap>;
@@ -71,5 +71,9 @@ impl Iota for NumberIota {
             Some(other) => (self - other).abs() < tolerance,
             None => false,
         }
+    }
+
+    fn serialize_to_nbt(&self) -> String {
+        format!("{{\"hexcasting:type\": \"hexcasting:double\", \"hexcasting:data\": {self}d}}")
     }
 }

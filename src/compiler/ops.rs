@@ -43,7 +43,7 @@ pub fn compile_op_store(
                     PatternIota::from_name(
                         registry,
                         "number",
-                        Some(ActionValue::Iota(Rc::new(*index as f32))),
+                        Some(ActionValue::Iota(Rc::new(*index as f64))),
                         None,
                     )
                     .unwrap(),
@@ -90,7 +90,7 @@ pub fn compile_op_push(
             PatternIota::from_name(
                 registry,
                 "number",
-                Some(ActionValue::Iota(Rc::new(*index as f32))),
+                Some(ActionValue::Iota(Rc::new(*index as f64))),
                 None
             )
             .unwrap(),

@@ -30,7 +30,7 @@ pub fn make<'a>(
         .get_iota_a_b_or_c::<NumberIota, VectorIota, ListIota>(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-    fn map_num(element: &Rc<dyn Iota>) -> Result<f32, ()> {
+    fn map_num(element: &Rc<dyn Iota>) -> Result<f64, ()> {
         element.downcast_ref::<NumberIota>().ok_or(()).cloned()
     }
 

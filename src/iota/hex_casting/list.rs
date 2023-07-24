@@ -60,5 +60,13 @@ impl Iota for ListIota {
             None => false,
         }
     }
-}
 
+    fn serialize_to_nbt(&self) -> String {
+        let out = self
+            .iter()
+            .map(|x| x.serialize_to_nbt())
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("{{\"hexcasting:type\": \"hexcasting:list\", \"hexcasting:data\": [{out}]}}")
+    }
+}

@@ -26,4 +26,8 @@ impl Iota for ContinuationIota {
             None => false,
         }
     }
+
+    fn serialize_to_nbt(&self) -> String {
+        todo!()
+    }
 }

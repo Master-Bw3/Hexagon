@@ -78,7 +78,7 @@ pub fn list_size<'a>(
     let iota = (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone();
     state.stack.remove_args(&arg_count);
 
-    let operaton_result = iota.len() as f32;
+    let operaton_result = iota.len() as f64;
 
     state.stack.push_back(Rc::new(operaton_result));
 
@@ -161,7 +161,7 @@ pub fn index_of<'a>(
         .filter(|(_, x)| x.tolerates_other(iotas.1.as_ref()))
         .collect::<Vector<(usize, _)>>()
         .get(0)
-        .map(|x| x.0 as f32)
+        .map(|x| x.0 as f64)
         .unwrap_or(-1.0);
     state.stack.push_back(Rc::new(operation_result));
 
@@ -283,12 +283,12 @@ mod tests {
         let mut state = State::default();
         state.stack = vector![1.0, 1.0, 2.0, 3.0,]
             .into_iter()
-            .map(|x: f32| -> Rc<dyn Iota> { Rc::new(x) })
+            .map(|x: f64| -> Rc<dyn Iota> { Rc::new(x) })
             .collect();
 
         let expected: Vector<Rc<dyn Iota>> = vector![1.0, 1.0, 2.0,]
             .into_iter()
-            .map(|x: f32| -> Rc<dyn Iota> { Rc::new(x) })
+            .map(|x: f64| -> Rc<dyn Iota> { Rc::new(x) })
             .collect();
 
         let result = last_n_list(

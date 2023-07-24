@@ -11,4 +11,8 @@ impl Iota for GarbageIota {
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         other.downcast_ref::<GarbageIota>().is_some()
     }
+
+    fn serialize_to_nbt(&self) -> String {
+        "{\"hexcasting:type\": \"hexcasting:garbage\", \"hexcasting:data\": {}}".to_string()
+    }
 }

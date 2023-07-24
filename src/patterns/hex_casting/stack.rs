@@ -151,7 +151,7 @@ pub fn stack_len<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
-    state.stack.push_back(Rc::new(state.stack.len() as f32));
+    state.stack.push_back(Rc::new(state.stack.len() as f64));
 
     Ok(state)
 }

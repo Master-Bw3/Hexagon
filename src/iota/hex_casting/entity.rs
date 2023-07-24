@@ -36,4 +36,8 @@ impl Iota for EntityIota {
             None => false,
         }
     }
+
+    fn serialize_to_nbt(&self) -> String {
+        todo!()
+    }
 }

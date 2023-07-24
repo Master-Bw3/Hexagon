@@ -1,4 +1,4 @@
-use compiler::compile_to_iotas;
+use compiler::{compile_to_iotas, nbt::gen_give_cmd};
 use im::Vector;
 use interpreter::mishap::Mishap;
 use iota::Iota;
@@ -94,7 +94,9 @@ pub fn run() {
     } else if let Command::Build = args.command {
         let compile_result = compile_to_iotas(parse_result, &config.great_spell_sigs);
         match compile_result {
-            Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
+            // Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
+            Ok(result) => println!("\nresult: {}", gen_give_cmd(result)),
+
             Err(err) => {
                 print_interpreter_error(err, &source, &args.source_path);
             }

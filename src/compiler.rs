@@ -14,6 +14,7 @@ use self::{
 
 pub mod if_block;
 pub mod ops;
+pub mod nbt;
 
 pub fn compile_to_iotas(
     node: AstNode,
