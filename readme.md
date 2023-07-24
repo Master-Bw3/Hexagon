@@ -51,7 +51,7 @@ NORTHEAST qaq                  //Pattern via signature
 Numerical Reflection: 1        //Pattern via name
 "hello world"                  //String
 [(3, 2) | 1, 1; 2, 2; 3, 3]    //Matrix
-[(0, 0) | ]                    //Empty Matrix
+[(0, 0)]                    //Empty Matrix
 ```
 
 ### Embedding Iotas
