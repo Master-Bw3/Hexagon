@@ -7,6 +7,7 @@ use crate::{
             entity::EntityIota, garbage::GarbageIota, list::ListIota, null::NullIota,
             number::NumberIota, pattern::PatternIota,
         },
+        more_iotas::matrix::MatrixIota,
         Iota,
     },
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -365,6 +366,17 @@ pub fn parse_iota(
             let string = string[1..string.len() - 1].to_string();
             Rc::new(string)
         }
+        Rule::Matrix => {
+            let mut inner = inner_pair.into_inner();
+            let nrows = inner.next().unwrap().as_str().parse::<usize>().unwrap();
+            let ncols = inner.next().unwrap().as_str().parse::<usize>().unwrap();
+            let data = inner
+                .map(|x| x.as_str().parse::<NumberIota>().unwrap())
+                .collect::<Vec<_>>();
+
+            Rc::new(MatrixIota::from_vec(nrows, ncols, data))
+        }
+
         _ => unreachable!(),
     }
 }

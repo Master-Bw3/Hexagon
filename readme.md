@@ -49,6 +49,7 @@ Garbage                        //Garbage
 True                           //Bool
 NORTHEAST qaq                  //Pattern via signature
 Numerical Reflection: 1        //Pattern via name
+"hello world"                  //String
 ```
 
 ### Embedding Iotas
