@@ -52,7 +52,7 @@ Pattern = ${ IntroRetro | PatternName | Action }
 
 String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))* ~ "\"")}
 
-Matrix = !{ "[" ~ "(" ~ Int ~ "," ~ Int ~ ")" ~ "|" ~ ((Number ~ ("," | ";"))* ~ Iota)? ~ "]"}
+Matrix = !{ "[" ~ "(" ~ Int ~ "," ~ Int ~ ")" ~ ("|" ~ (Number ~ ("," | ";"))* ~ Iota)? ~ "]"}
 
 Int = {ASCII_DIGIT+}
 

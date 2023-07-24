@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
-use crate::iota::hex_casting::list::ListIota;
+use crate::iota::hex_casting::pattern::SignatureExt;
+use crate::iota::hex_casting::{list::ListIota, pattern::PatternIota};
 use crate::iota::more_iotas::string::StringVecExt;
 use im::Vector;
 
@@ -181,4 +182,21 @@ pub fn set_prefix<'a>(
     } else {
         Err(Mishap::IncorrectIota(0, "String or Null".to_string(), iota))
     }
+}
+pub fn display_iota<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let iota = state.stack.get_any_iota(0, arg_count)?;
+
+    if let Ok(pattern) = iota.clone().downcast_rc::<PatternIota>() {
+        //TODO: implement pattern directionality
+        let formatted = format!("HexPattern(EAST {})", pattern.signature.as_str());
+        state.stack.push_back(Rc::new(formatted));
+    } else {
+        state.stack.push_back(Rc::new(iota.display()));
+    }
+
+    Ok(state)
 }

@@ -385,6 +385,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Discoverer's Distillation", "string/find", "waqwwaqa", Box::new(string::find)),
             Pattern::new("Winnowing Distillation", "string/sub", "aqwwaqwaad", Box::new(string::sub)),
             Pattern::new("Length Distillation: Str", "string/len", "waqaeaq", Box::new(string::len)),
+            Pattern::new("Scrivener's Purification", "string/iota", "wawqwawaw", Box::new(string::display_iota)),
+
             // Pattern::new("", "", "", Box::new(string::)),
 
             

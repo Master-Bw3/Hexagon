@@ -1,6 +1,6 @@
 use std::{ops::Not, rc::Rc};
 
-use nalgebra::{DMatrix, Dyn, Matrix, dmatrix};
+use nalgebra::{dmatrix, DMatrix, Dyn, Matrix};
 
 use crate::{
     interpreter::state::Either3,
@@ -20,12 +20,13 @@ impl Iota for MatrixIota {
             let row_str = row_out.join(", ");
             out.push(row_str)
         }
-        format!(
-            "[({}, {}) | {}]",
-            self.nrows(),
-            self.ncols(),
-            out.join("; ")
-        )
+
+        let formatted_out = if self.ncols() == 0 || self.nrows() == 0 {
+            "".to_string()
+        } else {
+            format!(" | {}", out.join("; "))
+        };
+        format!("[({}, {}){}]", self.nrows(), self.ncols(), formatted_out)
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
@@ -60,7 +61,6 @@ impl<T: AsMatrix, U: AsMatrix, V: AsMatrix> AsMatrix for Either3<Rc<T>, Rc<U>, R
         }
     }
 }
-
 
 impl AsMatrix for NumberIota {
     fn as_matrix(&self) -> MatrixIota {
