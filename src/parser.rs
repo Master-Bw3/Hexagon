@@ -362,8 +362,7 @@ pub fn parse_iota(
             )
         }
         Rule::String => {
-            let string = inner_pair.as_str();
-            let string = string[1..string.len() - 1].to_string();
+            let string = snailquote::unescape(&inner_pair.as_str()).unwrap().to_string();
             Rc::new(string)
         }
         Rule::Matrix => {

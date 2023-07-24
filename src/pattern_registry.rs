@@ -254,7 +254,7 @@ impl PatternRegistryExt for PatternRegistry {
 
             //requires value to be set
             Pattern::new_with_val("Numerical Reflection", "number", "", 
-                constructors::value_0::<NumberIota>("Number", "Numerical Reflection")),
+                constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection")),
 
             Pattern::new_with_val("Entity Purification", "get_entity", "qqqqqdaqa",
                 constructors::get_entity(None, "Entity Purification")),
@@ -354,10 +354,13 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::value_1::<VectorIota, StringIota>("String", true, "Reader's Purification")),
 
             Pattern::new_with_val("Whisper Reflection", "string/chat/caster", "waqa",
-                    constructors::value_0::<StringIota>("String", "Whisper Reflection")),
+                    constructors::value_0::<StringIota>("String", false, "Whisper Reflection")),
                 
             Pattern::new_with_val("Listener's Reflection", "string/chat/all", "wded",
-                constructors::value_0::<StringIota>("String", "Listener's Reflection")),
+                constructors::value_0::<StringIota>("String", false, "Listener's Reflection")),
+
+            Pattern::new_with_val("Sifter's Reflection", "string/chat/prefix/get", "ewded",
+                constructors::value_0::<StringIota>("String", true, "Sifter's Reflection")),
 
             //MoreIotas - Matrices
             Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),

@@ -66,20 +66,28 @@ pub fn spell_3<T: Iota, U: Iota, V: Iota>() -> Box<ActionNoValueType> {
     })
 }
 
-pub fn value_0<U: Iota + 'static>(
+pub fn value_0<T: Iota + 'static>(
     getter_type: &'static str,
+    accept_null: bool,
     display_name: &'static str,
 ) -> Box<ActionWithValueType> {
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             match value {
                 Some(ActionValue::Iota(iota)) => {
+                    //return early if iota is null and action accepts null
+                    if accept_null && iota.clone().downcast_rc::<NullIota>().is_ok() {
+                        state.stack.push_back(iota.clone());
+                        return Ok(state);
+                    }
+
                     //return early with an error if iota is of an invalid type
-                    let iota = iota.clone().downcast_rc::<U>().map_err(|_| {
+                    iota.clone().downcast_rc::<T>().map_err(|_| {
                         Mishap::InvalidValue(getter_type.to_string(), iota.display())
                     })?;
 
-                    state.stack.push_back(iota)
+                    state.stack.push_back(iota.clone());
+                    Ok(state)
                 }
                 Some(ActionValue::Bookkeeper(val)) => {
                     Err(Mishap::InvalidValue(getter_type.to_string(), val.clone()))?
@@ -89,8 +97,6 @@ pub fn value_0<U: Iota + 'static>(
                     getter_type.to_string(),
                 ))?,
             }
-
-            Ok(state)
         },
     )
 }
