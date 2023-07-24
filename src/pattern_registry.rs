@@ -210,6 +210,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Red Sun's Nadir", "potion/poison", "qqqqqadwawaww", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Write", "string/block/set", "dwewdweq", Box::new(string::write)),
+            Pattern::new("", "", "", Box::new(string::write)),
 
 
             //great spells
@@ -351,6 +352,12 @@ impl PatternRegistryExt for PatternRegistry {
 
             Pattern::new_with_val("Reader's Purification", "string/block/get", "awqwawqe",
                 constructors::value_1::<VectorIota, StringIota>("String", true, "Reader's Purification")),
+
+            Pattern::new_with_val("Whisper Reflection", "string/chat/caster", "waqa",
+                    constructors::value_0::<StringIota>("String", "Whisper Reflection")),
+                
+            Pattern::new_with_val("Listener's Reflection", "string/chat/all", "wded",
+                constructors::value_0::<StringIota>("String", "Listener's Reflection")),
 
             //MoreIotas - Matrices
             Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),
