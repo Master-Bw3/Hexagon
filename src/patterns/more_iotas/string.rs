@@ -1,5 +1,7 @@
 use std::rc::Rc;
 
+use crate::interpreter::state::Either;
+use crate::iota::hex_casting::bool::BooleanIota;
 use crate::iota::hex_casting::garbage::GarbageIota;
 use crate::iota::hex_casting::pattern::SignatureExt;
 use crate::iota::hex_casting::{list::ListIota, pattern::PatternIota};
@@ -224,6 +226,43 @@ pub fn display_action<'a>(
         };
 
     state.stack.push_back(string);
+
+    Ok(state)
+}
+
+pub fn set_case<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 2;
+    let string = state.stack.get_iota::<String>(0, arg_count)?;
+    let option = state
+        .stack
+        .get_iota_a_or_b::<BooleanIota, NullIota>(1, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let new_string = match option {
+        Either::L(bool) => {
+            if *bool {
+                string.to_uppercase()
+            } else {
+                string.to_lowercase()
+            }
+        }
+        Either::R(_null) => string
+            .chars()
+            .into_iter()
+            .map(|char| {
+                if char.is_lowercase() {
+                    char.to_uppercase().next().unwrap_or(char)
+                } else {
+                    char.to_lowercase().next().unwrap_or(char)
+                }
+            })
+            .collect(),
+    };
+
+    state.stack.push_back(Rc::new(new_string));
 
     Ok(state)
 }
