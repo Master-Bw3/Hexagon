@@ -38,7 +38,7 @@ impl PatternIota {
 impl Iota for PatternIota {
     fn display(&self) -> String {
         let mut result = PatternRegistry::find(
-            //todo: maybe make this not generate the entire registry each time
+            //TODO: maybe make this not generate the entire registry each time
             &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
             &self.signature.as_str(),
             &self.value,

@@ -18,7 +18,7 @@ impl Iota for ContinuationIota {
                     && self
                         .value.iter()
                         .zip(other.value.iter())
-                        .map(|(rhs, lhs)| false) //todo: fix this
+                        .map(|(rhs, lhs)| false) //TODO: fix this
                         .collect::<im::Vector<bool>>()
                         .contains(&false)
                         .not()

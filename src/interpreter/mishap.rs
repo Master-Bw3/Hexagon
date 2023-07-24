@@ -161,7 +161,7 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => {
                 Some("Define held items in a 'config.toml' file".to_string())
             }
-            //todo: make expectedValue show iota instead of type of iota in example
+            //TODO: make expectedValue show iota instead of type of iota in example
             Mishap::ExpectedValue(action_name, expected) => Some(format!(
                 "Set a value for this action. Example: {action_name}: {expected}"
             )),
