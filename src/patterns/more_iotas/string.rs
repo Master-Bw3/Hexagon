@@ -4,6 +4,7 @@ use crate::iota::hex_casting::garbage::GarbageIota;
 use crate::iota::hex_casting::pattern::SignatureExt;
 use crate::iota::hex_casting::{list::ListIota, pattern::PatternIota};
 use crate::iota::more_iotas::string::StringVecExt;
+use crate::pattern_registry::PatternRegistryExt;
 use im::Vector;
 
 use crate::{
@@ -184,12 +185,14 @@ pub fn set_prefix<'a>(
         Err(Mishap::IncorrectIota(0, "String or Null".to_string(), iota))
     }
 }
+
 pub fn display_iota<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
     let iota = state.stack.get_any_iota(0, arg_count)?;
+    state.stack.remove_args(&arg_count);
 
     if let Ok(pattern) = iota.clone().downcast_rc::<PatternIota>() {
         //TODO: implement pattern directionality
@@ -202,6 +205,25 @@ pub fn display_iota<'a>(
     } else {
         state.stack.push_back(Rc::new(iota.display()));
     }
+
+    Ok(state)
+}
+
+pub fn display_action<'a>(
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let pattern = state.stack.get_iota::<PatternIota>(0, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let string: Rc<dyn Iota> =
+        match pattern_registry.find(&pattern.signature.as_str(), &pattern.value) {
+            Some(_) => Rc::new(pattern.display()),
+            None => Rc::new(NullIota),
+        };
+
+    state.stack.push_back(string);
 
     Ok(state)
 }
