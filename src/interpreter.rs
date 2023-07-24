@@ -231,10 +231,10 @@ pub fn interpret_action<'a>(
     pattern_registry: &PatternRegistry,
     line: Option<(usize, usize)>
 ) -> Result<&'a mut State, Mishap> {
+
     let pattern = pattern_registry
         .find(&name, &value)
         .ok_or(Mishap::InvalidPattern)?;
-
     let is_escape = Signature::from_sig(&pattern.signature)
         == Signature::from_name(pattern_registry, "escape", &None).unwrap();
 

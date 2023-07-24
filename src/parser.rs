@@ -7,6 +7,7 @@ use crate::{
             entity::EntityIota, garbage::GarbageIota, list::ListIota, null::NullIota,
             number::NumberIota, pattern::PatternIota,
         },
+        more_iotas::matrix::MatrixIota,
         Iota,
     },
     pattern_registry::{PatternRegistry, PatternRegistryExt},
@@ -124,18 +125,19 @@ fn parse_action(
                 ))),
                 line: pair.line_col(),
             },
-            Rule::EntityType => AstNode::Action {
-                name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
-                value: righter
-                    .map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
-                line: pair.line_col(),
-            },
+
             Rule::BookkeeperValue => AstNode::Action {
                 name: left.as_str().to_string(),
                 value: Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
                 line: pair.line_col(),
             },
-            _ => unreachable!(),
+
+            _ => AstNode::Action {
+                name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
+                value: righter
+                    .map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
+                line: pair.line_col(),
+            },
         })
         .unwrap_or(AstNode::Action {
             name: left.as_str().to_string(),
@@ -341,12 +343,11 @@ pub fn parse_iota(
             _ => unreachable!(),
         },
         Rule::Influence => match inner_pair.as_str() {
-            "Garbage" => Rc::new(GarbageIota::Garbage),
-            "Null" => Rc::new(NullIota::Null),
+            "Garbage" => Rc::new(GarbageIota),
+            "Null" => Rc::new(NullIota),
             _ => unreachable!(),
         },
         Rule::Entity => {
-            // let mut inner = inner_pair.into_inner();
             let name = inner_pair.as_str()[1..].to_string();
             Rc::new(EntityIota {
                 name: Rc::from(name),
@@ -360,6 +361,21 @@ pub fn parse_iota(
                     .collect::<ListIota>(),
             )
         }
+        Rule::String => {
+            let string = snailquote::unescape(&inner_pair.as_str()).unwrap().to_string();
+            Rc::new(string)
+        }
+        Rule::Matrix => {
+            let mut inner = inner_pair.into_inner();
+            let nrows = inner.next().unwrap().as_str().parse::<usize>().unwrap();
+            let ncols = inner.next().unwrap().as_str().parse::<usize>().unwrap();
+            let data = inner
+                .map(|x| x.as_str().parse::<NumberIota>().unwrap())
+                .collect::<Vec<_>>();
+
+            Rc::new(MatrixIota::from_vec(nrows, ncols, data))
+        }
+
         _ => unreachable!(),
     }
 }

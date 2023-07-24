@@ -4,16 +4,17 @@ use std::rc::Rc;
 
 use im::vector;
 
-use crate::interpreter::state::{EntityType, };
+use crate::interpreter::state::EntityType;
 use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::null::NullIota;
 use crate::iota::hex_casting::number::NumberIota;
 use crate::iota::hex_casting::vector::VectorIota;
+use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
-use crate::patterns::more_iotas::matrices;
+use crate::patterns::more_iotas::{matrix, string};
 use crate::patterns::{constructors, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
@@ -172,9 +173,16 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Arc's Reflection", "const/double/pi", "qdwdq", constructors::push_const(Rc::new(PI))),
             Pattern::new("Circle's Reflection", "const/double/tau", "eawae", constructors::push_const(Rc::new(TAU))),
             Pattern::new("Euler's Reflection", "const/double/e", "aaq", constructors::push_const(Rc::new(E))),
-            Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(Rc::new(NullIota::Null))),
+            Pattern::new("Nullary Reflection", "const/null", "d", constructors::push_const(Rc::new(NullIota))),
             Pattern::new("True Reflection", "const/true", "aqae",constructors::push_const(Rc::new(true))),
             Pattern::new("False Reflection", "const/false", "dedq",constructors::push_const(Rc::new(false))),
+            Pattern::new("Blank Reflection", "string/empty", "awdwa",constructors::push_const(Rc::new(String::new()))),
+            Pattern::new("Spacing Reflection", "string/space", "awdwaaww",constructors::push_const(Rc::new(" ".to_string()))),
+            Pattern::new("Comma Reflection", "string/comma", "qa",constructors::push_const(Rc::new(",".to_string()))),
+            Pattern::new("Breaking Reflection", "string/newline", "waawaw",constructors::push_const(Rc::new("\n".to_string()))),
+            // Pattern::new("", "", "",constructors::push_const(Rc::new())),
+
+
 
             //spells
             Pattern::new("Alter Gravity", "interop/gravity/set", "wdwdwaaqw", constructors::spell_2::<EntityIota, VectorIota>()),
@@ -201,6 +209,9 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Black Sun's Nadir", "potion/wither", "qqqqqaewawawe", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Red Sun's Nadir", "potion/poison", "qqqqqadwawaww", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
+            Pattern::new("Write", "string/block/set", "dwewdweq", Box::new(string::write)),
+            Pattern::new("Sifter's Gambit", "string/chat/prefix/set", "qwaqa", Box::new(string::set_prefix)),
+
 
             //great spells
             Pattern::new("Craft Phial", "craft/battery", great_sigs.get("craft/battery").unwrap(), 
@@ -243,7 +254,7 @@ impl PatternRegistryExt for PatternRegistry {
 
             //requires value to be set
             Pattern::new_with_val("Numerical Reflection", "number", "", 
-                constructors::value_0::<NumberIota>("Number", "Numerical Reflection")),
+                constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection")),
 
             Pattern::new_with_val("Entity Purification", "get_entity", "qqqqqdaqa",
                 constructors::get_entity(None, "Entity Purification")),
@@ -298,50 +309,91 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::zone_entity(Some(&EntityType::Living), &true, "Zone Distillation: Non-Living")),
 
             Pattern::new_with_val("Compass' Purification", "entity_pos/eye",  "aa",
-                constructors::value_1::<EntityIota, VectorIota>("Vector", "Compass' Purification")),
+                constructors::value_1::<EntityIota, VectorIota>("Vector", false, "Compass' Purification")),
 
             Pattern::new_with_val("Compass' Purification II", "entity_pos/foot", "dd",
-                constructors::value_1::<EntityIota, VectorIota>("Vector", "Compass' Purification II")),
+                constructors::value_1::<EntityIota, VectorIota>("Vector", false, "Compass' Purification II")),
 
             Pattern::new_with_val("Alidade's Purification", "get_entity_look", "wa",
-                constructors::value_1::<EntityIota, VectorIota>("Vector", "Alidade's Purification")),
+                constructors::value_1::<EntityIota, VectorIota>("Vector", false, "Alidade's Purification")),
 
             Pattern::new_with_val("Stadiometer's Purification", "get_entity_height", "awq",
-                constructors::value_1::<EntityIota, NumberIota>("Number", "Stadiometer's Purification")),
+                constructors::value_1::<EntityIota, NumberIota>("Number", false, "Stadiometer's Purification")),
 
             Pattern::new_with_val("Pace Purification", "get_entity_velocity", "wq",
-                constructors::value_1::<EntityIota, VectorIota>("Vector", "Pace Purification")),
+                constructors::value_1::<EntityIota, VectorIota>("Vector", false, "Pace Purification")),
 
             Pattern::new_with_val("Gravitational Purification", "interop/gravity/get", "wawawddew",
-                constructors::value_1::<EntityIota, VectorIota>("Vector", "Gravitational Purification")),
+                constructors::value_1::<EntityIota, VectorIota>("Vector", false, "Gravitational Purification")),
 
             Pattern::new_with_val("Gulliver's Purification", "interop/pehkui/get", "aawawwawwa",
-                constructors::value_1::<EntityIota, NumberIota>("Number", "Gulliver's Purification")),
+                constructors::value_1::<EntityIota, NumberIota>("Number", false, "Gulliver's Purification")),
 
             Pattern::new_with_val("Archer's Distillation", "raycast", "wqaawdd",
-                constructors::value_2::<VectorIota, VectorIota, VectorIota>("Vector", "Archer's Distillation")),
+                constructors::value_2::<VectorIota, VectorIota, VectorIota>("Vector", true, "Archer's Distillation")),
 
             Pattern::new_with_val("Architect's Distillation", "raycast/axis", "weddwaa",
-                constructors::value_2::<VectorIota, VectorIota, VectorIota>("Vector", "Architect's Distillation")),
+                constructors::value_2::<VectorIota, VectorIota, VectorIota>("Vector", true, "Architect's Distillation")),
 
             Pattern::new_with_val("Scout's Distillation", "raycast/entity", "weaqa",
-                constructors::value_2::<VectorIota, VectorIota, EntityIota>("Entity", "Scout's Distillation")),
+                constructors::value_2::<VectorIota, VectorIota, EntityIota>("Entity", true, "Scout's Distillation")),
 
             Pattern::new_with_val("Waystone Reflection", "circle/impetus_pos", "eaqwqae",
-                constructors::value_1::<EntityIota, NumberIota>("Number", "Waystone Reflection")),
+                constructors::value_1::<EntityIota, NumberIota>("Number", false, "Waystone Reflection")),
 
             Pattern::new_with_val("Lodestone Reflection", "circle/impetus_dir", "eaqwqaewede",
-                constructors::value_1::<EntityIota, NumberIota>("Number", "Lodestone Reflection")),
+                constructors::value_1::<EntityIota, NumberIota>("Number", false, "Lodestone Reflection")),
 
             Pattern::new_with_val("Lesser Fold Reflection", "circle/bounds/min", "eaqwqaewdd",
-                constructors::value_1::<EntityIota, NumberIota>("Number", "Lesser Fold Reflection")),
+                constructors::value_1::<EntityIota, NumberIota>("Number", false, "Lesser Fold Reflection")),
 
             Pattern::new_with_val("Greater Fold Reflection", "circle/bounds/max", "aqwqawaaqa",
-                constructors::value_1::<EntityIota, NumberIota>("Number", "Greater Fold Reflection")),
+                constructors::value_1::<EntityIota, NumberIota>("Number", false, "Greater Fold Reflection")),
+
+            Pattern::new_with_val("Reader's Purification", "string/block/get", "awqwawqe",
+                constructors::value_1::<VectorIota, StringIota>("String", true, "Reader's Purification")),
+
+            Pattern::new_with_val("Whisper Reflection", "string/chat/caster", "waqa",
+                    constructors::value_0::<StringIota>("String", false, "Whisper Reflection")),
+                
+            Pattern::new_with_val("Listener's Reflection", "string/chat/all", "wded",
+                constructors::value_0::<StringIota>("String", false, "Listener's Reflection")),
+
+            Pattern::new_with_val("Sifter's Reflection", "string/chat/prefix/get", "ewded",
+                constructors::value_0::<StringIota>("String", true, "Sifter's Reflection")),
 
             //MoreIotas - Matrices
-            Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrices::make)),
-            Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrices::unmake)),
+            Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),
+            Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrix::unmake)),
+            Pattern::new("Identity Purification", "matrix/identity", "awwaeawwaqw", Box::new(matrix::identity)),
+            Pattern::new("Zero Distillation", "matrix/zero", "awwaeawwa", Box::new(matrix::zero)),
+            Pattern::new("Rotation Distillation", "matrix/rotation", "awwaeawwawawddw", Box::new(matrix::rotate)),
+            Pattern::new("Addition Distillation: Matrix", "matrix/add", "waawawaeawwaea", Box::new(matrix::add)),
+            Pattern::new("Multiplication Distillation: Matrix", "matrix/mul", "waqawawwaeaww", Box::new(matrix::multiply)),
+            Pattern::new("Transpose Purification", "matrix/transpose", "wwaeawwaede", Box::new(matrix::transpose)),
+            Pattern::new("Inverse Purification", "matrix/inverse", "wwdqdwwdqaq", Box::new(matrix::inverse)),
+            Pattern::new("Determinant Purification", "matrix/determinant", "aeawwaeawaw", Box::new(matrix::determinant)),
+            Pattern::new("Tower Distillation", "matrix/concat/vert", "awwaeawwawawdedwa", Box::new(matrix::concat_vertical)),
+            Pattern::new("Sprawling Distillation", "matrix/concat/hori", "dwwdqdwwdwdwaqawd", Box::new(matrix::concat_horizontal)),
+            Pattern::new("Toppling Gambit", "matrix/split/vert", "awdedwawawwaeawwa", Box::new(matrix::split_vertical)),
+            Pattern::new("Mitosis Gambit", "matrix/split/hori", "dwaqawdwdwwdqdwwd", Box::new(matrix::split_horizontal)),
+            
+            //MoreIotas - Strings
+            Pattern::new("Concatenation Distillation", "string/add", "waawaqwawqq", Box::new(string::concat)),
+            Pattern::new("Separation Distillation", "string/split", "aqwaqa", Box::new(string::split)),
+            Pattern::new("Input Purification", "string/parse", "aqwaq", Box::new(string::parse)),
+            Pattern::new("Discoverer's Distillation", "string/find", "waqwwaqa", Box::new(string::find)),
+            Pattern::new("Winnowing Distillation", "string/sub", "aqwwaqwaad", Box::new(string::sub)),
+            Pattern::new("Length Distillation: Str", "string/len", "waqaeaq", Box::new(string::len)),
+            Pattern::new("Scrivener's Purification", "string/iota", "wawqwawaw", Box::new(string::display_iota)),
+            Pattern::new("Patternmaster's Purification", "string/action", "wdwewdwdw", Box::new(string::display_action)),
+            Pattern::new("Case Distillation", "string/case", "dwwdwwdwdd", Box::new(string::set_case)),
+
+            // Pattern::new("", "", "", Box::new(string::)),
+
+            
+            
+            
 
         ];
 

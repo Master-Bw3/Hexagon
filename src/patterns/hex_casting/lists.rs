@@ -63,7 +63,7 @@ pub fn index<'a>(
     let operaton_result = (iotas.0)
         .get((iotas.1).round() as usize)
         .cloned()
-        .unwrap_or(Rc::new(NullIota::Null));
+        .unwrap_or(Rc::new(NullIota));
 
     state.stack.push_back(operaton_result.clone());
 
@@ -197,10 +197,10 @@ pub fn slice<'a>(
     let iotas = (
         (state.stack)
             .get_iota::<NumberIota>(1, arg_count)?
-            .int_under_inclusive(1, list.len())? as usize,
+            .positive_int_under_inclusive(1, list.len())? as usize,
         (state.stack)
             .get_iota::<NumberIota>(2, arg_count)?
-            .int_under_inclusive(2, list.len())? as usize,
+            .positive_int_under_inclusive(2, list.len())? as usize,
     );
     state.stack.remove_args(&arg_count);
 
@@ -219,7 +219,7 @@ pub fn modify_in_place<'a>(
     let iotas = (
         (state.stack)
             .get_iota::<NumberIota>(1, arg_count)?
-            .int_under_inclusive(1, list.len())? as usize,
+            .positive_int_under_inclusive(1, list.len())? as usize,
         (state.stack).get_any_iota(2, arg_count)?.clone(),
     );
     state.stack.remove_args(&arg_count);

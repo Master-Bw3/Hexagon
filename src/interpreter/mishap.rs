@@ -12,6 +12,23 @@ use crate::{
 };
 
 #[derive(Debug)]
+pub enum MatrixSize {
+    N,
+    Const(usize),
+    Max(usize),
+}
+
+impl std::fmt::Display for MatrixSize {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MatrixSize::N => write!(f, "n"),
+            MatrixSize::Const(len) => write!(f, "{len}"),
+            MatrixSize::Max(len) => write!(f, "(max {len})"),
+        }
+    }
+}
+
+#[derive(Debug)]
 pub enum Mishap {
     NotEnoughIotas(usize, usize),
     IncorrectIota(usize, String, Rc<dyn Iota>),
@@ -29,7 +46,7 @@ pub enum Mishap {
     NoIotaAtIndex(usize),
     NoAkashicRecord(Rc<VectorIota>),
     HoldingIncorrectItem,
-    EvalError(Vec<Rc<dyn Iota>>, usize, Rc<Mishap>),
+    MatrixWrongSize(Rc<dyn Iota>, MatrixSize, MatrixSize),
 }
 
 impl Mishap {
@@ -37,14 +54,14 @@ impl Mishap {
         match self {
             Mishap::NotEnoughIotas(_, num) => {
                 let mut new_stack = stack;
-                let garbage = Rc::new(GarbageIota::Garbage);
+                let garbage = Rc::new(GarbageIota);
                 let garbages: Vec<Rc<dyn Iota>> = vec![garbage; num];
                 new_stack.append(Vector::from(garbages));
                 new_stack
             }
             Mishap::IncorrectIota(index, _, _) => {
                 let mut new_stack = stack;
-                new_stack[index] = Rc::new(GarbageIota::Garbage);
+                new_stack[index] = Rc::new(GarbageIota);
                 new_stack
             }
             Mishap::MathematicalError() => todo!(),
@@ -56,7 +73,7 @@ impl Mishap {
             }
             Mishap::InvalidPattern => {
                 let mut new_stack = stack;
-                new_stack.push_back(Rc::new(GarbageIota::Garbage));
+                new_stack.push_back(Rc::new(GarbageIota));
                 new_stack
             }
             Mishap::ExpectedPattern(_) => todo!(),
@@ -71,14 +88,14 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => todo!(),
             Mishap::ExpectedValue(_, _) => todo!(),
             Mishap::InvalidValue(_, _) => todo!(),
-            Mishap::EvalError(_, _, _) => todo!(),
+            Mishap::MatrixWrongSize(_, _, _) => todo!(),
         }
     }
 
     pub fn error_message(&self) -> String {
         match self {
             Mishap::NotEnoughIotas(arg_count, stack_height) => format!(
-                "Expected {arg_count} or more arguments but the stack was only {stack_height} tall"
+                "Expected {arg_count} arguments but the stack was only {stack_height} tall"
             ),
             Mishap::IncorrectIota(index, expected, recieved) => format!(
                 "expected {} at index {index} of the stack, but got {}",
@@ -87,7 +104,7 @@ impl Mishap {
             ),
             Mishap::MathematicalError() => todo!(),
             Mishap::HastyRetrospection => "Expected preceding Introspection".to_string(),
-            Mishap::InvalidPattern => "That pattern isn't associated with any action".to_string(),
+            Mishap::InvalidPattern => "This pattern isn't associated with any action".to_string(),
             Mishap::ExpectedPattern(iota) => format!("Expected Pattern but got {}", iota.display()),
             Mishap::OpCannotBeConsidered => "Ops cannot be considered".to_string(),
             Mishap::OpNotEnoughArgs(arg_count) => format!("Expected {arg_count} arguments"),
@@ -106,7 +123,10 @@ impl Mishap {
             Mishap::InvalidValue(expected, recieved) => {
                 format!("Expected {expected} value to be supplied but got {recieved}")
             }
-            Mishap::EvalError(_, _, mishap) => mishap.error_message(),
+            Mishap::MatrixWrongSize(iota, row_count, col_count) => format!(
+                "Expected {row_count} by {col_count} matrix but found {}",
+                iota.display()
+            ),
         }
     }
 
@@ -141,12 +161,12 @@ impl Mishap {
             Mishap::HoldingIncorrectItem => {
                 Some("Define held items in a 'config.toml' file".to_string())
             }
-            //todo: make expectedValue show iota instead of type of iota in example
+            //TODO: make expectedValue show iota instead of type of iota in example
             Mishap::ExpectedValue(action_name, expected) => Some(format!(
                 "Set a value for this action. Example: {action_name}: {expected}"
             )),
             Mishap::InvalidValue(_expected, _recieved) => None,
-            Mishap::EvalError(_, _, mishap) => mishap.error_hint(),
+            Mishap::MatrixWrongSize(_, _, _) => None,
         }
     }
 }

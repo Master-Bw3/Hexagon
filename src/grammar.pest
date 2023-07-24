@@ -14,7 +14,9 @@ ElseIf = {"else if" ~ Newline? ~ Term}
 
 Term = {"{" ~ Hex ~ "}"}
 
-Action = { ActionName ~ (":" ~ EntityType)? ~ (":" ~ WHITESPACE* ~ ( BookkeeperValue | Iota | IntroRetro ))? }
+Action = { ActionName ~ (":" ~ WHITESPACE* ~ ActionDiscriminator)? ~ (":" ~ WHITESPACE* ~ ( BookkeeperValue | Iota | IntroRetro ))? }
+
+ActionDiscriminator = {EntityType | "Matrix" | "Str"}
 
 ActionName = !{ASCII_ALPHA_UPPER ~ (ASCII_ALPHA | "+" | "-" | "'")+}
 
@@ -22,7 +24,7 @@ BookkeeperValue = @{("v" | "-")+ ~ !(ASCII_DIGIT)}
 
 // ActionDiscriminator = { (ASCII_ALPHA_UPPER) ~ ('A'..'z' | "-")* ~ (ASCII_ALPHA_UPPER)? }
 
-Iota = { Number | Vector | Entity | Influence | Bool | Pattern | List}
+Iota = { Matrix | String | Number | Vector | Entity | Influence | Bool | Pattern | List}
 
 List = !{"[" ~ ((Iota ~ ",")* ~ Iota)? ~ "]" }
 
@@ -48,7 +50,11 @@ Bool = @{("True" | "False") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
 Pattern = ${ IntroRetro | PatternName | Action }
 
-String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))+ ~ "\"")}
+String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))* ~ "\"")}
+
+Matrix = !{ "[" ~ "(" ~ Int ~ "," ~ Int ~ ")" ~ ("|" ~ (Number ~ ("," | ";"))* ~ Iota)? ~ "]"}
+
+Int = {ASCII_DIGIT+}
 
 PatternName = ${ PatternDirection ~ " " ~ PatternSignature}
 

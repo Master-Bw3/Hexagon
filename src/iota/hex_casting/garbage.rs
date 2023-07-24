@@ -1,9 +1,7 @@
 use crate::iota::Iota;
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum GarbageIota {
-    Garbage,
-}
+pub struct GarbageIota;
 
 impl Iota for GarbageIota {
     fn display(&self) -> String {

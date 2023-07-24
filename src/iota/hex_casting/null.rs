@@ -1,9 +1,7 @@
 use crate::iota::Iota;
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum NullIota {
-    Null,
-}
+pub struct NullIota;
 
 impl Iota for NullIota {
     fn display(&self) -> String {

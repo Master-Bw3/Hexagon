@@ -21,7 +21,7 @@ pub fn read_local<'a>(
 ) -> Result<&'a mut State, Mishap> {
     state
         .stack
-        .push_back(state.ravenmind.clone().unwrap_or(Rc::new(NullIota::Null)));
+        .push_back(state.ravenmind.clone().unwrap_or(Rc::new(NullIota)));
 
     Ok(state)
 }
@@ -127,7 +127,7 @@ pub fn read<'a>(
 
     let operation_result = match player.holding.as_ref() {
         Holding::Focus(Some(iota)) => iota.clone(),
-        _ => Rc::new(NullIota::Null),
+        _ => Rc::new(NullIota),
     };
 
     state.stack.push_back(operation_result);
@@ -204,7 +204,7 @@ pub fn akashic_read<'a>(
 
     let location = &[(iotas.0).x as i32, (iotas.0).y as i32, (iotas.0).z as i32];
 
-    let null: Rc<dyn Iota> = Rc::new(NullIota::Null);
+    let null: Rc<dyn Iota> = Rc::new(NullIota);
 
     let operation_result = match state.libraries.get(location) {
         Some(library) => library.get(&iotas.1.signature).unwrap_or(&null).clone(),
@@ -248,7 +248,7 @@ pub fn read_entity<'a>(
 
     let operation_result = match state.entities.get(iota.name.as_ref()) {
         Some(entity) => match *entity.holding.clone() {
-            Holding::Focus(iota) => iota.unwrap_or(Rc::new(NullIota::Null)),
+            Holding::Focus(iota) => iota.unwrap_or(Rc::new(NullIota)),
             _ => todo!("handle unreadable item"),
         },
         None => todo!("handle entity not existing"),
