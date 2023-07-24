@@ -19,24 +19,14 @@ impl Iota for StringIota {
 }
 
 pub trait StringVecExt {
-    fn string_vec(&self, index: usize) -> Result<&Self, Mishap>;
+    fn is_string_vec(&self) -> bool;
 }
 
 impl StringVecExt for Vector<Rc<dyn Iota>> {
-    fn string_vec(&self, index: usize) -> Result<&Self, Mishap> {
-        if self
-            .iter()
+    fn is_string_vec(&self) -> bool {
+        self.iter()
             .filter(|i| (**i).clone().downcast_rc::<StringIota>().is_ok())
             .count()
             == self.len()
-        {
-            Ok(self)
-        } else {
-            Err(Mishap::IncorrectIota(
-                index,
-                "List of Strings".to_string(),
-                Rc::new(self.clone()),
-            ))
-        }
     }
 }

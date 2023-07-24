@@ -210,7 +210,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Red Sun's Nadir", "potion/poison", "qqqqqadwawaww", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Write", "string/block/set", "dwewdweq", Box::new(string::write)),
-            Pattern::new("", "", "", Box::new(string::write)),
+            Pattern::new("Sifter's Gambit", "string/chat/prefix/set", "qwaqa", Box::new(string::set_prefix)),
 
 
             //great spells

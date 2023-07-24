@@ -141,14 +141,44 @@ pub fn write<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     state.stack.get_iota::<VectorIota>(0, arg_count)?;
+    let iota = state.stack.get_any_iota(1, arg_count)?;
+
     //check for list of strings or a single string
-    if let Ok(list) = state.stack.get_iota::<ListIota>(1, arg_count) {
-        list.string_vec(1)?;
+    if matches!(
+        iota.clone()
+            .downcast_rc::<ListIota>()
+            .map(|list| list.is_string_vec()),
+        Ok(true)
+    ) || iota.clone().downcast_rc::<StringIota>().is_ok()
+    {
     } else {
-        state.stack.get_iota::<StringIota>(1, arg_count)?;
-    };
+        Err(Mishap::IncorrectIota(
+            0,
+            "String or List of Strings".to_string(),
+            iota,
+        ))?
+    }
 
     state.stack.remove_args(&arg_count);
 
     Ok(state)
+}
+
+pub fn set_prefix<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    //check for null or a string
+    let iota = state.stack.get_any_iota(0, arg_count)?;
+
+    if iota.clone().downcast_rc::<NullIota>().is_ok()
+        || iota.clone().downcast_rc::<StringIota>().is_ok()
+    {
+        state.stack.remove_args(&arg_count);
+
+        Ok(state)
+    } else {
+        Err(Mishap::IncorrectIota(0, "String or Null".to_string(), iota))
+    }
 }
