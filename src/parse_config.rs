@@ -71,6 +71,7 @@ fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
                 .unwrap(),
             &PatternRegistry::construct(&config.great_spell_sigs),
             &mut config.entities,
+            &HashMap::new()
         );
         contents.insert(Signature::from_sig(key), iota);
     }
@@ -129,6 +130,7 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
             pair,
             &PatternRegistry::construct(&config.great_spell_sigs),
             &mut config.entities,
+            &HashMap::new()
         )
     });
 

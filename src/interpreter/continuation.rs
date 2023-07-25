@@ -12,11 +12,13 @@ impl ContinuationFrameTrait for ContinuationFrame {
         &self,
         state: &mut State,
         pattern_registry: &PatternRegistry,
+        macros: &Macros,
+
     ) -> Result<(), (Mishap, (usize, usize))> {
         match self {
-            ContinuationFrame::Evaluate(frame) => frame.evaluate(state, pattern_registry),
-            ContinuationFrame::EndEval(frame) => frame.evaluate(state, pattern_registry),
-            ContinuationFrame::ForEach(frame) => frame.evaluate(state, pattern_registry),
+            ContinuationFrame::Evaluate(frame) => frame.evaluate(state, pattern_registry, macros),
+            ContinuationFrame::EndEval(frame) => frame.evaluate(state, pattern_registry, macros),
+            ContinuationFrame::ForEach(frame) => frame.evaluate(state, pattern_registry, macros),
         }
     }
 
@@ -34,10 +36,10 @@ use crate::{
         hex_casting::pattern::{PatternIota, SignatureExt},
         Iota,
     },
-    parser::{AstNode, OpName, OpValue},
+    parser::{AstNode, OpName, OpValue, Macros},
     pattern_registry::PatternRegistry,
 };
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, rc::Rc, collections::HashMap};
 
 use super::{interpret_node, mishap::Mishap, state::State};
 
@@ -48,6 +50,7 @@ pub trait ContinuationFrameTrait: std::fmt::Debug {
         &self,
         state: &mut State,
         pattern_registry: &PatternRegistry,
+        macros: &Macros,
     ) -> Result<(), (Mishap, (usize, usize))>;
 
     fn break_out(&self, state: &mut State) -> bool;
@@ -63,6 +66,7 @@ impl ContinuationFrameTrait for FrameEvaluate {
         &self,
         state: &mut State,
         pattern_registry: &PatternRegistry,
+        macros: &Macros,
     ) -> Result<(), (Mishap, (usize, usize))> {
         let mut new_frame = self.clone();
         let node = new_frame.nodes_queue.pop_front();
@@ -75,7 +79,7 @@ impl ContinuationFrameTrait for FrameEvaluate {
                     .continuation
                     .push_back(ContinuationFrame::Evaluate(new_frame));
 
-                interpret_node(n.clone(), state, pattern_registry)?;
+                interpret_node(n.clone(), state, pattern_registry, macros,)?;
                 Ok(())
             }
             //else, don't push any new frames
@@ -97,6 +101,8 @@ impl ContinuationFrameTrait for FrameEndEval {
         &self,
         state: &mut State,
         _: &PatternRegistry,
+        macros: &Macros,
+
     ) -> Result<(), (Mishap, (usize, usize))> {
         state.consider_next = false;
         Ok(())
@@ -122,6 +128,8 @@ impl ContinuationFrameTrait for FrameForEach {
         &self,
         state: &mut State,
         _: &PatternRegistry,
+        macros: &Macros,
+
     ) -> Result<(), (Mishap, (usize, usize))> {
         let stack = match &self.base_stack {
             //thoth entry point

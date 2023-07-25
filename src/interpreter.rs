@@ -5,10 +5,11 @@ pub mod state;
 
 use std::rc::Rc;
 
-use im::{Vector, vector};
+use im::{vector, Vector};
 
 use crate::{
     compiler::{
+        compile_to_iotas,
         if_block::compile_if_block,
         ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     },
@@ -24,17 +25,23 @@ use crate::{
         Iota,
     },
     parse_config::Config,
-    parser::{ActionValue, AstNode, OpName, OpValue},
+    parser::{ActionValue, AstNode, Macros, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 use self::{
-    continuation::{ContinuationFrame, ContinuationFrameTrait, FrameEvaluate},
+    continuation::{
+        iota_list_to_ast_node_list, ContinuationFrame, ContinuationFrameTrait, FrameEvaluate,
+    },
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
 
-pub fn interpret(node: AstNode, config: &Config) -> Result<State, (Mishap, (usize, usize))> {
+pub fn interpret(
+    node: AstNode,
+    config: &Config,
+    macros: Macros,
+) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
         ravenmind: Some(Rc::new(im::vector![])),
         ..Default::default()
@@ -59,13 +66,14 @@ pub fn interpret(node: AstNode, config: &Config) -> Result<State, (Mishap, (usiz
         }
     }
 
-    (interpret_node(node, &mut state, &pattern_registry)).map(|state| state.clone())
+    (interpret_node(node, &mut state, &pattern_registry, &macros)).map(|state| state.clone())
 }
 
 fn interpret_node<'a>(
     node: AstNode,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
+    macros: &Macros,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
 
@@ -84,27 +92,40 @@ fn interpret_node<'a>(
                 let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)
-                frame.evaluate(state, pattern_registry)?;
+                frame.evaluate(state, pattern_registry, macros)?;
             }
             Ok(state)
         }
 
         AstNode::Action { name, value, line } => {
-            interpret_action(name, value, state, pattern_registry, Some(line)).map_err(|err| (err, line))
+            interpret_action(name, value, state, pattern_registry, &macros, Some(line))
         }
         AstNode::Hex(nodes) => {
-            interpret_action("open_paren".to_string(), None, state, pattern_registry, None)
-                .map_err(|err| (err, (1, 0)))?;
+            interpret_action(
+                "open_paren".to_string(),
+                None,
+                state,
+                pattern_registry,
+                &macros,
+                None,
+            )?;
+
             for node in nodes {
-                interpret_node(node, state, pattern_registry)?;
+                interpret_node(node, state, pattern_registry, macros)?;
             }
-            interpret_action("close_paren".to_string(), None, state, pattern_registry, None)
-                .map_err(|err| (err, (1, 0)))?;
+            interpret_action(
+                "close_paren".to_string(),
+                None,
+                state,
+                pattern_registry,
+                &macros,
+                None,
+            )?;
 
             Ok(state)
         }
         AstNode::Op { name, arg, line } => {
-            interpret_op(name, arg, state, pattern_registry).map_err(|err| (err, line))
+            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, line))
         }
         AstNode::IfBlock {
             condition,
@@ -116,42 +137,25 @@ fn interpret_node<'a>(
                 return Err((Mishap::OpCannotBeConsidered, line));
             }
 
+            let compiled = Vector::from(compile_if_block(
+                &line,
+                &condition,
+                &succeed,
+                &fail,
+                calc_buffer_depth(pattern_registry, &state.buffer),
+                &mut state.heap,
+                pattern_registry,
+                macros,
+            )?);
+
             if let Some(buffer) = &mut state.buffer {
-                buffer.append(
-                    compile_if_block(
-                        &line,
-                        &condition,
-                        &succeed,
-                        &fail,
-                        calc_buffer_depth(pattern_registry, &Some(buffer.clone())),
-                        &mut state.heap,
-                        pattern_registry,
-                    )?
-                    .iter()
-                    .map(|x| (x.clone(), false))
-                    .collect(),
-                )
+                buffer.append(compiled.iter().map(|x| (x.clone(), false)).collect())
             } else {
-                if let AstNode::Hex(nodes) = *condition {
-                    for node in nodes {
-                        interpret_node(node, state, pattern_registry)?;
-                    }
-                }
-
-                let condition = state
-                    .stack
-                    .get_iota::<BooleanIota>(0, 1)
-                    .map_err(|err| (err, line))?;
-
-                state.stack.remove_args(&1);
-
-                if *condition {
-                    interpret_node(*succeed, state, pattern_registry)?;
-                } else if let Some(node) = fail {
-                    interpret_node(*node, state, pattern_registry)?;
-                } else {
-                    push_iota(Rc::new(vector![]), state, false)
-                }
+                state
+                    .continuation
+                    .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                        nodes_queue: iota_list_to_ast_node_list(Rc::new(compiled)),
+                    }))
             }
             Ok(state)
         }
@@ -163,6 +167,7 @@ pub fn interpret_op<'a>(
     arg: Option<OpValue>,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
+    macros: &Macros,
 ) -> Result<&'a mut State, Mishap> {
     if state.consider_next {
         return Err(Mishap::OpCannotBeConsidered);
@@ -208,15 +213,17 @@ pub fn interpret_op<'a>(
             crate::parser::OpName::Store => store(&arg, state, false),
             crate::parser::OpName::Copy => store(&arg, state, true),
             crate::parser::OpName::Push => push(&arg, state),
-            crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
+            crate::parser::OpName::Embed => {
+                embed(&arg, state, pattern_registry, EmbedType::Normal, macros)
+            }
             crate::parser::OpName::SmartEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::Smart)
+                embed(&arg, state, pattern_registry, EmbedType::Smart, macros)
             }
             crate::parser::OpName::ConsiderEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::Consider)
+                embed(&arg, state, pattern_registry, EmbedType::Consider, macros)
             }
             crate::parser::OpName::IntroEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::IntroRetro)
+                embed(&arg, state, pattern_registry, EmbedType::IntroRetro, macros)
             }
         }?;
     }
@@ -229,12 +236,41 @@ pub fn interpret_action<'a>(
     value: Option<ActionValue>,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
-    line: Option<(usize, usize)>
-) -> Result<&'a mut State, Mishap> {
+    macros: &Macros,
+    line: Option<(usize, usize)>,
+) -> Result<&'a mut State, (Mishap, (usize, usize))> {
+    if let Some((_, AstNode::Hex(macro_hex))) = macros.get(&name) {
+        //check for macro and apply it
+        if let Some(ref mut buffer) = state.buffer {
+            let compiled = compile_to_iotas(
+                &AstNode::File(macro_hex.clone()),
+                Some(&mut state.heap),
+                pattern_registry,
+                macros,
+            )
+            .unwrap()
+            .into_iter()
+            .map(|x| (x, false))
+            .collect::<Vector<_>>();
+            buffer.append(compiled);
+            return Ok(state);
+        } else if let ContinuationFrame::Evaluate(eval_frame) =
+            state.continuation.pop_back().unwrap()
+        {
+            let mut new_frame = Vector::from(macro_hex);
+            new_frame.append(eval_frame.nodes_queue);
+            state
+                .continuation
+                .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                    nodes_queue: new_frame,
+                }));
+            return Ok(state);
+        }
+    }
 
     let pattern = pattern_registry
         .find(&name, &value)
-        .ok_or(Mishap::InvalidPattern)?;
+        .ok_or((Mishap::InvalidPattern, line.unwrap_or((1, 0))))?;
     let is_escape = Signature::from_sig(&pattern.signature)
         == Signature::from_name(pattern_registry, "escape", &None).unwrap();
 
@@ -252,7 +288,9 @@ pub fn interpret_action<'a>(
         return Ok(state);
     }
 
-    pattern.operate(state, pattern_registry, &value)?;
+    pattern
+        .operate(state, pattern_registry, &value)
+        .map_err(|err| (err, line.unwrap_or((1, 0))))?;
 
     Ok(state)
 }
@@ -263,7 +301,7 @@ pub fn push_pattern(
     state: &mut State,
     pattern_registry: &PatternRegistry,
     considered: bool,
-    line: Option<(usize, usize)>
+    line: Option<(usize, usize)>,
 ) {
     push_iota(
         Rc::new(PatternIota::from_name(pattern_registry, &pattern, value, line).unwrap()),

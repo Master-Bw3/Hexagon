@@ -1,4 +1,4 @@
-use std::{ops::Deref, rc::Rc};
+use std::{collections::HashMap, ops::Deref, rc::Rc};
 
 use im::Vector;
 
@@ -10,7 +10,7 @@ use crate::{
         },
         Iota,
     },
-    parser::OpValue,
+    parser::{OpValue, Macros},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -149,6 +149,7 @@ pub fn embed<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     embed_type: EmbedType,
+    macros: &Macros
 ) -> Result<(), Mishap> {
     let val = match value {
         Some(val) => val,
@@ -167,8 +168,10 @@ pub fn embed<'a>(
                         *pat.value.clone(),
                         state,
                         pattern_registry,
-                        None
-                    )?;
+                        macros,
+                        None,
+                    )
+                    .map_err(|err| err.0)?;
                 }
                 _ => return Err(Mishap::ExpectedPattern(iota.clone())),
             },
