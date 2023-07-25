@@ -401,7 +401,11 @@ pub fn parse_iota(
         Rule::Entity => {
             let name = inner_pair.as_str()[1..].to_string();
             Rc::new(EntityIota {
-                name: Rc::from(name),
+                name: Rc::from(name.clone()),
+                uuid: conf_entities
+                    .get(&name)
+                    .map(|entity| entity.uuid.clone())
+                    .unwrap_or("[I;0,0,0,0]".to_string()),
             })
         }
         Rule::List => {

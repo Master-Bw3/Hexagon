@@ -161,7 +161,7 @@ impl PatternRegistryExt for PatternRegistry {
 
             // //consts
             Pattern::new("Mind's Reflection", "get_caster", "qaq", 
-                constructors::push_const(Rc::new(EntityIota {name: Rc::from("Caster")}))),
+                constructors::push_const(Rc::new(EntityIota {name: Rc::from("Caster"), uuid: "[I;0,0,0,0]".to_string()}))),
             Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Rc::new(vector![]))),
             Pattern::new("Vector Reflection +X", "const/vec/px", "qqqqqea", constructors::push_const(Rc::new(VectorIota::new(1.0, 0.0, 0.0)))),
             Pattern::new("Vector Reflection +Y", "const/vec/py", "qqqqqew", constructors::push_const(Rc::new(VectorIota::new(0.0, 1.0, 0.0)))),

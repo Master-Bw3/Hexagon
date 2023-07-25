@@ -1,6 +1,6 @@
-use std::{ops::Not, rc::Rc};
+use std::{fmt::format, ops::Not, rc::Rc};
 
-use nalgebra::{dmatrix, DMatrix, Dyn, Matrix};
+use nalgebra::{dmatrix, iter::RowIter, DMatrix, Dyn, Matrix};
 
 use crate::{
     interpreter::state::Either3,
@@ -48,9 +48,31 @@ impl Iota for MatrixIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        todo!()
+        let gen_col_str = |col: Col<'_>| {
+            let row_out = col
+                .iter()
+                .map(|x| format!("{x}d"))
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("[{row_out}]")
+        };
+        let out = self
+            .column_iter()
+            .map(gen_col_str)
+            .collect::<Vec<_>>()
+            .join(", ");
+        let out = format!("[{out}]");
+
+        format!("{{\"hexcasting:type\": \"moreiotas:matrix\", \"hexcasting:data\": {{mat: {out}, cols: {}, rows: {}}}}}", self.ncols(), self.nrows())
     }
 }
+
+type Col<'a> = Matrix<
+    f64,
+    Dyn,
+    nalgebra::Const<1>,
+    nalgebra::ViewStorage<'a, f64, Dyn, nalgebra::Const<1>, nalgebra::Const<1>, Dyn>,
+>;
 
 pub trait AsMatrix {
     fn as_matrix(&self) -> MatrixIota;
