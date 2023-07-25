@@ -30,7 +30,9 @@ use crate::{
 };
 
 use self::{
-    continuation::{ContinuationFrame, ContinuationFrameTrait, FrameEvaluate},
+    continuation::{
+        iota_list_to_ast_node_list, ContinuationFrame, ContinuationFrameTrait, FrameEvaluate,
+    },
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -135,43 +137,25 @@ fn interpret_node<'a>(
                 return Err((Mishap::OpCannotBeConsidered, line));
             }
 
+            let compiled = Vector::from(compile_if_block(
+                &line,
+                &condition,
+                &succeed,
+                &fail,
+                calc_buffer_depth(pattern_registry, &state.buffer),
+                &mut state.heap,
+                pattern_registry,
+                macros,
+            )?);
+
             if let Some(buffer) = &mut state.buffer {
-                buffer.append(
-                    compile_if_block(
-                        &line,
-                        &condition,
-                        &succeed,
-                        &fail,
-                        calc_buffer_depth(pattern_registry, &Some(buffer.clone())),
-                        &mut state.heap,
-                        pattern_registry,
-                        macros,
-                    )?
-                    .iter()
-                    .map(|x| (x.clone(), false))
-                    .collect(),
-                )
+                buffer.append(compiled.iter().map(|x| (x.clone(), false)).collect())
             } else {
-                if let AstNode::Hex(nodes) = *condition {
-                    for node in nodes {
-                        interpret_node(node, state, pattern_registry, &macros)?;
-                    }
-                }
-
-                let condition = state
-                    .stack
-                    .get_iota::<BooleanIota>(0, 1)
-                    .map_err(|err| (err, line))?;
-
-                state.stack.remove_args(&1);
-
-                if *condition {
-                    interpret_node(*succeed, state, pattern_registry, macros)?;
-                } else if let Some(node) = fail {
-                    interpret_node(*node, state, pattern_registry, macros)?;
-                } else {
-                    push_iota(Rc::new(vector![]), state, false)
-                }
+                state
+                    .continuation
+                    .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                        nodes_queue: iota_list_to_ast_node_list(Rc::new(compiled)),
+                    }))
             }
             Ok(state)
         }
