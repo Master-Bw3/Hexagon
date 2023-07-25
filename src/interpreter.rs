@@ -255,7 +255,7 @@ pub fn interpret_action<'a>(
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
             let compiled = compile_to_iotas(
-                &macros.get(&name).unwrap().1,
+                &AstNode::File(macro_hex.clone()),
                 pattern_registry,
                 Some(&mut state.heap),
             )
