@@ -75,7 +75,7 @@ pub fn compile_if_block(
             _ => unreachable!(),
         },
         None => {
-            compile_node(&AstNode::Hex(vec![]), heap, depth, pattern_registry, macros)?;
+            result.append(&mut compile_node(&AstNode::Hex(vec![]), heap, depth, pattern_registry, macros)?);
         }
     }
     //push augur's to buffer
