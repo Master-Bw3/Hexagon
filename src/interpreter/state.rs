@@ -179,6 +179,7 @@ impl StackExt for Stack {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Entity {
     pub name: String,
+    pub uuid: String,
     pub entity_type: EntityType,
     pub holding: Box<Holding>,
 }

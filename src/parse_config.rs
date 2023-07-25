@@ -3,9 +3,13 @@ use std::{collections::HashMap, rc::Rc};
 use toml::{map::Map, Table, Value};
 
 use crate::{
-    interpreter::state::{Holding, Library, Entity, EntityType},
+    interpreter::state::{Entity, EntityType, Holding, Library},
+    iota::{
+        hex_casting::pattern::{Signature, SignatureExt},
+        Iota,
+    },
     parser::{parse_iota, HexParser, Rule},
-    pattern_registry::{PatternRegistry, PatternRegistryExt}, iota::{hex_casting::pattern::{Signature, SignatureExt}, Iota},
+    pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 #[derive(Debug)]
@@ -71,7 +75,7 @@ fn parse_library(library: &mut Map<String, Value>, config: &mut Config) {
                 .unwrap(),
             &PatternRegistry::construct(&config.great_spell_sigs),
             &mut config.entities,
-            &HashMap::new()
+            &HashMap::new(),
         );
         contents.insert(Signature::from_sig(key), iota);
     }
@@ -108,6 +112,12 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
     let name_value = entity.get("name").unwrap().clone();
     let name = parse_str(&name_value).to_string();
 
+    let uuid = entity
+        .get("name")
+        .map(parse_str)
+        .map(String::clone)
+        .unwrap_or("00000001-0001-0001-0001-000000000001".to_string());
+
     let entity_type_value = entity.get("type").unwrap().clone();
     let entity_type_pair = HexParser::parse(Rule::EntityType, parse_str(&entity_type_value))
         .unwrap()
@@ -130,7 +140,7 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
             pair,
             &PatternRegistry::construct(&config.great_spell_sigs),
             &mut config.entities,
-            &HashMap::new()
+            &HashMap::new(),
         )
     });
 
@@ -148,6 +158,7 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
         Entity {
             name,
             entity_type,
+            uuid,
             holding: Box::new(holding),
         },
     );
@@ -165,7 +176,6 @@ pub fn parse_entity_type(string: String) -> EntityType {
     }
 }
 
-
 fn parse_int(value: &Value) -> i32 {
     match value {
         Value::Integer(int) => *int as i32,
@@ -179,4 +189,3 @@ fn parse_str(value: &Value) -> &String {
         _ => unreachable!(),
     }
 }
-

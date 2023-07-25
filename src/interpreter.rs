@@ -60,6 +60,7 @@ pub fn interpret(
                 Entity {
                     name: "Caster".to_string(),
                     entity_type: EntityType::Player,
+                    uuid: "00000001-0001-0001-0001-000000000001".to_string(),
                     holding: Box::new(Holding::None),
                 },
             );
