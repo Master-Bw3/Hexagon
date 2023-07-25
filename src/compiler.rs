@@ -3,7 +3,7 @@ use std::{collections::HashMap, rc::Rc};
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parser::{AstNode, OpName},
+    parser::{AstNode, Macros, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -18,12 +18,13 @@ pub mod ops;
 
 pub fn compile_to_iotas(
     node: &AstNode,
-    pattern_registry: &PatternRegistry,
     heap: Option<&mut HashMap<String, i32>>,
+    pattern_registry: &PatternRegistry,
+    macros: &Macros,
 ) -> CompileResult {
     let mut empty_heap = HashMap::new();
     let mut heap = heap.unwrap_or(&mut empty_heap);
-    compile_node(&node, &mut heap, 0, pattern_registry)
+    compile_node(&node, &mut heap, 0, pattern_registry, macros)
 }
 
 fn compile_node(
@@ -31,33 +32,51 @@ fn compile_node(
     heap: &mut HashMap<String, i32>,
     depth: u32,
     pattern_registry: &PatternRegistry,
+    macros: &Macros,
 ) -> CompileResult {
     match node {
         AstNode::File(file) => {
             let mut result = vec![];
             for node in file {
-                result.append(&mut compile_node(node, heap, depth, pattern_registry)?)
+                result.append(&mut compile_node(
+                    node,
+                    heap,
+                    depth,
+                    pattern_registry,
+                    macros,
+                )?)
             }
             Ok(result)
         }
 
-        AstNode::Action { line, name, value } => Ok(vec![{
-            let pattern = pattern_registry
-                .find(name, value)
-                .ok_or((Mishap::InvalidPattern, *line))?;
-
-            //remove output values used by the interpreter
-            //once signature generation exists for number, all values can be ignored
-            let new_value = if pattern.internal_name == "number" || pattern.internal_name == "mask"
-            {
-                value.clone()
+        AstNode::Action { line, name, value } => {
+            if let Some((_, AstNode::Hex(macro_hex))) = macros.get(name) {
+                compile_to_iotas(
+                    &AstNode::File(macro_hex.clone()),
+                    Some(heap),
+                    pattern_registry,
+                    macros,
+                )
             } else {
-                None
-            };
-            Rc::new(PatternIota::from_sig(&pattern.signature, new_value, None))
-        }]),
+                Ok(vec![{
+                    let pattern = pattern_registry
+                        .find(name, value)
+                        .ok_or((Mishap::InvalidPattern, *line))?;
 
-        AstNode::Hex(hex) => compile_hex_node(hex, heap, depth, pattern_registry),
+                    //remove output values used by the interpreter
+                    //once signature generation exists for number, all values can be ignored
+                    let new_value =
+                        if pattern.internal_name == "number" || pattern.internal_name == "mask" {
+                            value.clone()
+                        } else {
+                            None
+                        };
+                    Rc::new(PatternIota::from_sig(&pattern.signature, new_value, None))
+                }])
+            }
+        }
+
+        AstNode::Hex(hex) => compile_hex_node(hex, heap, depth, pattern_registry, macros),
 
         AstNode::Op { line, name, arg } => match name {
             OpName::Store => compile_op_store(heap, pattern_registry, arg),
@@ -87,6 +106,7 @@ fn compile_node(
             depth,
             heap,
             pattern_registry,
+            macros
         ),
     }
 }
@@ -98,6 +118,7 @@ fn compile_hex_node(
     heap: &mut HashMap<String, i32>,
     mut depth: u32,
     pattern_registry: &PatternRegistry,
+    macros: &Macros
 ) -> CompileResult {
     depth += 1;
 
@@ -105,7 +126,7 @@ fn compile_hex_node(
 
     let mut inner = vec![];
     for node in hex {
-        inner.append(&mut compile_node(node, heap, depth, pattern_registry)?)
+        inner.append(&mut compile_node(node, heap, depth, pattern_registry, macros)?)
     }
 
     result.push(Rc::new(

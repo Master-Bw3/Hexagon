@@ -145,6 +145,7 @@ fn interpret_node<'a>(
                         calc_buffer_depth(pattern_registry, &Some(buffer.clone())),
                         &mut state.heap,
                         pattern_registry,
+                        macros
                     )?
                     .iter()
                     .map(|x| (x.clone(), false))
@@ -256,8 +257,9 @@ pub fn interpret_action<'a>(
         if let Some(ref mut buffer) = state.buffer {
             let compiled = compile_to_iotas(
                 &AstNode::File(macro_hex.clone()),
-                pattern_registry,
                 Some(&mut state.heap),
+                pattern_registry,
+                macros,
             )
             .unwrap()
             .into_iter()

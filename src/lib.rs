@@ -73,9 +73,10 @@ pub fn run() {
     let parse_result = parser::parse(&source, &config.great_spell_sigs, &mut config.entities);
     let (ast, macros) = match parse_result {
         Ok(result) => result,
-        Err(err) => {eprintln!("{}\n{}", "Parsing Error:".red().bold(), err);
-        return;
-    },
+        Err(err) => {
+            eprintln!("{}\n{}", "Parsing Error:".red().bold(), err);
+            return;
+        }
     };
 
     if let Command::Run = args.command {
@@ -93,7 +94,7 @@ pub fn run() {
         };
     } else if let Command::Build = args.command {
         let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
-        let compile_result = compile_to_iotas(&ast, &pattern_registry, None);
+        let compile_result = compile_to_iotas(&ast, None, &pattern_registry, &macros);
         match compile_result {
             // Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
             Ok(result) => println!("\nresult: {}", gen_give_cmd(result)),

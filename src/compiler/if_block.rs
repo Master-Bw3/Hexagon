@@ -1,8 +1,8 @@
 use std::{collections::HashMap, rc::Rc};
 
 use crate::{
-    iota::{Iota, hex_casting::pattern::PatternIota},
-    parser::AstNode,
+    iota::{hex_casting::pattern::PatternIota, Iota},
+    parser::{AstNode, Macros},
     pattern_registry::PatternRegistry,
 };
 
@@ -16,18 +16,31 @@ pub fn compile_if_block(
     depth: u32,
     heap: &mut HashMap<String, i32>,
     pattern_registry: &PatternRegistry,
+    macros: &Macros,
 ) -> CompileResult {
     let mut result: Vec<Rc<dyn Iota>> = vec![];
 
     //append condition to result
     if let AstNode::Hex(condition_hex) = (*condition).clone() {
         for node in condition_hex {
-            result.append(&mut compile_node(&node, heap, depth, pattern_registry)?)
+            result.append(&mut compile_node(
+                &node,
+                heap,
+                depth,
+                pattern_registry,
+                macros,
+            )?)
         }
     };
 
     //push success hex to result
-    result.append(&mut compile_node(succeed, heap, depth, pattern_registry)?);
+    result.append(&mut compile_node(
+        succeed,
+        heap,
+        depth,
+        pattern_registry,
+        macros,
+    )?);
     //push fail hex to result (if there is one)
     match fail {
         Some(fail_node) => match **fail_node {
@@ -38,6 +51,7 @@ pub fn compile_if_block(
                     heap,
                     depth,
                     pattern_registry,
+                    macros,
                 )?);
             }
             // "if else"
@@ -52,21 +66,22 @@ pub fn compile_if_block(
                     heap,
                     depth,
                     pattern_registry,
+                    macros,
                 )?);
-                result.push(
-                    Rc::new(PatternIota::from_name(pattern_registry, "eval", None, None).unwrap()),
-                );
+                result.push(Rc::new(
+                    PatternIota::from_name(pattern_registry, "eval", None, None).unwrap(),
+                ));
             }
             _ => unreachable!(),
         },
         None => {
-            compile_node(&AstNode::Hex(vec![]), heap, depth, pattern_registry)?;
+            compile_node(&AstNode::Hex(vec![]), heap, depth, pattern_registry, macros)?;
         }
     }
     //push augur's to buffer
-    result.push(
-        Rc::new(PatternIota::from_name(pattern_registry, "if", None, None).unwrap()),
-    );
+    result.push(Rc::new(
+        PatternIota::from_name(pattern_registry, "if", None, None).unwrap(),
+    ));
 
     Ok(result)
 }
