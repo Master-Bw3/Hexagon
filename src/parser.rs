@@ -35,11 +35,14 @@ pub fn parse(
     let mut macros: Macros = HashMap::new();
 
     let pairs = HexParser::parse(Rule::File, source)?;
-    for pair in pairs {
+    for pair in pairs.clone() {
         if Rule::Macro == pair.as_rule() {
             let hex_macro = parse_macro(pair, &pattern_registry, conf_entities);
             macros.insert(hex_macro.0, hex_macro.1);
-        } else if let Some(node) = construct_ast_node(pair, &pattern_registry, conf_entities) {
+        }
+    }
+    for pair in pairs {
+        if let Some(node) = construct_ast_node(pair, &pattern_registry, conf_entities, &macros) {
             ast.push(node);
         }
     }
@@ -54,8 +57,19 @@ fn parse_macro(
 ) -> (String, (PatternIota, AstNode)) {
     let mut inner = pair.into_inner();
     let name = inner.next().unwrap().as_str().to_string();
-    let pattern = parse_pattern(inner.next().unwrap(), pattern_registry, conf_entities);
-    let hex = construct_ast_node(inner.next().unwrap(), pattern_registry, conf_entities).unwrap();
+    let pattern = parse_pattern(
+        inner.next().unwrap(),
+        pattern_registry,
+        conf_entities,
+        &HashMap::new(),
+    );
+    let hex = construct_ast_node(
+        inner.next().unwrap(),
+        pattern_registry,
+        conf_entities,
+        &HashMap::new(),
+    )
+    .unwrap();
 
     (name, (pattern, hex))
 }
@@ -64,6 +78,7 @@ fn construct_ast_node(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
 ) -> Option<AstNode> {
     match pair.as_rule() {
         Rule::Action => {
@@ -78,6 +93,7 @@ fn construct_ast_node(
                 righter,
                 pattern_registry,
                 conf_entities,
+                macros,
             ))
         }
         Rule::Op => {
@@ -85,14 +101,21 @@ fn construct_ast_node(
             let name = pair.next().unwrap();
             let arg = pair.next();
 
-            Some(parse_op(name, arg, pattern_registry, conf_entities))
+            Some(parse_op(name, arg, pattern_registry, conf_entities, macros))
         }
         Rule::Var => Some(parse_var(pair)),
-        Rule::Embed => Some(parse_embed(pair, pattern_registry, conf_entities)),
-        Rule::IfBlock => Some(parse_if_block(pair, pattern_registry, conf_entities)),
+        Rule::Embed => Some(parse_embed(pair, pattern_registry, conf_entities, macros)),
+        Rule::IfBlock => Some(parse_if_block(
+            pair,
+            pattern_registry,
+            conf_entities,
+            macros,
+        )),
         Rule::Term => Some(AstNode::Hex(
             pair.into_inner()
-                .filter_map(|node| construct_ast_node(node, pattern_registry, conf_entities))
+                .filter_map(|node| {
+                    construct_ast_node(node, pattern_registry, conf_entities, macros)
+                })
                 .collect(),
         )),
         _ => None,
@@ -104,6 +127,7 @@ fn parse_op(
     arg: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
 ) -> AstNode {
     AstNode::Op {
         name: {
@@ -116,7 +140,9 @@ fn parse_op(
         },
         arg: {
             arg.map(|pair| match pair.as_rule() {
-                Rule::Iota => OpValue::Iota(parse_iota(pair, pattern_registry, conf_entities)),
+                Rule::Iota => {
+                    OpValue::Iota(parse_iota(pair, pattern_registry, conf_entities, macros))
+                }
                 Rule::Var => OpValue::Var(pair.as_str().to_string()),
                 _ => unreachable!(),
             })
@@ -131,6 +157,7 @@ fn parse_action(
     righter: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
 ) -> AstNode {
     right
         .clone()
@@ -141,6 +168,7 @@ fn parse_action(
                     pair.clone(),
                     pattern_registry,
                     conf_entities,
+                    macros,
                 ))),
                 line: pair.line_col(),
             },
@@ -153,8 +181,9 @@ fn parse_action(
 
             _ => AstNode::Action {
                 name: format!("{}: {}", left.as_str(), right.unwrap().as_str()),
-                value: righter
-                    .map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
+                value: righter.map(|p| {
+                    ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities, macros))
+                }),
                 line: pair.line_col(),
             },
         })
@@ -170,6 +199,7 @@ fn parse_action_iota(
     right: Option<Pair<'_, Rule>>,
     righter: Option<Pair<'_, Rule>>,
     pattern_registry: &PatternRegistry,
+    macros: &Macros,
     conf_entities: &mut HashMap<String, Entity>,
 ) -> PatternIota {
     right
@@ -182,13 +212,16 @@ fn parse_action_iota(
                     pair.clone(),
                     pattern_registry,
                     conf_entities,
+                    macros,
                 ))),
                 None,
             ),
             Rule::EntityType => PatternIota::from_name(
                 pattern_registry,
                 &format!("{}: {}", left.as_str(), right.unwrap().as_str()),
-                righter.map(|p| ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities))),
+                righter.map(|p| {
+                    ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities, macros))
+                }),
                 None,
             ),
             Rule::BookkeeperValue => PatternIota::from_name(
@@ -199,11 +232,15 @@ fn parse_action_iota(
             ),
             _ => unreachable!(),
         })
-        .unwrap_or(PatternIota::from_name(
-            pattern_registry,
-            left.as_str(),
-            None,
-            None,
+        .unwrap_or(Ok(
+            //check if macro
+            macros
+                .get(left.as_str())
+                .map(|(pattern, _)| pattern.clone())
+                .unwrap_or_else(
+                    //check if pattern name
+                    || PatternIota::from_name(pattern_registry, left.as_str(), None, None).unwrap(),
+                ),
         ))
         .unwrap()
 }
@@ -236,6 +273,7 @@ fn parse_embed(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
 ) -> AstNode {
     let inner_pair = pair.clone().into_inner().next().unwrap();
     AstNode::Op {
@@ -251,7 +289,7 @@ fn parse_embed(
         arg: (inner_pair
             .into_inner()
             .next()
-            .map(|iota| OpValue::Iota(parse_iota(iota, pattern_registry, conf_entities)))),
+            .map(|iota| OpValue::Iota(parse_iota(iota, pattern_registry, conf_entities, macros)))),
         line: pair.line_col(),
     }
 }
@@ -260,26 +298,38 @@ fn parse_if_block(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
 ) -> AstNode {
     fn parse_inner(
         line: (usize, usize),
         mut inner: Pairs<'_, Rule>,
         pattern_registry: &PatternRegistry,
         conf_entities: &mut HashMap<String, Entity>,
+        macros: &Macros,
     ) -> AstNode {
         AstNode::IfBlock {
             condition: {
                 let mut condition = inner.next().unwrap().into_inner();
                 Box::new(
-                    construct_ast_node(condition.next().unwrap(), pattern_registry, conf_entities)
-                        .unwrap(),
+                    construct_ast_node(
+                        condition.next().unwrap(),
+                        pattern_registry,
+                        conf_entities,
+                        macros,
+                    )
+                    .unwrap(),
                 )
             },
             succeed: {
                 let mut succeed = inner.next().unwrap().into_inner();
                 Box::new(
-                    construct_ast_node(succeed.next().unwrap(), pattern_registry, conf_entities)
-                        .unwrap(),
+                    construct_ast_node(
+                        succeed.next().unwrap(),
+                        pattern_registry,
+                        conf_entities,
+                        macros,
+                    )
+                    .unwrap(),
                 )
             },
             fail: {
@@ -289,12 +339,17 @@ fn parse_if_block(
                             branch.into_inner().next().unwrap(),
                             pattern_registry,
                             conf_entities,
+                            macros,
                         )
                         .unwrap(),
                     ),
-                    Rule::ElseIf => {
-                        Box::new(parse_inner(line, inner, pattern_registry, conf_entities))
-                    }
+                    Rule::ElseIf => Box::new(parse_inner(
+                        line,
+                        inner,
+                        pattern_registry,
+                        conf_entities,
+                        macros,
+                    )),
                     _ => unreachable!(),
                 })
             },
@@ -306,6 +361,7 @@ fn parse_if_block(
         pair.into_inner(),
         pattern_registry,
         conf_entities,
+        macros,
     )
 }
 
@@ -313,11 +369,17 @@ pub fn parse_iota(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
 ) -> Rc<dyn Iota> {
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
         Rule::Number => Rc::new(inner_pair.as_str().parse::<NumberIota>().unwrap()),
-        Rule::Pattern => Rc::new(parse_pattern(inner_pair, pattern_registry, conf_entities)),
+        Rule::Pattern => Rc::new(parse_pattern(
+            inner_pair.into_inner().next().unwrap(),
+            pattern_registry,
+            conf_entities,
+            macros,
+        )),
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();
             Rc::new(matrix![
@@ -346,7 +408,7 @@ pub fn parse_iota(
             let inner = inner_pair.into_inner();
             Rc::new(
                 inner
-                    .map(|x| parse_iota(x, pattern_registry, conf_entities))
+                    .map(|x| parse_iota(x, pattern_registry, conf_entities, macros))
                     .collect::<ListIota>(),
             )
         }
@@ -375,33 +437,30 @@ fn parse_pattern(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
 ) -> PatternIota {
-    match pair.clone().into_inner().next() {
-        Some(inner_pair) => match inner_pair.as_str() {
-            "{" => PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap(),
+    match pair.as_str() {
+        "{" => PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap(),
 
-            "}" => PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap(),
+        "}" => PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap(),
 
-            _ => match pair.as_rule() {
-                Rule::Action => {
-                    let mut pairs = inner_pair.into_inner();
-                    parse_action_iota(
-                        pairs.next().unwrap(),
-                        pairs.next(),
-                        pairs.next(),
-                        pattern_registry,
-                        conf_entities,
-                    )
-                }
-                Rule::PatternRaw => PatternIota::from_sig(
-                    pair.into_inner().last().unwrap().as_str(),
-                    None,
-                    None,
-                ),
-                _ => unreachable!("{:?}", inner_pair.as_rule()),
-            },
+        _ => match pair.as_rule() {
+            Rule::Action => {
+                let mut pairs = pair.into_inner();
+                parse_action_iota(
+                    pairs.next().unwrap(),
+                    pairs.next(),
+                    pairs.next(),
+                    pattern_registry,
+                    macros,
+                    conf_entities,
+                )
+            }
+            Rule::PatternRaw => {
+                PatternIota::from_sig(pair.into_inner().last().unwrap().as_str(), None, None)
+            }
+            _ => unreachable!("{:?}", pair.as_rule()),
         },
-        None => unreachable!(),
     }
 }
 

@@ -123,7 +123,7 @@ fn interpret_node<'a>(
             Ok(state)
         }
         AstNode::Op { name, arg, line } => {
-            interpret_op(name, arg, state, pattern_registry).map_err(|err| (err, line))
+            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, line))
         }
         AstNode::IfBlock {
             condition,
@@ -145,7 +145,7 @@ fn interpret_node<'a>(
                         calc_buffer_depth(pattern_registry, &Some(buffer.clone())),
                         &mut state.heap,
                         pattern_registry,
-                        macros
+                        macros,
                     )?
                     .iter()
                     .map(|x| (x.clone(), false))
@@ -183,6 +183,7 @@ pub fn interpret_op<'a>(
     arg: Option<OpValue>,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
+    macros: &Macros,
 ) -> Result<&'a mut State, Mishap> {
     if state.consider_next {
         return Err(Mishap::OpCannotBeConsidered);
@@ -228,15 +229,17 @@ pub fn interpret_op<'a>(
             crate::parser::OpName::Store => store(&arg, state, false),
             crate::parser::OpName::Copy => store(&arg, state, true),
             crate::parser::OpName::Push => push(&arg, state),
-            crate::parser::OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal),
+            crate::parser::OpName::Embed => {
+                embed(&arg, state, pattern_registry, EmbedType::Normal, macros)
+            }
             crate::parser::OpName::SmartEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::Smart)
+                embed(&arg, state, pattern_registry, EmbedType::Smart, macros)
             }
             crate::parser::OpName::ConsiderEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::Consider)
+                embed(&arg, state, pattern_registry, EmbedType::Consider, macros)
             }
             crate::parser::OpName::IntroEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::IntroRetro)
+                embed(&arg, state, pattern_registry, EmbedType::IntroRetro, macros)
             }
         }?;
     }

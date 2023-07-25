@@ -122,6 +122,49 @@ if {<\True>} then {
 	...
 }
 Hermes' Gambit //evaluates the 'then' branch
+
+
+```
+
+### Macros
+Macros are defined using this syntax:
+```
+#define Macro Name (DIRECTION signature) ... {
+...
+}
+```
+As an example:
+```
+#define Duplicate Thrice (SOUTH_EAST edd) = num, num -> num {
+	Numerical Reflection: 3
+	Gemini Gambit
+}
+```
+
+Note: everything between the signature and first curly bracket is ignored, so the following is also valid:
+```
+#define Duplicate Thrice (SOUTH_EAST edd)
+{
+	Numerical Reflection: 3
+	Gemini Gambit
+}
+```
+
+When macros are used in a hex, they get expanded, not evaluated.
+```
+Mind's Reflection
+Duplicate Thrice     //expand a macro
+
+{
+	Duplicate Thrice //expand a macro into a list
+}
+
+
+
+
+<\Duplicate Thrice>  //embed the pattern associated with the macro
+
+<Duplicate Thrice>   //will cause a mishap
 ```
 
 ## Config

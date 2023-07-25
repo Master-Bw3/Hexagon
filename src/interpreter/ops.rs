@@ -10,7 +10,7 @@ use crate::{
         },
         Iota,
     },
-    parser::OpValue,
+    parser::{OpValue, Macros},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -149,6 +149,7 @@ pub fn embed<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     embed_type: EmbedType,
+    macros: &Macros
 ) -> Result<(), Mishap> {
     let val = match value {
         Some(val) => val,
@@ -167,7 +168,7 @@ pub fn embed<'a>(
                         *pat.value.clone(),
                         state,
                         pattern_registry,
-                        &HashMap::new(),
+                        macros,
                         None,
                     )
                     .map_err(|err| err.0)?;
