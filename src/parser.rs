@@ -20,6 +20,8 @@ use pest::{
 };
 use pest_derive::Parser;
 
+pub type Macros = HashMap<String, (PatternIota, AstNode)>;
+
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
 pub struct HexParser;
@@ -27,18 +29,35 @@ pub fn parse(
     source: &str,
     great_spell_sigs: &HashMap<String, String>,
     conf_entities: &mut HashMap<String, Entity>,
-) -> Result<AstNode, Box<Error<Rule>>> {
+) -> Result<(AstNode, Macros), Box<Error<Rule>>> {
     let mut ast = vec![];
     let pattern_registry = PatternRegistry::construct(great_spell_sigs);
+    let mut macros: Macros = HashMap::new();
 
     let pairs = HexParser::parse(Rule::File, source)?;
     for pair in pairs {
-        if let Some(node) = construct_ast_node(pair, &pattern_registry, conf_entities) {
+        if Rule::Macro == pair.as_rule() {
+            let hex_macro = parse_macro(pair, &pattern_registry, conf_entities);
+            macros.insert(hex_macro.0, hex_macro.1);
+        } else if let Some(node) = construct_ast_node(pair, &pattern_registry, conf_entities) {
             ast.push(node);
         }
     }
 
-    Ok(AstNode::File(ast))
+    Ok((AstNode::File(ast), macros))
+}
+
+fn parse_macro(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &mut HashMap<String, Entity>,
+) -> (String, (PatternIota, AstNode)) {
+    let mut inner = pair.into_inner();
+    let name = inner.next().unwrap().as_str().to_string();
+    let pattern = parse_pattern(inner.next().unwrap(), pattern_registry, conf_entities);
+    let hex = construct_ast_node(inner.next().unwrap(), pattern_registry, conf_entities).unwrap();
+
+    (name, (pattern, hex))
 }
 
 fn construct_ast_node(
@@ -298,37 +317,7 @@ pub fn parse_iota(
     let inner_pair = pair.into_inner().next().unwrap();
     match inner_pair.as_rule() {
         Rule::Number => Rc::new(inner_pair.as_str().parse::<NumberIota>().unwrap()),
-        Rule::Pattern => match inner_pair.clone().into_inner().next() {
-            Some(inner_inner_pair) => match inner_inner_pair.as_str() {
-                "{" => Rc::new(
-                    PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap(),
-                ),
-
-                "}" => Rc::new(
-                    PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap(),
-                ),
-
-                _ => match inner_inner_pair.as_rule() {
-                    Rule::Action => {
-                        let mut pairs = inner_inner_pair.into_inner();
-                        Rc::new(parse_action_iota(
-                            pairs.next().unwrap(),
-                            pairs.next(),
-                            pairs.next(),
-                            pattern_registry,
-                            conf_entities,
-                        ))
-                    }
-                    Rule::PatternName => Rc::new(PatternIota::from_sig(
-                        inner_inner_pair.into_inner().last().unwrap().as_str(),
-                        None,
-                        None,
-                    )),
-                    _ => unreachable!(),
-                },
-            },
-            None => unreachable!(),
-        },
+        Rule::Pattern => Rc::new(parse_pattern(inner_pair, pattern_registry, conf_entities)),
         Rule::Vector => {
             let mut inner = inner_pair.into_inner();
             Rc::new(matrix![
@@ -362,7 +351,9 @@ pub fn parse_iota(
             )
         }
         Rule::String => {
-            let string = snailquote::unescape(&inner_pair.as_str()).unwrap().to_string();
+            let string = snailquote::unescape(&inner_pair.as_str())
+                .unwrap()
+                .to_string();
             Rc::new(string)
         }
         Rule::Matrix => {
@@ -377,6 +368,40 @@ pub fn parse_iota(
         }
 
         _ => unreachable!(),
+    }
+}
+
+fn parse_pattern(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &mut HashMap<String, Entity>,
+) -> PatternIota {
+    match pair.clone().into_inner().next() {
+        Some(inner_pair) => match inner_pair.as_str() {
+            "{" => PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap(),
+
+            "}" => PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap(),
+
+            _ => match pair.as_rule() {
+                Rule::Action => {
+                    let mut pairs = inner_pair.into_inner();
+                    parse_action_iota(
+                        pairs.next().unwrap(),
+                        pairs.next(),
+                        pairs.next(),
+                        pattern_registry,
+                        conf_entities,
+                    )
+                }
+                Rule::PatternRaw => PatternIota::from_sig(
+                    pair.into_inner().last().unwrap().as_str(),
+                    None,
+                    None,
+                ),
+                _ => unreachable!("{:?}", inner_pair.as_rule()),
+            },
+        },
+        None => unreachable!(),
     }
 }
 

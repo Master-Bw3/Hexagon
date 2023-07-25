@@ -1,6 +1,6 @@
 File = _{ SOI ~ Hex ~ EOI }
 
-Hex = _{ (( IfBlock | Embed | Op | Var | Action | Term ) ~ Newline? | Newline)* }
+Hex = _{ (( Macro | IfBlock | Embed | Op | Var | Action | Term ) ~ Newline? | Newline)* }
 
 IfBlock = {If ~ Then ~ (ElseIf ~ Then ~ Newline? )* ~ Else?}
 
@@ -48,7 +48,7 @@ Influence = @{("Null" | "Garbage") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
 Bool = @{("True" | "False") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
-Pattern = ${ IntroRetro | PatternName | Action }
+Pattern = ${ IntroRetro | PatternRaw | Action }
 
 String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))* ~ "\"")}
 
@@ -56,9 +56,9 @@ Matrix = !{ "[" ~ "(" ~ Int ~ "," ~ Int ~ ")" ~ ("|" ~ (Number ~ ("," | ";"))* ~
 
 Int = {ASCII_DIGIT+}
 
-PatternName = ${ PatternDirection ~ " " ~ PatternSignature}
+PatternRaw = ${ PatternDirection ~ " " ~ PatternSignature}
 
-PatternDirection = @{("NORTHEAST" | "EAST" | "SOUTHEAST" | "SOUTHWEST" | "WEST" | "NORTHWEST")}
+PatternDirection = @{("NORTH_EAST" | "EAST" | "SOUTH_EAST" | "SOUTH_WEST" | "WEST" | "NORTH_WEST" | "NE" | "SE" | "E" |"W" | "NW" | "SW" )}
 
 PatternSignature = @{("q" | "a" | "w" | "e" | "d")+}
 
@@ -79,6 +79,10 @@ Var = ${"$" ~ ASCII_ALPHANUMERIC+}
 Op = ${OpName ~ "(" ~ (Iota | Var)? ~ ")"}
 
 OpName =  {ASCII_ALPHA_UPPER ~ ASCII_ALPHA_LOWER*}
+
+Macro = {"#define" ~ MacroName ~ "(" ~ PatternRaw ~ ")" ~ (!Newline ~ !Term ~ ANY)* ~ Newline? ~ Term}
+
+MacroName = {(!"(" ~ ANY)*}
 
 WHITESPACE = _{ " " | "\t" }
 

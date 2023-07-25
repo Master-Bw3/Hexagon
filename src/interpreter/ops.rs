@@ -1,4 +1,4 @@
-use std::{ops::Deref, rc::Rc};
+use std::{collections::HashMap, ops::Deref, rc::Rc};
 
 use im::Vector;
 
@@ -167,8 +167,10 @@ pub fn embed<'a>(
                         *pat.value.clone(),
                         state,
                         pattern_registry,
-                        None
-                    )?;
+                        &HashMap::new(),
+                        None,
+                    )
+                    .map_err(|err| err.0)?;
                 }
                 _ => return Err(Mishap::ExpectedPattern(iota.clone())),
             },

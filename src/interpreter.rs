@@ -5,10 +5,11 @@ pub mod state;
 
 use std::rc::Rc;
 
-use im::{Vector, vector};
+use im::{vector, Vector};
 
 use crate::{
     compiler::{
+        compile_to_iotas,
         if_block::compile_if_block,
         ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     },
@@ -24,7 +25,7 @@ use crate::{
         Iota,
     },
     parse_config::Config,
-    parser::{ActionValue, AstNode, OpName, OpValue},
+    parser::{ActionValue, AstNode, Macros, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -34,7 +35,11 @@ use self::{
     state::{Considered, Entity, EntityType, Holding, State},
 };
 
-pub fn interpret(node: AstNode, config: &Config) -> Result<State, (Mishap, (usize, usize))> {
+pub fn interpret(
+    node: AstNode,
+    config: &Config,
+    macros: Macros,
+) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
         ravenmind: Some(Rc::new(im::vector![])),
         ..Default::default()
@@ -59,13 +64,14 @@ pub fn interpret(node: AstNode, config: &Config) -> Result<State, (Mishap, (usiz
         }
     }
 
-    (interpret_node(node, &mut state, &pattern_registry)).map(|state| state.clone())
+    (interpret_node(node, &mut state, &pattern_registry, &macros)).map(|state| state.clone())
 }
 
 fn interpret_node<'a>(
     node: AstNode,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
+    macros: &Macros,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
 
@@ -84,22 +90,35 @@ fn interpret_node<'a>(
                 let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)
-                frame.evaluate(state, pattern_registry)?;
+                frame.evaluate(state, pattern_registry, macros)?;
             }
             Ok(state)
         }
 
         AstNode::Action { name, value, line } => {
-            interpret_action(name, value, state, pattern_registry, Some(line)).map_err(|err| (err, line))
+            interpret_action(name, value, state, pattern_registry, &macros, Some(line))
         }
         AstNode::Hex(nodes) => {
-            interpret_action("open_paren".to_string(), None, state, pattern_registry, None)
-                .map_err(|err| (err, (1, 0)))?;
+            interpret_action(
+                "open_paren".to_string(),
+                None,
+                state,
+                pattern_registry,
+                &macros,
+                None,
+            )?;
+
             for node in nodes {
-                interpret_node(node, state, pattern_registry)?;
+                interpret_node(node, state, pattern_registry, macros)?;
             }
-            interpret_action("close_paren".to_string(), None, state, pattern_registry, None)
-                .map_err(|err| (err, (1, 0)))?;
+            interpret_action(
+                "close_paren".to_string(),
+                None,
+                state,
+                pattern_registry,
+                &macros,
+                None,
+            )?;
 
             Ok(state)
         }
@@ -134,7 +153,7 @@ fn interpret_node<'a>(
             } else {
                 if let AstNode::Hex(nodes) = *condition {
                     for node in nodes {
-                        interpret_node(node, state, pattern_registry)?;
+                        interpret_node(node, state, pattern_registry, &macros)?;
                     }
                 }
 
@@ -146,9 +165,9 @@ fn interpret_node<'a>(
                 state.stack.remove_args(&1);
 
                 if *condition {
-                    interpret_node(*succeed, state, pattern_registry)?;
+                    interpret_node(*succeed, state, pattern_registry, macros)?;
                 } else if let Some(node) = fail {
-                    interpret_node(*node, state, pattern_registry)?;
+                    interpret_node(*node, state, pattern_registry, macros)?;
                 } else {
                     push_iota(Rc::new(vector![]), state, false)
                 }
@@ -229,12 +248,40 @@ pub fn interpret_action<'a>(
     value: Option<ActionValue>,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
-    line: Option<(usize, usize)>
-) -> Result<&'a mut State, Mishap> {
+    macros: &Macros,
+    line: Option<(usize, usize)>,
+) -> Result<&'a mut State, (Mishap, (usize, usize))> {
+    if let Some((_, AstNode::Hex(macro_hex))) = macros.get(&name) {
+        //check for macro and apply it
+        if let Some(ref mut buffer) = state.buffer {
+            let compiled = compile_to_iotas(
+                &macros.get(&name).unwrap().1,
+                pattern_registry,
+                Some(&mut state.heap),
+            )
+            .unwrap()
+            .into_iter()
+            .map(|x| (x, false))
+            .collect::<Vector<_>>();
+            buffer.append(compiled);
+            return Ok(state);
+        } else if let ContinuationFrame::Evaluate(eval_frame) =
+            state.continuation.pop_back().unwrap()
+        {
+            let mut new_frame = Vector::from(macro_hex);
+            new_frame.append(eval_frame.nodes_queue);
+            state
+                .continuation
+                .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                    nodes_queue: new_frame,
+                }));
+            return Ok(state);
+        }
+    }
 
     let pattern = pattern_registry
         .find(&name, &value)
-        .ok_or(Mishap::InvalidPattern)?;
+        .ok_or((Mishap::InvalidPattern, line.unwrap_or((1, 0))))?;
     let is_escape = Signature::from_sig(&pattern.signature)
         == Signature::from_name(pattern_registry, "escape", &None).unwrap();
 
@@ -252,7 +299,9 @@ pub fn interpret_action<'a>(
         return Ok(state);
     }
 
-    pattern.operate(state, pattern_registry, &value)?;
+    pattern
+        .operate(state, pattern_registry, &value)
+        .map_err(|err| (err, line.unwrap_or((1, 0))))?;
 
     Ok(state)
 }
@@ -263,7 +312,7 @@ pub fn push_pattern(
     state: &mut State,
     pattern_registry: &PatternRegistry,
     considered: bool,
-    line: Option<(usize, usize)>
+    line: Option<(usize, usize)>,
 ) {
     push_iota(
         Rc::new(PatternIota::from_name(pattern_registry, &pattern, value, line).unwrap()),

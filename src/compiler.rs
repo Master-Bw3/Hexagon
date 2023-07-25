@@ -13,18 +13,17 @@ use self::{
 };
 
 pub mod if_block;
-pub mod ops;
 pub mod nbt;
+pub mod ops;
 
 pub fn compile_to_iotas(
-    node: AstNode,
-    great_sigs: &HashMap<String, String>,
+    node: &AstNode,
+    pattern_registry: &PatternRegistry,
+    heap: Option<&mut HashMap<String, i32>>,
 ) -> CompileResult {
-    let mut heap: HashMap<String, i32> = HashMap::new();
-
-    let pattern_registry = PatternRegistry::construct(great_sigs);
-
-    compile_node(&node, &mut heap, 0, &pattern_registry)
+    let mut empty_heap = HashMap::new();
+    let mut heap = heap.unwrap_or(&mut empty_heap);
+    compile_node(&node, &mut heap, 0, pattern_registry)
 }
 
 fn compile_node(
