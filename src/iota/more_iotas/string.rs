@@ -18,7 +18,7 @@ impl Iota for StringIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        todo!()
+        format!("{{\"hexcasting:type\": \"moreiotas:string\", \"hexcasting:data\": \"{self}\"}}")
     }
 }
 
