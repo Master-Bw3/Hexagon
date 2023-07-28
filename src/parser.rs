@@ -245,22 +245,6 @@ fn parse_action_iota(
         .unwrap()
 }
 
-// fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
-//     let line = pair.line_col();
-//     let inner = pair.into_inner().next().unwrap();
-//     AstNode::Action {
-//         name: {
-//             match inner.as_str() {
-//                 "{" => "open_paren".to_string(),
-//                 "}" => "close_paren".to_string(),
-//                 _ => unreachable!(),
-//             }
-//         },
-//         value: None,
-//         line,
-//     }
-// }
-
 fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     AstNode::Op {
         name: OpName::Push,
