@@ -113,10 +113,10 @@ fn parse_entity(entity: &Map<String, Value>, config: &mut Config) {
     let name = parse_str(&name_value).to_string();
 
     let uuid = entity
-        .get("name")
+        .get("uuid")
         .map(parse_str)
         .map(String::clone)
-        .unwrap_or("00000001-0001-0001-0001-000000000001".to_string());
+        .unwrap_or("[I;0,0,0,0]".to_string());
 
     let entity_type_value = entity.get("type").unwrap().clone();
     let entity_type_pair = HexParser::parse(Rule::EntityType, parse_str(&entity_type_value))

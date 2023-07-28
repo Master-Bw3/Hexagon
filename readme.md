@@ -188,7 +188,8 @@ location = [1, 2, 3]
 //register an entity
 [[entities]]
 name = "Zombie"
+uuid = "[I;542246046,714361767,-2088965103,2106423580]" //optional, defaults to 0s
 type = "Monster"
-item = "Focus" //optional
-iota = "1"     //optional
+item = "Focus" //optional, defaults to None
+iota = "1"     //optional, defaults to None
 ```

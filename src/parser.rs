@@ -245,22 +245,6 @@ fn parse_action_iota(
         .unwrap()
 }
 
-// fn parse_intro_retro(pair: Pair<'_, Rule>) -> AstNode {
-//     let line = pair.line_col();
-//     let inner = pair.into_inner().next().unwrap();
-//     AstNode::Action {
-//         name: {
-//             match inner.as_str() {
-//                 "{" => "open_paren".to_string(),
-//                 "}" => "close_paren".to_string(),
-//                 _ => unreachable!(),
-//             }
-//         },
-//         value: None,
-//         line,
-//     }
-// }
-
 fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     AstNode::Op {
         name: OpName::Push,
@@ -401,7 +385,11 @@ pub fn parse_iota(
         Rule::Entity => {
             let name = inner_pair.as_str()[1..].to_string();
             Rc::new(EntityIota {
-                name: Rc::from(name),
+                name: Rc::from(name.clone()),
+                uuid: conf_entities
+                    .get(&name)
+                    .map(|entity| entity.uuid.clone())
+                    .unwrap_or("[I;0,0,0,0]".to_string()),
             })
         }
         Rule::List => {

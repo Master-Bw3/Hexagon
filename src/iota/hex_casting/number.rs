@@ -66,7 +66,7 @@ impl Iota for NumberIota {
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
-        let tolerance = 0.001;
+        let tolerance = 0.0001;
         match other.downcast_ref::<NumberIota>() {
             Some(other) => (self - other).abs() < tolerance,
             None => false,

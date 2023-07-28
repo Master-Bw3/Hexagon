@@ -8,6 +8,7 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct EntityIota {
     pub name: Rc<str>,
+    pub uuid: String,
 }
 
 impl EntityIota {
@@ -38,6 +39,6 @@ impl Iota for EntityIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        todo!()
+        format!("{{\"hexcasting:type\": \"hexcasting:entity\", \"hexcasting:data\": {{name: '{{\"text\":\"\"}}', uuid: {}}}}}", self.uuid)
     }
 }
