@@ -4,6 +4,7 @@ use downcast_rs::{impl_downcast, Downcast};
 
 pub mod hex_casting;
 pub mod more_iotas;
+pub mod five_dim_casting;
 
 pub trait Iota: Downcast + Debug {
     fn display(&self) -> String;

@@ -1,6 +1,7 @@
 pub mod hex_casting;
 pub mod more_iotas;
 pub mod constructors;
+pub mod five_dim_casting;
 
 use std::rc::Rc;
 
