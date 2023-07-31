@@ -323,10 +323,12 @@ impl ContinuationFrameTrait for FrameMap {
             let mut new_maps = self.maps.clone();
             let current_map = new_maps.pop_front().unwrap();
 
+            let mut new_data = self.data.clone();
+            let element = new_data.pop_front().unwrap();
             state
                 .continuation
                 .push_back(ContinuationFrame::Map(FrameMap {
-                    data: self.data.clone(),
+                    data: new_data,
                     maps: new_maps,
                     base_stack: self.base_stack.clone(),
                     acc: self.acc.clone(),
@@ -335,11 +337,7 @@ impl ContinuationFrameTrait for FrameMap {
                     collect_single: self.collect_single,
                 }));
 
-            state.stack = self
-                .data
-                .last()
-                .map(|x| vector![x.clone()])
-                .unwrap_or(vector![]);
+            state.stack = vector![element];
 
             state
                 .continuation
@@ -350,7 +348,12 @@ impl ContinuationFrameTrait for FrameMap {
             return Ok(());
         }
 
+        //end of map
         if self.data.is_empty() {
+            let new_acc: Rc<RefCell<Vector<Rc<dyn Iota>>>> = self.acc.clone();
+            let stack_top = state.stack.last().cloned().unwrap_or(Rc::new(NullIota));
+            new_acc.borrow_mut().push_back(stack_top);
+
             //if there are more maps
             if self.maps.is_empty().not() {
                 state.stack = vector![];
@@ -366,7 +369,7 @@ impl ContinuationFrameTrait for FrameMap {
                         current_map: vector![],
                         collect_single: self.collect_single,
                     }));
-            //end of maps
+            //end of all maps
             } else {
                 state.stack = self.base_stack.clone();
 
@@ -379,6 +382,7 @@ impl ContinuationFrameTrait for FrameMap {
                 }
             }
             Ok(())
+        //iter next
         } else {
             let mut new_data = self.data.clone();
             let stack_top = state.stack.last().cloned().unwrap_or(Rc::new(NullIota));

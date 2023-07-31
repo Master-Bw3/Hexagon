@@ -10,7 +10,7 @@ use crate::{
 #[derive(Debug, Clone)]
 pub struct ContinuumIota {
     pub front_val: Rc<dyn Iota>,
-    pub gen_next_func: Rc<ListIota>,
+    pub gen_next_func: Vector<AstNode>,
     pub maps: Vector<Vector<AstNode>>
 }
 

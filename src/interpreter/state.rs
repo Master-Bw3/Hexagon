@@ -1,12 +1,9 @@
-use std::{collections::HashMap, rc::Rc, ops::Deref};
+use std::{collections::HashMap, ops::Deref, rc::Rc};
 
 use im::Vector;
 
 use crate::iota::{
-    hex_casting::{
-        pattern::Signature,
-        vector::VectorIota,
-    },
+    hex_casting::{pattern::Signature, vector::VectorIota},
     Iota,
 };
 
@@ -89,7 +86,6 @@ pub trait StackExt {
     ) -> Result<Either3Rc<T, U, V>, Mishap>;
 
     fn remove_args(&mut self, arg_count: &usize);
-    
 }
 
 impl StackExt for Stack {
@@ -102,7 +98,8 @@ impl StackExt for Stack {
             }
         };
 
-        iota.clone().downcast_rc::<T>()
+        iota.clone()
+            .downcast_rc::<T>()
             .map_err(|_| Mishap::IncorrectIota(index, T::display_type_name(), iota.clone()))
     }
 
@@ -141,7 +138,11 @@ impl StackExt for Stack {
         match (left, right) {
             (Ok(l), Err(_)) => Ok(Either::L(l)),
             (Err(_), Ok(r)) => Ok(Either::R(r)),
-            (Err(_), Err(_)) => Err(Mishap::IncorrectIota(index, "".to_string(), iota.clone())),
+            (Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+                index,
+                format!("{} or {}", T::display_type_name(), U::display_type_name()),
+                iota.clone(),
+            )),
             _ => unreachable!(),
         }
     }
@@ -168,9 +169,16 @@ impl StackExt for Stack {
             (Ok(l), Err(_), Err(_)) => Ok(Either3::L(l)),
             (Err(_), Ok(m), Err(_)) => Ok(Either3::M(m)),
             (Err(_), Err(_), Ok(r)) => Ok(Either3::R(r)),
-            (Err(_), Err(_), Err(_)) => {
-                Err(Mishap::IncorrectIota(index, "".to_string(), iota.clone()))
-            }
+            (Err(_), Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+                index,
+                format!(
+                    "{}, {} or {}",
+                    T::display_type_name(),
+                    U::display_type_name(),
+                    V::display_type_name()
+                ),
+                iota.clone(),
+            )),
             _ => unreachable!(),
         }
     }
