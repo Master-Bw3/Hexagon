@@ -29,6 +29,10 @@ impl Iota for MatrixIota {
         format!("[({}, {}){}]", self.nrows(), self.ncols(), formatted_out)
     }
 
+    fn display_type_name() -> String {
+        "Matrix".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         match other.downcast_ref::<MatrixIota>() {
             Some(other) => {

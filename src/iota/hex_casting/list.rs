@@ -45,6 +45,11 @@ impl Iota for ListIota {
                 .join(", ")
         )
     }
+    
+    fn display_type_name() -> String {
+        "List".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         match other.downcast_ref::<ListIota>() {
             Some(other) => {

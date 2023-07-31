@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::f64::consts::{E, PI, TAU};
 use std::rc::Rc;
 
-use im::vector;
+use im::{vector, Vector};
 
 use crate::interpreter::state::EntityType;
 use crate::iota::hex_casting::entity::EntityIota;
@@ -25,6 +25,7 @@ pub trait PatternRegistryExt {
 
     fn construct(great_sigs: &HashMap<String, String>) -> PatternRegistry;
     fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern>;
+    fn find_all(&self, query: &str, value: &Option<ActionValue>) -> Vector<Pattern>;
 }
 
 impl PatternRegistryExt for PatternRegistry {
@@ -392,9 +393,11 @@ impl PatternRegistryExt for PatternRegistry {
 
             // Pattern::new("", "", "", Box::new(string::)),
 
-            
-            Pattern::new("GetF", "continuum/get", "dead", Box::new(continuum::get)),
-            Pattern::new("ContNum", "continuum/get", "dead", Box::new(continuum::number_stream)),
+            //5D Casting - Continuum
+            Pattern::new("Selection Distillation", "continuum/get", "dead", Box::new(continuum::get)),
+            Pattern::new("Selection Exaltation", "continuum/slice", "dead", Box::new(continuum::slice)),
+            Pattern::new("Transmutation Distillation", "continuum/map", "dead", Box::new(continuum::map)),
+            Pattern::new("Natural Reflection", "continuum/num_stream", "dead", Box::new(continuum::number_stream)),
 
 
         ];
@@ -427,6 +430,31 @@ impl PatternRegistryExt for PatternRegistry {
             .get(0)
             .copied()
             .cloned()
+    }
+
+
+    fn find_all(&self, query: &str, value: &Option<ActionValue>) -> Vector<Pattern> {
+        if let Some(ActionValue::Bookkeeper(code)) = value {
+            let mut bookkeeper =
+                Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
+            bookkeeper.signature = parse_bookkeeper_code(code);
+            if query == bookkeeper.display_name
+                || query == bookkeeper.internal_name
+                || query == bookkeeper.signature
+            {
+                return vector![bookkeeper];
+            } else {
+                return vector![];
+            }
+        }
+
+        self.clone().into_iter()
+            .filter(|entry| {
+                entry.display_name == *query
+                    || entry.internal_name == *query
+                    || entry.signature == *query
+            })
+            .collect::<Vector<Pattern>>()
     }
 }
 

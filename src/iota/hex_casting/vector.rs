@@ -8,6 +8,10 @@ impl Iota for VectorIota {
         format!("({}, {}, {})", self.x, self.y, self.z)
     }
 
+    fn display_type_name() -> String {
+        "Vector".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         let tolerance = 0.0001;
         match other.downcast_ref::<VectorIota>() {

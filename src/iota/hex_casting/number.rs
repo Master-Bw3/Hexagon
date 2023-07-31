@@ -65,6 +65,10 @@ impl Iota for NumberIota {
         self.to_string()
     }
 
+    fn display_type_name() -> String {
+        "Number".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         let tolerance = 0.0001;
         match other.downcast_ref::<NumberIota>() {

@@ -20,6 +20,10 @@ impl Iota for ContinuumIota {
         format!("[{}, ...]", self.front_val.display())
     }
 
+    fn display_type_name() -> String {
+        "Continuum".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         false
     }

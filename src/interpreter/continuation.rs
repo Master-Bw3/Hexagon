@@ -205,6 +205,7 @@ pub struct FrameIterate {
     pub prev: Rc<dyn Iota>,
     pub gen_next_code: Vector<AstNode>,
     pub maps: Vector<Vector<AstNode>>,
+    pub collect_single: bool,
 }
 
 impl ContinuationFrameTrait for FrameIterate {
@@ -240,10 +241,14 @@ impl ContinuationFrameTrait for FrameIterate {
             state.stack = vector![];
 
             if self.maps.clone().is_empty() {
-                state.stack = self.base_stack.clone().unwrap();
+                state.stack = base_stack.clone();
 
                 let result = Rc::new(self.acc.borrow().clone());
-                state.stack.push_back(result);
+                if self.collect_single {
+                    state.stack.push_back(result[0].clone());
+                } else {
+                    state.stack.push_back(result);
+                }
             } else {
                 state
                     .continuation
@@ -254,6 +259,7 @@ impl ContinuationFrameTrait for FrameIterate {
                         acc: Rc::new(RefCell::new(vector![])),
                         init: true,
                         current_map: vector![],
+                        collect_single: self.collect_single,
                     }));
             }
 
@@ -303,6 +309,7 @@ pub struct FrameMap {
     pub base_stack: Vector<Rc<dyn Iota>>,
     pub acc: ThothAcc,
     pub init: bool,
+    pub collect_single: bool,
 }
 
 impl ContinuationFrameTrait for FrameMap {
@@ -325,6 +332,7 @@ impl ContinuationFrameTrait for FrameMap {
                     acc: self.acc.clone(),
                     init: false,
                     current_map: current_map.clone(),
+                    collect_single: self.collect_single,
                 }));
 
             state.stack = self
@@ -356,13 +364,19 @@ impl ContinuationFrameTrait for FrameMap {
                         acc: Rc::new(RefCell::new(vector![])),
                         init: true,
                         current_map: vector![],
+                        collect_single: self.collect_single,
                     }));
             //end of maps
             } else {
                 state.stack = self.base_stack.clone();
 
                 let result = Rc::new(self.acc.borrow().clone());
-                state.stack.push_back(result);
+
+                if self.collect_single {
+                    state.stack.push_back(result[0].clone());
+                } else {
+                    state.stack.push_back(result);
+                }
             }
             Ok(())
         } else {
@@ -382,6 +396,7 @@ impl ContinuationFrameTrait for FrameMap {
                     acc: new_acc,
                     init: false,
                     current_map: self.current_map.clone(),
+                    collect_single: self.collect_single,
                 }));
 
             state.stack = vector![element];

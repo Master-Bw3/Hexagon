@@ -57,6 +57,11 @@ impl Iota for PatternIota {
         }
         result
     }
+
+    fn display_type_name() -> String {
+        "Pattern".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         match other.downcast_ref::<PatternIota>() {
             Some(other) => self.signature == other.signature,

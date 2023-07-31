@@ -16,7 +16,7 @@ pub type Stack = Vector<Rc<dyn Iota>>;
 
 pub type Considered = bool;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Rc<dyn Iota>>,
@@ -103,7 +103,7 @@ impl StackExt for Stack {
         };
 
         iota.clone().downcast_rc::<T>()
-            .map_err(|_| Mishap::IncorrectIota(index, "".to_string(), iota.clone()))
+            .map_err(|_| Mishap::IncorrectIota(index, T::display_type_name(), iota.clone()))
     }
 
     fn get_any_iota(&self, index: usize, arg_count: usize) -> Result<Rc<dyn Iota>, Mishap> {

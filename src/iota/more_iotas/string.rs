@@ -10,6 +10,11 @@ impl Iota for StringIota {
     fn display(&self) -> String {
         format!("{:?}", self)
     }
+
+    fn display_type_name() -> String {
+        "String".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         match other.downcast_ref::<StringIota>() {
             Some(other) => self == other,

@@ -8,6 +8,10 @@ impl Iota for GarbageIota {
         "Garbage".to_string()
     }
 
+    fn display_type_name() -> String {
+        "Garbage".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         other.downcast_ref::<GarbageIota>().is_some()
     }

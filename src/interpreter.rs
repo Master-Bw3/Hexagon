@@ -3,7 +3,7 @@ pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::rc::Rc;
+use std::{rc::Rc, result};
 
 use im::{vector, Vector};
 
@@ -269,13 +269,15 @@ pub fn interpret_action<'a>(
         }
     }
 
-    let pattern = pattern_registry
-        .find(&name, &value)
-        .ok_or((Mishap::InvalidPattern, line.unwrap_or((1, 0))))?;
-    let is_escape = Signature::from_sig(&pattern.signature)
-        == Signature::from_name(pattern_registry, "escape", &None).unwrap();
+    let patterns = pattern_registry.find_all(&name, &value);
+    if patterns.is_empty() {
+        return Err((Mishap::InvalidPattern, line.unwrap_or((1, 0))));
+    }
+    let signature = &patterns[0].signature;
 
-    let is_retro = Signature::from_sig(&pattern.signature)
+    let is_escape = Signature::from_sig(signature)
+        == Signature::from_name(pattern_registry, "escape", &None).unwrap();
+    let is_retro = Signature::from_sig(signature)
         == Signature::from_name(pattern_registry, "close_paren", &None).unwrap();
 
     if state.consider_next {
@@ -289,11 +291,27 @@ pub fn interpret_action<'a>(
         return Ok(state);
     }
 
-    pattern
-        .operate(state, pattern_registry, &value)
-        .map_err(|err| (err, line.unwrap_or((1, 0))))?;
+    let mut result = Ok(());
+    for pattern in patterns {
+        let operation_result = pattern.operate(state, pattern_registry, &value);
+        match operation_result {
+            Ok(_) => {
+                result = Ok(());
+                break;
+            }
+            Err(Mishap::IncorrectIota(_, _, _)) | Err(Mishap::NotEnoughIotas(_, _)) => {
+                result = operation_result.map(|_| ());
+            }
+            Err(_) => {
+                result = operation_result.map(|_| ());
+                break;
+            }
+        }
+    }
 
-    Ok(state)
+    result
+        .map(|_| state)
+        .map_err(|mishap| (mishap, line.unwrap_or((1, 0))))
 }
 
 pub fn push_pattern(
