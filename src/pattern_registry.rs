@@ -16,7 +16,7 @@ use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
 use crate::patterns::more_iotas::{matrix, string};
-use crate::patterns::{constructors, Pattern};
+use crate::patterns::{constructors, Pattern, hexal};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -102,6 +102,11 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
             Pattern::new("Augur's Exaltation", "if", "awdd",  Box::new(math::bool_if)),
             Pattern::new("Entropy Reflection", "random", "eqqq",  Box::new(math::random)),
+
+            //Hexal - math
+            Pattern::new("Factorial Purification", "factorial", "wawdedwaw",  Box::new(hexal::math::factorial)),
+            Pattern::new("Running Sum Purification", "running/sum", "aea",  Box::new(hexal::math::running_sum)),
+            Pattern::new("Running Product Purification", "running/mul", "qaawaaq",  Box::new(hexal::math::running_sum)),
 
 
             //lists

@@ -15,6 +15,7 @@ pub trait ListIotaExt {
         entity_type: Option<&EntityType>,
         entities: &HashMap<String, Entity>,
     ) -> bool;
+    
 }
 
 impl ListIotaExt for ListIota {
