@@ -296,7 +296,6 @@ impl ContinuationFrameTrait for FrameIterate {
     }
 
     fn break_out(&self, state: &mut State) -> bool {
-        state.continuation.pop_back();
         true
     }
 }
@@ -416,14 +415,6 @@ impl ContinuationFrameTrait for FrameMap {
     }
 
     fn break_out(&self, state: &mut State) -> bool {
-        state.continuation.pop_back();
-
-        let mut new_stack = self.base_stack.clone();
-
-        let new_acc = self.acc.clone();
-        new_acc.borrow_mut().append(state.stack.clone());
-        new_stack.push_back(Rc::new(new_acc.borrow().clone()));
-        state.stack = new_stack.into_iter().collect();
         true
     }
 }

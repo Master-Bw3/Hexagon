@@ -394,11 +394,12 @@ impl PatternRegistryExt for PatternRegistry {
             // Pattern::new("", "", "", Box::new(string::)),
 
             //5D Casting - Continuum
-            Pattern::new("Selection Distillation", "continuum/get", "dead", Box::new(continuum::get)),
-            Pattern::new("Selection Exaltation", "continuum/slice", "dead", Box::new(continuum::slice)),
-            Pattern::new("Transmutation Distillation", "continuum/map", "dead", Box::new(continuum::map)),
-            Pattern::new("Natural Reflection", "continuum/stream/num", "dead", Box::new(continuum::number_stream)),
-            Pattern::new("Eternal Distillation", "continuum/stream/make", "dead", Box::new(continuum::make_stream)),
+            Pattern::new("Selection Distillation", "continuum/get", "deeed", Box::new(continuum::get)),
+            Pattern::new("Selection Exaltation", "continuum/slice", "qaeaqwded", Box::new(continuum::slice)),
+            Pattern::new("Transmutation Distillation", "continuum/map", "dadadad", Box::new(continuum::map)),
+            Pattern::new("Natural Reflection", "continuum/stream/num", "edwaq", Box::new(continuum::number_stream)),
+            Pattern::new("Eternal Distillation", "continuum/stream/make", "aqqqaqwdaqqqaq", Box::new(continuum::make_stream)),
+            Pattern::new("Speaker's Decomposition", "continuum/deconstruct", "aaqwqaa", Box::new(continuum::deconstruct)),
 
 
         ];

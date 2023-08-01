@@ -181,3 +181,42 @@ pub fn make_stream<'a>(
 
     Ok(state)
 }
+
+
+pub fn deconstruct<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let continuum = (*state.stack.get_iota::<ContinuumIota>(0, arg_count)?).clone();
+    state.stack.remove_args(&arg_count);
+
+
+    state
+    .continuation
+    .push_back(ContinuationFrame::Iterate(FrameIterate {
+        base_stack: None,
+        index: 0,
+        collect: (1, 1),
+        acc: Rc::new(RefCell::new(vector![])),
+        prev: continuum.front_val.clone(),
+        gen_next_code: continuum.gen_next_func.clone(),
+        maps: vector![],
+        collect_single: true,
+    }));
+
+    state
+    .continuation
+    .push_back(ContinuationFrame::Iterate(FrameIterate {
+        base_stack: None,
+        index: 0,
+        collect: (0, 0),
+        acc: Rc::new(RefCell::new(vector![])),
+        prev: continuum.front_val,
+        gen_next_code: continuum.gen_next_func.clone(),
+        maps: continuum.maps,
+        collect_single: true,
+    }));
+
+    Ok(state)
+}
