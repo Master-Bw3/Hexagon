@@ -5,7 +5,7 @@ pub type VectorIota = nalgebra::Matrix1x3<NumberIota>;
 
 impl Iota for VectorIota {
     fn display(&self) -> String {
-        format!("({}, {}, {})", self.x, self.y, self.z)
+        format!("({:.3}, {:.3}, {:.3})", self.x, self.y, self.z)
     }
 
     fn display_type_name() -> String {
