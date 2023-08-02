@@ -218,7 +218,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Write", "string/block/set", "dwewdweq", Box::new(string::write)),
             Pattern::new("Sifter's Gambit", "string/chat/prefix/set", "qwaqa", Box::new(string::set_prefix)),
-
+            Pattern::new("Particles", "particles", "eqqqqa", Box::new(hexal::spells::particles)),
+  
 
             //great spells
             Pattern::new("Craft Phial", "craft/battery", great_sigs.get("craft/battery").unwrap(), 
