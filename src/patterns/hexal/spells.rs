@@ -22,7 +22,7 @@ pub fn particles<'a>(
         crate::interpreter::state::Either::R(list) => {
             for iota in (*list).clone() {
                 iota.clone().downcast_rc::<VectorIota>().map_err(|_| {
-                    Mishap::IncorrectIota(0, "List of numbers".to_string(), iota.clone())
+                    Mishap::IncorrectIota(0, "List of vectors".to_string(), iota.clone())
                 })?;
             }
         }
