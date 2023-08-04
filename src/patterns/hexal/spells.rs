@@ -3,7 +3,7 @@ use crate::{
         mishap::Mishap,
         state::{StackExt, State},
     },
-    iota::hex_casting::{list::ListIota, vector::VectorIota},
+    iota::hex_casting::{list::ListIota, vector::VectorIota, pattern::PatternIota, number::NumberIota},
     pattern_registry::PatternRegistry,
 };
 
@@ -27,6 +27,21 @@ pub fn particles<'a>(
             }
         }
     }
+
+    Ok(state)
+}
+
+pub fn summon_wisp_ticking<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 3;
+    let code = state
+        .stack
+        .get_iota_a_or_b::<PatternIota, ListIota>(0, arg_count)?;
+    let pos = state.stack.get_iota::<VectorIota>(1, arg_count)?;
+    let battery = state.stack.get_iota::<NumberIota>(1, arg_count)?;
+    state.stack.remove_args(&arg_count);
 
     Ok(state)
 }
