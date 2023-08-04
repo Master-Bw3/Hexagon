@@ -47,6 +47,8 @@ impl PatternRegistryExt for PatternRegistry {
         hashmap.insert("dispel_rain".to_string(), "eeewwweeewwaqqddqdqd".to_string());
         hashmap.insert("summon_rain".to_string(), "wwweeewwweewdawdwad".to_string());
         hashmap.insert("brainsweep".to_string(), "qeqwqwqwqwqeqaeqeaqeqaeqaqded".to_string());
+        hashmap.insert("move_block/spell".to_string(), "eeqeeqeeeqeeqdeeqeqqwqqqeeqeqqwqq".to_string());
+
         hashmap
     }
 
@@ -167,7 +169,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new( "sentinel/wayfind", "Wayfind Sentinel","waeawaedwa", Box::new(sentinel::wayfind)),
 
 
-            // //consts
+            //consts
             Pattern::new("Mind's Reflection", "get_caster", "qaq", 
                 constructors::push_const(Rc::new(EntityIota {name: Rc::from("Caster"), uuid: "[I;0,0,0,0]".to_string()}))),
             Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Rc::new(vector![]))),
@@ -220,7 +222,8 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Write", "string/block/set", "dwewdweq", Box::new(string::write)),
             Pattern::new("Sifter's Gambit", "string/chat/prefix/set", "qwaqa", Box::new(string::set_prefix)),
             Pattern::new("Particles", "particles", "eqqqqa", Box::new(hexal::spells::particles)),
-  
+            Pattern::new("Falling Block", "falling_block", "wqwawqwqwqwqwqw", constructors::spell_1::<VectorIota>()),
+
 
             //great spells
             Pattern::new("Craft Phial", "craft/battery", great_sigs.get("craft/battery").unwrap(), 
@@ -257,8 +260,13 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::spell_1::<VectorIota>()),
 
             Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
+            
             Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rain").unwrap(), Box::new(special::no_action)),
+            
             Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
+            
+            Pattern::new("Greater Translocation", "move_block/spell", great_sigs.get("move_block/spell").unwrap(), 
+                constructors::spell_2::<VectorIota, VectorIota>()),
 
 
             //requires value to be set
