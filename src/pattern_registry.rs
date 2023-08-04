@@ -223,7 +223,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Sifter's Gambit", "string/chat/prefix/set", "qwaqa", Box::new(string::set_prefix)),
             Pattern::new("Particles", "particles", "eqqqqa", Box::new(hexal::spells::particles)),
             Pattern::new("Falling Block", "falling_block", "wqwawqwqwqwqwqw", constructors::spell_1::<VectorIota>()),
-            Pattern::new("Summon Cyclic Wisp", "wisp/summon/ticking", "aqaweewaqawee", hexal::spells::summon_wisp_ticking),
+            Pattern::new("Summon Cyclic Wisp", "wisp/summon/ticking", "aqaweewaqawee", Box::new(hexalhexal::spells::summon_wisp_ticking)),
 
 
             //great spells
