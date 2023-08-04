@@ -27,7 +27,6 @@ pub fn compile_op_store(
     arg: &Option<OpValue>,
 ) -> Result<Vec<Rc<dyn Iota>>, Mishap> {
     let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
-
     let (index, var) = {
         match value {
             OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
@@ -54,7 +53,8 @@ pub fn compile_op_store(
             ]
         }
         None => {
-            let new_index = heap.values().fold(0, |acc, val| i32::max(acc, *val));
+            // let new_index = heap.values().fold(0, |acc, val| i32::max(acc, *val));
+            let new_index = heap.values().len() as i32;
             heap.insert(var.clone(), new_index);
 
             vec![

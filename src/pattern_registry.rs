@@ -2,12 +2,13 @@ use std::collections::HashMap;
 use std::f64::consts::{E, PI, TAU};
 use std::rc::Rc;
 
+use hexnumgen::{generate_number_pattern_beam, Bounds};
 use im::{vector, Vector};
 
 use crate::interpreter::state::EntityType;
 use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::null::NullIota;
-use crate::iota::hex_casting::number::NumberIota;
+use crate::iota::hex_casting::number::{NumberIota, self};
 use crate::iota::hex_casting::vector::VectorIota;
 use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
@@ -428,6 +429,19 @@ impl PatternRegistryExt for PatternRegistry {
             }
         }
 
+        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+            if let Some(ActionValue::Iota(iota)) = value {
+                if let Some(number) = iota.downcast_ref::<NumberIota>() {
+                    let number =
+                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
+                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    return Some(number);
+
+                }
+
+        } }
+
+
         self.iter()
             .filter(|entry| {
                 entry.display_name == *query
@@ -455,6 +469,18 @@ impl PatternRegistryExt for PatternRegistry {
                 return vector![];
             }
         }
+
+        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+            if let Some(ActionValue::Iota(iota)) = value {
+                if let Some(number) = iota.downcast_ref::<NumberIota>() {
+                    let number =
+                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
+                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    return vector![number];
+
+                }
+
+        } }
 
         self.clone().into_iter()
             .filter(|entry| {
@@ -501,4 +527,10 @@ fn parse_bookkeeper_code(code: &str) -> String {
         )
         .1
         .concat()
+}
+
+fn gen_number(num: f32) -> String {
+    generate_number_pattern_beam(num as i32, Bounds::new(100, 100, 100), 1, false)
+    .map(|x| x.pattern)
+    .unwrap_or("".to_string())
 }
