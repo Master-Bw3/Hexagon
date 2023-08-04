@@ -40,7 +40,7 @@ pub fn summon_wisp_ticking<'a>(
         .stack
         .get_iota_a_or_b::<PatternIota, ListIota>(0, arg_count)?;
     let pos = state.stack.get_iota::<VectorIota>(1, arg_count)?;
-    let battery = state.stack.get_iota::<NumberIota>(1, arg_count)?;
+    let battery = state.stack.get_iota::<NumberIota>(2, arg_count)?;
     state.stack.remove_args(&arg_count);
 
     Ok(state)

@@ -126,7 +126,7 @@ impl StackExt for Stack {
     ) -> Result<Either<Rc<T>, Rc<U>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -154,7 +154,7 @@ impl StackExt for Stack {
     ) -> Result<Either3<Rc<T>, Rc<U>, Rc<V>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
