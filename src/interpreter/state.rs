@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::Deref, rc::Rc};
+use std::{collections::HashMap, ops::Deref, rc::Rc, sync::Arc};
 
 use im::Vector;
 
@@ -199,6 +199,7 @@ pub enum EntityType {
     Living,
     Item,
     Player,
+    Wisp,
     Misc,
 }
 
@@ -211,6 +212,7 @@ impl EntityType {
             EntityType::Item => "Item".to_string(),
             EntityType::Player => "Player".to_string(),
             EntityType::Misc => "Misc".to_string(),
+            EntityType::Wisp => "Wisp".to_string(),
         }
     }
 }

@@ -1,9 +1,15 @@
+use std::{rc::Rc, thread::spawn};
+
+use im::vector;
+
 use crate::{
     interpreter::{
         mishap::Mishap,
-        state::{StackExt, State},
+        state::{Entity, EntityType, Holding, StackExt, State},
     },
-    iota::hex_casting::{list::ListIota, vector::VectorIota, pattern::PatternIota, number::NumberIota},
+    iota::hex_casting::{
+        list::ListIota, number::NumberIota, pattern::PatternIota, vector::VectorIota,
+    },
     pattern_registry::PatternRegistry,
 };
 
@@ -42,6 +48,26 @@ pub fn summon_wisp_ticking<'a>(
     let pos = state.stack.get_iota::<VectorIota>(1, arg_count)?;
     let battery = state.stack.get_iota::<NumberIota>(2, arg_count)?;
     state.stack.remove_args(&arg_count);
+
+    let num_wisps = {
+        state
+            .entities
+            .keys()
+            .filter(|k| k.starts_with("Wisp"))
+            .count()
+    };
+
+    state.entities.insert(
+        format!("Wisp #{}", num_wisps + 1),
+        Entity {
+            name: format!("Wisp #{}", num_wisps + 1),
+            uuid: String::new(),
+            entity_type: EntityType::Wisp,
+            holding: Box::new(Holding::None),
+        },
+    );
+
+
 
     Ok(state)
 }
