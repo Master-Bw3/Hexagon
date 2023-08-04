@@ -1,13 +1,17 @@
-use std::{collections::HashMap, ops::Deref, rc::Rc, sync::Arc};
+use std::{collections::HashMap, default, ops::Deref, rc::Rc, sync::Arc};
 
 use im::Vector;
 
-use crate::iota::{
-    hex_casting::{pattern::Signature, vector::VectorIota},
-    Iota,
+use crate::{
+    iota::{
+        hex_casting::{pattern::Signature, vector::VectorIota},
+        Iota,
+    },
+    parser::{AstNode, Macros},
+    pattern_registry::PatternRegistry,
 };
 
-use super::{continuation::ContinuationFrame, mishap::Mishap};
+use super::{continuation::ContinuationFrame, interpret_node, mishap::Mishap};
 
 pub type Stack = Vector<Rc<dyn Iota>>;
 
@@ -24,6 +28,7 @@ pub struct State {
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub continuation: Vector<ContinuationFrame>,
+    pub wisps: Vector<Wisp>,
 }
 
 pub type Library = HashMap<Signature, Rc<dyn Iota>>;
@@ -214,5 +219,51 @@ impl EntityType {
             EntityType::Misc => "Misc".to_string(),
             EntityType::Wisp => "Wisp".to_string(),
         }
+    }
+}
+
+#[derive(Clone, Default, Debug)]
+pub struct Wisp {
+    pub stack: Stack,
+    pub ravenmind: Option<Rc<dyn Iota>>,
+    pub heap: HashMap<String, i32>,
+    pub code: Vector<AstNode>,
+}
+
+impl Wisp {
+    pub fn evaluate(
+        &mut self,
+        main_state: &mut State,
+        pattern_registry: &PatternRegistry,
+        macros: &Macros,
+    ) -> Result<(), (Mishap, (usize, usize))> {
+        let mut state = State {
+            stack: self.stack.clone(),
+            ravenmind: self.ravenmind.clone(),
+            heap: self.heap.clone(),
+            buffer: Default::default(),
+            consider_next: Default::default(),
+            continuation: Default::default(),
+            wisps: Default::default(),
+            ..main_state.clone()
+        };
+
+        let result = interpret_node(
+            AstNode::File(self.code.clone().into_iter().collect()),
+            &mut state,
+            &pattern_registry,
+            &macros,
+        )?;
+
+        main_state.entities = result.entities.clone();
+        main_state.libraries = result.libraries.clone();
+        main_state.sentinal_location = result.sentinal_location;
+        main_state.wisps.append(result.wisps.clone());
+
+        self.stack = state.stack;
+        self.ravenmind = state.ravenmind;
+        self.heap = state.heap;
+
+        Ok(())
     }
 }

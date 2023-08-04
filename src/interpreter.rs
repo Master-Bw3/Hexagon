@@ -89,7 +89,7 @@ fn interpret_node<'a>(
 
             //loop through every frame until there aren't any more
             while !state.continuation.is_empty() {
-                //get top fram and remove it from the stack
+                //get top frame and remove it from the stack
                 let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)

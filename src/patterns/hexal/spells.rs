@@ -1,14 +1,20 @@
 use std::{rc::Rc, thread::spawn};
 
-use im::vector;
+use im::{vector, Vector};
 
 use crate::{
     interpreter::{
+        continuation::iota_list_to_ast_node_list,
         mishap::Mishap,
-        state::{Entity, EntityType, Holding, StackExt, State},
+        state::{Entity, EntityType, Holding, StackExt, State, Wisp},
     },
-    iota::hex_casting::{
-        list::ListIota, number::NumberIota, pattern::PatternIota, vector::VectorIota,
+    iota::{
+        self,
+        hex_casting::{
+            entity::EntityIota, list::ListIota, number::NumberIota, pattern::PatternIota,
+            vector::VectorIota,
+        },
+        Iota,
     },
     pattern_registry::PatternRegistry,
 };
@@ -67,7 +73,25 @@ pub fn summon_wisp_ticking<'a>(
         },
     );
 
+    let code_list: Vector<Rc<dyn Iota>> = match code {
+        crate::interpreter::state::Either::L(pat) => {
+            let mut vec: Vector<Rc<dyn Iota>> = vector![];
+            vec.push_back(pat);
+            vec
+        }
+        crate::interpreter::state::Either::R(list) => (*list).clone(),
+    };
 
+    let wisp: Rc<dyn Iota> = Rc::new(EntityIota {
+        name: Rc::from(format!("Wisp #{}", num_wisps + 1).as_str()),
+        uuid: String::new(),
+    });
+
+    state.wisps.push_back(Wisp {
+        code: iota_list_to_ast_node_list(Rc::new(code_list)),
+        stack: vector![wisp],
+        ..Default::default()
+    });
 
     Ok(state)
 }
