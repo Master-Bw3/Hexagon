@@ -5,7 +5,7 @@ use crate::{
     iota::Iota,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug,)]
 pub struct EntityIota {
     pub name: Rc<str>,
     pub uuid: String,

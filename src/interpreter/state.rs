@@ -4,7 +4,7 @@ use im::{vector, Vector};
 
 use crate::{
     iota::{
-        hex_casting::{continuation, pattern::Signature, vector::VectorIota},
+        hex_casting::{continuation, pattern::Signature, vector::VectorIota, entity::EntityIota},
         Iota,
     },
     parser::{AstNode, Macros},
@@ -232,6 +232,7 @@ pub struct Wisp {
     pub ravenmind: Option<Rc<dyn Iota>>,
     pub heap: HashMap<String, i32>,
     pub code: Vector<AstNode>,
+    pub self_ref: Option<EntityIota>,
 }
 
 impl Wisp {
@@ -251,6 +252,10 @@ impl Wisp {
             ..main_state.clone()
         };
 
+        if let Some(entity) = self.self_ref.clone() {
+            wisp_state.stack.push_back(Rc::new(entity))
+        }
+
         wisp_state
             .continuation
             .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
@@ -269,11 +274,13 @@ impl Wisp {
         main_state.sentinal_location = wisp_state.sentinal_location;
         main_state.wisps = wisp_state.wisps;
 
+        //set self_ref to None so that it isn't added to stack in future iterations
         let result = Wisp {
             stack: wisp_state.stack,
             ravenmind: wisp_state.ravenmind,
             heap: wisp_state.heap,
             code: self.code.clone(),
+            self_ref: None,
         };
 
         Ok(result)

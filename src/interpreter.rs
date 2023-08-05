@@ -1,4 +1,5 @@
 pub mod continuation;
+pub mod error;
 pub mod mishap;
 pub mod ops;
 pub mod state;
@@ -33,6 +34,7 @@ use self::{
     continuation::{
         iota_list_to_ast_node_list, ContinuationFrame, ContinuationFrameTrait, FrameEvaluate,
     },
+    error::print_interpreter_error,
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -41,6 +43,8 @@ pub fn interpret(
     node: AstNode,
     config: &Config,
     macros: Macros,
+    source: &str,
+    source_path: &str,
 ) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
         ravenmind: Some(Rc::new(im::vector![])),
@@ -67,17 +71,25 @@ pub fn interpret(
         }
     }
 
-    (interpret_node(node, &mut state, &pattern_registry, &macros)).map(|state| state.clone())
+    (run_vm(
+        node,
+        &mut state,
+        &pattern_registry,
+        &macros,
+        source,
+        source_path,
+    ))
+    .map(|state| state.clone())
 }
 
-fn interpret_node<'a>(
+fn run_vm<'a>(
     node: AstNode,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     macros: &Macros,
+    source: &str,
+    source_path: &str,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
-    // println!("a: {:?}, {:?}", state.stack, state.buffer);
-
     match node {
         AstNode::File(nodes) => {
             //initialize the vm
@@ -103,7 +115,8 @@ fn interpret_node<'a>(
                     let result = wisp.evaluate(state, pattern_registry, macros);
                     match result {
                         Ok(wisp) => state.wisps[index] = wisp,
-                        Err(_) => {
+                        Err(err) => {
+                            print_interpreter_error(err, source, source_path);
                             state.wisps.remove(index);
                         }
                     }
@@ -112,7 +125,18 @@ fn interpret_node<'a>(
 
             Ok(state)
         }
+        _ => unreachable!(),
+    }
+}
 
+fn interpret_node<'a>(
+    node: AstNode,
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+    macros: &Macros,
+) -> Result<&'a mut State, (Mishap, (usize, usize))> {
+    // println!("a: {:?}, {:?}", state.stack, state.buffer);
+    match node {
         AstNode::Action { name, value, line } => {
             interpret_action(name, value, state, pattern_registry, &macros, Some(line))
         }
@@ -175,6 +199,7 @@ fn interpret_node<'a>(
             }
             Ok(state)
         }
+        AstNode::File(_) => unreachable!(),
     }
 }
 
