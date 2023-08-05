@@ -3,7 +3,7 @@ pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::{rc::Rc, result};
+use std::{rc::Rc, result, time::Duration};
 
 use im::{vector, Vector};
 
@@ -97,6 +97,7 @@ fn interpret_node<'a>(
             }
 
             while !state.wisps.is_empty() {
+                std::thread::sleep(Duration::from_millis(50));
                 //technically this means that a destroyed wisp can still execute once more in some situations
                 for (index, wisp) in state.wisps.clone().iter().enumerate() {
                     let result = wisp.evaluate(state, pattern_registry, macros);
