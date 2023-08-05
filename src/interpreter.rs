@@ -88,28 +88,27 @@ fn interpret_node<'a>(
                 }));
 
             //loop through every frame until there aren't any more
-            while !state.continuation.is_empty() || !state.wisps.is_empty() {
-                if !state.continuation.is_empty() {
-                    //get top frame and remove it from the stack
-                    let frame = state.continuation.pop_back().unwrap();
+            while !state.continuation.is_empty() {
+                //get top frame and remove it from the stack
+                let frame = state.continuation.pop_back().unwrap();
 
-                    //evaluate the top frame (mutates state)
-                    frame.evaluate(state, pattern_registry, macros)?;
-                }
+                //evaluate the top frame (mutates state)
+                frame.evaluate(state, pattern_registry, macros)?;
+            }
 
-                if !state.wisps.is_empty() {
-                    //technically this means that a destroyed wisp can still execute once more in some situations
-                    for (index, wisp) in state.wisps.clone().iter().enumerate() {
-                        let result = wisp.evaluate(state, pattern_registry, macros);
-                        match result {
-                            Ok(wisp) => state.wisps[index] = wisp,
-                            Err(_) => {
-                                state.wisps.remove(index);
-                            }
+            while !state.wisps.is_empty() {
+                //technically this means that a destroyed wisp can still execute once more in some situations
+                for (index, wisp) in state.wisps.clone().iter().enumerate() {
+                    let result = wisp.evaluate(state, pattern_registry, macros);
+                    match result {
+                        Ok(wisp) => state.wisps[index] = wisp,
+                        Err(_) => {
+                            state.wisps.remove(index);
                         }
                     }
                 }
             }
+
             Ok(state)
         }
 
