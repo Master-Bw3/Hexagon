@@ -380,6 +380,9 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("Sifter's Reflection", "string/chat/prefix/get", "ewded",
                 constructors::value_0::<StringIota>("String", true, "Sifter's Reflection")),
 
+            Pattern::new_with_val("Identity Reflection", "wisp/self", "dedwqqwdedwqqaw",
+                constructors::value_0::<EntityIota>("Entity", true, "Identity Reflection")),
+
             //MoreIotas - Matrices
             Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),
             Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrix::unmake)),

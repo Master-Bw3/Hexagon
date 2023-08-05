@@ -1,17 +1,21 @@
 use std::{collections::HashMap, default, ops::Deref, rc::Rc, sync::Arc};
 
-use im::Vector;
+use im::{vector, Vector};
 
 use crate::{
     iota::{
-        hex_casting::{pattern::Signature, vector::VectorIota},
+        hex_casting::{continuation, pattern::Signature, vector::VectorIota},
         Iota,
     },
     parser::{AstNode, Macros},
     pattern_registry::PatternRegistry,
 };
 
-use super::{continuation::ContinuationFrame, interpret_node, mishap::Mishap};
+use super::{
+    continuation::{ContinuationFrame, ContinuationFrameTrait, FrameEvaluate},
+    interpret_node,
+    mishap::Mishap,
+};
 
 pub type Stack = Vector<Rc<dyn Iota>>;
 
@@ -232,38 +236,46 @@ pub struct Wisp {
 
 impl Wisp {
     pub fn evaluate(
-        &mut self,
+        &self,
         main_state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))> {
-        let mut state = State {
+    ) -> Result<Wisp, (Mishap, (usize, usize))> {
+        let mut wisp_state = State {
             stack: self.stack.clone(),
             ravenmind: self.ravenmind.clone(),
             heap: self.heap.clone(),
             buffer: Default::default(),
             consider_next: Default::default(),
             continuation: Default::default(),
-            wisps: Default::default(),
             ..main_state.clone()
         };
 
-        let result = interpret_node(
-            AstNode::File(self.code.clone().into_iter().collect()),
-            &mut state,
-            &pattern_registry,
-            &macros,
-        )?;
+        wisp_state
+            .continuation
+            .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                nodes_queue: Vector::from(self.code.clone()),
+            }));
 
-        main_state.entities = result.entities.clone();
-        main_state.libraries = result.libraries.clone();
-        main_state.sentinal_location = result.sentinal_location;
-        main_state.wisps.append(result.wisps.clone());
+        while !wisp_state.continuation.is_empty() {
+            //get top frame and remove it from the stack
+            let frame = wisp_state.continuation.pop_back().unwrap();
+            //evaluate the top frame (mutates state)
+            frame.evaluate(&mut wisp_state, pattern_registry, macros)?;
+        }
 
-        self.stack = state.stack;
-        self.ravenmind = state.ravenmind;
-        self.heap = state.heap;
+        main_state.entities = wisp_state.entities.clone();
+        main_state.libraries = wisp_state.libraries.clone();
+        main_state.sentinal_location = wisp_state.sentinal_location;
+        main_state.wisps = wisp_state.wisps;
 
-        Ok(())
+        let result = Wisp {
+            stack: wisp_state.stack,
+            ravenmind: wisp_state.ravenmind,
+            heap: wisp_state.heap,
+            code: self.code.clone(),
+        };
+
+        Ok(result)
     }
 }
