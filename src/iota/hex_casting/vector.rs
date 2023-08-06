@@ -21,9 +21,9 @@ impl Iota for VectorIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        let x = self.x.to_bits();
-        let y = self.y.to_bits();
-        let z = self.z.to_bits();
+        let x = self.x.to_bits() as i64;
+        let y = self.y.to_bits() as i64;
+        let z = self.z.to_bits() as i64;
 
         format!("{{\"hexcasting:type\": \"hexcasting:vec3\", \"hexcasting:data\": [L; {x}L, {y}L, {z}L]}}")
     }
