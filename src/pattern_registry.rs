@@ -225,6 +225,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Falling Block", "falling_block", "wqwawqwqwqwqwqw", constructors::spell_1::<VectorIota>()),
             Pattern::new("Summon Cyclic Wisp", "wisp/summon/ticking", "aqaweewaqawee", Box::new(hexal::spells::summon_wisp_ticking)),
             Pattern::new("Pathfinder's Gambit", "wisp/move/target/set", "awqwawqaw", constructors::spell_1::<VectorIota>()),
+            Pattern::new("Haste", "wisp/move/speed/set", "aeawqqqae", constructors::spell_1::<NumberIota>()),
 
 
             //great spells
