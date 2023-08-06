@@ -69,7 +69,7 @@ fn compile_node(
                         if pattern.internal_name == "number" || pattern.internal_name == "mask" {
                             value.clone()
                         } else {
-                            None
+                            value.clone()
                         };
                     Rc::new(PatternIota::from_sig(&pattern.signature, new_value, None))
                 }])
