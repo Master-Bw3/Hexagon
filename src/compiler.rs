@@ -15,6 +15,7 @@ use self::{
 pub mod if_block;
 pub mod nbt;
 pub mod ops;
+pub mod init_heap;
 
 pub fn compile_to_iotas(
     node: &AstNode,
@@ -27,7 +28,7 @@ pub fn compile_to_iotas(
     compile_node(&node, &mut heap, 0, pattern_registry, macros)
 }
 
-fn compile_node(
+pub fn compile_node(
     node: &AstNode,
     heap: &mut HashMap<String, i32>,
     depth: u32,

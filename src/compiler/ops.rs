@@ -30,41 +30,31 @@ pub fn compile_op_store(
     let (index, var) = {
         match value {
             OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
-            OpValue::Var(var) => (heap.get(var), var),
+            OpValue::Var(var) => (heap.get(var).copied(), var),
         }
     };
 
-    let compiled: Vec<Rc<dyn Iota>> = match index {
-        Some(index) => {
-            vec![
-                Rc::new(PatternIota::from_name(registry, "read/local", None, None).unwrap()),
-                Rc::new(
-                    PatternIota::from_name(
-                        registry,
-                        "number",
-                        Some(ActionValue::Iota(Rc::new(*index as f64))),
-                        None,
-                    )
-                    .unwrap(),
-                ),
-                Rc::new(PatternIota::from_name(registry, "rotate", None, None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "modify_in_place", None, None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "write/local", None, None).unwrap()),
-            ]
-        }
-        None => {
-            // let new_index = heap.values().fold(0, |acc, val| i32::max(acc, *val));
-            let new_index = heap.values().len() as i32;
-            heap.insert(var.clone(), new_index);
+    let index = index.unwrap_or_else(|| {
+        let new_index = heap.values().len() as i32;
+        heap.insert(var.clone(), new_index);
+        new_index
+    });
 
-            vec![
-                Rc::new(PatternIota::from_name(registry, "read/local", None, None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "swap", None, None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "append", None, None).unwrap()),
-                Rc::new(PatternIota::from_name(registry, "write/local", None, None).unwrap()),
-            ]
-        }
-    };
+    let compiled: Vec<Rc<dyn Iota>> = vec![
+        Rc::new(PatternIota::from_name(registry, "read/local", None, None).unwrap()),
+        Rc::new(
+            PatternIota::from_name(
+                registry,
+                "number",
+                Some(ActionValue::Iota(Rc::new(index as f64))),
+                None,
+            )
+            .unwrap(),
+        ),
+        Rc::new(PatternIota::from_name(registry, "rotate", None, None).unwrap()),
+        Rc::new(PatternIota::from_name(registry, "modify_in_place", None, None).unwrap()),
+        Rc::new(PatternIota::from_name(registry, "write/local", None, None).unwrap()),
+    ];
 
     Ok(compiled)
 }
@@ -91,7 +81,7 @@ pub fn compile_op_push(
                 registry,
                 "number",
                 Some(ActionValue::Iota(Rc::new(*index as f64))),
-                None
+                None,
             )
             .unwrap(),
         ),

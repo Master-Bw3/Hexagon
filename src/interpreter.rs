@@ -10,7 +10,7 @@ use im::{vector, Vector};
 
 use crate::{
     compiler::{
-        compile_to_iotas,
+        compile_node, compile_to_iotas,
         if_block::compile_if_block,
         ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     },
@@ -21,6 +21,7 @@ use crate::{
     iota::{
         hex_casting::{
             bool::BooleanIota,
+            null::NullIota,
             pattern::{PatternIota, Signature, SignatureExt},
         },
         Iota,
@@ -47,13 +48,18 @@ pub fn interpret(
     source_path: &str,
 ) -> Result<State, (Mishap, (usize, usize))> {
     let mut state = State {
-        ravenmind: Some(Rc::new(im::vector![])),
         ..Default::default()
     };
     state.entities = config.entities.clone();
     state.libraries = config.libraries.clone();
 
     let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
+
+    //compile to get heap size so that the ravenmind can be set to the right lenght
+    //TODO: replace this with a thing that just looks for var nodes and counts them or something
+    compile_node(&node, &mut state.heap, 0, &pattern_registry, &macros).unwrap();
+    let null: Rc<dyn Iota> = Rc::new(NullIota);
+    state.ravenmind = Some(Rc::new(Vector::from(vec![null; state.heap.keys().len()])));
 
     //if caster is not overriden by config then set default caster values
     match state.entities.get("Caster") {
