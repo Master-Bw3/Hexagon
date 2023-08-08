@@ -146,7 +146,7 @@ fn interpret_node<'a>(
         AstNode::Action { name, value, line } => {
             interpret_action(name, value, state, pattern_registry, &macros, Some(line))
         }
-        AstNode::Hex(nodes) => {
+        AstNode::Hex { external, nodes } => {
             interpret_action(
                 "open_paren".to_string(),
                 None,
@@ -286,11 +286,11 @@ pub fn interpret_action<'a>(
     macros: &Macros,
     line: Option<(usize, usize)>,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
-    if let Some((_, AstNode::Hex(macro_hex))) = macros.get(&name) {
+    if let Some((_, AstNode::Hex{external, nodes})) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
             let compiled = compile_to_iotas(
-                &AstNode::File(macro_hex.clone()),
+                &AstNode::File(nodes.clone()),
                 Some(&mut state.heap),
                 pattern_registry,
                 macros,
@@ -304,7 +304,7 @@ pub fn interpret_action<'a>(
         } else if let ContinuationFrame::Evaluate(eval_frame) =
             state.continuation.pop_back().unwrap()
         {
-            let mut new_frame = Vector::from(macro_hex);
+            let mut new_frame = Vector::from(nodes);
             new_frame.append(eval_frame.nodes_queue);
             state
                 .continuation

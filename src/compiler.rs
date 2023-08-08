@@ -59,9 +59,9 @@ pub fn compile_node(
         }
 
         AstNode::Action { line, name, value } => {
-            if let Some((_, AstNode::Hex(macro_hex))) = macros.get(name) {
+            if let Some((_, AstNode::Hex { external, nodes })) = macros.get(name) {
                 compile_node(
-                    &AstNode::File(macro_hex.clone()),
+                    &AstNode::File(nodes.clone()),
                     heap,
                     depth,
                     pattern_registry,
@@ -86,7 +86,18 @@ pub fn compile_node(
             }
         }
 
-        AstNode::Hex(hex) => compile_hex_node(hex, heap, depth, pattern_registry, macros),
+        AstNode::Hex { external, nodes } => {
+            let mut result = compile_hex_node(nodes, heap, depth, pattern_registry, macros);
+            if *external {
+                result.map(|ref mut x| {
+                    let mut iotas = init_heap(heap, pattern_registry).unwrap();
+                    iotas.append(x);
+                    iotas
+                })
+            } else {
+                result
+            }
+        }
 
         AstNode::Op { line, name, arg } => match name {
             OpName::Store => compile_op_store(heap, pattern_registry, arg),

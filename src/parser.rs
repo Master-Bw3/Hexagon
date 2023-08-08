@@ -111,13 +111,25 @@ fn construct_ast_node(
             conf_entities,
             macros,
         )),
-        Rule::Term => Some(AstNode::Hex(
-            pair.into_inner()
+        Rule::Term => Some(AstNode::Hex {
+            nodes: pair
+                .into_inner()
                 .filter_map(|node| {
                     construct_ast_node(node, pattern_registry, conf_entities, macros)
                 })
                 .collect(),
-        )),
+            external: false,
+        }),
+
+        Rule::ExternTerm => Some(AstNode::Hex {
+            nodes: pair
+                .into_inner()
+                .filter_map(|node| {
+                    construct_ast_node(node, pattern_registry, conf_entities, macros)
+                })
+                .collect(),
+            external: true,
+        }),
         _ => None,
     }
 }
@@ -471,7 +483,10 @@ pub enum AstNode {
         name: String,
         value: Option<ActionValue>,
     },
-    Hex(Vec<AstNode>),
+    Hex {
+        external: bool,
+        nodes: Vec<AstNode>,
+    },
     Op {
         line: (usize, usize),
         name: OpName,

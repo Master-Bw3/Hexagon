@@ -21,8 +21,8 @@ pub fn compile_if_block(
     let mut result: Vec<Rc<dyn Iota>> = vec![];
 
     //append condition to result
-    if let AstNode::Hex(condition_hex) = (*condition).clone() {
-        for node in condition_hex {
+    if let AstNode::Hex { external: _, nodes } = (*condition).clone() {
+        for node in nodes {
             result.append(&mut compile_node(
                 &node,
                 heap,
@@ -44,7 +44,7 @@ pub fn compile_if_block(
     //push fail hex to result (if there is one)
     match fail {
         Some(fail_node) => match **fail_node {
-            AstNode::Hex(_) => {
+            AstNode::Hex { external: _, nodes: _ } => {
                 // "else"
                 result.append(&mut compile_node(
                     fail_node,
@@ -62,7 +62,7 @@ pub fn compile_if_block(
                 fail: _,
             } => {
                 result.append(&mut compile_node(
-                    &AstNode::Hex(vec![(**fail_node).clone()]),
+                    &AstNode::Hex{nodes: vec![(**fail_node).clone()], external: false },
                     heap,
                     depth,
                     pattern_registry,
@@ -75,7 +75,7 @@ pub fn compile_if_block(
             _ => unreachable!(),
         },
         None => {
-            result.append(&mut compile_node(&AstNode::Hex(vec![]), heap, depth, pattern_registry, macros)?);
+            result.append(&mut compile_node(&AstNode::Hex{nodes: vec![], external: false }, heap, depth, pattern_registry, macros)?);
         }
     }
     //push augur's to buffer
