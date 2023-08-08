@@ -2,20 +2,21 @@ use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
-    iota::{hex_casting::pattern::PatternIota, Iota, self},
+    iota::{self, hex_casting::pattern::PatternIota, Iota},
     parser::{AstNode, Macros, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 use self::{
     if_block::compile_if_block,
-    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store}, init_heap::init_heap,
+    init_heap::init_heap,
+    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
 };
 
 pub mod if_block;
+pub mod init_heap;
 pub mod nbt;
 pub mod ops;
-pub mod init_heap;
 
 pub fn compile_to_iotas(
     node: &AstNode,
@@ -59,9 +60,10 @@ pub fn compile_node(
 
         AstNode::Action { line, name, value } => {
             if let Some((_, AstNode::Hex(macro_hex))) = macros.get(name) {
-                compile_to_iotas(
+                compile_node(
                     &AstNode::File(macro_hex.clone()),
-                    Some(heap),
+                    heap,
+                    depth,
                     pattern_registry,
                     macros,
                 )
@@ -114,7 +116,7 @@ pub fn compile_node(
             depth,
             heap,
             pattern_registry,
-            macros
+            macros,
         ),
     }
 }
@@ -126,7 +128,7 @@ fn compile_hex_node(
     heap: &mut HashMap<String, i32>,
     mut depth: u32,
     pattern_registry: &PatternRegistry,
-    macros: &Macros
+    macros: &Macros,
 ) -> CompileResult {
     depth += 1;
 
@@ -134,7 +136,13 @@ fn compile_hex_node(
 
     let mut inner = vec![];
     for node in hex {
-        inner.append(&mut compile_node(node, heap, depth, pattern_registry, macros)?)
+        inner.append(&mut compile_node(
+            node,
+            heap,
+            depth,
+            pattern_registry,
+            macros,
+        )?)
     }
 
     result.push(Rc::new(
