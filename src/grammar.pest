@@ -1,6 +1,6 @@
 File = _{ SOI ~ Hex ~ EOI }
 
-Hex = _{ (( Macro | IfBlock | Embed | Op | Var  | Action  | Term ) ~ Newline? | Newline)* }
+Hex = _{ (( Macro | IfBlock | Embed | Op | Var  | ExternTerm | Action  | Term ) ~ Newline? | Newline)* }
 
 IfBlock = {If ~ Then ~ (ElseIf ~ Then ~ Newline? )* ~ Else?}
 
