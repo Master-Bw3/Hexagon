@@ -2,14 +2,14 @@ use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
-    iota::{hex_casting::pattern::PatternIota, Iota},
+    iota::{hex_casting::pattern::PatternIota, Iota, self},
     parser::{AstNode, Macros, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 use self::{
     if_block::compile_if_block,
-    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store}, init_heap::init_heap,
 };
 
 pub mod if_block;
@@ -25,7 +25,14 @@ pub fn compile_to_iotas(
 ) -> CompileResult {
     let mut empty_heap = HashMap::new();
     let mut heap = heap.unwrap_or(&mut empty_heap);
-    compile_node(&node, &mut heap, 0, pattern_registry, macros)
+    let result = compile_node(&node, &mut heap, 0, pattern_registry, macros);
+
+    //prepend heap init (sets the size of the ravenmind list)
+    result.map(|ref mut x| {
+        let mut iotas = init_heap(heap, pattern_registry).unwrap();
+        iotas.append(x);
+        iotas
+    })
 }
 
 pub fn compile_node(
