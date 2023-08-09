@@ -45,7 +45,7 @@ pub fn compile_node(
     macros: &Macros,
 ) -> CompileResult {
     match node {
-        AstNode::File(file) => {
+        AstNode::Program(file) => {
             let mut result = vec![];
             for node in file {
                 result.append(&mut compile_node(
@@ -60,9 +60,9 @@ pub fn compile_node(
         }
 
         AstNode::Action { line, name, value } => {
-            if let Some((_, AstNode::Hex { external, nodes })) = macros.get(name) {
+            if let Some((_, AstNode::Block { external, nodes })) = macros.get(name) {
                 compile_node(
-                    &AstNode::File(nodes.clone()),
+                    &AstNode::Program(nodes.clone()),
                     heap,
                     depth,
                     pattern_registry,
@@ -87,7 +87,7 @@ pub fn compile_node(
             }
         }
 
-        AstNode::Hex { external, nodes } => {
+        AstNode::Block { external, nodes } => {
             let result = compile_hex_node(nodes, heap, depth, pattern_registry, macros);
             if *external {
                 result.map(|ref mut x| {

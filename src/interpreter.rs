@@ -97,7 +97,7 @@ fn run_vm<'a>(
     source_path: &str,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
     match node {
-        AstNode::File(nodes) => {
+        AstNode::Program(nodes) => {
             //initialize the vm
             state
                 .continuation
@@ -146,7 +146,7 @@ fn interpret_node<'a>(
         AstNode::Action { name, value, line } => {
             interpret_action(name, value, state, pattern_registry, &macros, Some(line))
         }
-        AstNode::Hex { external, nodes } => {
+        AstNode::Block { external, nodes } => {
             if external {
                 let result = vec![
                     ("open_paren", None),
@@ -251,7 +251,7 @@ fn interpret_node<'a>(
             }
             Ok(state)
         }
-        AstNode::File(_) => unreachable!(),
+        AstNode::Program(_) => unreachable!(),
     }
 }
 
@@ -332,11 +332,11 @@ pub fn interpret_action<'a>(
     macros: &Macros,
     line: Option<(usize, usize)>,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
-    if let Some((_, AstNode::Hex { external: _, nodes })) = macros.get(&name) {
+    if let Some((_, AstNode::Block { external: _, nodes })) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
             let compiled = compile_node(
-                &AstNode::File(nodes.clone()),
+                &AstNode::Program(nodes.clone()),
                 &mut state.heap,
                 calc_buffer_depth(&pattern_registry, &Some(buffer.clone())),
                 pattern_registry,

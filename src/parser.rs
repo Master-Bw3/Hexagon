@@ -47,7 +47,7 @@ pub fn parse(
         }
     }
 
-    Ok((AstNode::File(ast), macros))
+    Ok((AstNode::Program(ast), macros))
 }
 
 fn parse_macro(
@@ -111,7 +111,7 @@ fn construct_ast_node(
             conf_entities,
             macros,
         )),
-        Rule::Term => Some(AstNode::Hex {
+        Rule::Term => Some(AstNode::Block {
             nodes: pair
                 .into_inner()
                 .filter_map(|node| {
@@ -121,7 +121,7 @@ fn construct_ast_node(
             external: false,
         }),
 
-        Rule::ExternTerm => Some(AstNode::Hex {
+        Rule::ExternTerm => Some(AstNode::Block {
             nodes: pair
                 .into_inner()
                 .filter_map(|node| {
@@ -477,13 +477,13 @@ fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AstNode {
-    File(Vec<AstNode>),
+    Program(Vec<AstNode>),
     Action {
         line: (usize, usize),
         name: String,
         value: Option<ActionValue>,
     },
-    Hex {
+    Block {
         external: bool,
         nodes: Vec<AstNode>,
     },
