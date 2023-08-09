@@ -332,12 +332,13 @@ pub fn interpret_action<'a>(
     macros: &Macros,
     line: Option<(usize, usize)>,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
-    if let Some((_, AstNode::Hex { external, nodes })) = macros.get(&name) {
+    if let Some((_, AstNode::Hex { external: _, nodes })) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
-            let compiled = compile_to_iotas(
+            let compiled = compile_node(
                 &AstNode::File(nodes.clone()),
-                Some(&mut state.heap),
+                &mut state.heap,
+                calc_buffer_depth(&pattern_registry, &Some(buffer.clone())),
                 pattern_registry,
                 macros,
             )
