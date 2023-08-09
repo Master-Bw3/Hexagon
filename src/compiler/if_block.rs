@@ -2,14 +2,14 @@ use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parser::{AstNode, Macros},
+    parser::{AstNode, Macros, Location},
     pattern_registry::PatternRegistry,
 };
 
 use super::{compile_node, CompileResult};
 
 pub fn compile_if_block(
-    _line: &(usize, usize),
+    location: &Location,
     condition: &AstNode,
     succeed: &AstNode,
     fail: &Option<Box<AstNode>>,
@@ -43,7 +43,7 @@ pub fn compile_if_block(
     )?);
     //push fail hex to result (if there is one)
     match fail {
-        Some(fail_node) => match **fail_node {
+        Some(fail_node) => match *(fail_node.clone()) {
             AstNode::Block { external: _, nodes: _ } => {
                 // "else"
                 result.append(&mut compile_node(
@@ -56,7 +56,7 @@ pub fn compile_if_block(
             }
             // "if else"
             AstNode::IfBlock {
-                line: _,
+                location,
                 condition: _,
                 succeed: _,
                 fail: _,
@@ -69,7 +69,7 @@ pub fn compile_if_block(
                     macros,
                 )?);
                 result.push(Rc::new(
-                    PatternIota::from_name(pattern_registry, "eval", None, None).unwrap(),
+                    PatternIota::from_name(pattern_registry, "eval", None, location).unwrap(),
                 ));
             }
             _ => unreachable!(),
@@ -80,7 +80,7 @@ pub fn compile_if_block(
     }
     //push augur's to buffer
     result.push(Rc::new(
-        PatternIota::from_name(pattern_registry, "if", None, None).unwrap(),
+        PatternIota::from_name(pattern_registry, "if", None, location.clone()).unwrap(),
     ));
 
     Ok(result)

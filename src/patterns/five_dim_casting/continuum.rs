@@ -21,7 +21,7 @@ use crate::{
         },
         Iota,
     },
-    parser::{ActionValue, AstNode},
+    parser::{ActionValue, AstNode, Location},
     pattern_registry::PatternRegistry,
     patterns::hex_casting::stack,
 };
@@ -35,12 +35,12 @@ pub fn number_stream<'a>(
             pattern_registry,
             "number",
             Some(ActionValue::Iota(Rc::new(1.0))),
-            None,
+            Location::Unknown,
         )
         .unwrap(),
     );
     let add: Rc<dyn Iota> =
-        Rc::new(PatternIota::from_name(pattern_registry, "add", None, None).unwrap());
+        Rc::new(PatternIota::from_name(pattern_registry, "add", None, Location::Unknown).unwrap());
 
     let continuum = ContinuumIota {
         front_val: Rc::new(0.0),
@@ -131,7 +131,7 @@ pub fn map<'a>(
     match code {
         crate::interpreter::state::Either::L(pattern) => {
             continuum.maps.push_back(vector![AstNode::Action {
-                line: (1, 0),
+                location: Location::Unknown,
                 name: pattern.signature.as_str(),
                 value: *pattern.value.clone(),
             }])
@@ -161,7 +161,7 @@ pub fn make_stream<'a>(
     let gen_next_func = match code {
         crate::interpreter::state::Either::L(pattern) => {
             vector![AstNode::Action {
-                line: (1, 0),
+                location: Location::Unknown,
                 name: pattern.signature.as_str(),
                 value: *pattern.value.clone(),
             }]

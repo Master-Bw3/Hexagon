@@ -2,25 +2,31 @@ use std::rc::Rc;
 
 use owo_colors::OwoColorize;
 
-use crate::iota::Iota;
+use crate::{iota::Iota, parser::Location};
 
 use super::mishap::Mishap;
 
 pub fn print_interpreter_error(
-    (err, (line, col)): (Mishap, (usize, usize)),
+    (err, location): (Mishap, Location),
     source: &str,
     source_path: &str,
 ) {
-    let location = format!("{source_path}:{line}:{col}");
-    let line_content = source.lines().collect::<Vec<_>>()[line - 1];
-    let pad_len = line.to_string().len();
-    let padding = vec![" "; pad_len].concat();
+    match location {
+        Location::Unknown => todo!(),
+        Location::Line(line, col) => {
+            let location = format!("{source_path}:{line}:{col}");
+            let line_content = source.lines().collect::<Vec<_>>()[line - 1];
+            let pad_len = line.to_string().len();
+            let padding = vec![" "; pad_len].concat();
 
-    print_err_msg(&err, &padding, &location);
-    eprintln!(" {padding} {}", "|".magenta().bold());
-    print_mishap_content(line, line_content, &padding);
+            print_err_msg(&err, &padding, &location);
+            eprintln!(" {padding} {}", "|".magenta().bold());
+            print_mishap_content(line, line_content, &padding);
 
-    print_mishap_hint(&err, &padding);
+            print_mishap_hint(&err, &padding);
+        }
+        Location::List(_) => todo!(),
+    }
 }
 
 fn print_err_msg(err: &Mishap, padding: &String, location: &String) {

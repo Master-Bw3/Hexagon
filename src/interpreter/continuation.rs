@@ -15,7 +15,7 @@ impl ContinuationFrameTrait for ContinuationFrame {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))> {
+    ) -> Result<(), (Mishap, Location)> {
         match self {
             ContinuationFrame::Evaluate(frame) => frame.evaluate(state, pattern_registry, macros),
             ContinuationFrame::EndEval(frame) => frame.evaluate(state, pattern_registry, macros),
@@ -44,7 +44,7 @@ use crate::{
         },
         Iota,
     },
-    parser::{AstNode, Macros, OpName, OpValue},
+    parser::{AstNode, Macros, OpName, OpValue, Location},
     pattern_registry::PatternRegistry,
 };
 use std::{
@@ -64,7 +64,7 @@ pub trait ContinuationFrameTrait: std::fmt::Debug {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))>;
+    ) -> Result<(), (Mishap, Location)>;
 
     fn break_out(&self, state: &mut State) -> bool;
 }
@@ -80,7 +80,7 @@ impl ContinuationFrameTrait for FrameEvaluate {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))> {
+    ) -> Result<(), (Mishap, Location)> {
         let mut new_frame = self.clone();
         let node = new_frame.nodes_queue.pop_front();
 
@@ -115,7 +115,7 @@ impl ContinuationFrameTrait for FrameEndEval {
         state: &mut State,
         _: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))> {
+    ) -> Result<(), (Mishap, Location)> {
         state.consider_next = false;
         Ok(())
     }
@@ -141,7 +141,7 @@ impl ContinuationFrameTrait for FrameForEach {
         state: &mut State,
         _: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))> {
+    ) -> Result<(), (Mishap, Location)> {
         let stack = match &self.base_stack {
             //thoth entry point
             None => state.stack.clone(),
@@ -214,7 +214,7 @@ impl ContinuationFrameTrait for FrameIterate {
         state: &mut State,
         _pattern_registry: &PatternRegistry,
         _macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))> {
+    ) -> Result<(), (Mishap, Location)> {
         let base_stack = match &self.base_stack {
             //entry point
             None => state.stack.clone(),
@@ -317,7 +317,7 @@ impl ContinuationFrameTrait for FrameMap {
         state: &mut State,
         _: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, (usize, usize))> {
+    ) -> Result<(), (Mishap, Location)> {
         if self.init {
             let mut new_maps = self.maps.clone();
             let current_map = new_maps.pop_front().unwrap();
@@ -425,12 +425,12 @@ pub fn iota_list_to_ast_node_list(list: Rc<Vector<Rc<dyn Iota>>>) -> Vector<AstN
         .map(
             |(index, iota)| match iota.clone().downcast_rc::<PatternIota>() {
                 Ok(pattern) => AstNode::Action {
-                    line: pattern.line.unwrap_or((1, 0)),
+                    location: pattern.location.clone(),
                     name: pattern.signature.as_str(),
                     value: *pattern.value.clone(),
                 },
                 Err(_) => AstNode::Op {
-                    line: (1, 0),
+                    location: Location::List(index),
                     name: OpName::Embed,
                     arg: Some(OpValue::Iota(iota.clone())),
                 },

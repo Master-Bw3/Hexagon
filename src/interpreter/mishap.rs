@@ -8,7 +8,7 @@ use crate::{
         hex_casting::vector::VectorIota,
         hex_casting::{garbage::GarbageIota, pattern::PatternIota},
         Iota,
-    },
+    }, parser::Location,
 };
 
 #[derive(Debug)]
@@ -68,7 +68,7 @@ impl Mishap {
             Mishap::HastyRetrospection => {
                 let retro_sig: &str = "eee";
                 let mut new_stack = stack;
-                new_stack.push_back(Rc::new(PatternIota::from_sig(retro_sig, None, None)));
+                new_stack.push_back(Rc::new(PatternIota::from_sig(retro_sig, None, Location::Unknown)));
                 new_stack
             }
             Mishap::InvalidPattern => {

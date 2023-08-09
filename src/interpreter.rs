@@ -27,7 +27,7 @@ use crate::{
         Iota,
     },
     parse_config::Config,
-    parser::{ActionValue, AstNode, Macros, OpName, OpValue},
+    parser::{ActionValue, AstNode, Macros, OpName, OpValue, Location},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -46,7 +46,7 @@ pub fn interpret(
     macros: Macros,
     source: &str,
     source_path: &str,
-) -> Result<State, (Mishap, (usize, usize))> {
+) -> Result<State, (Mishap, Location)> {
     let mut state = State {
         ..Default::default()
     };
@@ -95,7 +95,7 @@ fn run_vm<'a>(
     macros: &Macros,
     source: &str,
     source_path: &str,
-) -> Result<&'a mut State, (Mishap, (usize, usize))> {
+) -> Result<&'a mut State, (Mishap, Location)> {
     match node {
         AstNode::Program(nodes) => {
             //initialize the vm
@@ -142,11 +142,11 @@ fn interpret_node<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     macros: &Macros,
-) -> Result<&'a mut State, (Mishap, (usize, usize))> {
+) -> Result<&'a mut State, (Mishap, Location)> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
     match node {
-        AstNode::Action { name, value, line } => {
-            interpret_action(name, value, state, pattern_registry, &macros, Some(line))
+        AstNode::Action { name, value, location: location } => {
+            interpret_action(name, value, state, pattern_registry, &macros, location)
         }
         AstNode::Block { external, nodes } => {
             if external {
@@ -178,7 +178,7 @@ fn interpret_node<'a>(
                         state,
                         &pattern_registry,
                         &macros,
-                        None,
+                        Location::Unknown,
                     )?;
                 }
             }
@@ -189,7 +189,7 @@ fn interpret_node<'a>(
                 state,
                 pattern_registry,
                 &macros,
-                None,
+                Location::Unknown,
             )?;
 
             for node in nodes {
@@ -201,7 +201,7 @@ fn interpret_node<'a>(
                 state,
                 pattern_registry,
                 &macros,
-                None,
+                Location::Unknown,
             )?;
 
             //combine external with rest of hex
@@ -212,27 +212,27 @@ fn interpret_node<'a>(
                     state,
                     pattern_registry,
                     &macros,
-                    None,
+                    Location::Unknown,
                 )?;
             }
 
             Ok(state)
         }
-        AstNode::Op { name, arg, line } => {
-            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, line))
+        AstNode::Op { name, arg, location } => {
+            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, location))
         }
         AstNode::IfBlock {
             condition,
             succeed,
             fail,
-            line,
+            location,
         } => {
             if state.consider_next {
-                return Err((Mishap::OpCannotBeConsidered, line));
+                return Err((Mishap::OpCannotBeConsidered, location));
             }
 
             let compiled = Vector::from(compile_if_block(
-                &line,
+                &location,
                 &condition,
                 &succeed,
                 &fail,
@@ -332,8 +332,8 @@ pub fn interpret_action<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     macros: &Macros,
-    line: Option<(usize, usize)>,
-) -> Result<&'a mut State, (Mishap, (usize, usize))> {
+    location: Location,
+) -> Result<&'a mut State, (Mishap, Location)> {
     if let Some((_, AstNode::Block { external: _, nodes })) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
@@ -366,7 +366,7 @@ pub fn interpret_action<'a>(
 
     let patterns = pattern_registry.find_all(&name, &value);
     if patterns.is_empty() {
-        return Err((Mishap::InvalidPattern, line.unwrap_or((1, 0))));
+        return Err((Mishap::InvalidPattern, location));
     }
     let signature = &patterns[0].signature;
 
@@ -376,13 +376,13 @@ pub fn interpret_action<'a>(
         == Signature::from_name(pattern_registry, "close_paren", &None).unwrap();
 
     if state.consider_next {
-        push_pattern(name, value, state, pattern_registry, true, line);
+        push_pattern(name, value, state, pattern_registry, true, location);
         state.consider_next = false;
         return Ok(state);
     }
 
     if state.buffer.is_some() && !(is_escape || is_retro) {
-        push_pattern(name, value, state, pattern_registry, false, line);
+        push_pattern(name, value, state, pattern_registry, false, location);
         return Ok(state);
     }
 
@@ -406,7 +406,7 @@ pub fn interpret_action<'a>(
 
     result
         .map(|_| state)
-        .map_err(|mishap| (mishap, line.unwrap_or((1, 0))))
+        .map_err(|mishap| (mishap, location))
 }
 
 pub fn push_pattern(
@@ -415,10 +415,10 @@ pub fn push_pattern(
     state: &mut State,
     pattern_registry: &PatternRegistry,
     considered: bool,
-    line: Option<(usize, usize)>,
+    location: Location,
 ) {
     push_iota(
-        Rc::new(PatternIota::from_name(pattern_registry, &pattern, value, line).unwrap()),
+        Rc::new(PatternIota::from_name(pattern_registry, &pattern, value, location).unwrap()),
         state,
         considered,
     )
@@ -435,8 +435,8 @@ fn calc_buffer_depth(
     registry: &PatternRegistry,
     buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>,
 ) -> u32 {
-    let intro_pattern = PatternIota::from_name(registry, "open_paren", None, None).unwrap();
-    let retro_pattern = PatternIota::from_name(registry, "close_paren", None, None).unwrap();
+    let intro_pattern = PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap();
+    let retro_pattern = PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap();
 
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

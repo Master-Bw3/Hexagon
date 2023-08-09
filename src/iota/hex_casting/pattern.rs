@@ -1,4 +1,5 @@
 use crate::interpreter::mishap::Mishap;
+use crate::parser::Location;
 use crate::pattern_registry::PatternRegistryExt;
 use crate::{parser::ActionValue, pattern_registry::PatternRegistry};
 
@@ -8,7 +9,7 @@ use crate::iota::Iota;
 pub struct PatternIota {
     pub signature: Signature,
     pub value: Box<Option<ActionValue>>,
-    pub line: Option<(usize, usize)>,
+    pub location: Location,
 }
 
 impl PatternIota {
@@ -16,25 +17,25 @@ impl PatternIota {
         registry: &PatternRegistry,
         name: &str,
         value: Option<ActionValue>,
-        line: Option<(usize, usize)>,
+        location: Location,
     ) -> Result<PatternIota, Mishap> {
         Ok(PatternIota {
             signature: Signature::from_name(registry, name, &value)
                 .ok_or(Mishap::InvalidPattern)?,
             value: Box::new(value),
-            line,
+            location,
         })
     }
 
     pub fn from_sig(
         name: &str,
         value: Option<ActionValue>,
-        line: Option<(usize, usize)>,
+        location: Location,
     ) -> PatternIota {
         PatternIota {
             signature: Signature::from_sig(name),
             value: Box::new(value),
-            line,
+            location,
         }
     }
 }

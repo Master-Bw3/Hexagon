@@ -7,7 +7,7 @@ use crate::{
         hex_casting::{continuation, pattern::Signature, vector::VectorIota, entity::EntityIota},
         Iota,
     },
-    parser::{AstNode, Macros},
+    parser::{AstNode, Macros, Location},
     pattern_registry::PatternRegistry,
 };
 
@@ -241,7 +241,7 @@ impl Wisp {
         main_state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<Wisp, (Mishap, (usize, usize))> {
+    ) -> Result<Wisp, (Mishap, Location)> {
         let mut wisp_state = State {
             stack: self.stack.clone(),
             ravenmind: self.ravenmind.clone(),
