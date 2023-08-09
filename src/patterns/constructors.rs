@@ -47,8 +47,8 @@ pub fn spell_1<T: Iota>() -> Box<ActionNoValueType> {
 
 pub fn spell_2<T: Iota, U: Iota>() -> Box<ActionNoValueType> {
     Box::new(move |state: &mut State, _: &PatternRegistry| {
-        state.stack.get_iota::<T>(0, 1)?;
-        state.stack.get_iota::<U>(1, 1)?;
+        state.stack.get_iota::<T>(0, 2)?;
+        state.stack.get_iota::<U>(1, 2)?;
 
         state.stack.remove_args(&2);
         Ok(state)
@@ -57,9 +57,9 @@ pub fn spell_2<T: Iota, U: Iota>() -> Box<ActionNoValueType> {
 
 pub fn spell_3<T: Iota, U: Iota, V: Iota>() -> Box<ActionNoValueType> {
     Box::new(move |state: &mut State, _: &PatternRegistry| {
-        state.stack.get_iota::<T>(0, 1)?;
-        state.stack.get_iota::<U>(1, 1)?;
-        state.stack.get_iota::<V>(2, 1)?;
+        state.stack.get_iota::<T>(0, 3)?;
+        state.stack.get_iota::<U>(1, 3)?;
+        state.stack.get_iota::<V>(2, 3)?;
 
         state.stack.remove_args(&3);
         Ok(state)
