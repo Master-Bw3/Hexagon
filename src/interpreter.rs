@@ -151,8 +151,6 @@ fn interpret_node<'a>(
         AstNode::Block { external, nodes } => {
             if external {
                 let result = vec![
-                    ("print", None),
-
                     ("open_paren", None),
                     ("read/local", None),
                     ("const/null", None),
@@ -168,7 +166,7 @@ fn interpret_node<'a>(
                     ("if", None),
                     ("eval", None),
                     ("close_paren", None),
-                    ("number", Some(ActionValue::Iota(Rc::new(6.0)))),
+                    ("number", Some(ActionValue::Iota(Rc::new(5.0)))),
                     ("read/local", None),
                     ("modify_in_place", None),
                 ];

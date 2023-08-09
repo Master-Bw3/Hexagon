@@ -19,7 +19,7 @@ pub fn compile_external(hex: &mut Vec<Rc<dyn Iota>>, registry: &PatternRegistry)
         Rc::new(PatternIota::from_name(registry, "if", None, None).unwrap()),
         Rc::new(PatternIota::from_name(registry, "eval", None, None).unwrap()),
         Rc::new(PatternIota::from_name(registry, "close_paren", None, None).unwrap()),
-        Rc::new(PatternIota::from_name(registry, "number", Some(ActionValue::Iota(Rc::new(6.0))), None).unwrap()),
+        Rc::new(PatternIota::from_name(registry, "number", Some(ActionValue::Iota(Rc::new(5.0))), None).unwrap()),
         Rc::new(PatternIota::from_name(registry, "read/local", None, None).unwrap()),
         Rc::new(PatternIota::from_name(registry, "modify_in_place", None, None).unwrap()),
 
