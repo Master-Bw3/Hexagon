@@ -2,7 +2,7 @@ use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
-    iota::{self, hex_casting::pattern::PatternIota, Iota},
+    iota::{hex_casting::pattern::PatternIota, Iota},
     parser::{AstNode, Macros, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
@@ -10,13 +10,14 @@ use crate::{
 use self::{
     if_block::compile_if_block,
     init_heap::init_heap,
-    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store}, external::compile_external,
 };
 
 pub mod if_block;
 pub mod init_heap;
 pub mod nbt;
 pub mod ops;
+pub mod external;
 
 pub fn compile_to_iotas(
     node: &AstNode,
@@ -87,12 +88,10 @@ pub fn compile_node(
         }
 
         AstNode::Hex { external, nodes } => {
-            let mut result = compile_hex_node(nodes, heap, depth, pattern_registry, macros);
+            let result = compile_hex_node(nodes, heap, depth, pattern_registry, macros);
             if *external {
                 result.map(|ref mut x| {
-                    let mut iotas = init_heap(heap, pattern_registry).unwrap();
-                    iotas.append(x);
-                    iotas
+                    compile_external(x, pattern_registry)
                 })
             } else {
                 result

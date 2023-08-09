@@ -147,6 +147,40 @@ fn interpret_node<'a>(
             interpret_action(name, value, state, pattern_registry, &macros, Some(line))
         }
         AstNode::Hex { external, nodes } => {
+            if external {
+                let result = vec![
+                    ("open_paren", None),
+                    ("read/local", None),
+                    ("const/null", None),
+                    ("equals", None),
+                    ("empty_list", None),
+                    ("open_paren", None),
+                    ("open_paren", None),
+                    ("mask", Some(ActionValue::Bookkeeper("-".to_string()))),
+                    ("close_paren", None),
+                    ("splat", None),
+                    ("write/local", None),
+                    ("close_paren", None),
+                    ("if", None),
+                    ("eval", None),
+                    ("close_paren", None),
+                    ("number", Some(ActionValue::Iota(Rc::new(6.0)))),
+                    ("read/local", None),
+                    ("modify_in_place", None),
+                ];
+
+                for (name, value) in result {
+                    interpret_action(
+                        name.to_string(),
+                        value,
+                        state,
+                        &pattern_registry,
+                        &macros,
+                        None,
+                    )?;
+                }
+            }
+
             interpret_action(
                 "open_paren".to_string(),
                 None,
@@ -167,6 +201,18 @@ fn interpret_node<'a>(
                 &macros,
                 None,
             )?;
+
+            //combine external with rest of hex
+            if external {
+                interpret_action(
+                    "concat".to_string(),
+                    None,
+                    state,
+                    pattern_registry,
+                    &macros,
+                    None,
+                )?;
+            }
 
             Ok(state)
         }
@@ -286,7 +332,7 @@ pub fn interpret_action<'a>(
     macros: &Macros,
     line: Option<(usize, usize)>,
 ) -> Result<&'a mut State, (Mishap, (usize, usize))> {
-    if let Some((_, AstNode::Hex{external, nodes})) = macros.get(&name) {
+    if let Some((_, AstNode::Hex { external, nodes })) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
             let compiled = compile_to_iotas(
