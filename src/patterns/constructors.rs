@@ -147,7 +147,7 @@ pub fn value_2<T: Iota, U: Iota, V: Iota>(
     Box::new(
         move |state: &mut State, _: &PatternRegistry, value: Option<&ActionValue>| {
             state.stack.get_iota::<T>(0, 2)?;
-            state.stack.get_iota::<U>(0, 2)?;
+            state.stack.get_iota::<U>(1, 2)?;
             state.stack.remove_args(&2);
 
             match value {
