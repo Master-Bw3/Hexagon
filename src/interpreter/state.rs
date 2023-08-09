@@ -32,7 +32,7 @@ pub struct State {
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub continuation: Vector<ContinuationFrame>,
-    pub wisps: Vector<Wisp>,
+    pub wisps: HashMap<String, Wisp>,
 }
 
 pub type Library = HashMap<Signature, Rc<dyn Iota>>;

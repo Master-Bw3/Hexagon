@@ -117,13 +117,15 @@ fn run_vm<'a>(
             while !state.wisps.is_empty() {
                 std::thread::sleep(Duration::from_millis(50));
                 //technically this means that a destroyed wisp can still execute once more in some situations
-                for (index, wisp) in state.wisps.clone().iter().enumerate() {
+                for (name, wisp) in state.wisps.clone().iter() {
                     let result = wisp.evaluate(state, pattern_registry, macros);
                     match result {
-                        Ok(wisp) => state.wisps[index] = wisp,
+                        Ok(wisp) => {
+                            state.wisps.insert(name.clone(), wisp);
+                        }
                         Err(err) => {
                             print_interpreter_error(err, source, source_path);
-                            state.wisps.remove(index);
+                            state.wisps.remove(name);
                         }
                     }
                 }
@@ -149,11 +151,12 @@ fn interpret_node<'a>(
         AstNode::Block { external, nodes } => {
             if external {
                 let result = vec![
+                    ("print", None),
+
                     ("open_paren", None),
                     ("read/local", None),
                     ("const/null", None),
                     ("equals", None),
-                    ("empty_list", None),
                     ("open_paren", None),
                     ("open_paren", None),
                     ("mask", Some(ActionValue::Bookkeeper("-".to_string()))),
@@ -161,6 +164,7 @@ fn interpret_node<'a>(
                     ("splat", None),
                     ("write/local", None),
                     ("close_paren", None),
+                    ("empty_list", None),
                     ("if", None),
                     ("eval", None),
                     ("close_paren", None),
