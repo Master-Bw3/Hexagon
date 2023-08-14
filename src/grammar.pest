@@ -4,7 +4,7 @@ Hex = _{ (( Macro | IfBlock | Embed | Op | Var  | ExternTerm | Action  | Term ) 
 
 IfBlock = {If ~ Then ~ (ElseIf ~ Then ~ Newline? )* ~ Else?}
 
-If =  {"if" ~ Newline? ~ Term}
+IfBlock = { If ~ Then ~ Newline? ~ (ElseIf ~ Then ~ Newline?)* ~ Else? }
 
 Then = {"then" ~ Newline? ~ Term}
 
