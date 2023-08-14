@@ -2,9 +2,9 @@ File = _{ SOI ~ Hex ~ EOI }
 
 Hex = _{ (( Macro | IfBlock | Embed | Op | Var  | ExternTerm | Action  | Term ) ~ Newline? | Newline)* }
 
-IfBlock = {If ~ Then ~ (ElseIf ~ Then ~ Newline? )* ~ Else?}
-
 IfBlock = { If ~ Then ~ Newline? ~ (ElseIf ~ Then ~ Newline?)* ~ Else? }
+
+If =  {"if" ~ Newline? ~ Term}
 
 Then = {"then" ~ Newline? ~ Term}
 
