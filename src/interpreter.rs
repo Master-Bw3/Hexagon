@@ -1,15 +1,16 @@
 pub mod continuation;
+pub mod error;
 pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::rc::Rc;
+use std::{rc::Rc, result, time::Duration};
 
 use im::{vector, Vector};
 
 use crate::{
     compiler::{
-        compile_to_iotas,
+        compile_node, compile_to_iotas,
         if_block::compile_if_block,
         ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     },
@@ -20,12 +21,13 @@ use crate::{
     iota::{
         hex_casting::{
             bool::BooleanIota,
+            null::NullIota,
             pattern::{PatternIota, Signature, SignatureExt},
         },
         Iota,
     },
     parse_config::Config,
-    parser::{ActionValue, AstNode, Macros, OpName, OpValue},
+    parser::{ActionValue, AstNode, Macros, OpName, OpValue, Location},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -33,6 +35,7 @@ use self::{
     continuation::{
         iota_list_to_ast_node_list, ContinuationFrame, ContinuationFrameTrait, FrameEvaluate,
     },
+    error::print_interpreter_error,
     mishap::Mishap,
     state::{Considered, Entity, EntityType, Holding, State},
 };
@@ -41,15 +44,22 @@ pub fn interpret(
     node: AstNode,
     config: &Config,
     macros: Macros,
-) -> Result<State, (Mishap, (usize, usize))> {
+    source: &str,
+    source_path: &str,
+) -> Result<State, (Mishap, Location)> {
     let mut state = State {
-        ravenmind: Some(Rc::new(im::vector![])),
         ..Default::default()
     };
     state.entities = config.entities.clone();
     state.libraries = config.libraries.clone();
 
     let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
+
+    //compile to get heap size so that the ravenmind can be set to the right lenght
+    //TODO: replace this with a thing that just looks for var nodes and counts them or something
+    compile_node(&node, &mut state.heap, 0, &pattern_registry, &macros).unwrap();
+    let null: Rc<dyn Iota> = Rc::new(NullIota);
+    state.ravenmind = Some(Rc::new(Vector::from(vec![null; state.heap.keys().len()])));
 
     //if caster is not overriden by config then set default caster values
     match state.entities.get("Caster") {
@@ -67,19 +77,27 @@ pub fn interpret(
         }
     }
 
-    (interpret_node(node, &mut state, &pattern_registry, &macros)).map(|state| state.clone())
+    (run_vm(
+        node,
+        &mut state,
+        &pattern_registry,
+        &macros,
+        source,
+        source_path,
+    ))
+    .map(|state| state.clone())
 }
 
-fn interpret_node<'a>(
+fn run_vm<'a>(
     node: AstNode,
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     macros: &Macros,
-) -> Result<&'a mut State, (Mishap, (usize, usize))> {
-    // println!("a: {:?}, {:?}", state.stack, state.buffer);
-
+    source: &str,
+    source_path: &str,
+) -> Result<&'a mut State, (Mishap, Location)> {
     match node {
-        AstNode::File(nodes) => {
+        AstNode::Program(nodes) => {
             //initialize the vm
             state
                 .continuation
@@ -89,26 +107,89 @@ fn interpret_node<'a>(
 
             //loop through every frame until there aren't any more
             while !state.continuation.is_empty() {
-                //get top fram and remove it from the stack
+                //get top frame and remove it from the stack
                 let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)
                 frame.evaluate(state, pattern_registry, macros)?;
             }
+
+            while !state.wisps.is_empty() {
+                std::thread::sleep(Duration::from_millis(50));
+                //technically this means that a destroyed wisp can still execute once more in some situations
+                for (name, wisp) in state.wisps.clone().iter() {
+                    let result = wisp.evaluate(state, pattern_registry, macros);
+                    match result {
+                        Ok(wisp) => {
+                            state.wisps.insert(name.clone(), wisp);
+                        }
+                        Err(err) => {
+                            print_interpreter_error(err, source, source_path);
+                            state.wisps.remove(name);
+                        }
+                    }
+                }
+            }
+
             Ok(state)
         }
+        _ => unreachable!(),
+    }
+}
 
-        AstNode::Action { name, value, line } => {
-            interpret_action(name, value, state, pattern_registry, &macros, Some(line))
+fn interpret_node<'a>(
+    node: AstNode,
+    state: &'a mut State,
+    pattern_registry: &PatternRegistry,
+    macros: &Macros,
+) -> Result<&'a mut State, (Mishap, Location)> {
+    // println!("a: {:?}, {:?}", state.stack, state.buffer);
+    match node {
+        AstNode::Action { name, value, location: location } => {
+            interpret_action(name, value, state, pattern_registry, &macros, location)
         }
-        AstNode::Hex(nodes) => {
+        AstNode::Block { external, nodes } => {
+            if external {
+                let result = vec![
+                    ("open_paren", None),
+                    ("read/local", None),
+                    ("const/null", None),
+                    ("equals", None),
+                    ("open_paren", None),
+                    ("open_paren", None),
+                    ("mask", Some(ActionValue::Bookkeeper("-".to_string()))),
+                    ("close_paren", None),
+                    ("splat", None),
+                    ("write/local", None),
+                    ("close_paren", None),
+                    ("empty_list", None),
+                    ("if", None),
+                    ("eval", None),
+                    ("close_paren", None),
+                    ("number", Some(ActionValue::Iota(Rc::new(5.0)))),
+                    ("read/local", None),
+                    ("modify_in_place", None),
+                ];
+
+                for (name, value) in result {
+                    interpret_action(
+                        name.to_string(),
+                        value,
+                        state,
+                        &pattern_registry,
+                        &macros,
+                        Location::Unknown,
+                    )?;
+                }
+            }
+
             interpret_action(
                 "open_paren".to_string(),
                 None,
                 state,
                 pattern_registry,
                 &macros,
-                None,
+                Location::Unknown,
             )?;
 
             for node in nodes {
@@ -120,26 +201,38 @@ fn interpret_node<'a>(
                 state,
                 pattern_registry,
                 &macros,
-                None,
+                Location::Unknown,
             )?;
+
+            //combine external with rest of hex
+            if external {
+                interpret_action(
+                    "concat".to_string(),
+                    None,
+                    state,
+                    pattern_registry,
+                    &macros,
+                    Location::Unknown,
+                )?;
+            }
 
             Ok(state)
         }
-        AstNode::Op { name, arg, line } => {
-            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, line))
+        AstNode::Op { name, arg, location } => {
+            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, location))
         }
         AstNode::IfBlock {
             condition,
             succeed,
             fail,
-            line,
+            location,
         } => {
             if state.consider_next {
-                return Err((Mishap::OpCannotBeConsidered, line));
+                return Err((Mishap::OpCannotBeConsidered, location));
             }
 
             let compiled = Vector::from(compile_if_block(
-                &line,
+                &location,
                 &condition,
                 &succeed,
                 &fail,
@@ -160,6 +253,7 @@ fn interpret_node<'a>(
             }
             Ok(state)
         }
+        AstNode::Program(_) => unreachable!(),
     }
 }
 
@@ -238,14 +332,15 @@ pub fn interpret_action<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     macros: &Macros,
-    line: Option<(usize, usize)>,
-) -> Result<&'a mut State, (Mishap, (usize, usize))> {
-    if let Some((_, AstNode::Hex(macro_hex))) = macros.get(&name) {
+    location: Location,
+) -> Result<&'a mut State, (Mishap, Location)> {
+    if let Some((_, AstNode::Block { external: _, nodes })) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
-            let compiled = compile_to_iotas(
-                &AstNode::File(macro_hex.clone()),
-                Some(&mut state.heap),
+            let compiled = compile_node(
+                &AstNode::Program(nodes.clone()),
+                &mut state.heap,
+                calc_buffer_depth(&pattern_registry, &Some(buffer.clone())),
                 pattern_registry,
                 macros,
             )
@@ -258,7 +353,7 @@ pub fn interpret_action<'a>(
         } else if let ContinuationFrame::Evaluate(eval_frame) =
             state.continuation.pop_back().unwrap()
         {
-            let mut new_frame = Vector::from(macro_hex);
+            let mut new_frame = Vector::from(nodes);
             new_frame.append(eval_frame.nodes_queue);
             state
                 .continuation
@@ -269,31 +364,49 @@ pub fn interpret_action<'a>(
         }
     }
 
-    let pattern = pattern_registry
-        .find(&name, &value)
-        .ok_or((Mishap::InvalidPattern, line.unwrap_or((1, 0))))?;
-    let is_escape = Signature::from_sig(&pattern.signature)
-        == Signature::from_name(pattern_registry, "escape", &None).unwrap();
+    let patterns = pattern_registry.find_all(&name, &value);
+    if patterns.is_empty() {
+        return Err((Mishap::InvalidPattern, location));
+    }
+    let signature = &patterns[0].signature;
 
-    let is_retro = Signature::from_sig(&pattern.signature)
+    let is_escape = Signature::from_sig(signature)
+        == Signature::from_name(pattern_registry, "escape", &None).unwrap();
+    let is_retro = Signature::from_sig(signature)
         == Signature::from_name(pattern_registry, "close_paren", &None).unwrap();
 
     if state.consider_next {
-        push_pattern(name, value, state, pattern_registry, true, line);
+        push_pattern(name, value, state, pattern_registry, true, location);
         state.consider_next = false;
         return Ok(state);
     }
 
     if state.buffer.is_some() && !(is_escape || is_retro) {
-        push_pattern(name, value, state, pattern_registry, false, line);
+        push_pattern(name, value, state, pattern_registry, false, location);
         return Ok(state);
     }
 
-    pattern
-        .operate(state, pattern_registry, &value)
-        .map_err(|err| (err, line.unwrap_or((1, 0))))?;
+    let mut result = Ok(());
+    for pattern in patterns {
+        let operation_result = pattern.operate(state, pattern_registry, &value);
+        match operation_result {
+            Ok(_) => {
+                result = Ok(());
+                break;
+            }
+            Err(Mishap::IncorrectIota(_, _, _)) | Err(Mishap::NotEnoughIotas(_, _)) => {
+                result = operation_result.map(|_| ());
+            }
+            Err(_) => {
+                result = operation_result.map(|_| ());
+                break;
+            }
+        }
+    }
 
-    Ok(state)
+    result
+        .map(|_| state)
+        .map_err(|mishap| (mishap, location))
 }
 
 pub fn push_pattern(
@@ -302,10 +415,10 @@ pub fn push_pattern(
     state: &mut State,
     pattern_registry: &PatternRegistry,
     considered: bool,
-    line: Option<(usize, usize)>,
+    location: Location,
 ) {
     push_iota(
-        Rc::new(PatternIota::from_name(pattern_registry, &pattern, value, line).unwrap()),
+        Rc::new(PatternIota::from_name(pattern_registry, &pattern, value, location).unwrap()),
         state,
         considered,
     )
@@ -322,8 +435,8 @@ fn calc_buffer_depth(
     registry: &PatternRegistry,
     buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>,
 ) -> u32 {
-    let intro_pattern = PatternIota::from_name(registry, "open_paren", None, None).unwrap();
-    let retro_pattern = PatternIota::from_name(registry, "close_paren", None, None).unwrap();
+    let intro_pattern = PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap();
+    let retro_pattern = PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap();
 
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

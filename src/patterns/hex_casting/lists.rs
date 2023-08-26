@@ -219,13 +219,12 @@ pub fn modify_in_place<'a>(
     let iotas = (
         (state.stack)
             .get_iota::<NumberIota>(1, arg_count)?
-            .positive_int_under_inclusive(1, list.len())? as usize,
+            .positive_int_under_inclusive(1, list.len() - 1)? as usize,
         (state.stack).get_any_iota(2, arg_count)?.clone(),
     );
     state.stack.remove_args(&arg_count);
 
-    list.remove(iotas.0);
-    list.insert(iotas.0, iotas.1);
+    list[iotas.0] = iotas.1;
 
     state.stack.push_back(Rc::new(list));
 

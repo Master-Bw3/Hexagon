@@ -62,7 +62,11 @@ impl NumberIotaExt for NumberIota {
 
 impl Iota for NumberIota {
     fn display(&self) -> String {
-        self.to_string()
+        format!("{:.3}", self)
+    }
+
+    fn display_type_name() -> String {
+        "Number".to_string()
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {

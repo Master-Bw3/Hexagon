@@ -5,7 +5,7 @@ use crate::{
     iota::Iota,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug,)]
 pub struct EntityIota {
     pub name: Rc<str>,
     pub uuid: String,
@@ -31,6 +31,11 @@ impl Iota for EntityIota {
     fn display(&self) -> String {
         format!("@{}", self.name)
     }
+
+    fn display_type_name() -> String {
+        "Entity".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         match other.downcast_ref::<EntityIota>() {
             Some(other) => self.name == other.name,

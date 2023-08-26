@@ -8,6 +8,10 @@ impl Iota for NullIota {
         "Null".to_string()
     }
 
+    fn display_type_name() -> String {
+        "Null".to_string()
+    }
+
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
         other.downcast_ref::<NullIota>().is_some()
     }

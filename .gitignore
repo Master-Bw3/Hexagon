@@ -4,3 +4,4 @@ test.hexcasting
 config.toml
 patterns_not_added_yet.json
 nbt.txt
+/hexes

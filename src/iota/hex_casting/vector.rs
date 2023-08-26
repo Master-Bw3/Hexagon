@@ -5,7 +5,11 @@ pub type VectorIota = nalgebra::Matrix1x3<NumberIota>;
 
 impl Iota for VectorIota {
     fn display(&self) -> String {
-        format!("({}, {}, {})", self.x, self.y, self.z)
+        format!("({:.3}, {:.3}, {:.3})", self.x, self.y, self.z)
+    }
+
+    fn display_type_name() -> String {
+        "Vector".to_string()
     }
 
     fn tolerates_other(&self, other: &dyn Iota) -> bool {
@@ -17,9 +21,9 @@ impl Iota for VectorIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        let x = self.x.to_bits();
-        let y = self.x.to_bits();
-        let z = self.x.to_bits();
+        let x = self.x.to_bits() as i64;
+        let y = self.y.to_bits() as i64;
+        let z = self.z.to_bits() as i64;
 
         format!("{{\"hexcasting:type\": \"hexcasting:vec3\", \"hexcasting:data\": [L; {x}L, {y}L, {z}L]}}")
     }

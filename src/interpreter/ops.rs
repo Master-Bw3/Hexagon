@@ -10,7 +10,7 @@ use crate::{
         },
         Iota,
     },
-    parser::{OpValue, Macros},
+    parser::{OpValue, Macros, Location},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -169,7 +169,7 @@ pub fn embed<'a>(
                         state,
                         pattern_registry,
                         macros,
-                        None,
+                        Location::Unknown,
                     )
                     .map_err(|err| err.0)?;
                 }

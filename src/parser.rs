@@ -47,7 +47,7 @@ pub fn parse(
         }
     }
 
-    Ok((AstNode::File(ast), macros))
+    Ok((AstNode::Program(ast), macros))
 }
 
 fn parse_macro(
@@ -111,13 +111,25 @@ fn construct_ast_node(
             conf_entities,
             macros,
         )),
-        Rule::Term => Some(AstNode::Hex(
-            pair.into_inner()
+        Rule::Term => Some(AstNode::Block {
+            nodes: pair
+                .into_inner()
                 .filter_map(|node| {
                     construct_ast_node(node, pattern_registry, conf_entities, macros)
                 })
                 .collect(),
-        )),
+            external: false,
+        }),
+
+        Rule::ExternTerm => Some(AstNode::Block {
+            nodes: pair
+                .into_inner()
+                .filter_map(|node| {
+                    construct_ast_node(node, pattern_registry, conf_entities, macros)
+                })
+                .collect(),
+            external: true,
+        }),
         _ => None,
     }
 }
@@ -147,7 +159,7 @@ fn parse_op(
                 _ => unreachable!(),
             })
         },
-        line: name.line_col(),
+        location: Location::Line(name.line_col().0, name.line_col().1),
     }
 }
 
@@ -170,13 +182,13 @@ fn parse_action(
                     conf_entities,
                     macros,
                 ))),
-                line: pair.line_col(),
+                location: Location::Line(pair.line_col().0, pair.line_col().1),
             },
 
             Rule::BookkeeperValue => AstNode::Action {
                 name: left.as_str().to_string(),
                 value: Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
-                line: pair.line_col(),
+                location: Location::Line(pair.line_col().0, pair.line_col().1),
             },
 
             _ => AstNode::Action {
@@ -184,13 +196,13 @@ fn parse_action(
                 value: righter.map(|p| {
                     ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities, macros))
                 }),
-                line: pair.line_col(),
+                location: Location::Line(pair.line_col().0, pair.line_col().1),
             },
         })
         .unwrap_or(AstNode::Action {
             name: left.as_str().to_string(),
             value: None,
-            line: left.line_col(),
+            location: Location::Line(left.line_col().0, left.line_col().1),
         })
 }
 
@@ -214,7 +226,7 @@ fn parse_action_iota(
                     conf_entities,
                     macros,
                 ))),
-                None,
+                Location::Unknown,
             ),
             Rule::EntityType => PatternIota::from_name(
                 pattern_registry,
@@ -222,13 +234,13 @@ fn parse_action_iota(
                 righter.map(|p| {
                     ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities, macros))
                 }),
-                None,
+                Location::Unknown,
             ),
             Rule::BookkeeperValue => PatternIota::from_name(
                 pattern_registry,
                 left.as_str(),
                 Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
-                None,
+                Location::Unknown,
             ),
             _ => unreachable!(),
         })
@@ -239,7 +251,7 @@ fn parse_action_iota(
                 .map(|(pattern, _)| pattern.clone())
                 .unwrap_or_else(
                     //check if pattern name
-                    || PatternIota::from_name(pattern_registry, left.as_str(), None, None).unwrap(),
+                    || PatternIota::from_name(pattern_registry, left.as_str(), None, Location::Unknown).unwrap(),
                 ),
         ))
         .unwrap()
@@ -249,7 +261,7 @@ fn parse_var(pair: Pair<'_, Rule>) -> AstNode {
     AstNode::Op {
         name: OpName::Push,
         arg: { Some(OpValue::Var(pair.as_str().to_string())) },
-        line: pair.line_col(),
+        location: Location::Line(pair.line_col().0, pair.line_col().1),
     }
 }
 
@@ -274,7 +286,7 @@ fn parse_embed(
             .into_inner()
             .next()
             .map(|iota| OpValue::Iota(parse_iota(iota, pattern_registry, conf_entities, macros)))),
-        line: pair.line_col(),
+        location: Location::Line(pair.line_col().0, pair.line_col().1),
     }
 }
 
@@ -337,7 +349,7 @@ fn parse_if_block(
                     _ => unreachable!(),
                 })
             },
-            line,
+            location: Location::Line(line.0, line.1),
         }
     }
     parse_inner(
@@ -428,9 +440,9 @@ fn parse_pattern(
     macros: &Macros,
 ) -> PatternIota {
     match pair.as_str() {
-        "{" => PatternIota::from_name(pattern_registry, "open_paren", None, None).unwrap(),
+        "{" => PatternIota::from_name(pattern_registry, "open_paren", None, Location::Unknown).unwrap(),
 
-        "}" => PatternIota::from_name(pattern_registry, "close_paren", None, None).unwrap(),
+        "}" => PatternIota::from_name(pattern_registry, "close_paren", None, Location::Unknown).unwrap(),
 
         _ => match pair.as_rule() {
             Rule::Action => {
@@ -445,7 +457,7 @@ fn parse_pattern(
                 )
             }
             Rule::PatternRaw => {
-                PatternIota::from_sig(pair.into_inner().last().unwrap().as_str(), None, None)
+                PatternIota::from_sig(pair.into_inner().last().unwrap().as_str(), None, Location::Unknown)
             }
             _ => unreachable!("{:?}", pair.as_rule()),
         },
@@ -465,24 +477,34 @@ fn parse_bookkeeper(pair: Pair<'_, Rule>) -> String {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum AstNode {
-    File(Vec<AstNode>),
+    Program(Vec<AstNode>),
     Action {
-        line: (usize, usize),
+        location: Location,
         name: String,
         value: Option<ActionValue>,
     },
-    Hex(Vec<AstNode>),
+    Block {
+        external: bool,
+        nodes: Vec<AstNode>,
+    },
     Op {
-        line: (usize, usize),
+        location: Location,
         name: OpName,
         arg: Option<OpValue>,
     },
     IfBlock {
-        line: (usize, usize),
+        location: Location,
         condition: Box<AstNode>,
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
     },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Location {
+    Unknown,
+    Line(usize, usize),
+    List(usize,)
 }
 
 #[derive(Debug, Clone, PartialEq)]

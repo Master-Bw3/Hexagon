@@ -16,7 +16,7 @@ use crate::{
         list::ListIota,
         pattern::{PatternIota, SignatureExt},
     },
-    parser::AstNode,
+    parser::{AstNode, Location},
     pattern_registry::PatternRegistry,
 };
 
@@ -44,7 +44,7 @@ pub fn eval<'a>(
         Either3::M(pattern) => {
             state.continuation.push_back(ContinuationFrame::Evaluate(FrameEvaluate {
                 nodes_queue: vector![AstNode::Action {
-                    line: (1, 0),
+                    location: Location::List(0),
                     name: pattern.signature.as_str(),
                     value: *pattern.value.clone(),
                 }],

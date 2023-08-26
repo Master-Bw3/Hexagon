@@ -1,22 +1,27 @@
-use std::{collections::HashMap, rc::Rc, ops::Deref};
+use std::{collections::HashMap, default, ops::Deref, rc::Rc, sync::Arc};
 
-use im::Vector;
+use im::{vector, Vector};
 
-use crate::iota::{
-    hex_casting::{
-        pattern::Signature,
-        vector::VectorIota,
+use crate::{
+    iota::{
+        hex_casting::{continuation, pattern::Signature, vector::VectorIota, entity::EntityIota},
+        Iota,
     },
-    Iota,
+    parser::{AstNode, Macros, Location},
+    pattern_registry::PatternRegistry,
 };
 
-use super::{continuation::ContinuationFrame, mishap::Mishap};
+use super::{
+    continuation::{ContinuationFrame, ContinuationFrameTrait, FrameEvaluate},
+    interpret_node,
+    mishap::Mishap,
+};
 
 pub type Stack = Vector<Rc<dyn Iota>>;
 
 pub type Considered = bool;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct State {
     pub stack: Stack,
     pub ravenmind: Option<Rc<dyn Iota>>,
@@ -27,6 +32,7 @@ pub struct State {
     pub heap: HashMap<String, i32>,
     pub consider_next: bool,
     pub continuation: Vector<ContinuationFrame>,
+    pub wisps: HashMap<String, Wisp>,
 }
 
 pub type Library = HashMap<Signature, Rc<dyn Iota>>;
@@ -89,7 +95,6 @@ pub trait StackExt {
     ) -> Result<Either3Rc<T, U, V>, Mishap>;
 
     fn remove_args(&mut self, arg_count: &usize);
-    
 }
 
 impl StackExt for Stack {
@@ -102,8 +107,9 @@ impl StackExt for Stack {
             }
         };
 
-        iota.clone().downcast_rc::<T>()
-            .map_err(|_| Mishap::IncorrectIota(index, "".to_string(), iota.clone()))
+        iota.clone()
+            .downcast_rc::<T>()
+            .map_err(|_| Mishap::IncorrectIota(index, T::display_type_name(), iota.clone()))
     }
 
     fn get_any_iota(&self, index: usize, arg_count: usize) -> Result<Rc<dyn Iota>, Mishap> {
@@ -129,7 +135,7 @@ impl StackExt for Stack {
     ) -> Result<Either<Rc<T>, Rc<U>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -141,7 +147,11 @@ impl StackExt for Stack {
         match (left, right) {
             (Ok(l), Err(_)) => Ok(Either::L(l)),
             (Err(_), Ok(r)) => Ok(Either::R(r)),
-            (Err(_), Err(_)) => Err(Mishap::IncorrectIota(index, "".to_string(), iota.clone())),
+            (Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+                index,
+                format!("{} or {}", T::display_type_name(), U::display_type_name()),
+                iota.clone(),
+            )),
             _ => unreachable!(),
         }
     }
@@ -153,7 +163,7 @@ impl StackExt for Stack {
     ) -> Result<Either3<Rc<T>, Rc<U>, Rc<V>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count - self.len(), self.len()))?
+                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -168,9 +178,16 @@ impl StackExt for Stack {
             (Ok(l), Err(_), Err(_)) => Ok(Either3::L(l)),
             (Err(_), Ok(m), Err(_)) => Ok(Either3::M(m)),
             (Err(_), Err(_), Ok(r)) => Ok(Either3::R(r)),
-            (Err(_), Err(_), Err(_)) => {
-                Err(Mishap::IncorrectIota(index, "".to_string(), iota.clone()))
-            }
+            (Err(_), Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+                index,
+                format!(
+                    "{}, {} or {}",
+                    T::display_type_name(),
+                    U::display_type_name(),
+                    V::display_type_name()
+                ),
+                iota.clone(),
+            )),
             _ => unreachable!(),
         }
     }
@@ -191,6 +208,7 @@ pub enum EntityType {
     Living,
     Item,
     Player,
+    Wisp,
     Misc,
 }
 
@@ -203,6 +221,68 @@ impl EntityType {
             EntityType::Item => "Item".to_string(),
             EntityType::Player => "Player".to_string(),
             EntityType::Misc => "Misc".to_string(),
+            EntityType::Wisp => "Wisp".to_string(),
         }
+    }
+}
+
+#[derive(Clone, Default, Debug)]
+pub struct Wisp {
+    pub stack: Stack,
+    pub ravenmind: Option<Rc<dyn Iota>>,
+    pub heap: HashMap<String, i32>,
+    pub code: Vector<AstNode>,
+    pub self_ref: Option<EntityIota>,
+}
+
+impl Wisp {
+    pub fn evaluate(
+        &self,
+        main_state: &mut State,
+        pattern_registry: &PatternRegistry,
+        macros: &Macros,
+    ) -> Result<Wisp, (Mishap, Location)> {
+        let mut wisp_state = State {
+            stack: self.stack.clone(),
+            ravenmind: self.ravenmind.clone(),
+            heap: self.heap.clone(),
+            buffer: Default::default(),
+            consider_next: Default::default(),
+            continuation: Default::default(),
+            ..main_state.clone()
+        };
+
+        if let Some(entity) = self.self_ref.clone() {
+            wisp_state.stack.push_back(Rc::new(entity))
+        }
+
+        wisp_state
+            .continuation
+            .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                nodes_queue: Vector::from(self.code.clone()),
+            }));
+
+        while !wisp_state.continuation.is_empty() {
+            //get top frame and remove it from the stack
+            let frame = wisp_state.continuation.pop_back().unwrap();
+            //evaluate the top frame (mutates state)
+            frame.evaluate(&mut wisp_state, pattern_registry, macros)?;
+        }
+
+        main_state.entities = wisp_state.entities.clone();
+        main_state.libraries = wisp_state.libraries.clone();
+        main_state.sentinal_location = wisp_state.sentinal_location;
+        main_state.wisps = wisp_state.wisps;
+
+        //set self_ref to None so that it isn't added to stack in future iterations
+        let result = Wisp {
+            stack: wisp_state.stack,
+            ravenmind: wisp_state.ravenmind,
+            heap: wisp_state.heap,
+            code: self.code.clone(),
+            self_ref: None,
+        };
+
+        Ok(result)
     }
 }

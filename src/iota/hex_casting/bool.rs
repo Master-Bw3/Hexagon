@@ -14,6 +14,10 @@ impl Iota for BooleanIota {
         }
     }
 
+    fn display_type_name() -> String {
+        "Boolean".to_string()
+    }
+
     fn serialize_to_nbt(&self) -> String {
         let byte = if *self { "1b" } else { "0b" };
 

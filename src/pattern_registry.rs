@@ -2,20 +2,22 @@ use std::collections::HashMap;
 use std::f64::consts::{E, PI, TAU};
 use std::rc::Rc;
 
-use im::vector;
+use hexnumgen::{generate_number_pattern_beam, Bounds};
+use im::{vector, Vector};
 
 use crate::interpreter::state::EntityType;
 use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::null::NullIota;
-use crate::iota::hex_casting::number::NumberIota;
+use crate::iota::hex_casting::number::{NumberIota, self};
 use crate::iota::hex_casting::vector::VectorIota;
 use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
+use crate::patterns::five_dim_casting::continuum;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
 use crate::patterns::more_iotas::{matrix, string};
-use crate::patterns::{constructors, Pattern};
+use crate::patterns::{constructors, Pattern, hexal};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -24,6 +26,7 @@ pub trait PatternRegistryExt {
 
     fn construct(great_sigs: &HashMap<String, String>) -> PatternRegistry;
     fn find(&self, query: &str, value: &Option<ActionValue>) -> Option<Pattern>;
+    fn find_all(&self, query: &str, value: &Option<ActionValue>) -> Vector<Pattern>;
 }
 
 impl PatternRegistryExt for PatternRegistry {
@@ -44,6 +47,8 @@ impl PatternRegistryExt for PatternRegistry {
         hashmap.insert("dispel_rain".to_string(), "eeewwweeewwaqqddqdqd".to_string());
         hashmap.insert("summon_rain".to_string(), "wwweeewwweewdawdwad".to_string());
         hashmap.insert("brainsweep".to_string(), "qeqwqwqwqwqeqaeqeaqeqaeqaqded".to_string());
+        hashmap.insert("move_block/spell".to_string(), "eeqeeqeeeqeeqdeeqeqqwqqqeeqeqqwqq".to_string());
+
         hashmap
     }
 
@@ -100,6 +105,11 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Uniqueness Purification", "to_set", "aweaqa", Box::new(math::to_set)),
             Pattern::new("Augur's Exaltation", "if", "awdd",  Box::new(math::bool_if)),
             Pattern::new("Entropy Reflection", "random", "eqqq",  Box::new(math::random)),
+
+            //Hexal - math
+            Pattern::new("Factorial Purification", "factorial", "wawdedwaw",  Box::new(hexal::math::factorial)),
+            Pattern::new("Running Sum Purification", "running/sum", "aea",  Box::new(hexal::math::running_sum)),
+            Pattern::new("Running Product Purification", "running/mul", "qaawaaq",  Box::new(hexal::math::running_sum)),
 
 
             //lists
@@ -159,7 +169,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new( "sentinel/wayfind", "Wayfind Sentinel","waeawaedwa", Box::new(sentinel::wayfind)),
 
 
-            // //consts
+            //consts
             Pattern::new("Mind's Reflection", "get_caster", "qaq", 
                 constructors::push_const(Rc::new(EntityIota {name: Rc::from("Caster"), uuid: "[I;0,0,0,0]".to_string()}))),
             Pattern::new("Vacant Reflection", "empty_list", "qqaeaae", constructors::push_const(Rc::new(vector![]))),
@@ -211,6 +221,13 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Green Sun's Nadir", "potion/slowness", "qqqqqadwawaw", constructors::spell_3::<EntityIota, NumberIota, NumberIota>()),
             Pattern::new("Write", "string/block/set", "dwewdweq", Box::new(string::write)),
             Pattern::new("Sifter's Gambit", "string/chat/prefix/set", "qwaqa", Box::new(string::set_prefix)),
+            Pattern::new("Particles", "particles", "eqqqqa", Box::new(hexal::spells::particles)),
+            Pattern::new("Falling Block", "falling_block", "wqwawqwqwqwqwqw", constructors::spell_1::<VectorIota>()),
+            Pattern::new("Summon Cyclic Wisp", "wisp/summon/ticking", "aqaweewaqawee", Box::new(hexal::spells::summon_wisp_ticking)),
+            Pattern::new("Pathfinder's Gambit", "wisp/move/target/set", "awqwawqaw", constructors::spell_1::<VectorIota>()),
+            Pattern::new("Haste", "wisp/move/speed/set", "aeawqqqae", constructors::spell_1::<NumberIota>()),
+            //TODO: make Delay wisp Delay wisps
+            Pattern::new("Delay Wisp", "wisp/trigger/tick", "aqawded", constructors::spell_1::<NumberIota>()),
 
 
             //great spells
@@ -248,8 +265,13 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::spell_1::<VectorIota>()),
 
             Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
+            
             Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rain").unwrap(), Box::new(special::no_action)),
+            
             Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
+            
+            Pattern::new("Greater Translocation", "move_block/spell", great_sigs.get("move_block/spell").unwrap(), 
+                constructors::spell_2::<VectorIota, VectorIota>()),
 
 
             //requires value to be set
@@ -362,6 +384,9 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new_with_val("Sifter's Reflection", "string/chat/prefix/get", "ewded",
                 constructors::value_0::<StringIota>("String", true, "Sifter's Reflection")),
 
+            Pattern::new_with_val("Identity Reflection", "wisp/self", "dedwqqwdedwqqaw",
+                constructors::value_0::<EntityIota>("Entity", true, "Identity Reflection")),
+
             //MoreIotas - Matrices
             Pattern::new("Transformation Purification", "matrix/make", "awwaeawwaadwa", Box::new(matrix::make)),
             Pattern::new("Restoration Purification", "matrix/unmake", "dwwdqdwwddawd", Box::new(matrix::unmake)),
@@ -391,9 +416,14 @@ impl PatternRegistryExt for PatternRegistry {
 
             // Pattern::new("", "", "", Box::new(string::)),
 
-            
-            
-            
+            //5D Casting - Continuum
+            Pattern::new("Selection Distillation", "continuum/get", "deeed", Box::new(continuum::get)),
+            Pattern::new("Selection Exaltation", "continuum/slice", "qaeaqwded", Box::new(continuum::slice)),
+            Pattern::new("Transmutation Distillation", "continuum/map", "dadadad", Box::new(continuum::map)),
+            Pattern::new("Natural Reflection", "continuum/stream/num", "edwaq", Box::new(continuum::number_stream)),
+            Pattern::new("Eternal Distillation", "continuum/stream/make", "aqqqaqwdaqqqaq", Box::new(continuum::make_stream)),
+            Pattern::new("Speaker's Decomposition", "continuum/deconstruct", "aaqwqaa", Box::new(continuum::deconstruct)),
+
 
         ];
 
@@ -415,6 +445,19 @@ impl PatternRegistryExt for PatternRegistry {
             }
         }
 
+        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+            if let Some(ActionValue::Iota(iota)) = value {
+                if let Some(number) = iota.downcast_ref::<NumberIota>() {
+                    let number =
+                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
+                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    return Some(number);
+
+                }
+
+        } }
+
+
         self.iter()
             .filter(|entry| {
                 entry.display_name == *query
@@ -425,6 +468,43 @@ impl PatternRegistryExt for PatternRegistry {
             .get(0)
             .copied()
             .cloned()
+    }
+
+
+    fn find_all(&self, query: &str, value: &Option<ActionValue>) -> Vector<Pattern> {
+        if let Some(ActionValue::Bookkeeper(code)) = value {
+            let mut bookkeeper =
+                Pattern::new_with_val("Bookkeeper's Gambit", "mask", "", Box::new(stack::mask));
+            bookkeeper.signature = parse_bookkeeper_code(code);
+            if query == bookkeeper.display_name
+                || query == bookkeeper.internal_name
+                || query == bookkeeper.signature
+            {
+                return vector![bookkeeper];
+            } else {
+                return vector![];
+            }
+        }
+
+        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+            if let Some(ActionValue::Iota(iota)) = value {
+                if let Some(number) = iota.downcast_ref::<NumberIota>() {
+                    let number =
+                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
+                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    return vector![number];
+
+                }
+
+        } }
+
+        self.clone().into_iter()
+            .filter(|entry| {
+                entry.display_name == *query
+                    || entry.internal_name == *query
+                    || entry.signature == *query
+            })
+            .collect::<Vector<Pattern>>()
     }
 }
 
@@ -463,4 +543,10 @@ fn parse_bookkeeper_code(code: &str) -> String {
         )
         .1
         .concat()
+}
+
+fn gen_number(num: f32) -> String {
+    generate_number_pattern_beam(num as i32, Bounds::new(100, 100, 100), 1, false)
+    .map(|x| x.pattern)
+    .unwrap_or("".to_string())
 }
