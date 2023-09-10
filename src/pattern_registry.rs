@@ -109,7 +109,7 @@ impl PatternRegistryExt for PatternRegistry {
             //Hexal - math
             Pattern::new("Factorial Purification", "factorial", "wawdedwaw",  Box::new(hexal::math::factorial)),
             Pattern::new("Running Sum Purification", "running/sum", "aea",  Box::new(hexal::math::running_sum)),
-            Pattern::new("Running Product Purification", "running/mul", "qaawaaq",  Box::new(hexal::math::running_sum)),
+            Pattern::new("Running Product Purification", "running/mul", "qaawaaq",  Box::new(hexal::math::running_product)),
 
 
             //lists

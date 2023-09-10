@@ -1,4 +1,4 @@
-use std::{rc::Rc, result};
+use std::rc::Rc;
 
 use im::{vector, Vector};
 
