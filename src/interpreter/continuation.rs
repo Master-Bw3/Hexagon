@@ -1,5 +1,24 @@
 use im::{vector, Vector};
 
+use crate::{
+    iota::{
+        hex_casting::{
+            null::NullIota,
+            pattern::{PatternIota, SignatureExt},
+        },
+        Iota,
+    },
+    parser::{AstNode, Macros, OpName, OpValue, Location},
+    pattern_registry::PatternRegistry,
+};
+use std::{
+    cell::RefCell,
+    ops::Not,
+    rc::Rc,
+};
+
+use super::{interpret_node, mishap::Mishap, state::State};
+
 #[derive(Debug, Clone)]
 pub enum ContinuationFrame {
     Evaluate(FrameEvaluate),
@@ -35,26 +54,6 @@ impl ContinuationFrameTrait for ContinuationFrame {
         }
     }
 }
-
-use crate::{
-    iota::{
-        hex_casting::{
-            null::NullIota,
-            pattern::{PatternIota, SignatureExt},
-        },
-        Iota,
-    },
-    parser::{AstNode, Macros, OpName, OpValue, Location},
-    pattern_registry::PatternRegistry,
-};
-use std::{
-    cell::RefCell,
-    collections::HashMap,
-    ops::{Not, Range},
-    rc::Rc,
-};
-
-use super::{interpret_node, mishap::Mishap, state::State};
 
 pub type Continuation = Vector<ContinuationFrame>;
 
