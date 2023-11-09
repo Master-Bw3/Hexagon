@@ -12,7 +12,7 @@ use crate::iota::hex_casting::number::{NumberIota, self};
 use crate::iota::hex_casting::vector::VectorIota;
 use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
-use crate::patterns::five_dim_casting::continuum;
+use crate::patterns::five_dim_casting::{continuum, cell};
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
@@ -423,6 +423,10 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Natural Reflection", "continuum/stream/num", "edwaq", Box::new(continuum::number_stream)),
             Pattern::new("Eternal Distillation", "continuum/stream/make", "aqqqaqwdaqqqaq", Box::new(continuum::make_stream)),
             Pattern::new("Speaker's Decomposition", "continuum/deconstruct", "aaqwqaa", Box::new(continuum::deconstruct)),
+
+            //5D Casting - Cell
+            Pattern::new("Cell Purification", "cell/create", "aaaaaaaaaa", Box::new(cell::create)),
+            Pattern::new("Mutation Distillation", "cell/replace", "aaaaaaaaaaa", Box::new(cell::replace)),
 
 
         ];

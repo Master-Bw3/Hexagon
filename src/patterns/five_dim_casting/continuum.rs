@@ -23,7 +23,6 @@ use crate::{
     },
     parser::{ActionValue, AstNode, Location},
     pattern_registry::PatternRegistry,
-    patterns::hex_casting::stack,
 };
 
 pub fn number_stream<'a>(
