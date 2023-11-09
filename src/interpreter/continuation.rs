@@ -200,11 +200,11 @@ pub struct FrameIterate {
     pub base_stack: Option<Vector<Rc<dyn Iota>>>,
     pub index: usize,
     pub collect: (usize, usize),
+    pub collect_single: bool,
     pub acc: ThothAcc,
-    pub prev: Rc<dyn Iota>,
+    pub initial_iota: Rc<dyn Iota>,
     pub gen_next_code: Vector<AstNode>,
     pub maps: Vector<Vector<AstNode>>,
-    pub collect_single: bool,
 }
 
 impl ContinuationFrameTrait for FrameIterate {
@@ -214,6 +214,20 @@ impl ContinuationFrameTrait for FrameIterate {
         _pattern_registry: &PatternRegistry,
         _macros: &Macros,
     ) -> Result<(), (Mishap, Location)> {
+        let new_acc = Rc::clone(&self.acc);
+
+        if self.index <= self.collect.1 && self.index >= self.collect.0 {
+            //if index in collect range, push top of stack to accumulator
+            if self.base_stack.is_none() {
+                //on first just push the inital value
+                new_acc.borrow_mut().push_back(self.initial_iota.clone())
+            } else {
+                //else push top of stack (or null if stack is empty)
+                let stack_top = state.stack.last().cloned().unwrap_or(Rc::new(NullIota));
+                new_acc.borrow_mut().push_back(stack_top.clone())
+            }
+        }
+
         let base_stack = match &self.base_stack {
             //entry point
             None => state.stack.clone(),
@@ -222,21 +236,8 @@ impl ContinuationFrameTrait for FrameIterate {
             Some(base) => base.clone(),
         };
 
-        let new_acc = self.acc.clone();
-
-        if self.index <= self.collect.1 && self.index >= self.collect.0 {
-            //if index in collect range, push top of stack to accumulator
-            if self.base_stack.is_none() {
-                //on first just push the inital value
-                new_acc.borrow_mut().push_back(self.prev.clone())
-            } else {
-                let stack_top = state.stack.last().cloned().unwrap_or(Rc::new(NullIota));
-                new_acc.borrow_mut().push_back(stack_top.clone())
-            }
-        }
-
         if self.index >= self.collect.1 {
-            //if frame is last in range, apply map
+            //if frame is last in range, apply maps
             state.stack = vector![];
 
             if self.maps.clone().is_empty() {
@@ -266,7 +267,7 @@ impl ContinuationFrameTrait for FrameIterate {
         } else {
             //else push next frames
             let result: Rc<dyn Iota> = if self.base_stack.is_none() {
-                self.prev.clone()
+                self.initial_iota.clone()
             } else {
                 state.stack.last().cloned().unwrap_or(Rc::new(NullIota))
             };
@@ -280,7 +281,7 @@ impl ContinuationFrameTrait for FrameIterate {
                     base_stack: Some(base_stack),
                     index: self.index + 1,
                     acc: new_acc.clone(),
-                    prev: result,
+                    initial_iota: result,
                     ..self.clone()
                 }));
 
