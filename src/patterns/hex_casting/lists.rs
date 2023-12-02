@@ -55,7 +55,7 @@ pub fn index<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
+        state.stack.get_iota::<ListIota>(0, arg_count)?,
         state.stack.get_iota::<NumberIota>(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
