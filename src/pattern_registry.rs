@@ -427,6 +427,7 @@ impl PatternRegistryExt for PatternRegistry {
             //5D Casting - Cell
             Pattern::new("Cell Purification", "cell/create", "aaaaaaaaaa", Box::new(cell::create)),
             Pattern::new("Mutation Distillation", "cell/replace", "aaaaaaaaaaa", Box::new(cell::replace)),
+            Pattern::new("Retrieval Purification", "cell/unwrap", "aaaaaaaaaaaa", Box::new(cell::unwrap)),
 
 
         ];

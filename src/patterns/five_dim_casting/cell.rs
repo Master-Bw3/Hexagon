@@ -51,3 +51,17 @@ pub fn replace<'a>(
 
     Ok(state)
 }
+
+pub fn unwrap<'a>(
+    state: &'a mut State,
+    _pattern_registry: &PatternRegistry,
+) -> Result<&'a mut State, Mishap> {
+    let arg_count = 1;
+    let cell_iota = state.stack.get_iota::<CellIota>(0, arg_count)?;
+    state.stack.remove_args(&arg_count);
+
+    let iota = ((*cell_iota).clone()).into_inner();
+    state.stack.push_back(iota);
+
+    Ok(state)
+}
