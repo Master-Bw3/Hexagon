@@ -1,10 +1,10 @@
-use std::{collections::HashMap, default, ops::Deref, rc::Rc, sync::Arc};
+use std::{collections::HashMap, ops::Deref, rc::Rc};
 
-use im::{vector, Vector};
+use im::Vector;
 
 use crate::{
     iota::{
-        hex_casting::{continuation, pattern::Signature, vector::VectorIota, entity::EntityIota},
+        hex_casting::{pattern::Signature, vector::VectorIota, entity::EntityIota},
         Iota,
     },
     parser::{AstNode, Macros, Location},
@@ -13,7 +13,6 @@ use crate::{
 
 use super::{
     continuation::{ContinuationFrame, ContinuationFrameTrait, FrameEvaluate},
-    interpret_node,
     mishap::Mishap,
 };
 

@@ -1,4 +1,4 @@
-use std::{rc::Rc, thread::spawn};
+use std::rc::Rc;
 
 use im::{vector, Vector};
 
@@ -9,7 +9,6 @@ use crate::{
         state::{Entity, EntityType, Holding, StackExt, State, Wisp},
     },
     iota::{
-        self,
         hex_casting::{
             entity::EntityIota, list::ListIota, number::NumberIota, pattern::PatternIota,
             vector::VectorIota,

@@ -113,7 +113,7 @@ impl ContinuationFrameTrait for FrameEndEval {
         &self,
         state: &mut State,
         _: &PatternRegistry,
-        macros: &Macros,
+        _macros: &Macros,
     ) -> Result<(), (Mishap, Location)> {
         state.consider_next = false;
         Ok(())
@@ -139,7 +139,7 @@ impl ContinuationFrameTrait for FrameForEach {
         &self,
         state: &mut State,
         _: &PatternRegistry,
-        macros: &Macros,
+        _macros: &Macros,
     ) -> Result<(), (Mishap, Location)> {
         let stack = match &self.base_stack {
             //thoth entry point
@@ -295,7 +295,7 @@ impl ContinuationFrameTrait for FrameIterate {
         }
     }
 
-    fn break_out(&self, state: &mut State) -> bool {
+    fn break_out(&self, _state: &mut State) -> bool {
         true
     }
 }
@@ -316,7 +316,7 @@ impl ContinuationFrameTrait for FrameMap {
         &self,
         state: &mut State,
         _: &PatternRegistry,
-        macros: &Macros,
+        _macros: &Macros,
     ) -> Result<(), (Mishap, Location)> {
         if self.init {
             let mut new_maps = self.maps.clone();
@@ -414,7 +414,7 @@ impl ContinuationFrameTrait for FrameMap {
         }
     }
 
-    fn break_out(&self, state: &mut State) -> bool {
+    fn break_out(&self, _state: &mut State) -> bool {
         true
     }
 }

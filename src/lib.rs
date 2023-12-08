@@ -1,12 +1,12 @@
 use compiler::{compile_to_iotas, nbt::gen_give_cmd};
-use im::Vector;
-use interpreter::{mishap::Mishap, error::print_interpreter_error};
-use iota::Iota;
-use nalgebra::dmatrix;
-use owo_colors::OwoColorize;
-use std::{collections::HashMap, env, fs, rc::Rc};
 
-use crate::{interpreter::interpret, iota::more_iotas::matrix::MatrixIota};
+use interpreter::error::print_interpreter_error;
+use iota::Iota;
+
+use owo_colors::OwoColorize;
+use std::{collections::HashMap, env, fs};
+
+use crate::interpreter::interpret;
 mod compiler;
 mod interpreter;
 mod iota;

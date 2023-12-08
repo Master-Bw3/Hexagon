@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::Deref, rc::Rc};
+use std::{ops::Deref, rc::Rc};
 
 use im::Vector;
 

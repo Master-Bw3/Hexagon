@@ -1,10 +1,9 @@
-use std::{collections::HashMap, ops::Not, rc::Rc};
+use std::rc::Rc;
 
 use im::Vector;
 
 use crate::{
-    interpreter::{state::{Entity, EntityType, Stack}, continuation::Continuation},
-    iota::{Iota, hex_casting::list::ListIota}, parser::AstNode,
+    iota::Iota, parser::AstNode,
 };
 
 #[derive(Debug, Clone)]
@@ -24,7 +23,7 @@ impl Iota for ContinuumIota {
         "Continuum".to_string()
     }
 
-    fn tolerates_other(&self, other: &dyn Iota) -> bool {
+    fn tolerates_other(&self, _other: &dyn Iota) -> bool {
         false
     }
 

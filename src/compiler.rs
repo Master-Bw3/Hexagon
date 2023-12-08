@@ -60,7 +60,7 @@ pub fn compile_node(
         }
 
         AstNode::Action { location, name, value } => {
-            if let Some((_, AstNode::Block { external, nodes })) = macros.get(name) {
+            if let Some((_, AstNode::Block { external: _, nodes })) = macros.get(name) {
                 compile_node(
                     &AstNode::Program(nodes.clone()),
                     heap,

@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc};
 
-use crate::iota::{self, Iota};
+use crate::iota::Iota;
 
 pub type CellIota = RefCell<Rc<dyn Iota>>;
 

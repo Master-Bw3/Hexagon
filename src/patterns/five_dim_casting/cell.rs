@@ -1,22 +1,11 @@
-use std::{rc::Rc, cell::RefCell, borrow::BorrowMut};
-
-use im::vector;
+use std::{rc::Rc, cell::RefCell};
 
 use crate::{
     interpreter::{
-        continuation::{
-            iota_list_to_ast_node_list, ContinuationFrame, FrameEndEval, FrameEvaluate,
-            FrameForEach, ContinuationFrameTrait,
-        },
         mishap::Mishap,
-        state::{Either3, StackExt, State},
+        state::{StackExt, State},
     },
-    iota::{hex_casting::{
-        continuation::ContinuationIota,
-        list::ListIota,
-        pattern::{PatternIota, SignatureExt},
-    }, five_dim_casting::cell::CellIota},
-    parser::{AstNode, Location},
+    iota::five_dim_casting::cell::CellIota,
     pattern_registry::PatternRegistry,
 };
 

@@ -4,23 +4,18 @@ pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::{rc::Rc, result, time::Duration};
+use std::{rc::Rc, time::Duration};
 
-use im::{vector, Vector};
+use im::Vector;
 
 use crate::{
     compiler::{
-        compile_node, compile_to_iotas,
-        if_block::compile_if_block,
+        compile_node, if_block::compile_if_block,
         ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     },
-    interpreter::{
-        ops::{embed, push, store, EmbedType},
-        state::StackExt,
-    },
+    interpreter::ops::{embed, push, store, EmbedType},
     iota::{
         hex_casting::{
-            bool::BooleanIota,
             null::NullIota,
             pattern::{PatternIota, Signature, SignatureExt},
         },
@@ -145,7 +140,7 @@ fn interpret_node<'a>(
 ) -> Result<&'a mut State, (Mishap, Location)> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
     match node {
-        AstNode::Action { name, value, location: location } => {
+        AstNode::Action { name, value, location } => {
             interpret_action(name, value, state, pattern_registry, &macros, location)
         }
         AstNode::Block { external, nodes } => {

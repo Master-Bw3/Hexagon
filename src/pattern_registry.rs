@@ -8,7 +8,7 @@ use im::{vector, Vector};
 use crate::interpreter::state::EntityType;
 use crate::iota::hex_casting::entity::EntityIota;
 use crate::iota::hex_casting::null::NullIota;
-use crate::iota::hex_casting::number::{NumberIota, self};
+use crate::iota::hex_casting::number::NumberIota;
 use crate::iota::hex_casting::vector::VectorIota;
 use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;

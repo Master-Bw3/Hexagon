@@ -53,6 +53,8 @@ fn print_mishap_content(line: usize, line_content: &str, padding: &String) {
     );
     eprintln!(" {padding} {}", "|".magenta().bold());
 }
+
+//tf is this atrocity
 fn print_eval_mishap_content(pat_list: &[Rc<dyn Iota>], err_index: usize, pad_len: usize) {
     let err_pad_len = err_index.to_string().len();
     let padding = vec![" "; pad_len].concat();
