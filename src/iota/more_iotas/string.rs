@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use im::Vector;
 
-use crate::{interpreter::mishap::Mishap, iota::Iota};
+use crate::iota::Iota;
 
 pub type StringIota = String;
 

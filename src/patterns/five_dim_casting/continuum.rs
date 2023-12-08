@@ -5,19 +5,17 @@ use im::vector;
 use crate::{
     interpreter::{
         continuation::{
-            iota_list_to_ast_node_list, ContinuationFrame, FrameEvaluate, FrameIterate,
+            iota_list_to_ast_node_list, ContinuationFrame, FrameIterate,
         },
         mishap::Mishap,
         state::{StackExt, State},
     },
     iota::{
-        five_dim_casting::continuum::{self, ContinuumIota},
+        five_dim_casting::continuum::ContinuumIota,
         hex_casting::{
-            continuation::ContinuationIota,
             list::ListIota,
-            null::NullIota,
             number::{NumberIota, NumberIotaExt},
-            pattern::{self, PatternIota, SignatureExt},
+            pattern::{PatternIota, SignatureExt},
         },
         Iota,
     },

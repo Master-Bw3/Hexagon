@@ -1,6 +1,6 @@
-use std::{fmt::format, ops::Not, rc::Rc};
+use std::{ops::Not, rc::Rc};
 
-use nalgebra::{dmatrix, iter::RowIter, DMatrix, Dyn, Matrix};
+use nalgebra::{dmatrix, DMatrix, Dyn, Matrix};
 
 use crate::{
     interpreter::state::Either3,

@@ -31,11 +31,7 @@ impl Iota for VectorIota {
 
 #[cfg(test)]
 mod tests {
-
-    use im::vector;
     use nalgebra::matrix;
-
-    use crate::pattern_registry::PatternRegistryExt;
 
     use super::*;
 
