@@ -3,21 +3,22 @@ use std::{collections::HashMap, rc::Rc};
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parser::{AstNode, Macros, OpName, Location},
+    parser::{AstNode, Location, Macros, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
 use self::{
+    external::compile_external,
     if_block::compile_if_block,
     init_heap::init_heap,
-    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store}, external::compile_external,
+    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
 };
 
+pub mod external;
 pub mod if_block;
 pub mod init_heap;
 pub mod nbt;
 pub mod ops;
-pub mod external;
 
 pub fn compile_to_iotas(
     node: &AstNode,
@@ -59,7 +60,11 @@ pub fn compile_node(
             Ok(result)
         }
 
-        AstNode::Action { location, name, value } => {
+        AstNode::Action {
+            location,
+            name,
+            value,
+        } => {
             if let Some((_, AstNode::Block { external: _, nodes })) = macros.get(name) {
                 compile_node(
                     &AstNode::Program(nodes.clone()),
@@ -82,7 +87,11 @@ pub fn compile_node(
                         } else {
                             value.clone()
                         };
-                    Rc::new(PatternIota::from_sig(&pattern.signature, new_value, location.clone()))
+                    Rc::new(PatternIota::from_sig(
+                        &pattern.signature,
+                        new_value,
+                        location.clone(),
+                    ))
                 }])
             }
         }
@@ -90,15 +99,17 @@ pub fn compile_node(
         AstNode::Block { external, nodes } => {
             let result = compile_hex_node(nodes, heap, depth, pattern_registry, macros);
             if *external {
-                result.map(|ref mut x| {
-                    compile_external(x, pattern_registry)
-                })
+                result.map(|ref mut x| compile_external(x, pattern_registry))
             } else {
                 result
             }
         }
 
-        AstNode::Op { location, name, arg } => match name {
+        AstNode::Op {
+            location,
+            name,
+            arg,
+        } => match name {
             OpName::Store => compile_op_store(heap, pattern_registry, arg),
             OpName::Copy => compile_op_copy(heap, pattern_registry, arg),
             OpName::Push => compile_op_push(heap, pattern_registry, arg),

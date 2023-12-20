@@ -8,14 +8,10 @@ use crate::{
         },
         Iota,
     },
-    parser::{AstNode, Macros, OpName, OpValue, Location},
+    parser::{AstNode, Location, Macros, OpName, OpValue},
     pattern_registry::PatternRegistry,
 };
-use std::{
-    cell::RefCell,
-    ops::Not,
-    rc::Rc,
-};
+use std::{cell::RefCell, ops::Not, rc::Rc};
 
 use super::{interpret_node, mishap::Mishap, state::State};
 

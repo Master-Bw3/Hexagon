@@ -12,12 +12,12 @@ use crate::iota::hex_casting::number::NumberIota;
 use crate::iota::hex_casting::vector::VectorIota;
 use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
-use crate::patterns::five_dim_casting::{continuum, cell};
+use crate::patterns::five_dim_casting::{cell, continuum};
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
 use crate::patterns::more_iotas::{matrix, string};
-use crate::patterns::{constructors, Pattern, hexal};
+use crate::patterns::{constructors, hexal, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -450,18 +450,27 @@ impl PatternRegistryExt for PatternRegistry {
             }
         }
 
-        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+        if query == "number"
+            || query == "Numerical Reflection"
+            || query.starts_with("aqaa")
+            || query.starts_with("dedd")
+        {
             if let Some(ActionValue::Iota(iota)) = value {
                 if let Some(number) = iota.downcast_ref::<NumberIota>() {
-                    let number =
-                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
-                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    let number = Pattern::new_with_val(
+                        "Numerical Reflection",
+                        "number",
+                        &gen_number(*number as f32),
+                        constructors::value_0::<NumberIota>(
+                            "Number",
+                            false,
+                            "Numerical Reflection",
+                        ),
+                    );
                     return Some(number);
-
                 }
-
-        } }
-
+            }
+        }
 
         self.iter()
             .filter(|entry| {
@@ -474,7 +483,6 @@ impl PatternRegistryExt for PatternRegistry {
             .copied()
             .cloned()
     }
-
 
     fn find_all(&self, query: &str, value: &Option<ActionValue>) -> Vector<Pattern> {
         if let Some(ActionValue::Bookkeeper(code)) = value {
@@ -491,19 +499,30 @@ impl PatternRegistryExt for PatternRegistry {
             }
         }
 
-        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+        if query == "number"
+            || query == "Numerical Reflection"
+            || query.starts_with("aqaa")
+            || query.starts_with("dedd")
+        {
             if let Some(ActionValue::Iota(iota)) = value {
                 if let Some(number) = iota.downcast_ref::<NumberIota>() {
-                    let number =
-                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
-                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    let number = Pattern::new_with_val(
+                        "Numerical Reflection",
+                        "number",
+                        &gen_number(*number as f32),
+                        constructors::value_0::<NumberIota>(
+                            "Number",
+                            false,
+                            "Numerical Reflection",
+                        ),
+                    );
                     return vector![number];
-
                 }
+            }
+        }
 
-        } }
-
-        self.clone().into_iter()
+        self.clone()
+            .into_iter()
             .filter(|entry| {
                 entry.display_name == *query
                     || entry.internal_name == *query
@@ -552,6 +571,6 @@ fn parse_bookkeeper_code(code: &str) -> String {
 
 fn gen_number(num: f32) -> String {
     generate_number_pattern_beam(num as i32, Bounds::new(100, 100, 100), 1, false)
-    .map(|x| x.pattern)
-    .unwrap_or("".to_string())
+        .map(|x| x.pattern)
+        .unwrap_or("".to_string())
 }

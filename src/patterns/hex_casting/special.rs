@@ -40,7 +40,10 @@ pub fn introspect<'a>(
         Some(buffer) => {
             let mut new_buffer = buffer.clone();
             new_buffer.push_back((
-                Rc::new(PatternIota::from_name(pattern_registry, "open_paren", None, Location::Unknown).unwrap()),
+                Rc::new(
+                    PatternIota::from_name(pattern_registry, "open_paren", None, Location::Unknown)
+                        .unwrap(),
+                ),
                 false,
             ));
             new_buffer
@@ -94,7 +97,7 @@ pub fn retrospect<'a>(
             state,
             pattern_registry,
             false,
-            Location::Unknown
+            Location::Unknown,
         )
     };
 

@@ -213,7 +213,6 @@ pub fn fisherman_copy<'a>(
     Ok(state)
 }
 
-
 pub fn mask<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
@@ -373,4 +372,3 @@ pub fn mask<'a>(
 //         assert_eq!(result.stack, expected)
 //     }
 // }
-

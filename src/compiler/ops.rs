@@ -3,7 +3,7 @@ use std::{collections::HashMap, rc::Rc, vec};
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parser::{ActionValue, OpValue, Location},
+    parser::{ActionValue, Location, OpValue},
     pattern_registry::PatternRegistry,
 };
 
@@ -52,7 +52,9 @@ pub fn compile_op_store(
             .unwrap(),
         ),
         Rc::new(PatternIota::from_name(registry, "rotate", None, Location::Unknown).unwrap()),
-        Rc::new(PatternIota::from_name(registry, "modify_in_place", None, Location::Unknown).unwrap()),
+        Rc::new(
+            PatternIota::from_name(registry, "modify_in_place", None, Location::Unknown).unwrap(),
+        ),
         Rc::new(PatternIota::from_name(registry, "write/local", None, Location::Unknown).unwrap()),
     ];
 
@@ -122,17 +124,22 @@ pub fn compile_op_embed(
     let compiled = match embed_type {
         EmbedType::Normal => vec![iota],
         EmbedType::Consider => {
-            let consideration =
-                Rc::new(PatternIota::from_name(registry, "escape", None, Location::Unknown).unwrap());
+            let consideration = Rc::new(
+                PatternIota::from_name(registry, "escape", None, Location::Unknown).unwrap(),
+            );
 
             let mut result: Vec<Rc<dyn Iota>> = vec![consideration; i32::pow(2, depth) as usize];
             result.push(iota);
             result
         }
         EmbedType::IntroRetro => vec![
-            Rc::new(PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap()),
+            Rc::new(
+                PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap(),
+            ),
             iota,
-            Rc::new(PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap()),
+            Rc::new(
+                PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap(),
+            ),
             Rc::new(PatternIota::from_name(registry, "splat", None, Location::Unknown).unwrap()),
         ],
         EmbedType::Smart => unreachable!(),

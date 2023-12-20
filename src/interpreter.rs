@@ -10,7 +10,8 @@ use im::Vector;
 
 use crate::{
     compiler::{
-        compile_node, if_block::compile_if_block,
+        compile_node,
+        if_block::compile_if_block,
         ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
     },
     interpreter::ops::{embed, push, store, EmbedType},
@@ -22,7 +23,7 @@ use crate::{
         Iota,
     },
     parse_config::Config,
-    parser::{ActionValue, AstNode, Macros, OpName, OpValue, Location},
+    parser::{ActionValue, AstNode, Location, Macros, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -140,9 +141,11 @@ fn interpret_node<'a>(
 ) -> Result<&'a mut State, (Mishap, Location)> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
     match node {
-        AstNode::Action { name, value, location } => {
-            interpret_action(name, value, state, pattern_registry, &macros, location)
-        }
+        AstNode::Action {
+            name,
+            value,
+            location,
+        } => interpret_action(name, value, state, pattern_registry, &macros, location),
         AstNode::Block { external, nodes } => {
             if external {
                 let result = vec![
@@ -213,7 +216,11 @@ fn interpret_node<'a>(
 
             Ok(state)
         }
-        AstNode::Op { name, arg, location } => {
+        AstNode::Op {
+            name,
+            arg,
+            location,
+        } => {
             interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, location))
         }
         AstNode::IfBlock {
@@ -399,9 +406,7 @@ pub fn interpret_action<'a>(
         }
     }
 
-    result
-        .map(|_| state)
-        .map_err(|mishap| (mishap, location))
+    result.map(|_| state).map_err(|mishap| (mishap, location))
 }
 
 pub fn push_pattern(
@@ -430,8 +435,10 @@ fn calc_buffer_depth(
     registry: &PatternRegistry,
     buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>,
 ) -> u32 {
-    let intro_pattern = PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap();
-    let retro_pattern = PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap();
+    let intro_pattern =
+        PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap();
+    let retro_pattern =
+        PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap();
 
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

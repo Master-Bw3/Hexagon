@@ -4,3 +4,4 @@ pub struct mote {
     pub name: String,
     pub count: i32,
 }
+

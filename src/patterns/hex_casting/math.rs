@@ -10,10 +10,7 @@ use crate::{
         state::{Either, StackExt, State},
     },
     iota::{
-        hex_casting::{
-            bool::BooleanIota, list::ListIota, number::NumberIota,
-            vector::VectorIota,
-        },
+        hex_casting::{bool::BooleanIota, list::ListIota, number::NumberIota, vector::VectorIota},
         Iota,
     },
     pattern_registry::PatternRegistry,

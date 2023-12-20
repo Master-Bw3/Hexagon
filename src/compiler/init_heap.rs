@@ -3,7 +3,8 @@ use std::{collections::HashMap, rc::Rc};
 use crate::{
     interpreter::mishap::Mishap,
     iota::{hex_casting::pattern::PatternIota, Iota},
-    pattern_registry::PatternRegistry, parser::{ActionValue, Location},
+    parser::{ActionValue, Location},
+    pattern_registry::PatternRegistry,
 };
 
 pub fn init_heap(
@@ -34,7 +35,7 @@ pub fn init_heap(
         ),
         Rc::new(PatternIota::from_name(registry, "last_n_list", None, Location::Unknown).unwrap()),
         Rc::new(PatternIota::from_name(registry, "write/local", None, Location::Unknown).unwrap()),
-        ];
+    ];
 
     Ok(result)
 }

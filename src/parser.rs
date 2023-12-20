@@ -251,7 +251,15 @@ fn parse_action_iota(
                 .map(|(pattern, _)| pattern.clone())
                 .unwrap_or_else(
                     //check if pattern name
-                    || PatternIota::from_name(pattern_registry, left.as_str(), None, Location::Unknown).unwrap(),
+                    || {
+                        PatternIota::from_name(
+                            pattern_registry,
+                            left.as_str(),
+                            None,
+                            Location::Unknown,
+                        )
+                        .unwrap()
+                    },
                 ),
         ))
         .unwrap()
@@ -440,9 +448,12 @@ fn parse_pattern(
     macros: &Macros,
 ) -> PatternIota {
     match pair.as_str() {
-        "{" => PatternIota::from_name(pattern_registry, "open_paren", None, Location::Unknown).unwrap(),
+        "{" => {
+            PatternIota::from_name(pattern_registry, "open_paren", None, Location::Unknown).unwrap()
+        }
 
-        "}" => PatternIota::from_name(pattern_registry, "close_paren", None, Location::Unknown).unwrap(),
+        "}" => PatternIota::from_name(pattern_registry, "close_paren", None, Location::Unknown)
+            .unwrap(),
 
         _ => match pair.as_rule() {
             Rule::Action => {
@@ -456,9 +467,11 @@ fn parse_pattern(
                     conf_entities,
                 )
             }
-            Rule::PatternRaw => {
-                PatternIota::from_sig(pair.into_inner().last().unwrap().as_str(), None, Location::Unknown)
-            }
+            Rule::PatternRaw => PatternIota::from_sig(
+                pair.into_inner().last().unwrap().as_str(),
+                None,
+                Location::Unknown,
+            ),
             _ => unreachable!("{:?}", pair.as_rule()),
         },
     }
@@ -504,7 +517,7 @@ pub enum AstNode {
 pub enum Location {
     Unknown,
     Line(usize, usize),
-    List(usize,)
+    List(usize),
 }
 
 #[derive(Debug, Clone, PartialEq)]

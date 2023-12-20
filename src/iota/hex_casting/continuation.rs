@@ -21,7 +21,8 @@ impl Iota for ContinuationIota {
             Some(other) => {
                 self.value.len() == other.value.len()
                     && self
-                        .value.iter()
+                        .value
+                        .iter()
                         .zip(other.value.iter())
                         .map(|(_rhs, _lhs)| false) //TODO: fix this
                         .collect::<im::Vector<bool>>()
