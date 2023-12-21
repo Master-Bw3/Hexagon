@@ -265,11 +265,11 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::spell_1::<VectorIota>()),
 
             Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
-            
+
             Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rain").unwrap(), Box::new(special::no_action)),
-            
+
             Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
-            
+
             Pattern::new("Greater Translocation", "move_block/spell", great_sigs.get("move_block/spell").unwrap(), 
                 constructors::spell_2::<VectorIota, VectorIota>()),
 
@@ -377,7 +377,7 @@ impl PatternRegistryExt for PatternRegistry {
 
             Pattern::new_with_val("Whisper Reflection", "string/chat/caster", "waqa",
                     constructors::value_0::<StringIota>("String", false, "Whisper Reflection")),
-                
+
             Pattern::new_with_val("Listener's Reflection", "string/chat/all", "wded",
                 constructors::value_0::<StringIota>("String", false, "Listener's Reflection")),
 
@@ -402,7 +402,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Sprawling Distillation", "matrix/concat/hori", "dwwdqdwwdwdwaqawd", Box::new(matrix::concat_horizontal)),
             Pattern::new("Toppling Gambit", "matrix/split/vert", "awdedwawawwaeawwa", Box::new(matrix::split_vertical)),
             Pattern::new("Mitosis Gambit", "matrix/split/hori", "dwaqawdwdwwdqdwwd", Box::new(matrix::split_horizontal)),
-            
+
             //MoreIotas - Strings
             Pattern::new("Concatenation Distillation", "string/add", "waawaqwawqq", Box::new(string::concat)),
             Pattern::new("Separation Distillation", "string/split", "aqwaqa", Box::new(string::split)),
