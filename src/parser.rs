@@ -513,7 +513,7 @@ pub enum AstNode {
     },
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Location {
     Unknown,
     Line(usize, usize),
