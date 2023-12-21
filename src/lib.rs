@@ -7,13 +7,13 @@ use owo_colors::OwoColorize;
 use std::{collections::HashMap, env, fs};
 
 use crate::interpreter::interpret;
-mod compiler;
-mod interpreter;
-mod iota;
-mod parse_config;
-mod parser;
-mod pattern_registry;
-mod patterns;
+pub mod compiler;
+pub mod interpreter;
+pub mod iota;
+pub mod parse_config;
+pub mod parser;
+pub mod pattern_registry;
+pub mod patterns;
 
 use parse_config::{parse_config, Config};
 use pattern_registry::{PatternRegistry, PatternRegistryExt};
