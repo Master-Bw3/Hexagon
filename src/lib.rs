@@ -1,5 +1,6 @@
 use compiler::{compile_to_iotas, nbt::gen_give_cmd};
 
+use hex_server::send_hex;
 use interpreter::error::print_interpreter_error;
 use iota::Iota;
 
@@ -14,6 +15,7 @@ pub mod parse_config;
 pub mod parser;
 pub mod pattern_registry;
 pub mod patterns;
+pub mod hex_server;
 
 use parse_config::{parse_config, Config};
 use pattern_registry::{PatternRegistry, PatternRegistryExt};
@@ -46,6 +48,7 @@ impl Args {
         match cmd {
             "run" => Command::Run,
             "build" => Command::Build,
+            "run_external" => Command::RunExternal,
             _ => panic!("invalid command"),
         }
     }
@@ -54,6 +57,7 @@ impl Args {
 enum Command {
     Run,
     Build,
+    RunExternal,
 }
 
 pub fn run() {
@@ -92,6 +96,7 @@ pub fn run() {
                 print_interpreter_error(err, &source, &args.source_path);
             }
         };
+
     } else if let Command::Build = args.command {
         let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
         let compile_result = compile_to_iotas(&ast, None, &pattern_registry, &macros);
@@ -103,5 +108,20 @@ pub fn run() {
                 print_interpreter_error(err, &source, &args.source_path);
             }
         };
+    } else if let Command::RunExternal = args.command { 
+        let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
+        let compile_result = compile_to_iotas(&ast, None, &pattern_registry, &macros);
+        match compile_result {
+            // Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
+            Ok(result) => {
+                send_hex(result).unwrap();
+                println!("hex sent to server")
+            },
+
+            Err(err) => {
+                print_interpreter_error(err, &source, &args.source_path);
+            }
+        };
     }
+
 }
