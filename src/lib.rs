@@ -22,6 +22,7 @@ use pattern_registry::{PatternRegistry, PatternRegistryExt};
 
 struct Args {
     command: Command,
+    url: Option<String>,
     source_path: String,
     config_path: String,
 }
@@ -30,25 +31,47 @@ impl Args {
     fn get() -> Args {
         let args: Vec<String> = env::args().collect();
 
-        let command = args.get(1).expect("Expected command");
+        let command = Args::get_cmd(args.get(1).expect("Expected command"));
 
-        let source_path = args.get(2).expect("Expected File Path").to_owned();
+        if let Command::Send = command {
+            let url = args.get(2).expect("Expected Url").to_owned();
 
-        let default_config_path = "config.toml".to_string();
-        let config_path = args.get(3).unwrap_or(&default_config_path).to_owned();
 
-        Args {
-            command: Args::get_cmd(command),
-            source_path,
-            config_path,
+            let source_path = args.get(3).expect("Expected File Path").to_owned();
+
+            let default_config_path = "config.toml".to_string();
+            let config_path = args.get(4).unwrap_or(&default_config_path).to_owned();
+    
+            Args {
+                command,
+                url: Some(url),
+                source_path,
+                config_path,
+            }
+
+        } else {
+            let source_path = args.get(2).expect("Expected File Path").to_owned();
+
+            let default_config_path = "config.toml".to_string();
+            let config_path = args.get(3).unwrap_or(&default_config_path).to_owned();
+    
+            Args {
+                command,
+                url: None,
+                source_path,
+                config_path,
+            }
         }
+        
+
+
     }
 
     fn get_cmd(cmd: &str) -> Command {
         match cmd {
             "run" => Command::Run,
             "build" => Command::Build,
-            "run_external" => Command::RunExternal,
+            "send" => Command::Send,
             _ => panic!("invalid command"),
         }
     }
@@ -57,7 +80,7 @@ impl Args {
 enum Command {
     Run,
     Build,
-    RunExternal,
+    Send,
 }
 
 pub fn run() {
@@ -108,13 +131,13 @@ pub fn run() {
                 print_interpreter_error(err, &source, &args.source_path);
             }
         };
-    } else if let Command::RunExternal = args.command { 
+    } else if let Command::Send = args.command { 
         let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
         let compile_result = compile_to_iotas(&ast, None, &pattern_registry, &macros);
         match compile_result {
             // Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
             Ok(result) => {
-                let result = send_hex(result).unwrap();
+                let result = send_hex(result, &args.url.unwrap()).unwrap();
                 println!("resultant stack:\n{result}")
             },
 
