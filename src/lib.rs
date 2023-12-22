@@ -114,8 +114,8 @@ pub fn run() {
         match compile_result {
             // Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
             Ok(result) => {
-                send_hex(result).unwrap();
-                println!("hex sent to server")
+                let result = send_hex(result).unwrap();
+                println!("resultant stack:\n{result}")
             },
 
             Err(err) => {
