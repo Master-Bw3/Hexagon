@@ -14,6 +14,10 @@ Compile a file
 ```
 hexagon build filename.hexcasting
 ```
+Send a hex to [Hex Server](https://github.com/Master-Bw3/hex_server)
+```
+hexagon send http://localhost:9000/hexPost filename.hexcasting
+```
 
 ## Syntax
 
