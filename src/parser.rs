@@ -522,6 +522,7 @@ pub enum Location {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpName {
+    Init,
     Store,
     Copy,
     Push,

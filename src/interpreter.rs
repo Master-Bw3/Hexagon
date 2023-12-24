@@ -272,56 +272,58 @@ pub fn interpret_op<'a>(
 
     if state.buffer.is_some() {
         let compiled = match name {
-            crate::parser::OpName::Store => {
+            OpName::Store => {
                 compile_op_store(&mut state.heap, pattern_registry, &arg)
             }
-            crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Embed => compile_op_embed(
+            OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
+            OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
+            OpName::Embed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::Normal,
             ),
-            crate::parser::OpName::SmartEmbed => compile_op_embed(
+            OpName::SmartEmbed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::Smart,
             ),
-            crate::parser::OpName::ConsiderEmbed => compile_op_embed(
+            OpName::ConsiderEmbed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::Consider,
             ),
-            crate::parser::OpName::IntroEmbed => compile_op_embed(
+            OpName::IntroEmbed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::IntroRetro,
             ),
+            OpName::Init => todo!(),
         }?;
         for iota in compiled {
             push_iota(iota, state, false)
         }
     } else {
         match name {
-            crate::parser::OpName::Store => store(&arg, state, false),
-            crate::parser::OpName::Copy => store(&arg, state, true),
-            crate::parser::OpName::Push => push(&arg, state),
-            crate::parser::OpName::Embed => {
+            OpName::Store => store(&arg, state, false),
+            OpName::Copy => store(&arg, state, true),
+            OpName::Push => push(&arg, state),
+            OpName::Embed => {
                 embed(&arg, state, pattern_registry, EmbedType::Normal, macros)
             }
-            crate::parser::OpName::SmartEmbed => {
+            OpName::SmartEmbed => {
                 embed(&arg, state, pattern_registry, EmbedType::Smart, macros)
             }
-            crate::parser::OpName::ConsiderEmbed => {
+            OpName::ConsiderEmbed => {
                 embed(&arg, state, pattern_registry, EmbedType::Consider, macros)
             }
-            crate::parser::OpName::IntroEmbed => {
+            OpName::IntroEmbed => {
                 embed(&arg, state, pattern_registry, EmbedType::IntroRetro, macros)
             }
+            OpName::Init => todo!(),
         }?;
     }
 

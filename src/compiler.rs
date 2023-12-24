@@ -1,9 +1,9 @@
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::HashMap, mem, rc::Rc};
 
 use crate::{
     interpreter::{mishap::Mishap, ops::EmbedType},
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parser::{AstNode, Location, Macros, OpName},
+    parser::{ActionValue, AstNode, Location, Macros, OpName},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -11,7 +11,7 @@ use self::{
     external::compile_external,
     if_block::compile_if_block,
     init_heap::init_heap,
-    ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+    ops::{compile_op_copy, compile_op_embed, compile_op_init, compile_op_push, compile_op_store},
 };
 
 pub mod external;
@@ -97,7 +97,21 @@ pub fn compile_node(
         }
 
         AstNode::Block { external, nodes } => {
-            let result = compile_hex_node(nodes, heap, depth, pattern_registry, macros);
+            let block_heap = &mut heap.clone();
+            let result = compile_hex_node(nodes, block_heap, depth, pattern_registry, macros)
+                .and_then(|mut x| {
+                    x.append(&mut block_end(
+                        heap.len(),
+                        pattern_registry,
+                    ));
+                    Ok(x)
+                });
+
+            for key in heap.keys().cloned().collect::<Vec<String>>() {
+                let new_val = block_heap[&key];
+                heap.insert(key, new_val);
+            }
+
             if *external {
                 result.map(|ref mut x| compile_external(x, pattern_registry))
             } else {
@@ -110,6 +124,7 @@ pub fn compile_node(
             name,
             arg,
         } => match name {
+            OpName::Init => compile_op_init(heap, pattern_registry, arg),
             OpName::Store => compile_op_store(heap, pattern_registry, arg),
             OpName::Copy => compile_op_copy(heap, pattern_registry, arg),
             OpName::Push => compile_op_push(heap, pattern_registry, arg),
@@ -177,6 +192,37 @@ fn compile_hex_node(
     ));
 
     Ok(result)
+}
+
+fn block_end<'a>(
+    heap_len: usize,
+    registry: &'a PatternRegistry,
+) -> Vec<Rc<dyn Iota>> {
+println!("hl: {heap_len}");
+
+    vec![
+        Rc::new(PatternIota::from_name(registry, "read/local", None, Location::Unknown).unwrap()),
+        Rc::new(
+            PatternIota::from_name(
+                registry,
+                "number",
+                Some(ActionValue::Iota(Rc::new(0.0))),
+                Location::Unknown,
+            )
+            .unwrap(),
+        ),
+        Rc::new(
+            PatternIota::from_name(
+                registry,
+                "number",
+                Some(ActionValue::Iota(Rc::new(heap_len as f64))),
+                Location::Unknown,
+            )
+            .unwrap(),
+        ),
+        Rc::new(PatternIota::from_name(registry, "slice", None, Location::Unknown).unwrap()),
+        Rc::new(PatternIota::from_name(registry, "write/local", None, Location::Unknown).unwrap()),
+    ]
 }
 
 // pub fn calc_eval_depth(registry: &PatternRegistry, iotas: &Vec<Iota>) -> u32 {
