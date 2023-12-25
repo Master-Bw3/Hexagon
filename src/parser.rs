@@ -111,6 +111,12 @@ fn construct_ast_node(
             conf_entities,
             macros,
         )),
+        Rule::WhileBlock => Some(parse_while_block(
+            pair,
+            pattern_registry,
+            conf_entities,
+            macros,
+        )),
         Rule::Term => Some(AstNode::Block {
             nodes: pair
                 .into_inner()
@@ -369,6 +375,56 @@ fn parse_if_block(
     )
 }
 
+fn parse_while_block(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
+) -> AstNode {
+    fn parse_inner(
+        line: (usize, usize),
+        mut inner: Pairs<'_, Rule>,
+        pattern_registry: &PatternRegistry,
+        conf_entities: &mut HashMap<String, Entity>,
+        macros: &Macros,
+    ) -> AstNode {
+        AstNode::WhileBlock {
+            condition: {
+                let mut condition = inner.next().unwrap().into_inner();
+                Box::new(
+                    construct_ast_node(
+                        condition.next().unwrap(),
+                        pattern_registry,
+                        conf_entities,
+                        macros,
+                    )
+                    .unwrap(),
+                )
+            },
+            block: {
+                let mut block = inner.next().unwrap().into_inner();
+                Box::new(
+                    construct_ast_node(
+                        block.next().unwrap(),
+                        pattern_registry,
+                        conf_entities,
+                        macros,
+                    )
+                    .unwrap(),
+                )
+            },
+            location: Location::Line(line.0, line.1),
+        }
+    }
+    parse_inner(
+        pair.line_col(),
+        pair.into_inner(),
+        pattern_registry,
+        conf_entities,
+        macros,
+    )
+}
+
 pub fn parse_iota(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
@@ -511,6 +567,11 @@ pub enum AstNode {
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
     },
+    WhileBlock {
+        location: Location,
+        condition: Box<AstNode>,
+        block: Box<AstNode>,
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

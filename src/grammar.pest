@@ -1,6 +1,12 @@
 File = _{ SOI ~ Hex ~ EOI }
 
-Hex = _{ (( Macro | IfBlock | Embed | Op | Var  | ExternTerm | Action  | Term ) ~ Newline? | Newline)* }
+Hex = _{ (( Macro | WhileBlock | IfBlock | Embed | Op | Var  | ExternTerm | Action  | Term ) ~ Newline? | Newline)* }
+
+WhileBlock = { While ~ Do }
+
+While = { "while" ~ Newline* ~ Term ~ Newline* }
+
+Do = { "do" ~ Newline* ~ Term ~ Newline* }
 
 IfBlock = { If ~ Then ~ (ElseIf ~ Then)* ~ Else? }
 
