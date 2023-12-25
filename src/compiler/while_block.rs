@@ -74,18 +74,17 @@ pub fn compile_while_block(
         .map(wrap_pattern),
     );
 
-    //append condition to result
-    if let AstNode::Block { external: _, nodes } = (*condition).clone() {
-        for node in nodes {
-            result.append(&mut compile_node(
-                &node,
-                heap,
-                depth,
-                pattern_registry,
-                macros,
-            )?)
-        }
-    };
+    //todo: inline this to minimize eval usage
+    result.append(&mut compile_node(
+        condition,
+        heap,
+        depth,
+        pattern_registry,
+        macros,
+    )?);
+    result.push(Rc::new(
+        PatternIota::from_name(pattern_registry, "eval", None, location.clone()).unwrap(),
+    ));
 
     result.extend(
         vec![
