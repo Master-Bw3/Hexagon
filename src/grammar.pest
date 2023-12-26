@@ -4,6 +4,9 @@ Hex = _{ (( Macro | WhileBlock | IfBlock | Embed | Op | Var  | ExternTerm | Acti
 
 WhileBlock = { While ~ Do }
 
+DoWhileBlock = { Do ~ While }
+
+
 While = { "while" ~ Newline* ~ Term ~ Newline* }
 
 Do = { "do" ~ Newline* ~ Term ~ Newline* }

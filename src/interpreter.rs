@@ -12,7 +12,8 @@ use crate::{
     compiler::{
         compile_node,
         if_block::compile_if_block,
-        ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store}, while_block::compile_while_block,
+        ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+        while_block::{compile_do_while_block, compile_while_block},
     },
     interpreter::ops::{embed, push, store, EmbedType},
     iota::{
@@ -255,31 +256,49 @@ fn interpret_node<'a>(
             }
             Ok(state)
         }
-        AstNode::WhileBlock { location, condition, block } => {            if state.consider_next {
-            return Err((Mishap::OpCannotBeConsidered, location));
-        }
+        AstNode::WhileBlock {
+            location,
+            condition,
+            block,
+            do_while,
+        } => {
+            if state.consider_next {
+                return Err((Mishap::OpCannotBeConsidered, location));
+            }
 
-        let compiled = Vector::from(compile_while_block(
-            &location,
-            &condition,
-            &block,
-            calc_buffer_depth(pattern_registry, &state.buffer),
-            &mut state.heap,
-            pattern_registry,
-            macros,
-        )?);
+            let compiled = if do_while {
+                Vector::from(compile_do_while_block(
+                    &location,
+                    &condition,
+                    &block,
+                    calc_buffer_depth(pattern_registry, &state.buffer),
+                    &mut state.heap,
+                    pattern_registry,
+                    macros,
+                )?)
+            } else {
+                Vector::from(compile_while_block(
+                    &location,
+                    &condition,
+                    &block,
+                    calc_buffer_depth(pattern_registry, &state.buffer),
+                    &mut state.heap,
+                    pattern_registry,
+                    macros,
+                )?)
+            };
 
-        if let Some(buffer) = &mut state.buffer {
-            buffer.append(compiled.iter().map(|x| (x.clone(), false)).collect())
-        } else {
-            state
-                .continuation
-                .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
-                    nodes_queue: iota_list_to_ast_node_list(Rc::new(compiled)),
-                }))
+            if let Some(buffer) = &mut state.buffer {
+                buffer.append(compiled.iter().map(|x| (x.clone(), false)).collect())
+            } else {
+                state
+                    .continuation
+                    .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                        nodes_queue: iota_list_to_ast_node_list(Rc::new(compiled)),
+                    }))
+            }
+            Ok(state)
         }
-        Ok(state)
-    },
         AstNode::Program(_) => unreachable!(),
     }
 }
@@ -297,9 +316,7 @@ pub fn interpret_op<'a>(
 
     if state.buffer.is_some() {
         let compiled = match name {
-            OpName::Store => {
-                compile_op_store(&mut state.heap, pattern_registry, &arg)
-            }
+            OpName::Store => compile_op_store(&mut state.heap, pattern_registry, &arg),
             OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
             OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
             OpName::Embed => compile_op_embed(
@@ -336,12 +353,8 @@ pub fn interpret_op<'a>(
             OpName::Store => store(&arg, state, false),
             OpName::Copy => store(&arg, state, true),
             OpName::Push => push(&arg, state),
-            OpName::Embed => {
-                embed(&arg, state, pattern_registry, EmbedType::Normal, macros)
-            }
-            OpName::SmartEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::Smart, macros)
-            }
+            OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal, macros),
+            OpName::SmartEmbed => embed(&arg, state, pattern_registry, EmbedType::Smart, macros),
             OpName::ConsiderEmbed => {
                 embed(&arg, state, pattern_registry, EmbedType::Consider, macros)
             }

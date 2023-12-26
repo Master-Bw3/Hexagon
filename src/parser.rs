@@ -111,11 +111,19 @@ fn construct_ast_node(
             conf_entities,
             macros,
         )),
+        Rule::DoWhileBlock => Some(parse_while_block(
+            pair,
+            pattern_registry,
+            conf_entities,
+            macros,
+            true,
+        )),
         Rule::WhileBlock => Some(parse_while_block(
             pair,
             pattern_registry,
             conf_entities,
             macros,
+            false,
         )),
         Rule::Term => Some(AstNode::Block {
             nodes: pair
@@ -380,6 +388,7 @@ fn parse_while_block(
     pattern_registry: &PatternRegistry,
     conf_entities: &mut HashMap<String, Entity>,
     macros: &Macros,
+    do_while: bool,
 ) -> AstNode {
     fn parse_inner(
         line: (usize, usize),
@@ -387,8 +396,10 @@ fn parse_while_block(
         pattern_registry: &PatternRegistry,
         conf_entities: &mut HashMap<String, Entity>,
         macros: &Macros,
+        do_while: bool,
     ) -> AstNode {
         AstNode::WhileBlock {
+            do_while,
             condition: {
                 let mut condition = inner.next().unwrap().into_inner();
                 Box::new(
@@ -422,6 +433,7 @@ fn parse_while_block(
         pattern_registry,
         conf_entities,
         macros,
+        do_while,
     )
 }
 
@@ -568,6 +580,7 @@ pub enum AstNode {
         fail: Option<Box<AstNode>>,
     },
     WhileBlock {
+        do_while: bool,
         location: Location,
         condition: Box<AstNode>,
         block: Box<AstNode>,

@@ -12,7 +12,7 @@ use self::{
     if_block::compile_if_block,
     init_heap::init_heap,
     ops::{compile_op_copy, compile_op_embed, compile_op_init, compile_op_push, compile_op_store},
-    while_block::compile_while_block,
+    while_block::{compile_do_while_block, compile_while_block},
 };
 
 pub mod external;
@@ -157,15 +157,30 @@ pub fn compile_node(
             location,
             condition,
             block,
-        } => compile_while_block(
-            location,
-            condition,
-            block,
-            depth,
-            heap,
-            pattern_registry,
-            macros,
-        ),
+            do_while,
+        } => {
+            if *do_while {
+                compile_do_while_block(
+                    location,
+                    condition,
+                    block,
+                    depth,
+                    heap,
+                    pattern_registry,
+                    macros,
+                )
+            } else {
+                compile_while_block(
+                    location,
+                    condition,
+                    block,
+                    depth,
+                    heap,
+                    pattern_registry,
+                    macros,
+                )
+            }
+        }
     }
 }
 
