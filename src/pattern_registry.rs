@@ -201,7 +201,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Explosion", "explode", "aawaawaa", constructors::spell_2::<VectorIota, NumberIota>()),
             Pattern::new("Fireball", "explode/fire", "ddwddwdd", constructors::spell_2::<VectorIota, NumberIota>()),
             Pattern::new("Impulse", "add_motion", "awqqqwaqw", constructors::spell_2::<EntityIota, VectorIota>()),
-            Pattern::new("Blink", "blink", "awqqqwaq", constructors::spell_2::<EntityIota, VectorIota>()),
+            Pattern::new("Blink", "blink", "awqqqwaq", constructors::spell_2::<EntityIota, NumberIota>()),
             Pattern::new("Break Block", "break_block", "qaqqqqq", constructors::spell_1::<VectorIota>()),
             Pattern::new("Place Block", "place_block", "eeeeede", constructors::spell_1::<VectorIota>()),
             Pattern::new("Internalize Pigment", "colorize", "awddwqawqwawq", Box::new(special::no_action)),
