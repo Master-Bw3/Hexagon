@@ -8,15 +8,15 @@ Either download the latest release file or install via Cargo:
 ## Usage
 Interpret a file
 ```
-hexagon run filename.hexcasting
+hexagon run filename.hexagon
 ```
 Compile a file
 ```
-hexagon build filename.hexcasting
+hexagon build filename.hexagon
 ```
 Send a hex to [Hex Server](https://github.com/Master-Bw3/hex_server)
 ```
-hexagon send http://localhost:9000/hexPost filename.hexcasting
+hexagon send http://localhost:9000/hexPost filename.hexagon
 ```
 
 ## Syntax
@@ -174,7 +174,7 @@ Duplicate Thrice     //expand a macro
 ## Config
 By default, Hexagon looks for a `config.toml` file in the current directory. A different file can also be specified:
 ```
-hexagon run example.hexcasting example.toml
+hexagon run example.hexagon example.toml
 ```
 
 ### Config Syntax 
