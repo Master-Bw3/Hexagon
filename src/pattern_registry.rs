@@ -13,6 +13,7 @@ use crate::iota::hex_casting::vector::VectorIota;
 use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
 use crate::patterns::five_dim_casting::{cell, continuum};
+use crate::patterns::hex_casting::special::no_action;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
@@ -429,6 +430,10 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Mutation Distillation", "cell/replace", "aaaaaaaaaaa", Box::new(cell::replace)),
             Pattern::new("Retrieval Purification", "cell/unwrap", "aaaaaaaaaaaa", Box::new(cell::unwrap)),
 
+            //Macula
+            Pattern::new("Macula Gambit", "macula/dimensions", "aawawaa", Box::new(no_action)),
+            Pattern::new("Calligrapher's Purification", "visage/text/unbounded", "aaqdwdwd", Box::new(no_action)),
+            Pattern::new("Etch Visage", "macula/add", "wddaaddw", Box::new(no_action)),
 
         ];
 
