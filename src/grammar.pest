@@ -61,7 +61,7 @@ Bool = @{("True" | "False") ~ !(WHITESPACE? ~ ASCII_ALPHA)}
 
 Pattern = ${ IntroRetro | PatternRaw | Action }
 
-String = @{("\"" ~ ("\\\"" | (!"\"" ~ ANY))* ~ "\"")}
+String = @{("\"" ~ ("\\\"" | "\\\\" | (!"\"" ~ ANY))* ~ "\"")}
 
 Matrix = !{ "[" ~ "(" ~ Int ~ "," ~ Int ~ ")" ~ ("|" ~ (Number ~ ("," | ";"))* ~ Iota)? ~ "]"}
 
