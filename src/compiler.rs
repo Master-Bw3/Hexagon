@@ -102,9 +102,7 @@ pub fn compile_node(
             let block_heap = &mut heap.clone();
             let result = compile_hex_node(nodes, block_heap, depth, pattern_registry, macros)
                 .and_then(|mut x| {
-                    let retro = x.pop().expect("Retrospection at end of block");
                     x.append(&mut block_end(heap.len(), pattern_registry));
-                    x.push(retro);
                     Ok(x)
                 });
             
