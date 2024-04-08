@@ -37,7 +37,7 @@ impl Iota for VectorIota {
         vec_map.insert("z".to_string(), serde_json::Value::Number(Number::from_f64(self.z).unwrap()));
 
         let mut map = Map::new();
-        map.insert("iotaType".to_string(), serde_json::Value::String("vector".to_string()));
+        map.insert("iota_type".to_string(), serde_json::Value::String("vector".to_string()));
         map.insert("value".to_string(), serde_json::Value::Object(vec_map));
 
         serde_json::Value::Object(map)

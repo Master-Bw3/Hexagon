@@ -88,7 +88,7 @@ impl Iota for PatternIota {
     
     fn serialize_to_json(&self) -> serde_json::Value {
         let mut map = Map::new();
-        map.insert("iotaType".to_string(), serde_json::Value::String("pattern".to_string()));
+        map.insert("iota_type".to_string(), serde_json::Value::String("pattern".to_string()));
         map.insert("value".to_string(), serde_json::Value::String(self.signature.as_str()));
 
         serde_json::Value::Object(map)    }

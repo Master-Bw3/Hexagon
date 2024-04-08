@@ -85,7 +85,7 @@ impl Iota for NumberIota {
     
     fn serialize_to_json(&self) -> serde_json::Value {
         let mut map = Map::new();
-        map.insert("iotaType".to_string(), serde_json::Value::String("number".to_string()));
+        map.insert("iota_type".to_string(), serde_json::Value::String("number".to_string()));
         map.insert("value".to_string(), serde_json::Value::Number(Number::from_f64(*self).unwrap()));
 
         serde_json::Value::Object(map)

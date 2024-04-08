@@ -84,7 +84,7 @@ impl Iota for ListIota {
             .collect::<Vec<_>>();
 
         let mut map = Map::new();
-        map.insert("iotaType".to_string(), serde_json::Value::String("list".to_string()));
+        map.insert("iota_type".to_string(), serde_json::Value::String("list".to_string()));
         map.insert("value".to_string(), serde_json::Value::Array(iotas));
 
         serde_json::Value::Object(map)

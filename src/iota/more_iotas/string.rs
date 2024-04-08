@@ -29,7 +29,7 @@ impl Iota for StringIota {
     
     fn serialize_to_json(&self) -> serde_json::Value {
         let mut map = Map::new();
-        map.insert("iotaType".to_string(), serde_json::Value::String("string".to_string()));
+        map.insert("iota_type".to_string(), serde_json::Value::String("string".to_string()));
         map.insert("value".to_string(), serde_json::Value::String(self.clone()));
 
         serde_json::Value::Object(map)
