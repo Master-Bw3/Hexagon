@@ -69,6 +69,10 @@ impl Iota for MatrixIota {
 
         format!("{{\"hexcasting:type\": \"moreiotas:matrix\", \"hexcasting:data\": {{mat: {out}, cols: {}, rows: {}}}}}", self.ncols(), self.nrows())
     }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        todo!()
+    }
 }
 
 type Col<'a> = Matrix<

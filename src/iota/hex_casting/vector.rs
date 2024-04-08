@@ -1,3 +1,5 @@
+use serde_json::{Map, Number};
+
 use super::number::NumberIota;
 use crate::iota::Iota;
 
@@ -26,6 +28,19 @@ impl Iota for VectorIota {
         let z = self.z.to_bits() as i64;
 
         format!("{{\"hexcasting:type\": \"hexcasting:vec3\", \"hexcasting:data\": [L; {x}L, {y}L, {z}L]}}")
+    }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        let mut vec_map = Map::new();
+        vec_map.insert("x".to_string(), serde_json::Value::Number(Number::from_f64(self.x).unwrap()));
+        vec_map.insert("y".to_string(), serde_json::Value::Number(Number::from_f64(self.y).unwrap()));
+        vec_map.insert("z".to_string(), serde_json::Value::Number(Number::from_f64(self.z).unwrap()));
+
+        let mut map = Map::new();
+        map.insert("iotaType".to_string(), serde_json::Value::String("vector".to_string()));
+        map.insert("value".to_string(), serde_json::Value::Object(vec_map));
+
+        serde_json::Value::Object(map)
     }
 }
 

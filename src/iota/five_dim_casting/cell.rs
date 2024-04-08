@@ -23,4 +23,8 @@ impl Iota for CellIota {
     fn display_type_name() -> String {
         "Cell".to_string()
     }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        todo!()
+    }
 }

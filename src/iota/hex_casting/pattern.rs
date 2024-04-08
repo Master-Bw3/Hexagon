@@ -1,3 +1,5 @@
+use serde_json::Map;
+
 use crate::interpreter::mishap::Mishap;
 use crate::parser::Location;
 use crate::pattern_registry::PatternRegistryExt;
@@ -87,6 +89,13 @@ impl Iota for PatternIota {
 
         format!("{{\"hexcasting:type\": \"hexcasting:pattern\", \"hexcasting:data\": {{angles: [B;{bytelist}], start_dir: 1b}}}}")
     }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        let mut map = Map::new();
+        map.insert("iotaType".to_string(), serde_json::Value::String("pattern".to_string()));
+        map.insert("value".to_string(), serde_json::Value::String(self.signature.as_str()));
+
+        serde_json::Value::Object(map)    }
 }
 
 pub type Signature = Vec<PatternSigDir>;

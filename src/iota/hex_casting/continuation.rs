@@ -35,4 +35,8 @@ impl Iota for ContinuationIota {
     fn serialize_to_nbt(&self) -> String {
         todo!()
     }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        todo!()
+    }
 }

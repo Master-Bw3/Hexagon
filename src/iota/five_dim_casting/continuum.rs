@@ -30,4 +30,8 @@ impl Iota for ContinuumIota {
     fn serialize_to_nbt(&self) -> String {
         "".to_string()
     }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        todo!()
+    }
 }
