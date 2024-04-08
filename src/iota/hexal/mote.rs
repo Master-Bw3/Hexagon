@@ -34,4 +34,8 @@ impl Iota for MoteIota {
     {
         todo!()
     }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        todo!()
+    }
 }
