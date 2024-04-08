@@ -1,13 +1,12 @@
 use compiler::{compile_to_iotas, nbt::gen_give_cmd};
 
-use hex_server::send_hex;
 use interpreter::error::print_interpreter_error;
 use iota::Iota;
 
 use owo_colors::OwoColorize;
 use std::{collections::HashMap, env, fs};
 
-use crate::interpreter::interpret;
+use crate::{hex_server::send_hex, interpreter::interpret};
 pub mod compiler;
 pub mod interpreter;
 pub mod iota;
