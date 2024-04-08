@@ -2,7 +2,7 @@ use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     iota::{hex_casting::pattern::PatternIota, Iota},
-    parser::{AstNode, Macros, Location},
+    parser::{AstNode, Location, Macros},
     pattern_registry::PatternRegistry,
 };
 
@@ -44,7 +44,10 @@ pub fn compile_if_block(
     //push fail hex to result (if there is one)
     match fail {
         Some(fail_node) => match *(fail_node.clone()) {
-            AstNode::Block { external: _, nodes: _ } => {
+            AstNode::Block {
+                external: _,
+                nodes: _,
+            } => {
                 // "else"
                 result.append(&mut compile_node(
                     fail_node,
@@ -62,7 +65,10 @@ pub fn compile_if_block(
                 fail: _,
             } => {
                 result.append(&mut compile_node(
-                    &AstNode::Block{nodes: vec![(**fail_node).clone()], external: false },
+                    &AstNode::Block {
+                        nodes: vec![(**fail_node).clone()],
+                        external: false,
+                    },
                     heap,
                     depth,
                     pattern_registry,
@@ -75,7 +81,16 @@ pub fn compile_if_block(
             _ => unreachable!(),
         },
         None => {
-            result.append(&mut compile_node(&AstNode::Block{nodes: vec![], external: false }, heap, depth, pattern_registry, macros)?);
+            result.append(&mut compile_node(
+                &AstNode::Block {
+                    nodes: vec![],
+                    external: false,
+                },
+                heap,
+                depth,
+                pattern_registry,
+                macros,
+            )?);
         }
     }
     //push augur's to buffer

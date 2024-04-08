@@ -1,9 +1,9 @@
-pub mod number;
 pub mod bool;
-pub mod vector;
-pub mod pattern;
-pub mod list;
-pub mod entity;
-pub mod null;
-pub mod garbage;
 pub mod continuation;
+pub mod entity;
+pub mod garbage;
+pub mod list;
+pub mod null;
+pub mod number;
+pub mod pattern;
+pub mod vector;

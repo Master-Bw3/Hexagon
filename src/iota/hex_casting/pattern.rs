@@ -29,11 +29,7 @@ impl PatternIota {
         })
     }
 
-    pub fn from_sig(
-        name: &str,
-        value: Option<ActionValue>,
-        location: Location,
-    ) -> PatternIota {
+    pub fn from_sig(name: &str, value: Option<ActionValue>, location: Location) -> PatternIota {
         PatternIota {
             signature: Signature::from_sig(name),
             value: Box::new(value),

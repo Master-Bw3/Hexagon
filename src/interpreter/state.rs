@@ -4,10 +4,10 @@ use im::Vector;
 
 use crate::{
     iota::{
-        hex_casting::{pattern::Signature, vector::VectorIota, entity::EntityIota},
+        hex_casting::{entity::EntityIota, pattern::Signature, vector::VectorIota},
         Iota,
     },
-    parser::{AstNode, Macros, Location},
+    parser::{AstNode, Location, Macros},
     pattern_registry::PatternRegistry,
 };
 

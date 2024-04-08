@@ -12,12 +12,13 @@ use crate::iota::hex_casting::number::NumberIota;
 use crate::iota::hex_casting::vector::VectorIota;
 use crate::iota::more_iotas::string::StringIota;
 use crate::parser::ActionValue;
-use crate::patterns::five_dim_casting::{continuum, cell};
+use crate::patterns::five_dim_casting::{cell, continuum};
+use crate::patterns::hex_casting::special::no_action;
 use crate::patterns::hex_casting::{
     eval, lists, math, read_write, sentinel, special, stack, swizzle,
 };
 use crate::patterns::more_iotas::{matrix, string};
-use crate::patterns::{constructors, Pattern, hexal};
+use crate::patterns::{constructors, hexal, Pattern};
 
 pub type PatternRegistry = Vec<Pattern>;
 
@@ -200,7 +201,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Explosion", "explode", "aawaawaa", constructors::spell_2::<VectorIota, NumberIota>()),
             Pattern::new("Fireball", "explode/fire", "ddwddwdd", constructors::spell_2::<VectorIota, NumberIota>()),
             Pattern::new("Impulse", "add_motion", "awqqqwaqw", constructors::spell_2::<EntityIota, VectorIota>()),
-            Pattern::new("Blink", "blink", "awqqqwaq", constructors::spell_2::<EntityIota, VectorIota>()),
+            Pattern::new("Blink", "blink", "awqqqwaq", constructors::spell_2::<EntityIota, NumberIota>()),
             Pattern::new("Break Block", "break_block", "qaqqqqq", constructors::spell_1::<VectorIota>()),
             Pattern::new("Place Block", "place_block", "eeeeede", constructors::spell_1::<VectorIota>()),
             Pattern::new("Internalize Pigment", "colorize", "awddwqawqwawq", Box::new(special::no_action)),
@@ -265,11 +266,11 @@ impl PatternRegistryExt for PatternRegistry {
                 constructors::spell_1::<VectorIota>()),
 
             Pattern::new("Dispel Rain", "dispel_rain", great_sigs.get("dispel_rain").unwrap(), Box::new(special::no_action)),
-            
+
             Pattern::new("Summon Rain", "summon_rain", great_sigs.get("summon_rain").unwrap(), Box::new(special::no_action)),
-            
+
             Pattern::new("Flay Mind", "brainsweep", great_sigs.get("brainsweep").unwrap(), Box::new(special::no_action)),
-            
+
             Pattern::new("Greater Translocation", "move_block/spell", great_sigs.get("move_block/spell").unwrap(), 
                 constructors::spell_2::<VectorIota, VectorIota>()),
 
@@ -377,7 +378,7 @@ impl PatternRegistryExt for PatternRegistry {
 
             Pattern::new_with_val("Whisper Reflection", "string/chat/caster", "waqa",
                     constructors::value_0::<StringIota>("String", false, "Whisper Reflection")),
-                
+
             Pattern::new_with_val("Listener's Reflection", "string/chat/all", "wded",
                 constructors::value_0::<StringIota>("String", false, "Listener's Reflection")),
 
@@ -402,7 +403,7 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Sprawling Distillation", "matrix/concat/hori", "dwwdqdwwdwdwaqawd", Box::new(matrix::concat_horizontal)),
             Pattern::new("Toppling Gambit", "matrix/split/vert", "awdedwawawwaeawwa", Box::new(matrix::split_vertical)),
             Pattern::new("Mitosis Gambit", "matrix/split/hori", "dwaqawdwdwwdqdwwd", Box::new(matrix::split_horizontal)),
-            
+
             //MoreIotas - Strings
             Pattern::new("Concatenation Distillation", "string/add", "waawaqwawqq", Box::new(string::concat)),
             Pattern::new("Separation Distillation", "string/split", "aqwaqa", Box::new(string::split)),
@@ -429,6 +430,10 @@ impl PatternRegistryExt for PatternRegistry {
             Pattern::new("Mutation Distillation", "cell/replace", "aaaaaaaaaaa", Box::new(cell::replace)),
             Pattern::new("Retrieval Purification", "cell/unwrap", "aaaaaaaaaaaa", Box::new(cell::unwrap)),
 
+            //Macula
+            Pattern::new("Macula Gambit", "macula/dimensions", "aawawaa", Box::new(no_action)),
+            Pattern::new("Calligrapher's Purification", "visage/text/unbounded", "aaqdwdwd", Box::new(no_action)),
+            Pattern::new("Etch Visage", "macula/add", "wddaaddw", Box::new(no_action)),
 
         ];
 
@@ -450,18 +455,27 @@ impl PatternRegistryExt for PatternRegistry {
             }
         }
 
-        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+        if query == "number"
+            || query == "Numerical Reflection"
+            || query.starts_with("aqaa")
+            || query.starts_with("dedd")
+        {
             if let Some(ActionValue::Iota(iota)) = value {
                 if let Some(number) = iota.downcast_ref::<NumberIota>() {
-                    let number =
-                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
-                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    let number = Pattern::new_with_val(
+                        "Numerical Reflection",
+                        "number",
+                        &gen_number(*number as f32),
+                        constructors::value_0::<NumberIota>(
+                            "Number",
+                            false,
+                            "Numerical Reflection",
+                        ),
+                    );
                     return Some(number);
-
                 }
-
-        } }
-
+            }
+        }
 
         self.iter()
             .filter(|entry| {
@@ -474,7 +488,6 @@ impl PatternRegistryExt for PatternRegistry {
             .copied()
             .cloned()
     }
-
 
     fn find_all(&self, query: &str, value: &Option<ActionValue>) -> Vector<Pattern> {
         if let Some(ActionValue::Bookkeeper(code)) = value {
@@ -491,19 +504,30 @@ impl PatternRegistryExt for PatternRegistry {
             }
         }
 
-        if query == "number" || query == "Numerical Reflection" || query.starts_with("aqaa") || query.starts_with("dedd") {
+        if query == "number"
+            || query == "Numerical Reflection"
+            || query.starts_with("aqaa")
+            || query.starts_with("dedd")
+        {
             if let Some(ActionValue::Iota(iota)) = value {
                 if let Some(number) = iota.downcast_ref::<NumberIota>() {
-                    let number =
-                    Pattern::new_with_val("Numerical Reflection", "number", &gen_number(*number as f32), 
-                        constructors::value_0::<NumberIota>("Number", false, "Numerical Reflection"));
+                    let number = Pattern::new_with_val(
+                        "Numerical Reflection",
+                        "number",
+                        &gen_number(*number as f32),
+                        constructors::value_0::<NumberIota>(
+                            "Number",
+                            false,
+                            "Numerical Reflection",
+                        ),
+                    );
                     return vector![number];
-
                 }
+            }
+        }
 
-        } }
-
-        self.clone().into_iter()
+        self.clone()
+            .into_iter()
             .filter(|entry| {
                 entry.display_name == *query
                     || entry.internal_name == *query
@@ -552,6 +576,6 @@ fn parse_bookkeeper_code(code: &str) -> String {
 
 fn gen_number(num: f32) -> String {
     generate_number_pattern_beam(num as i32, Bounds::new(100, 100, 100), 1, false)
-    .map(|x| x.pattern)
-    .unwrap_or("".to_string())
+        .map(|x| x.pattern)
+        .unwrap_or("".to_string())
 }

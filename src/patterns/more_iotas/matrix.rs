@@ -40,7 +40,6 @@ pub fn make<'a>(
         } else {
             None
         }
-        
     }
 
     fn matrix_from_vec_list(list: &Vector<Rc<dyn Iota>>) -> Option<MatrixIota> {
@@ -63,13 +62,21 @@ pub fn make<'a>(
     }
 
     fn col_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Option<MatrixXx1<NumberIota>> {
-        let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>().ok()?;
+        let num_list = list
+            .iter()
+            .map(map_num)
+            .collect::<Result<Vec<_>, _>>()
+            .ok()?;
 
         Some(MatrixXx1::from_vec(num_list))
     }
 
     fn row_from_num_list(list: &Vector<Rc<dyn Iota>>) -> Option<Matrix1xX<NumberIota>> {
-        let num_list = list.iter().map(map_num).collect::<Result<Vec<_>, _>>().ok()?;
+        let num_list = list
+            .iter()
+            .map(map_num)
+            .collect::<Result<Vec<_>, _>>()
+            .ok()?;
 
         Some(Matrix1xX::from_vec(num_list))
     }
@@ -104,9 +111,7 @@ pub fn make<'a>(
     let operation_result = match iota {
         Either3::L(num) => dmatrix![*num],
         Either3::M(vec) => dmatrix![vec.x; vec.y; vec.z;],
-        Either3::R(list) => 
-
-            matrix_from_empty_list(&list)
+        Either3::R(list) => matrix_from_empty_list(&list)
             .or_else(|| matrix_from_num_list(&list))
             .or_else(|| matrix_from_num_list_list(&list))
             .or_else(|| matrix_from_vec_list(&list))
@@ -459,42 +464,37 @@ pub fn split_vertical<'a>(
     state.stack.remove_args(&arg_count);
 
     let bottom_matrix: MatrixIota = {
-        let slice = 
-            matrix
-                .row_iter()
-                .enumerate()
-                .filter_map(|(i, x)| if i < split_index { Some(x) } else { None })
-                .collect::<Vec<_>>();
+        let slice = matrix
+            .row_iter()
+            .enumerate()
+            .filter_map(|(i, x)| if i < split_index { Some(x) } else { None })
+            .collect::<Vec<_>>();
         let slice = slice.as_slice();
 
         if slice.is_empty() {
             MatrixIota::from_vec(0, matrix.ncols(), vec![])
-
-
         } else {
             MatrixIota::from_rows(slice)
         }
-        };
+    };
 
-        let top_matrix: MatrixIota = {
-            let slice = 
-                matrix
-                    .row_iter()
-                    .enumerate()
-                    .filter_map(|(i, x)| if i >= split_index { Some(x) } else { None })
-                    .collect::<Vec<_>>();
-            let slice = slice.as_slice();
-    
-            if slice.is_empty() {
-                MatrixIota::from_vec(0, matrix.ncols(), vec![])
-    
-            } else {
-                MatrixIota::from_rows(slice)
-            }
-            };
+    let top_matrix: MatrixIota = {
+        let slice = matrix
+            .row_iter()
+            .enumerate()
+            .filter_map(|(i, x)| if i >= split_index { Some(x) } else { None })
+            .collect::<Vec<_>>();
+        let slice = slice.as_slice();
+
+        if slice.is_empty() {
+            MatrixIota::from_vec(0, matrix.ncols(), vec![])
+        } else {
+            MatrixIota::from_rows(slice)
+        }
+    };
 
     state.stack.push_back(Rc::new(bottom_matrix));
-    state.stack.push_back(Rc::new(top_matrix));    
+    state.stack.push_back(Rc::new(top_matrix));
 
     Ok(state)
 }
@@ -515,42 +515,37 @@ pub fn split_horizontal<'a>(
     state.stack.remove_args(&arg_count);
 
     let left_matrix: MatrixIota = {
-        let slice = 
-            matrix
-                .column_iter()
-                .enumerate()
-                .filter_map(|(i, x)| if i < split_index { Some(x) } else { None })
-                .collect::<Vec<_>>();
+        let slice = matrix
+            .column_iter()
+            .enumerate()
+            .filter_map(|(i, x)| if i < split_index { Some(x) } else { None })
+            .collect::<Vec<_>>();
         let slice = slice.as_slice();
 
         if slice.is_empty() {
             MatrixIota::from_vec(matrix.nrows(), 0, vec![])
-
-
         } else {
             MatrixIota::from_columns(slice)
         }
-        };
+    };
 
-        let right_matrix: MatrixIota = {
-            let slice = 
-                matrix
-                    .column_iter()
-                    .enumerate()
-                    .filter_map(|(i, x)| if i >= split_index { Some(x) } else { None })
-                    .collect::<Vec<_>>();
-            let slice = slice.as_slice();
-    
-            if slice.is_empty() {
-                MatrixIota::from_vec(matrix.nrows(), 0, vec![])
-    
-            } else {
-                MatrixIota::from_columns(slice)
-            }
-            };
+    let right_matrix: MatrixIota = {
+        let slice = matrix
+            .column_iter()
+            .enumerate()
+            .filter_map(|(i, x)| if i >= split_index { Some(x) } else { None })
+            .collect::<Vec<_>>();
+        let slice = slice.as_slice();
+
+        if slice.is_empty() {
+            MatrixIota::from_vec(matrix.nrows(), 0, vec![])
+        } else {
+            MatrixIota::from_columns(slice)
+        }
+    };
 
     state.stack.push_back(Rc::new(left_matrix));
-    state.stack.push_back(Rc::new(right_matrix));    
+    state.stack.push_back(Rc::new(right_matrix));
 
     Ok(state)
 }

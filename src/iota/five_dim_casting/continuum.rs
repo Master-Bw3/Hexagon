@@ -2,17 +2,14 @@ use std::rc::Rc;
 
 use im::Vector;
 
-use crate::{
-    iota::Iota, parser::AstNode,
-};
+use crate::{iota::Iota, parser::AstNode};
 
 #[derive(Debug, Clone)]
 pub struct ContinuumIota {
     pub front_val: Rc<dyn Iota>,
     pub gen_next_func: Vector<AstNode>,
-    pub maps: Vector<Vector<AstNode>>
+    pub maps: Vector<Vector<AstNode>>,
 }
-
 
 impl Iota for ContinuumIota {
     fn display(&self) -> String {

@@ -1,4 +1,4 @@
-use std::{rc::Rc, cell::RefCell};
+use std::{cell::RefCell, rc::Rc};
 
 use crate::{
     interpreter::{
@@ -17,11 +17,9 @@ pub fn create<'a>(
     let iota = state.stack.get_any_iota(0, arg_count)?;
     state.stack.remove_args(&arg_count);
 
-
     let cell: Rc<CellIota> = Rc::new(RefCell::new(iota));
-    
-    state.stack.push_back(cell);
 
+    state.stack.push_back(cell);
 
     Ok(state)
 }
@@ -36,7 +34,6 @@ pub fn replace<'a>(
     state.stack.remove_args(&1);
 
     (*cell_iota).replace(iota);
-
 
     Ok(state)
 }

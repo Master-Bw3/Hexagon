@@ -8,7 +8,8 @@ use crate::{
         hex_casting::vector::VectorIota,
         hex_casting::{garbage::GarbageIota, pattern::PatternIota},
         Iota,
-    }, parser::Location,
+    },
+    parser::Location,
 };
 
 #[derive(Debug)]
@@ -68,7 +69,11 @@ impl Mishap {
             Mishap::HastyRetrospection => {
                 let retro_sig: &str = "eee";
                 let mut new_stack = stack;
-                new_stack.push_back(Rc::new(PatternIota::from_sig(retro_sig, None, Location::Unknown)));
+                new_stack.push_back(Rc::new(PatternIota::from_sig(
+                    retro_sig,
+                    None,
+                    Location::Unknown,
+                )));
                 new_stack
             }
             Mishap::InvalidPattern => {
@@ -94,9 +99,9 @@ impl Mishap {
 
     pub fn error_message(&self) -> String {
         match self {
-            Mishap::NotEnoughIotas(arg_count, stack_height) => format!(
-                "Expected {arg_count} arguments but the stack was only {stack_height} tall"
-            ),
+            Mishap::NotEnoughIotas(arg_count, stack_height) => {
+                format!("Expected {arg_count} arguments but the stack was only {stack_height} tall")
+            }
             Mishap::IncorrectIota(index, expected, recieved) => format!(
                 "expected {} at index {index} of the stack, but got {}",
                 expected,

@@ -8,7 +8,10 @@ use crate::{
         state::{StackExt, State},
     },
     iota::{
-        hex_casting::{list::ListIota, number::{NumberIota, NumberIotaExt}},
+        hex_casting::{
+            list::ListIota,
+            number::{NumberIota, NumberIotaExt},
+        },
         Iota,
     },
     pattern_registry::PatternRegistry,
@@ -85,7 +88,10 @@ pub fn factorial<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let num = state.stack.get_iota::<NumberIota>(0, arg_count)?.positive_int(0)? as usize;
+    let num = state
+        .stack
+        .get_iota::<NumberIota>(0, arg_count)?
+        .positive_int(0)? as usize;
     state.stack.remove_args(&arg_count);
 
     let result = (1..=num).product::<usize>() as f64;

@@ -273,7 +273,7 @@ pub fn deconstruct<'a>(
 #[cfg(test)]
 mod tests {
 
-    use crate::{pattern_registry::PatternRegistryExt, iota::Iota};
+    use crate::{iota::Iota, pattern_registry::PatternRegistryExt};
 
     use super::*;
 
