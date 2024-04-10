@@ -43,7 +43,7 @@ pub fn interpret(
     macros: Macros,
     source: &str,
     source_path: &str,
-) -> Result<State, (Mishap, Location)> {
+) -> Result<State, (Mishap, Location, State)> {
     let mut state = State {
         ..Default::default()
     };
@@ -92,7 +92,7 @@ fn run_vm<'a>(
     macros: &Macros,
     source: &str,
     source_path: &str,
-) -> Result<&'a mut State, (Mishap, Location)> {
+) -> Result<&'a mut State, (Mishap, Location, State)> {
     match node {
         AstNode::Program(nodes) => {
             //initialize the vm
@@ -108,7 +108,11 @@ fn run_vm<'a>(
                 let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)
-                frame.evaluate(state, pattern_registry, macros)?;
+                frame.evaluate(state, pattern_registry, macros)
+                    .map_err(|(mishap, location)| {
+                        state.stack = mishap.apply_to_stack(&state.stack);
+                        (mishap, location, state.clone())
+                    })?;
             }
 
             while !state.wisps.is_empty() {

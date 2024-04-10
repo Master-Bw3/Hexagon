@@ -114,8 +114,8 @@ pub fn run() {
                 result.stack.display(),
                 result.buffer
             ),
-            Err(err) => {
-                print_interpreter_error(err, &source, &args.source_path);
+            Err((mishap, location, _)) => {
+                print_interpreter_error((mishap, location), &source, &args.source_path);
             }
         };
 

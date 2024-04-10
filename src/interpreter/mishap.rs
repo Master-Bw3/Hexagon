@@ -12,7 +12,7 @@ use crate::{
     parser::Location,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum MatrixSize {
     N,
     Const(usize),
@@ -29,7 +29,7 @@ impl std::fmt::Display for MatrixSize {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Mishap {
     NotEnoughIotas(usize, usize),
     IncorrectIota(usize, String, Rc<dyn Iota>),
@@ -51,24 +51,24 @@ pub enum Mishap {
 }
 
 impl Mishap {
-    pub fn apply_to_stack(self, stack: Stack) -> Stack {
+    pub fn apply_to_stack(&self, stack: &Stack) -> Stack {
         match self {
             Mishap::NotEnoughIotas(_, num) => {
-                let mut new_stack = stack;
+                let mut new_stack = stack.clone();
                 let garbage = Rc::new(GarbageIota);
-                let garbages: Vec<Rc<dyn Iota>> = vec![garbage; num];
+                let garbages: Vec<Rc<dyn Iota>> = vec![garbage; *num];
                 new_stack.append(Vector::from(garbages));
                 new_stack
             }
             Mishap::IncorrectIota(index, _, _) => {
-                let mut new_stack = stack;
-                new_stack[index] = Rc::new(GarbageIota);
+                let mut new_stack = stack.clone();
+                new_stack[*index] = Rc::new(GarbageIota);
                 new_stack
             }
             Mishap::MathematicalError() => todo!(),
             Mishap::HastyRetrospection => {
                 let retro_sig: &str = "eee";
-                let mut new_stack = stack;
+                let mut new_stack = stack.clone();
                 new_stack.push_back(Rc::new(PatternIota::from_sig(
                     retro_sig,
                     None,
@@ -77,7 +77,7 @@ impl Mishap {
                 new_stack
             }
             Mishap::InvalidPattern => {
-                let mut new_stack = stack;
+                let mut new_stack = stack.clone();
                 new_stack.push_back(Rc::new(GarbageIota));
                 new_stack
             }
