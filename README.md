@@ -18,16 +18,20 @@ Download the latest release [here](https://github.com/Master-Bw3/Hexagon/release
 
 ## Usage
 Interpret a file
-```
+```sh
 hexagon run filename.hexagon
 ```
 Compile a file
-```
+```sh
 hexagon build filename.hexagon
 ```
-Send a hex to [Hex Server](https://github.com/Master-Bw3/hex_server)
-```
+Evaluate a hex in-game using [Hex Server](https://github.com/Master-Bw3/hex_server)
+```sh
 hexagon send http://localhost:9000/hexPost filename.hexagon
+```
+Debug a hex in-game using [Hex Server](https://github.com/Master-Bw3/hex_server) and [HexDebug](https://github.com/object-Object/HexDebug)
+```sh
+hexagon send http://localhost:9000/hexDebug filename.hexagon
 ```
 
 ## Syntax
