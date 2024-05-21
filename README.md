@@ -6,8 +6,8 @@
 
 Hexagon is a programming language for Hex Casting. Hexagon is a superset of the [hexpattern](https://github.com/object-Object/vscode-hex-casting) format, adding variables, if statements, and more. 
 
-[![release](https://github.com/Master-Bw3/Hexagon/actions/workflows/release.yml/badge.svg)](https://github.com/axodotdev/oranda/actions/workflows/release.yml)
-[![web](https://github.com/Master-Bw3/Hexagon/actions/workflows/web.yml/badge.svg?branch=master)](https://github.com/axodotdev/oranda/actions/workflows/web.yml)
+[![release](https://github.com/Master-Bw3/Hexagon/actions/workflows/release.yml/badge.svg)](https://github.com/Master-Bw3/Hexagon/actions/workflows/release.yml)
+[![web](https://github.com/Master-Bw3/Hexagon/actions/workflows/web.yml/badge.svg?branch=master)](https://github.com/Master-Bw3/Hexagon/actions/workflows/web.yml)
 
 
 <div class="oranda-hide">
