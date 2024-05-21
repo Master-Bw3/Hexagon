@@ -2,7 +2,14 @@
 name = "hexagon"
 version = "0.1.0"
 edition = "2021"
+authors = ["Master_Bw3"]
 repository = "https://github.com/Master-Bw3/Hexagon"
+
+[package.metadata.wix]
+upgrade-guid = "25DAEE36-F38F-4531-8BF6-A26578B735E7"
+path-guid = "200FA54E-319A-46B1-B2B1-5EE9F03B8819"
+license = false
+eula = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -33,8 +40,10 @@ cargo-dist-version = "0.14.1"
 # CI backends to support
 ci = "github"
 # The installers to generate for each app
-installers = []
+installers = ["shell", "powershell", "msi"]
 # Target platforms to build apps for (Rust target-triple syntax)
 targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
 # Publish jobs to run in CI
 pr-run-mode = "plan"
+# Whether to install an updater program
+install-updater = true
