@@ -52,7 +52,7 @@ pub fn interpret(
 
     let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
 
-    //compile to get heap size so that the ravenmind can be set to the right lenght
+    //compile to get heap size so that the ravenmind can be set to the right length
     //TODO: replace this with a thing that just looks for var nodes and counts them or something
     compile_node(&node, &mut state.heap, 0, &pattern_registry, &macros).unwrap();
     let null: Rc<dyn Iota> = Rc::new(NullIota);
