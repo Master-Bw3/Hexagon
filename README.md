@@ -1,9 +1,20 @@
+<div class="oranda-hide">
+
 # Hexagon
+
+</div>
+
 Hexagon is a programming language for Hex Casting. Hexagon is a superset of the [hexpattern](https://github.com/object-Object/vscode-hex-casting) format, adding variables, if statements, and more. 
 
+[![release](https://github.com/Master-Bw3/Hexagon/actions/workflows/release.yml/badge.svg)](https://github.com/axodotdev/oranda/actions/workflows/release.yml)
+[![web](https://github.com/Master-Bw3/Hexagon/actions/workflows/web.yml/badge.svg?branch=master)](https://github.com/axodotdev/oranda/actions/workflows/web.yml)
+
+
+<div class="oranda-hide">
+
 ## Installing
-Either download the latest release file or install via Cargo:
-```cargo install --git https://github.com/Master-Bw3/Hexagon```
+Download the latest release [here](https://github.com/Master-Bw3/Hexagon/releases/latest)
+</div>
 
 ## Usage
 Interpret a file
