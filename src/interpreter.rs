@@ -440,7 +440,7 @@ pub fn interpret_action<'a>(
                 result = Ok(());
                 break;
             }
-            Err(Mishap::IncorrectIota(_, _, _)) | Err(Mishap::NotEnoughIotas(_, _)) => {
+            Err(Mishap::IncorrectIota { index: _, expected: _, received: _ }) | Err(Mishap::NotEnoughIotas { arg_count: _, stack_height: _ }) => {
                 result = operation_result.map(|_| ());
             }
             Err(_) => {

@@ -215,20 +215,20 @@ pub fn get_entity(
                     {
                         state.stack.push_back(iota.clone())
                     } else {
-                        Err(Mishap::InvalidValue(
-                            format!("Entity of type {}", entity_type_str),
-                            iota.display(),
-                        ))?
+                        Err(Mishap::InvalidValue {
+                            expected: format!("Entity of type {}", entity_type_str),
+                            received: iota.display(),
+                        })?
                     }
                 }
-                Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(
-                    format!("Entity of type {}", entity_type_str),
-                    val.clone(),
-                ))?,
-                None => Err(Mishap::ExpectedValue(
-                    display_name.to_string(),
-                    format!("Entity of type {}", entity_type_str),
-                ))?,
+                Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue {
+                    expected: format!("Entity of type {}", entity_type_str),
+                    received: val.clone(),
+                })?,
+                None => Err(Mishap::ExpectedValue {
+                    caused_by: display_name.to_string(),
+                    expected: format!("Entity of type {}", entity_type_str),
+                })?,
             }
 
             Ok(state)
@@ -268,29 +268,29 @@ pub fn zone_entity(
                     if conditon(Rc::clone(iota)) {
                         state.stack.push_back(iota.clone())
                     } else {
-                        Err(Mishap::InvalidValue(
-                            format!(
+                        Err(Mishap::InvalidValue {
+                            expected: format!(
                                 "List of Entities of type {}",
                                 entity_type.map_or("Any".to_string(), |t| t.display())
                             ),
-                            iota.display(),
-                        ))?
+                            received: iota.display(),
+                        })?
                     }
                 }
-                Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue(
-                    format!(
+                Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue {
+                    expected: format!(
                         "List of Entities of type {}",
                         entity_type.map_or("Any".to_string(), |t| t.display())
                     ),
-                    val.clone(),
-                ))?,
-                None => Err(Mishap::ExpectedValue(
-                    display_name.to_string(),
-                    format!(
+                    received: val.clone(),
+                })?,
+                None => Err(Mishap::ExpectedValue {
+                    caused_by: display_name.to_string(),
+                    expected: format!(
                         "List of Entities of type {}",
                         entity_type.map_or("Any".to_string(), |t| t.display())
                     ),
-                ))?,
+                })?,
             }
 
             Ok(state)
