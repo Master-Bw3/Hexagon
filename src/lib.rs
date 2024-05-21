@@ -136,8 +136,11 @@ pub fn run() {
         match compile_result {
             // Ok(result) => println!("\nresult: {}", Vector::from(result).display()),
             Ok(result) => {
-                let result = send_hex(result, &args.url.unwrap()).unwrap();
-                println!("resultant stack:\n{result}")
+                let result = send_hex(result, &args.url.unwrap());
+                match result {
+                    Ok(msg) => println!("{msg}"),
+                    Err(error) => println!("{error}")
+                }
             },
 
             Err(err) => {
