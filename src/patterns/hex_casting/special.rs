@@ -22,7 +22,7 @@ pub fn escape<'a>(
     match value {
         Some(ActionValue::Iota(iota)) => state.stack.push_back(iota.clone()),
         Some(ActionValue::Bookkeeper(val)) => {
-            Err(Mishap::InvalidValue(val.clone(), "Iota".to_string()))?
+            Err(Mishap::InvalidValue{received: val.clone(), expected: "Iota".to_string()})?
         }
         None => {
             state.consider_next = true;
@@ -123,7 +123,7 @@ pub fn beep<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 3;
     if state.stack.len() < arg_count {
-        Err(Mishap::NotEnoughIotas(arg_count, state.stack.len()))?
+        Err(Mishap::NotEnoughIotas{arg_count, stack_height: state.stack.len()})?
     } else {
         state.stack.remove_args(&arg_count);
     }

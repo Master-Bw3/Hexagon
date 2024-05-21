@@ -642,11 +642,11 @@ pub fn and_bit<'a>(
                 .collect::<Vector<Rc<dyn Iota>>>(),
         ),
         (Either::L(_num), Either::R(list)) => {
-            Err(Mishap::IncorrectIota(0, "Integer".to_string(), list))?
+            Err(Mishap::IncorrectIota{index: 0, expected: "Integer".to_string(), received: list})?
         }
 
         (Either::R(_list), Either::L(num)) => {
-            Err(Mishap::IncorrectIota(0, "List".to_string(), num))?
+            Err(Mishap::IncorrectIota{index: 0, expected: "List".to_string(), received: num})?
         }
     };
 
@@ -690,11 +690,11 @@ pub fn or_bit<'a>(
         }
 
         (Either::L(_num), Either::R(list)) => {
-            Err(Mishap::IncorrectIota(0, "Integer".to_string(), list))?
+            Err(Mishap::IncorrectIota{index: 0, expected: "Integer".to_string(), received: list})?
         }
 
         (Either::R(_list), Either::L(num)) => {
-            Err(Mishap::IncorrectIota(0, "List".to_string(), num))?
+            Err(Mishap::IncorrectIota{index: 0, expected: "List".to_string(), received: num})?
         }
     };
 
@@ -751,11 +751,11 @@ pub fn xor_bit<'a>(
             new_list
         }),
         (Either::L(_num), Either::R(list)) => {
-            Err(Mishap::IncorrectIota(0, "Integer".to_string(), list))?
+            Err(Mishap::IncorrectIota{index: 0, expected: "Integer".to_string(), received: list})?
         }
 
         (Either::R(_list), Either::L(num)) => {
-            Err(Mishap::IncorrectIota(0, "List".to_string(), num))?
+            Err(Mishap::IncorrectIota{index: 0, expected: "List".to_string(), received: num})?
         }
     };
 

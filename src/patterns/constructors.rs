@@ -82,20 +82,24 @@ pub fn value_0<T: Iota + 'static>(
                     }
 
                     //return early with an error if iota is of an invalid type
-                    iota.clone().downcast_rc::<T>().map_err(|_| {
-                        Mishap::InvalidValue(getter_type.to_string(), iota.display())
-                    })?;
+                    iota.clone()
+                        .downcast_rc::<T>()
+                        .map_err(|_| Mishap::InvalidValue {
+                            expected: getter_type.to_string(),
+                            received: iota.display(),
+                        })?;
 
                     state.stack.push_back(iota.clone());
                     Ok(state)
                 }
-                Some(ActionValue::Bookkeeper(val)) => {
-                    Err(Mishap::InvalidValue(getter_type.to_string(), val.clone()))?
-                }
-                None => Err(Mishap::ExpectedValue(
-                    display_name.to_string(),
-                    getter_type.to_string(),
-                ))?,
+                Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue {
+                    expected: getter_type.to_string(),
+                    received: val.clone(),
+                })?,
+                None => Err(Mishap::ExpectedValue {
+                    caused_by: display_name.to_string(),
+                    expected: getter_type.to_string(),
+                })?,
             }
         },
     )
@@ -120,20 +124,24 @@ pub fn value_1<T: Iota + 'static, U: Iota + 'static>(
                     }
 
                     //return early with an error if iota is of an invalid type
-                    iota.clone().downcast_rc::<U>().map_err(|_| {
-                        Mishap::InvalidValue(getter_type.to_string(), iota.display())
-                    })?;
+                    iota.clone()
+                        .downcast_rc::<U>()
+                        .map_err(|_| Mishap::InvalidValue {
+                            expected: getter_type.to_string(),
+                            received: iota.display(),
+                        })?;
 
                     state.stack.push_back(iota.clone());
                     Ok(state)
                 }
-                Some(ActionValue::Bookkeeper(val)) => {
-                    Err(Mishap::InvalidValue(getter_type.to_string(), val.clone()))?
-                }
-                None => Err(Mishap::ExpectedValue(
-                    display_name.to_string(),
-                    getter_type.to_string(),
-                ))?,
+                Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue {
+                    expected: getter_type.to_string(),
+                    received: val.clone(),
+                })?,
+                None => Err(Mishap::ExpectedValue {
+                    caused_by: display_name.to_string(),
+                    expected: getter_type.to_string(),
+                })?,
             }
         },
     )
@@ -159,20 +167,24 @@ pub fn value_2<T: Iota, U: Iota, V: Iota>(
                     }
 
                     //return early with an error if iota is of an invalid type
-                    iota.clone().downcast_rc::<V>().map_err(|_| {
-                        Mishap::InvalidValue(getter_type.to_string(), iota.display())
-                    })?;
+                    iota.clone()
+                        .downcast_rc::<V>()
+                        .map_err(|_| Mishap::InvalidValue {
+                            expected: getter_type.to_string(),
+                            received: iota.display(),
+                        })?;
 
                     state.stack.push_back(iota.clone());
                     Ok(state)
                 }
-                Some(ActionValue::Bookkeeper(val)) => {
-                    Err(Mishap::InvalidValue(getter_type.to_string(), val.clone()))?
-                }
-                None => Err(Mishap::ExpectedValue(
-                    display_name.to_string(),
-                    getter_type.to_string(),
-                ))?,
+                Some(ActionValue::Bookkeeper(val)) => Err(Mishap::InvalidValue {
+                    expected: getter_type.to_string(),
+                    received: val.clone(),
+                })?,
+                None => Err(Mishap::ExpectedValue {
+                    caused_by: display_name.to_string(),
+                    expected: getter_type.to_string(),
+                })?,
             }
         },
     )

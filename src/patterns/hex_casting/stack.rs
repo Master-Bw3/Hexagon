@@ -161,7 +161,7 @@ pub fn fisherman<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     if state.stack.len() < 2 {
-        return Err(Mishap::NotEnoughIotas(2, state.stack.len()));
+        return Err(Mishap::NotEnoughIotas{arg_count: 2, stack_height: state.stack.len()});
     }
 
     let arg_count = 1;
@@ -169,7 +169,7 @@ pub fn fisherman<'a>(
     state.stack.remove_args(&arg_count);
 
     if state.stack.len() < iota as usize {
-        return Err(Mishap::NotEnoughIotas(iota as usize, state.stack.len()));
+        return Err(Mishap::NotEnoughIotas{arg_count: iota as usize, stack_height: state.stack.len()});
     }
 
     if iota >= 0 {
@@ -195,7 +195,7 @@ pub fn fisherman_copy<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     if state.stack.len() < 2 {
-        return Err(Mishap::NotEnoughIotas(2, state.stack.len()));
+        return Err(Mishap::NotEnoughIotas{arg_count: 2, stack_height: state.stack.len()});
     }
 
     let arg_count = 1;
@@ -203,7 +203,7 @@ pub fn fisherman_copy<'a>(
     state.stack.remove_args(&arg_count);
 
     if state.stack.len() < iota {
-        return Err(Mishap::NotEnoughIotas(iota, state.stack.len()));
+        return Err(Mishap::NotEnoughIotas{arg_count: iota, stack_height: state.stack.len()});
     }
 
     let operation_result = { state.stack[state.stack.len() - 1 - iota].clone() };
@@ -220,14 +220,14 @@ pub fn mask<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let code = match value {
         Some(ActionValue::Bookkeeper(code)) => code,
-        Some(val) => Err(Mishap::InvalidValue(
-            "Bookeeper Code".to_string(),
-            format!("{:?}", val),
-        ))?,
-        None => Err(Mishap::ExpectedValue(
-            "Bookkeeper's Gambit".to_string(),
-            "bookkeeper Code".to_string(),
-        ))?,
+        Some(val) => Err(Mishap::InvalidValue{
+            expected: "Bookeeper Code".to_string(),
+            received: format!("{:?}", val),
+    })?,
+        None => Err(Mishap::ExpectedValue{
+            caused_by: "Bookkeeper's Gambit".to_string(),
+            expected: "bookkeeper Code".to_string(),
+    })?,
     };
 
     let apply_code = |iota, char| match char {
@@ -237,7 +237,7 @@ pub fn mask<'a>(
     };
 
     if state.stack.len() < code.len() {
-        return Err(Mishap::NotEnoughIotas(code.len(), state.stack.len()));
+        return Err(Mishap::NotEnoughIotas{arg_count: code.len(), stack_height: state.stack.len()});
     }
 
     let mut new_stack = state.stack.slice(..state.stack.len() - code.len());

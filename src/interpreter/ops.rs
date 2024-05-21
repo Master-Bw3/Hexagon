@@ -23,23 +23,23 @@ pub fn store<'a>(
 ) -> Result<(), Mishap> {
     let val = match value {
         Some(val) => val,
-        None => Err(Mishap::OpNotEnoughArgs(1))?,
+        None => Err(Mishap::OpNotEnoughArgs { arg_count: 1 })?,
     };
     match val {
-        OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone())),
+        OpValue::Iota(iota) => Err(Mishap::OpExpectedVar{received: iota.clone()}),
         OpValue::Var(var) => {
             let iota = {
                 if copy {
                     state
                         .stack
                         .last()
-                        .ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?
+                        .ok_or(Mishap::NotEnoughIotas { arg_count: 1, stack_height: state.stack.len() })?
                         .clone()
                 } else {
                     state
                         .stack
                         .pop_back()
-                        .ok_or(Mishap::NotEnoughIotas(1, state.stack.len()))?
+                        .ok_or(Mishap::NotEnoughIotas { arg_count: 1, stack_height: state.stack.len() })?
                 }
             };
 
@@ -119,21 +119,21 @@ fn get_iota_from_ravenmind(ravenmind: Option<Rc<dyn Iota>>, index: usize) -> Opt
 pub fn push<'a>(value: &'a Option<OpValue>, state: &'a mut State) -> Result<(), Mishap> {
     match value {
         Some(val) => match val {
-            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
+            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar{received: iota.clone()})?,
             OpValue::Var(var) => {
                 let index = *state
                     .heap
                     .get(var)
-                    .ok_or(Mishap::VariableNotAssigned(var.clone()))?
+                    .ok_or(Mishap::VariableNotAssigned{variable_name: var.clone()})?
                     as usize;
                 let iota = get_iota_from_ravenmind(state.ravenmind.clone(), index)
-                    .ok_or(Mishap::NoIotaAtIndex(index))?;
+                    .ok_or(Mishap::NoIotaAtIndex{index})?;
                 push_iota(iota, state, state.consider_next);
                 state.consider_next = false;
                 Ok(())
             }
         },
-        None => Err(Mishap::OpNotEnoughArgs(1))?,
+        None => Err(Mishap::OpNotEnoughArgs { arg_count: 1 })?,
     }
 }
 
@@ -153,7 +153,7 @@ pub fn embed<'a>(
 ) -> Result<(), Mishap> {
     let val = match value {
         Some(val) => val,
-        None => Err(Mishap::OpNotEnoughArgs(1))?,
+        None => Err(Mishap::OpNotEnoughArgs { arg_count: 1 })?,
     };
 
     match val {
@@ -173,7 +173,7 @@ pub fn embed<'a>(
                     )
                     .map_err(|err| err.0)?;
                 }
-                _ => return Err(Mishap::ExpectedPattern(iota.clone())),
+                _ => return Err(Mishap::ExpectedPattern { iota: iota.clone() }),
             },
             _ => state.stack.push_back(iota.clone()),
         },

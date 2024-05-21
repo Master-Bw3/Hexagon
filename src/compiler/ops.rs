@@ -26,10 +26,10 @@ pub fn compile_op_init(
     registry: &PatternRegistry,
     arg: &Option<OpValue>,
 ) -> Result<Vec<Rc<dyn Iota>>, Mishap> {
-    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
+    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs{arg_count: 1})?;
     let (index, var) = {
         match value {
-            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
+            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar{received: iota.clone()})?,
             OpValue::Var(var) => (heap.get(var).copied(), var),
         }
     };
@@ -55,10 +55,10 @@ pub fn compile_op_store(
     registry: &PatternRegistry,
     arg: &Option<OpValue>,
 ) -> Result<Vec<Rc<dyn Iota>>, Mishap> {
-    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
+    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs{arg_count: 1})?;
     let (index, var) = {
         match value {
-            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
+            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar{received: iota.clone()})?,
             OpValue::Var(var) => (heap.get(var).copied(), var),
         }
     };
@@ -115,14 +115,14 @@ pub fn compile_op_push(
     registry: &PatternRegistry,
     arg: &Option<OpValue>,
 ) -> Result<Vec<Rc<dyn Iota>>, Mishap> {
-    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
+    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs{arg_count: 1})?;
 
     let index = {
         match value {
-            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar(iota.clone()))?,
+            OpValue::Iota(iota) => Err(Mishap::OpExpectedVar{received: iota.clone()})?,
             OpValue::Var(var) => heap
                 .get(var)
-                .ok_or(Mishap::VariableNotAssigned(var.clone()))?,
+                .ok_or(Mishap::VariableNotAssigned{variable_name: var.clone()})?,
         }
     };
     let compiled: Vec<Rc<dyn Iota>> = vec![
@@ -148,7 +148,7 @@ pub fn compile_op_embed(
     arg: &Option<OpValue>,
     embed_type: EmbedType,
 ) -> Result<Vec<Rc<dyn Iota>>, Mishap> {
-    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs(1))?;
+    let value = arg.as_ref().ok_or(Mishap::OpNotEnoughArgs{arg_count: 1})?;
 
     let iota = {
         if let OpValue::Iota(iota) = value {

@@ -18,46 +18,48 @@ impl NumberIotaExt for NumberIota {
         if (self - self.round()).abs() < tolerance {
             Ok(self as i32)
         } else {
-            Err(Mishap::IncorrectIota(
+            Err(Mishap::IncorrectIota {
                 index,
-                "Integer".to_string(),
-                Rc::new(self),
-            ))
+                expected: "Integer".to_string(),
+                received: Rc::new(self),
+            })
         }
     }
 
     fn positive_int(self, index: usize) -> Result<i32, Mishap> {
-        let int = self.int(index).map_err(|_| {
-            Mishap::IncorrectIota(index, "Positive Integer".to_string(), Rc::new(self))
+        let int = self.int(index).map_err(|_| Mishap::IncorrectIota {
+            index,
+            expected: "Positive Integer".to_string(),
+            received: Rc::new(self),
         })?;
 
         if int >= 0 {
             Ok(int)
         } else {
-            Err(Mishap::IncorrectIota(
+            Err(Mishap::IncorrectIota {
                 index,
-                "Positive Integer".to_string(),
-                Rc::new(self),
-            ))
+                expected: "Positive Integer".to_string(),
+                received: Rc::new(self),
+            })
         }
     }
 
     fn positive_int_under_inclusive(self, index: usize, len: usize) -> Result<i32, Mishap> {
-        let int = self.positive_int(index).map_err(|_| {
-            Mishap::IncorrectIota(
+        let int = self
+            .positive_int(index)
+            .map_err(|_| Mishap::IncorrectIota {
                 index,
-                format!("Integer between 0 and {}", len),
-                Rc::new(self),
-            )
-        })?;
+                expected: format!("Integer between 0 and {}", len),
+                received: Rc::new(self),
+            })?;
         if int <= len as i32 {
             Ok(int)
         } else {
-            Err(Mishap::IncorrectIota(
+            Err(Mishap::IncorrectIota {
                 index,
-                format!("Integer between 0 and {}", len),
-                Rc::new(self),
-            ))
+                expected: format!("Integer between 0 and {}", len),
+                received: Rc::new(self),
+            })
         }
     }
 }
@@ -82,11 +84,17 @@ impl Iota for NumberIota {
     fn serialize_to_nbt(&self) -> String {
         format!("{{\"hexcasting:type\": \"hexcasting:double\", \"hexcasting:data\": {self}d}}")
     }
-    
+
     fn serialize_to_json(&self) -> serde_json::Value {
         let mut map = Map::new();
-        map.insert("iota_type".to_string(), serde_json::Value::String("number".to_string()));
-        map.insert("value".to_string(), serde_json::Value::Number(Number::from_f64(*self).unwrap()));
+        map.insert(
+            "iota_type".to_string(),
+            serde_json::Value::String("number".to_string()),
+        );
+        map.insert(
+            "value".to_string(),
+            serde_json::Value::Number(Number::from_f64(*self).unwrap()),
+        );
 
         serde_json::Value::Object(map)
     }

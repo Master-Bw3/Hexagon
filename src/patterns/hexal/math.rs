@@ -31,7 +31,7 @@ pub fn running_sum<'a>(
         let num = iota
             .clone()
             .downcast_rc::<NumberIota>()
-            .map_err(|_| Mishap::IncorrectIota(0, "List of numbers".to_string(), iota.clone()))?;
+            .map_err(|_| Mishap::IncorrectIota{index: 0, expected: "List of numbers".to_string(), received: iota.clone()})?;
 
         num_list.push_back(*num)
     }
@@ -64,7 +64,7 @@ pub fn running_product<'a>(
         let num = iota
             .clone()
             .downcast_rc::<NumberIota>()
-            .map_err(|_| Mishap::IncorrectIota(0, "List of numbers".to_string(), iota.clone()))?;
+            .map_err(|_| Mishap::IncorrectIota{index: 0, expected: "List of numbers".to_string(), received: iota.clone()})?;
 
         num_list.push_back(*num)
     }

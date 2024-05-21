@@ -208,7 +208,7 @@ pub fn akashic_read<'a>(
 
     let operation_result = match state.libraries.get(location) {
         Some(library) => library.get(&iotas.1.signature).unwrap_or(&null).clone(),
-        None => Err(Mishap::NoAkashicRecord(iotas.0))?,
+        None => Err(Mishap::NoAkashicRecord{location: iotas.0})?,
     };
 
     state.stack.push_back(operation_result);
@@ -232,7 +232,7 @@ pub fn akashic_write<'a>(
 
     match state.libraries.get_mut(location) {
         Some(library) => library.insert((iotas.1).signature, iotas.2),
-        None => Err(Mishap::NoAkashicRecord(iotas.0))?,
+        None => Err(Mishap::NoAkashicRecord{location: iotas.0})?,
     };
 
     Ok(state)

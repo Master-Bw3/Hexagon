@@ -100,7 +100,10 @@ impl StackExt for Stack {
     fn get_iota<T: Iota>(&self, index: usize, arg_count: usize) -> Result<Rc<T>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -108,13 +111,20 @@ impl StackExt for Stack {
 
         iota.clone()
             .downcast_rc::<T>()
-            .map_err(|_| Mishap::IncorrectIota(index, T::display_type_name(), iota.clone()))
+            .map_err(|_| Mishap::IncorrectIota {
+                index,
+                expected: T::display_type_name(),
+                received: iota.clone(),
+            })
     }
 
     fn get_any_iota(&self, index: usize, arg_count: usize) -> Result<Rc<dyn Iota>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -134,7 +144,10 @@ impl StackExt for Stack {
     ) -> Result<Either<Rc<T>, Rc<U>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -146,11 +159,11 @@ impl StackExt for Stack {
         match (left, right) {
             (Ok(l), Err(_)) => Ok(Either::L(l)),
             (Err(_), Ok(r)) => Ok(Either::R(r)),
-            (Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+            (Err(_), Err(_)) => Err(Mishap::IncorrectIota {
                 index,
-                format!("{} or {}", T::display_type_name(), U::display_type_name()),
-                iota.clone(),
-            )),
+                expected: format!("{} or {}", T::display_type_name(), U::display_type_name()),
+                received: iota.clone(),
+            }),
             _ => unreachable!(),
         }
     }
@@ -162,7 +175,10 @@ impl StackExt for Stack {
     ) -> Result<Either3<Rc<T>, Rc<U>, Rc<V>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -177,16 +193,16 @@ impl StackExt for Stack {
             (Ok(l), Err(_), Err(_)) => Ok(Either3::L(l)),
             (Err(_), Ok(m), Err(_)) => Ok(Either3::M(m)),
             (Err(_), Err(_), Ok(r)) => Ok(Either3::R(r)),
-            (Err(_), Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+            (Err(_), Err(_), Err(_)) => Err(Mishap::IncorrectIota{
                 index,
-                format!(
-                    "{}, {} or {}",
+                expected: format!(
+                    "{}, {}, or {}",
                     T::display_type_name(),
                     U::display_type_name(),
                     V::display_type_name()
                 ),
-                iota.clone(),
-            )),
+                received: iota.clone(),
+        }),
             _ => unreachable!(),
         }
     }

@@ -32,12 +32,12 @@ impl Iterator for Factorial {
 }
 
 /** Fn to take a stack and a value and perform a shuffling of the last few elems */
-fn ixed_factorial<T: Clone>(mut value: usize, stack: &mut [T]) -> Result<(), Mishap> {
+fn fixed_factorial<T: Clone>(mut value: usize, stack: &mut [T]) -> Result<(), Mishap> {
     let mut strides: Vec<usize> = Factorial::new().take_while(|&x| x <= value).collect();
 
     // want only the last few elems of the stack
     if stack.len() < strides.len() {
-        Err(Mishap::NotEnoughIotas(strides.len(), stack.len()))?
+        Err(Mishap::NotEnoughIotas{arg_count: strides.len(), stack_height: stack.len()})?
     }
     let stride_offset = stack.len() - strides.len();
     let mut edit_target = &mut stack[stride_offset..];
@@ -58,7 +58,7 @@ pub fn swizzle<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     if state.stack.is_empty() {
-        return Err(Mishap::NotEnoughIotas(1, state.stack.len()));
+        return Err(Mishap::NotEnoughIotas { arg_count: 1, stack_height: state.stack.len() });
     }
 
     let arg_count = 1;
@@ -66,7 +66,7 @@ pub fn swizzle<'a>(
     state.stack.remove_args(&arg_count);
 
     let mut new_stack = state.stack.iter().cloned().collect::<Vec<_>>();
-    ixed_factorial(code, &mut new_stack)?;
+    fixed_factorial(code, &mut new_stack)?;
     state.stack = Vector::from(new_stack);
 
     Ok(state)
