@@ -19,24 +19,6 @@ use crate::{
     patterns::{ActionNoValueType, ActionWithValueType},
 };
 
-// pub fn operator<T: 'static>(arg_count: usize, action: &'static ActionNoValueType) -> Box<ActionNoValueType> {
-//     Box::new(move |state: &mut State, pattern_registry: &PatternRegistry| {
-//         let stack_len = state.stack.len();
-
-//         if stack_len < arg_count {
-//             Err(Mishap::NotEnoughIotas(arg_count - stack_len))?}
-
-//         let args = &state.stack[stack_len-arg_count..];
-//         state.stack.remove_args(&1);
-//         let new_data = action(state, pattern_registry);
-
-//         state.stack
-
-//         todo!()
-
-//     })
-// }
-
 pub fn spell_1<T: Iota>() -> Box<ActionNoValueType> {
     Box::new(move |state: &mut State, _: &PatternRegistry| {
         state.stack.get_iota::<T>(0, 1)?;
