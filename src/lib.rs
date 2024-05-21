@@ -100,7 +100,7 @@ pub fn run() {
     let (ast, macros) = match parse_result {
         Ok(result) => result,
         Err(err) => {
-            eprintln!("{}\n{}", "Parsing Error:".red().bold(), err);
+            eprintln!("{}\n{}\n{}", "Parsing Error:".red().bold(), args.source_path, err);
             return;
         }
     };
