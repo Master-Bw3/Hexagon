@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::Deref, rc::Rc};
+use std::{collections::HashMap, fmt::Display, ops::Deref, rc::Rc};
 
 use crate::{
     interpreter::state::Entity,
@@ -240,7 +240,7 @@ fn parse_action_iota(
                     conf_entities,
                     macros,
                 ))),
-                Location::Unknown,
+                Location::Line(pair.line_col().0, pair.line_col().1),
             ),
             Rule::EntityType => PatternIota::from_name(
                 pattern_registry,
@@ -248,13 +248,13 @@ fn parse_action_iota(
                 righter.map(|p| {
                     ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities, macros))
                 }),
-                Location::Unknown,
+                Location::Line(pair.line_col().0, pair.line_col().1),
             ),
             Rule::BookkeeperValue => PatternIota::from_name(
                 pattern_registry,
                 left.as_str(),
                 Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
-                Location::Unknown,
+                Location::Line(pair.line_col().0, pair.line_col().1),
             ),
             _ => unreachable!(),
         })
@@ -270,7 +270,7 @@ fn parse_action_iota(
                             pattern_registry,
                             left.as_str(),
                             None,
-                            Location::Unknown,
+                            Location::Line(left.line_col().0, left.line_col().1),
                         )
                         .unwrap()
                     },
@@ -516,12 +516,21 @@ fn parse_pattern(
     macros: &Macros,
 ) -> PatternIota {
     match pair.as_str() {
-        "{" => {
-            PatternIota::from_name(pattern_registry, "open_paren", None, Location::Unknown).unwrap()
-        }
+        "{" => PatternIota::from_name(
+            pattern_registry,
+            "open_paren",
+            None,
+            Location::Line(pair.line_col().0, pair.line_col().1),
+        )
+        .unwrap(),
 
-        "}" => PatternIota::from_name(pattern_registry, "close_paren", None, Location::Unknown)
-            .unwrap(),
+        "}" => PatternIota::from_name(
+            pattern_registry,
+            "close_paren",
+            None,
+            Location::Line(pair.line_col().0, pair.line_col().1),
+        )
+        .unwrap(),
 
         _ => match pair.as_rule() {
             Rule::Action => {
@@ -536,9 +545,9 @@ fn parse_pattern(
                 )
             }
             Rule::PatternRaw => PatternIota::from_sig(
-                pair.into_inner().last().unwrap().as_str(),
+                pair.clone().into_inner().last().unwrap().as_str(),
                 None,
-                Location::Unknown,
+                Location::Line(pair.line_col().0, pair.line_col().1),
             ),
             _ => unreachable!("{:?}", pair.as_rule()),
         },
@@ -584,7 +593,7 @@ pub enum AstNode {
         location: Location,
         condition: Box<AstNode>,
         block: Box<AstNode>,
-    }
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -604,6 +613,21 @@ pub enum OpName {
     SmartEmbed,
     ConsiderEmbed,
     IntroEmbed,
+}
+
+impl Display for OpName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OpName::Init => write!(f, "Init"),
+            OpName::Store => write!(f, "Store"),
+            OpName::Copy => write!(f, "Copy"),
+            OpName::Push => write!(f, "Push"),
+            OpName::Embed => write!(f, "Embed"),
+            OpName::SmartEmbed => write!(f, "SmartEmbed"),
+            OpName::ConsiderEmbed => write!(f, "ConsiderEmbed"),
+            OpName::IntroEmbed => write!(f, "IntroEmbed"),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

@@ -43,7 +43,7 @@ pub fn interpret(
     macros: Macros,
     source: &str,
     source_path: &str,
-) -> Result<State, (Mishap, Location, State)> {
+) -> Result<State, (Mishap, Location, String, State)> {
     let mut state = State {
         ..Default::default()
     };
@@ -92,7 +92,7 @@ fn run_vm<'a>(
     macros: &Macros,
     source: &str,
     source_path: &str,
-) -> Result<&'a mut State, (Mishap, Location, State)> {
+) -> Result<&'a mut State, (Mishap, Location, String, State)> {
     match node {
         AstNode::Program(nodes) => {
             //initialize the vm
@@ -108,11 +108,12 @@ fn run_vm<'a>(
                 let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)
-                frame.evaluate(state, pattern_registry, macros)
-                    .map_err(|(mishap, location)| {
+                frame.evaluate(state, pattern_registry, macros).map_err(
+                    |(mishap, location, caused_by)| {
                         state.stack = mishap.apply_to_stack(&state.stack);
-                        (mishap, location, state.clone())
-                    })?;
+                        (mishap, location, caused_by, state.clone())
+                    },
+                )?;
             }
 
             while !state.wisps.is_empty() {
@@ -143,7 +144,7 @@ fn interpret_node<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     macros: &Macros,
-) -> Result<&'a mut State, (Mishap, Location)> {
+) -> Result<&'a mut State, (Mishap, Location, String)> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
     match node {
         AstNode::Action {
@@ -225,9 +226,8 @@ fn interpret_node<'a>(
             name,
             arg,
             location,
-        } => {
-            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, location))
-        }
+        } => interpret_op(name.clone(), arg, state, pattern_registry, macros)
+            .map_err(|err| (err, location, name.to_string())),
         AstNode::IfBlock {
             condition,
             succeed,
@@ -235,7 +235,14 @@ fn interpret_node<'a>(
             location,
         } => {
             if state.consider_next {
-                return Err((Mishap::OpCannotBeConsidered, location));
+                return Err((
+                    Mishap::OpCannotBeConsidered,
+                    location,
+                    pattern_registry
+                        .find("escape", &None)
+                        .expect("escape exists")
+                        .display_name,
+                ));
             }
 
             let compiled = Vector::from(compile_if_block(
@@ -267,7 +274,14 @@ fn interpret_node<'a>(
             do_while,
         } => {
             if state.consider_next {
-                return Err((Mishap::OpCannotBeConsidered, location));
+                return Err((
+                    Mishap::OpCannotBeConsidered,
+                    location,
+                    pattern_registry
+                        .find("escape", &None)
+                        .expect("escape exists")
+                        .display_name,
+                ));
             }
 
             let compiled = if do_while {
@@ -379,7 +393,7 @@ pub fn interpret_action<'a>(
     pattern_registry: &PatternRegistry,
     macros: &Macros,
     location: Location,
-) -> Result<&'a mut State, (Mishap, Location)> {
+) -> Result<&'a mut State, (Mishap, Location, String)> {
     if let Some((_, AstNode::Block { external: _, nodes })) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
@@ -412,7 +426,7 @@ pub fn interpret_action<'a>(
 
     let patterns = pattern_registry.find_all(&name, &value);
     if patterns.is_empty() {
-        return Err((Mishap::InvalidPattern, location));
+        return Err((Mishap::InvalidPattern, location, name));
     }
     let signature = &patterns[0].signature;
 
@@ -440,7 +454,15 @@ pub fn interpret_action<'a>(
                 result = Ok(());
                 break;
             }
-            Err(Mishap::IncorrectIota { index: _, expected: _, received: _ }) | Err(Mishap::NotEnoughIotas { arg_count: _, stack_height: _ }) => {
+            Err(Mishap::IncorrectIota {
+                index: _,
+                expected: _,
+                received: _,
+            })
+            | Err(Mishap::NotEnoughIotas {
+                arg_count: _,
+                stack_height: _,
+            }) => {
                 result = operation_result.map(|_| ());
             }
             Err(_) => {
@@ -450,7 +472,9 @@ pub fn interpret_action<'a>(
         }
     }
 
-    result.map(|_| state).map_err(|mishap| (mishap, location))
+    result
+        .map(|_| state)
+        .map_err(|mishap| (mishap, location, name))
 }
 
 pub fn push_pattern(

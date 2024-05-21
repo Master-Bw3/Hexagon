@@ -256,7 +256,7 @@ impl Wisp {
         main_state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<Wisp, (Mishap, Location)> {
+    ) -> Result<Wisp, (Mishap, Location, String)> {
         let mut wisp_state = State {
             stack: self.stack.clone(),
             ravenmind: self.ravenmind.clone(),

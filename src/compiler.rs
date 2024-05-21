@@ -79,7 +79,7 @@ pub fn compile_node(
                 Ok(vec![{
                     let pattern = pattern_registry
                         .find(name, value)
-                        .ok_or((Mishap::InvalidPattern, location.clone()))?;
+                        .ok_or((Mishap::InvalidPattern, location.clone(), name.clone()))?;
 
                     //remove output values used by the interpreter
                     //once signature generation exists for number, all values can be ignored
@@ -137,7 +137,7 @@ pub fn compile_node(
                 compile_op_embed(pattern_registry, depth, arg, EmbedType::Consider)
             }
         }
-        .map_err(|mishap| (mishap, location.clone())),
+        .map_err(|mishap| (mishap, location.clone(), name.to_string())),
 
         AstNode::IfBlock {
             location,
@@ -185,7 +185,7 @@ pub fn compile_node(
     }
 }
 
-pub type CompileResult = Result<Vec<Rc<dyn Iota>>, (Mishap, Location)>;
+pub type CompileResult = Result<Vec<Rc<dyn Iota>>, (Mishap, Location, String)>;
 
 fn compile_hex_node(
     hex: &Vec<AstNode>,

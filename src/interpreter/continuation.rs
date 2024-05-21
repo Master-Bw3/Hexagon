@@ -30,7 +30,7 @@ impl ContinuationFrameTrait for ContinuationFrame {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         match self {
             ContinuationFrame::Evaluate(frame) => frame.evaluate(state, pattern_registry, macros),
             ContinuationFrame::EndEval(frame) => frame.evaluate(state, pattern_registry, macros),
@@ -59,7 +59,7 @@ pub trait ContinuationFrameTrait: std::fmt::Debug {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, Location)>;
+    ) -> Result<(), (Mishap, Location, String)>;
 
     fn break_out(&self, state: &mut State) -> bool;
 }
@@ -75,7 +75,7 @@ impl ContinuationFrameTrait for FrameEvaluate {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         let mut new_frame = self.clone();
         let node = new_frame.nodes_queue.pop_front();
 
@@ -110,7 +110,7 @@ impl ContinuationFrameTrait for FrameEndEval {
         state: &mut State,
         _: &PatternRegistry,
         _macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         state.consider_next = false;
         Ok(())
     }
@@ -136,7 +136,7 @@ impl ContinuationFrameTrait for FrameForEach {
         state: &mut State,
         _: &PatternRegistry,
         _macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         let stack = match &self.base_stack {
             //thoth entry point
             None => state.stack.clone(),
@@ -209,7 +209,7 @@ impl ContinuationFrameTrait for FrameIterate {
         state: &mut State,
         _pattern_registry: &PatternRegistry,
         _macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         let new_acc = Rc::clone(&self.acc);
 
         if self.index <= self.collect.1 && self.index >= self.collect.0 {
@@ -313,7 +313,7 @@ impl ContinuationFrameTrait for FrameMap {
         state: &mut State,
         _: &PatternRegistry,
         _macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         if self.init {
             let mut new_maps = self.maps.clone();
             let current_map = new_maps.pop_front().unwrap();
