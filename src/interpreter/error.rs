@@ -14,6 +14,7 @@ pub fn print_interpreter_error(
     match location {
         Location::Unknown => {
             print_err_msg(&err, &String::new());
+            print_caused_by(caused_by.as_str());
             print_mishap_hint(&err, &String::new());
         }
         Location::Line(line, col) => {
@@ -31,9 +32,17 @@ pub fn print_interpreter_error(
         }
         Location::List(_) => {
             print_err_msg(&err, &String::new());
+            print_caused_by(caused_by.as_str());
             print_mishap_hint(&err, &String::new());
         },
     }
+}
+
+fn print_caused_by(caused_by: &str) {
+    eprintln!(
+        "{} {caused_by}",
+        "Caused by:".magenta().bold(),
+    );
 }
 
 fn print_err_msg(err: &Mishap, padding: &String) {
