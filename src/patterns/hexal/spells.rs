@@ -1,4 +1,4 @@
-use std::{rc::Rc, thread::spawn};
+use std::rc::Rc;
 
 use im::{vector, Vector};
 
@@ -9,7 +9,6 @@ use crate::{
         state::{Entity, EntityType, Holding, StackExt, State, Wisp},
     },
     iota::{
-        self,
         hex_casting::{
             entity::EntityIota, list::ListIota, number::NumberIota, pattern::PatternIota,
             vector::VectorIota,
@@ -33,9 +32,13 @@ pub fn particles<'a>(
         crate::interpreter::state::Either::L(_) => (),
         crate::interpreter::state::Either::R(list) => {
             for iota in (*list).clone() {
-                iota.clone().downcast_rc::<VectorIota>().map_err(|_| {
-                    Mishap::IncorrectIota(0, "List of vectors".to_string(), iota.clone())
-                })?;
+                iota.clone()
+                    .downcast_rc::<VectorIota>()
+                    .map_err(|_| Mishap::IncorrectIota {
+                        index: 0,
+                        expected: "List of vectors".to_string(),
+                        received: iota.clone(),
+                    })?;
             }
         }
     }

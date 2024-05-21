@@ -1,11 +1,13 @@
 use std::{collections::HashMap, rc::Rc};
 
+use serde_json::Map;
+
 use crate::{
     interpreter::state::{Entity, EntityType},
     iota::Iota,
 };
 
-#[derive(Clone, Debug,)]
+#[derive(Clone, Debug)]
 pub struct EntityIota {
     pub name: Rc<str>,
     pub uuid: String,
@@ -45,5 +47,13 @@ impl Iota for EntityIota {
 
     fn serialize_to_nbt(&self) -> String {
         format!("{{\"hexcasting:type\": \"hexcasting:entity\", \"hexcasting:data\": {{name: '{{\"text\":\"\"}}', uuid: {}}}}}", self.uuid)
+    }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        let mut map = Map::new();
+        map.insert("iota_type".to_string(), serde_json::Value::String("entity".to_string()));
+        map.insert("value".to_string(), serde_json::Value::String(self.uuid.clone()));
+
+        serde_json::Value::Object(map)
     }
 }

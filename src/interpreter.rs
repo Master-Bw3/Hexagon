@@ -4,30 +4,27 @@ pub mod mishap;
 pub mod ops;
 pub mod state;
 
-use std::{rc::Rc, result, time::Duration};
+use std::{rc::Rc, time::Duration};
 
-use im::{vector, Vector};
+use im::Vector;
 
 use crate::{
     compiler::{
-        compile_node, compile_to_iotas,
+        compile_node,
         if_block::compile_if_block,
         ops::{compile_op_copy, compile_op_embed, compile_op_push, compile_op_store},
+        while_block::{compile_do_while_block, compile_while_block},
     },
-    interpreter::{
-        ops::{embed, push, store, EmbedType},
-        state::StackExt,
-    },
+    interpreter::ops::{embed, push, store, EmbedType},
     iota::{
         hex_casting::{
-            bool::BooleanIota,
             null::NullIota,
             pattern::{PatternIota, Signature, SignatureExt},
         },
         Iota,
     },
     parse_config::Config,
-    parser::{ActionValue, AstNode, Macros, OpName, OpValue, Location},
+    parser::{ActionValue, AstNode, Location, Macros, OpName, OpValue},
     pattern_registry::{PatternRegistry, PatternRegistryExt},
 };
 
@@ -46,7 +43,7 @@ pub fn interpret(
     macros: Macros,
     source: &str,
     source_path: &str,
-) -> Result<State, (Mishap, Location)> {
+) -> Result<State, (Mishap, Location, String, State)> {
     let mut state = State {
         ..Default::default()
     };
@@ -55,7 +52,7 @@ pub fn interpret(
 
     let pattern_registry = PatternRegistry::construct(&config.great_spell_sigs);
 
-    //compile to get heap size so that the ravenmind can be set to the right lenght
+    //compile to get heap size so that the ravenmind can be set to the right length
     //TODO: replace this with a thing that just looks for var nodes and counts them or something
     compile_node(&node, &mut state.heap, 0, &pattern_registry, &macros).unwrap();
     let null: Rc<dyn Iota> = Rc::new(NullIota);
@@ -95,7 +92,7 @@ fn run_vm<'a>(
     macros: &Macros,
     source: &str,
     source_path: &str,
-) -> Result<&'a mut State, (Mishap, Location)> {
+) -> Result<&'a mut State, (Mishap, Location, String, State)> {
     match node {
         AstNode::Program(nodes) => {
             //initialize the vm
@@ -111,7 +108,12 @@ fn run_vm<'a>(
                 let frame = state.continuation.pop_back().unwrap();
 
                 //evaluate the top frame (mutates state)
-                frame.evaluate(state, pattern_registry, macros)?;
+                frame.evaluate(state, pattern_registry, macros).map_err(
+                    |(mishap, location, caused_by)| {
+                        state.stack = mishap.apply_to_stack(&state.stack);
+                        (mishap, location, caused_by, state.clone())
+                    },
+                )?;
             }
 
             while !state.wisps.is_empty() {
@@ -142,12 +144,14 @@ fn interpret_node<'a>(
     state: &'a mut State,
     pattern_registry: &PatternRegistry,
     macros: &Macros,
-) -> Result<&'a mut State, (Mishap, Location)> {
+) -> Result<&'a mut State, (Mishap, Location, String)> {
     // println!("a: {:?}, {:?}", state.stack, state.buffer);
     match node {
-        AstNode::Action { name, value, location: location } => {
-            interpret_action(name, value, state, pattern_registry, &macros, location)
-        }
+        AstNode::Action {
+            name,
+            value,
+            location,
+        } => interpret_action(name, value, state, pattern_registry, &macros, location),
         AstNode::Block { external, nodes } => {
             if external {
                 let result = vec![
@@ -218,9 +222,12 @@ fn interpret_node<'a>(
 
             Ok(state)
         }
-        AstNode::Op { name, arg, location } => {
-            interpret_op(name, arg, state, pattern_registry, macros).map_err(|err| (err, location))
-        }
+        AstNode::Op {
+            name,
+            arg,
+            location,
+        } => interpret_op(name.clone(), arg, state, pattern_registry, macros)
+            .map_err(|err| (err, location, name.to_string())),
         AstNode::IfBlock {
             condition,
             succeed,
@@ -228,7 +235,14 @@ fn interpret_node<'a>(
             location,
         } => {
             if state.consider_next {
-                return Err((Mishap::OpCannotBeConsidered, location));
+                return Err((
+                    Mishap::OpCannotBeConsidered,
+                    location,
+                    pattern_registry
+                        .find("escape", &None)
+                        .expect("escape exists")
+                        .display_name,
+                ));
             }
 
             let compiled = Vector::from(compile_if_block(
@@ -241,6 +255,56 @@ fn interpret_node<'a>(
                 pattern_registry,
                 macros,
             )?);
+
+            if let Some(buffer) = &mut state.buffer {
+                buffer.append(compiled.iter().map(|x| (x.clone(), false)).collect())
+            } else {
+                state
+                    .continuation
+                    .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                        nodes_queue: iota_list_to_ast_node_list(Rc::new(compiled)),
+                    }))
+            }
+            Ok(state)
+        }
+        AstNode::WhileBlock {
+            location,
+            condition,
+            block,
+            do_while,
+        } => {
+            if state.consider_next {
+                return Err((
+                    Mishap::OpCannotBeConsidered,
+                    location,
+                    pattern_registry
+                        .find("escape", &None)
+                        .expect("escape exists")
+                        .display_name,
+                ));
+            }
+
+            let compiled = if do_while {
+                Vector::from(compile_do_while_block(
+                    &location,
+                    &condition,
+                    &block,
+                    calc_buffer_depth(pattern_registry, &state.buffer),
+                    &mut state.heap,
+                    pattern_registry,
+                    macros,
+                )?)
+            } else {
+                Vector::from(compile_while_block(
+                    &location,
+                    &condition,
+                    &block,
+                    calc_buffer_depth(pattern_registry, &state.buffer),
+                    &mut state.heap,
+                    pattern_registry,
+                    macros,
+                )?)
+            };
 
             if let Some(buffer) = &mut state.buffer {
                 buffer.append(compiled.iter().map(|x| (x.clone(), false)).collect())
@@ -270,56 +334,52 @@ pub fn interpret_op<'a>(
 
     if state.buffer.is_some() {
         let compiled = match name {
-            crate::parser::OpName::Store => {
-                compile_op_store(&mut state.heap, pattern_registry, &arg)
-            }
-            crate::parser::OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
-            crate::parser::OpName::Embed => compile_op_embed(
+            OpName::Store => compile_op_store(&mut state.heap, pattern_registry, &arg),
+            OpName::Copy => compile_op_copy(&mut state.heap, pattern_registry, &arg),
+            OpName::Push => compile_op_push(&mut state.heap, pattern_registry, &arg),
+            OpName::Embed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::Normal,
             ),
-            crate::parser::OpName::SmartEmbed => compile_op_embed(
+            OpName::SmartEmbed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::Smart,
             ),
-            crate::parser::OpName::ConsiderEmbed => compile_op_embed(
+            OpName::ConsiderEmbed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::Consider,
             ),
-            crate::parser::OpName::IntroEmbed => compile_op_embed(
+            OpName::IntroEmbed => compile_op_embed(
                 pattern_registry,
                 calc_buffer_depth(pattern_registry, &state.buffer),
                 &arg,
                 EmbedType::IntroRetro,
             ),
+            OpName::Init => todo!(),
         }?;
         for iota in compiled {
             push_iota(iota, state, false)
         }
     } else {
         match name {
-            crate::parser::OpName::Store => store(&arg, state, false),
-            crate::parser::OpName::Copy => store(&arg, state, true),
-            crate::parser::OpName::Push => push(&arg, state),
-            crate::parser::OpName::Embed => {
-                embed(&arg, state, pattern_registry, EmbedType::Normal, macros)
-            }
-            crate::parser::OpName::SmartEmbed => {
-                embed(&arg, state, pattern_registry, EmbedType::Smart, macros)
-            }
-            crate::parser::OpName::ConsiderEmbed => {
+            OpName::Store => store(&arg, state, false),
+            OpName::Copy => store(&arg, state, true),
+            OpName::Push => push(&arg, state),
+            OpName::Embed => embed(&arg, state, pattern_registry, EmbedType::Normal, macros),
+            OpName::SmartEmbed => embed(&arg, state, pattern_registry, EmbedType::Smart, macros),
+            OpName::ConsiderEmbed => {
                 embed(&arg, state, pattern_registry, EmbedType::Consider, macros)
             }
-            crate::parser::OpName::IntroEmbed => {
+            OpName::IntroEmbed => {
                 embed(&arg, state, pattern_registry, EmbedType::IntroRetro, macros)
             }
+            OpName::Init => todo!(),
         }?;
     }
 
@@ -333,7 +393,7 @@ pub fn interpret_action<'a>(
     pattern_registry: &PatternRegistry,
     macros: &Macros,
     location: Location,
-) -> Result<&'a mut State, (Mishap, Location)> {
+) -> Result<&'a mut State, (Mishap, Location, String)> {
     if let Some((_, AstNode::Block { external: _, nodes })) = macros.get(&name) {
         //check for macro and apply it
         if let Some(ref mut buffer) = state.buffer {
@@ -366,7 +426,7 @@ pub fn interpret_action<'a>(
 
     let patterns = pattern_registry.find_all(&name, &value);
     if patterns.is_empty() {
-        return Err((Mishap::InvalidPattern, location));
+        return Err((Mishap::InvalidPattern, location, name));
     }
     let signature = &patterns[0].signature;
 
@@ -394,7 +454,15 @@ pub fn interpret_action<'a>(
                 result = Ok(());
                 break;
             }
-            Err(Mishap::IncorrectIota(_, _, _)) | Err(Mishap::NotEnoughIotas(_, _)) => {
+            Err(Mishap::IncorrectIota {
+                index: _,
+                expected: _,
+                received: _,
+            })
+            | Err(Mishap::NotEnoughIotas {
+                arg_count: _,
+                stack_height: _,
+            }) => {
                 result = operation_result.map(|_| ());
             }
             Err(_) => {
@@ -406,7 +474,7 @@ pub fn interpret_action<'a>(
 
     result
         .map(|_| state)
-        .map_err(|mishap| (mishap, location))
+        .map_err(|mishap| (mishap, location, name))
 }
 
 pub fn push_pattern(
@@ -435,8 +503,10 @@ fn calc_buffer_depth(
     registry: &PatternRegistry,
     buffer: &Option<Vector<(Rc<dyn Iota>, Considered)>>,
 ) -> u32 {
-    let intro_pattern = PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap();
-    let retro_pattern = PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap();
+    let intro_pattern =
+        PatternIota::from_name(registry, "open_paren", None, Location::Unknown).unwrap();
+    let retro_pattern =
+        PatternIota::from_name(registry, "close_paren", None, Location::Unknown).unwrap();
 
     let intro_count: u32 = if let Some(inner_buffer) = buffer {
         inner_buffer.iter().fold(0, |acc, x| {

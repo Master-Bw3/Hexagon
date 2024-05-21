@@ -1,4 +1,4 @@
-use std::{rc::Rc, result};
+use std::rc::Rc;
 
 use im::{vector, Vector};
 
@@ -8,7 +8,10 @@ use crate::{
         state::{StackExt, State},
     },
     iota::{
-        hex_casting::{list::ListIota, number::{NumberIota, NumberIotaExt}},
+        hex_casting::{
+            list::ListIota,
+            number::{NumberIota, NumberIotaExt},
+        },
         Iota,
     },
     pattern_registry::PatternRegistry,
@@ -28,7 +31,7 @@ pub fn running_sum<'a>(
         let num = iota
             .clone()
             .downcast_rc::<NumberIota>()
-            .map_err(|_| Mishap::IncorrectIota(0, "List of numbers".to_string(), iota.clone()))?;
+            .map_err(|_| Mishap::IncorrectIota{index: 0, expected: "List of numbers".to_string(), received: iota.clone()})?;
 
         num_list.push_back(*num)
     }
@@ -61,7 +64,7 @@ pub fn running_product<'a>(
         let num = iota
             .clone()
             .downcast_rc::<NumberIota>()
-            .map_err(|_| Mishap::IncorrectIota(0, "List of numbers".to_string(), iota.clone()))?;
+            .map_err(|_| Mishap::IncorrectIota{index: 0, expected: "List of numbers".to_string(), received: iota.clone()})?;
 
         num_list.push_back(*num)
     }
@@ -85,7 +88,10 @@ pub fn factorial<'a>(
     _pattern_registry: &PatternRegistry,
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 1;
-    let num = state.stack.get_iota::<NumberIota>(0, arg_count)?.positive_int(0)? as usize;
+    let num = state
+        .stack
+        .get_iota::<NumberIota>(0, arg_count)?
+        .positive_int(0)? as usize;
     state.stack.remove_args(&arg_count);
 
     let result = (1..=num).product::<usize>() as f64;

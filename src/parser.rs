@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::Deref, rc::Rc};
+use std::{collections::HashMap, fmt::Display, ops::Deref, rc::Rc};
 
 use crate::{
     interpreter::state::Entity,
@@ -110,6 +110,20 @@ fn construct_ast_node(
             pattern_registry,
             conf_entities,
             macros,
+        )),
+        Rule::DoWhileBlock => Some(parse_while_block(
+            pair,
+            pattern_registry,
+            conf_entities,
+            macros,
+            true,
+        )),
+        Rule::WhileBlock => Some(parse_while_block(
+            pair,
+            pattern_registry,
+            conf_entities,
+            macros,
+            false,
         )),
         Rule::Term => Some(AstNode::Block {
             nodes: pair
@@ -226,7 +240,7 @@ fn parse_action_iota(
                     conf_entities,
                     macros,
                 ))),
-                Location::Unknown,
+                Location::Line(pair.line_col().0, pair.line_col().1),
             ),
             Rule::EntityType => PatternIota::from_name(
                 pattern_registry,
@@ -234,13 +248,13 @@ fn parse_action_iota(
                 righter.map(|p| {
                     ActionValue::Iota(parse_iota(p, pattern_registry, conf_entities, macros))
                 }),
-                Location::Unknown,
+                Location::Line(pair.line_col().0, pair.line_col().1),
             ),
             Rule::BookkeeperValue => PatternIota::from_name(
                 pattern_registry,
                 left.as_str(),
                 Some(ActionValue::Bookkeeper(parse_bookkeeper(pair.clone()))),
-                Location::Unknown,
+                Location::Line(pair.line_col().0, pair.line_col().1),
             ),
             _ => unreachable!(),
         })
@@ -251,7 +265,15 @@ fn parse_action_iota(
                 .map(|(pattern, _)| pattern.clone())
                 .unwrap_or_else(
                     //check if pattern name
-                    || PatternIota::from_name(pattern_registry, left.as_str(), None, Location::Unknown).unwrap(),
+                    || {
+                        PatternIota::from_name(
+                            pattern_registry,
+                            left.as_str(),
+                            None,
+                            Location::Line(left.line_col().0, left.line_col().1),
+                        )
+                        .unwrap()
+                    },
                 ),
         ))
         .unwrap()
@@ -361,6 +383,60 @@ fn parse_if_block(
     )
 }
 
+fn parse_while_block(
+    pair: Pair<'_, Rule>,
+    pattern_registry: &PatternRegistry,
+    conf_entities: &mut HashMap<String, Entity>,
+    macros: &Macros,
+    do_while: bool,
+) -> AstNode {
+    fn parse_inner(
+        line: (usize, usize),
+        mut inner: Pairs<'_, Rule>,
+        pattern_registry: &PatternRegistry,
+        conf_entities: &mut HashMap<String, Entity>,
+        macros: &Macros,
+        do_while: bool,
+    ) -> AstNode {
+        AstNode::WhileBlock {
+            do_while,
+            condition: {
+                let mut condition = inner.next().unwrap().into_inner();
+                Box::new(
+                    construct_ast_node(
+                        condition.next().unwrap(),
+                        pattern_registry,
+                        conf_entities,
+                        macros,
+                    )
+                    .unwrap(),
+                )
+            },
+            block: {
+                let mut block = inner.next().unwrap().into_inner();
+                Box::new(
+                    construct_ast_node(
+                        block.next().unwrap(),
+                        pattern_registry,
+                        conf_entities,
+                        macros,
+                    )
+                    .unwrap(),
+                )
+            },
+            location: Location::Line(line.0, line.1),
+        }
+    }
+    parse_inner(
+        pair.line_col(),
+        pair.into_inner(),
+        pattern_registry,
+        conf_entities,
+        macros,
+        do_while,
+    )
+}
+
 pub fn parse_iota(
     pair: Pair<'_, Rule>,
     pattern_registry: &PatternRegistry,
@@ -440,9 +516,21 @@ fn parse_pattern(
     macros: &Macros,
 ) -> PatternIota {
     match pair.as_str() {
-        "{" => PatternIota::from_name(pattern_registry, "open_paren", None, Location::Unknown).unwrap(),
+        "{" => PatternIota::from_name(
+            pattern_registry,
+            "open_paren",
+            None,
+            Location::Line(pair.line_col().0, pair.line_col().1),
+        )
+        .unwrap(),
 
-        "}" => PatternIota::from_name(pattern_registry, "close_paren", None, Location::Unknown).unwrap(),
+        "}" => PatternIota::from_name(
+            pattern_registry,
+            "close_paren",
+            None,
+            Location::Line(pair.line_col().0, pair.line_col().1),
+        )
+        .unwrap(),
 
         _ => match pair.as_rule() {
             Rule::Action => {
@@ -456,9 +544,11 @@ fn parse_pattern(
                     conf_entities,
                 )
             }
-            Rule::PatternRaw => {
-                PatternIota::from_sig(pair.into_inner().last().unwrap().as_str(), None, Location::Unknown)
-            }
+            Rule::PatternRaw => PatternIota::from_sig(
+                pair.clone().into_inner().last().unwrap().as_str(),
+                None,
+                Location::Line(pair.line_col().0, pair.line_col().1),
+            ),
             _ => unreachable!("{:?}", pair.as_rule()),
         },
     }
@@ -498,17 +588,24 @@ pub enum AstNode {
         succeed: Box<AstNode>,
         fail: Option<Box<AstNode>>,
     },
+    WhileBlock {
+        do_while: bool,
+        location: Location,
+        condition: Box<AstNode>,
+        block: Box<AstNode>,
+    },
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Location {
     Unknown,
     Line(usize, usize),
-    List(usize,)
+    List(usize),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpName {
+    Init,
     Store,
     Copy,
     Push,
@@ -516,6 +613,21 @@ pub enum OpName {
     SmartEmbed,
     ConsiderEmbed,
     IntroEmbed,
+}
+
+impl Display for OpName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OpName::Init => write!(f, "Init"),
+            OpName::Store => write!(f, "Store"),
+            OpName::Copy => write!(f, "Copy"),
+            OpName::Push => write!(f, "Push"),
+            OpName::Embed => write!(f, "Embed"),
+            OpName::SmartEmbed => write!(f, "SmartEmbed"),
+            OpName::ConsiderEmbed => write!(f, "ConsiderEmbed"),
+            OpName::IntroEmbed => write!(f, "IntroEmbed"),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

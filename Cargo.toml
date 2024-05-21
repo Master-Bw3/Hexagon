@@ -2,6 +2,14 @@
 name = "hexagon"
 version = "0.1.0"
 edition = "2021"
+authors = ["Master_Bw3"]
+repository = "https://github.com/Master-Bw3/Hexagon"
+
+[package.metadata.wix]
+upgrade-guid = "25DAEE36-F38F-4531-8BF6-A26578B735E7"
+path-guid = "200FA54E-319A-46B1-B2B1-5EE9F03B8819"
+license = false
+eula = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,4 +24,26 @@ rand = "0.8.5"
 snailquote = "0.3.1"
 toml = "0.7.6"
 hexnumgen = {git = "https://github.com/Master-Bw3/hexnumgen-rs"}
-# serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.115"
+serde = "1.0.197"
+reqwest = { version = "0.11.23", features = ["blocking", "json"] }
+
+# The profile that 'cargo dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
+# Config for 'cargo dist'
+[workspace.metadata.dist]
+# The preferred cargo-dist version to use in CI (Cargo.toml SemVer syntax)
+cargo-dist-version = "0.14.1"
+# CI backends to support
+ci = "github"
+# The installers to generate for each app
+installers = ["shell", "powershell", "msi"]
+# Target platforms to build apps for (Rust target-triple syntax)
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
+# Publish jobs to run in CI
+pr-run-mode = "plan"
+# Whether to install an updater program
+install-updater = true

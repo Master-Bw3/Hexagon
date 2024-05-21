@@ -4,26 +4,21 @@ use im::vector;
 
 use crate::{
     interpreter::{
-        continuation::{
-            iota_list_to_ast_node_list, ContinuationFrame, FrameEvaluate, FrameIterate,
-        },
+        continuation::{iota_list_to_ast_node_list, ContinuationFrame, FrameIterate},
         mishap::Mishap,
         state::{StackExt, State},
     },
     iota::{
-        five_dim_casting::continuum::{self, ContinuumIota},
+        five_dim_casting::continuum::ContinuumIota,
         hex_casting::{
-            continuation::ContinuationIota,
             list::ListIota,
-            null::NullIota,
             number::{NumberIota, NumberIotaExt},
-            pattern::{self, PatternIota, SignatureExt},
+            pattern::{PatternIota, SignatureExt},
         },
         Iota,
     },
     parser::{ActionValue, AstNode, Location},
     pattern_registry::PatternRegistry,
-    patterns::hex_casting::stack,
 };
 
 pub fn number_stream<'a>(
@@ -72,7 +67,7 @@ pub fn get<'a>(
                 index: 0,
                 collect: (*iotas.1 as usize, *iotas.1 as usize),
                 acc: Rc::new(RefCell::new(vector![])),
-                prev: iotas.0.front_val,
+                initial_iota: iotas.0.front_val,
                 gen_next_code: iotas.0.gen_next_func.clone(),
                 maps: iotas.0.maps,
                 collect_single: true,
@@ -107,7 +102,7 @@ pub fn slice<'a>(
                 index: 0,
                 collect: (iotas.0, iotas.1 - 1),
                 acc: Rc::new(RefCell::new(vector![])),
-                prev: continuum.front_val,
+                initial_iota: continuum.front_val,
                 gen_next_code: continuum.gen_next_func.clone(),
                 maps: continuum.maps,
                 collect_single: false,
@@ -182,7 +177,6 @@ pub fn make_stream<'a>(
     Ok(state)
 }
 
-
 pub fn deconstruct<'a>(
     state: &'a mut State,
     _pattern_registry: &PatternRegistry,
@@ -191,32 +185,31 @@ pub fn deconstruct<'a>(
     let continuum = (*state.stack.get_iota::<ContinuumIota>(0, arg_count)?).clone();
     state.stack.remove_args(&arg_count);
 
+    state
+        .continuation
+        .push_back(ContinuationFrame::Iterate(FrameIterate {
+            base_stack: None,
+            index: 0,
+            collect: (1, 1),
+            acc: Rc::new(RefCell::new(vector![])),
+            initial_iota: continuum.front_val.clone(),
+            gen_next_code: continuum.gen_next_func.clone(),
+            maps: vector![],
+            collect_single: true,
+        }));
 
     state
-    .continuation
-    .push_back(ContinuationFrame::Iterate(FrameIterate {
-        base_stack: None,
-        index: 0,
-        collect: (1, 1),
-        acc: Rc::new(RefCell::new(vector![])),
-        prev: continuum.front_val.clone(),
-        gen_next_code: continuum.gen_next_func.clone(),
-        maps: vector![],
-        collect_single: true,
-    }));
-
-    state
-    .continuation
-    .push_back(ContinuationFrame::Iterate(FrameIterate {
-        base_stack: None,
-        index: 0,
-        collect: (0, 0),
-        acc: Rc::new(RefCell::new(vector![])),
-        prev: continuum.front_val,
-        gen_next_code: continuum.gen_next_func.clone(),
-        maps: continuum.maps,
-        collect_single: true,
-    }));
+        .continuation
+        .push_back(ContinuationFrame::Iterate(FrameIterate {
+            base_stack: None,
+            index: 0,
+            collect: (0, 0),
+            acc: Rc::new(RefCell::new(vector![])),
+            initial_iota: continuum.front_val,
+            gen_next_code: continuum.gen_next_func.clone(),
+            maps: continuum.maps,
+            collect_single: true,
+        }));
 
     Ok(state)
 }

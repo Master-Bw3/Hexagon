@@ -7,33 +7,52 @@ use crate::{iota::Iota, parser::Location};
 use super::mishap::Mishap;
 
 pub fn print_interpreter_error(
-    (err, location): (Mishap, Location),
+    (err, location, caused_by): (Mishap, Location, String),
     source: &str,
     source_path: &str,
 ) {
     match location {
-        Location::Unknown => todo!(),
+        Location::Unknown => {
+            print_err_msg(&err, &String::new());
+            print_caused_by(caused_by.as_str());
+            print_mishap_hint(&err, &String::new());
+        }
         Location::Line(line, col) => {
             let location = format!("{source_path}:{line}:{col}");
             let line_content = source.lines().collect::<Vec<_>>()[line - 1];
             let pad_len = line.to_string().len();
             let padding = vec![" "; pad_len].concat();
 
-            print_err_msg(&err, &padding, &location);
+            print_err_msg(&err, &padding);
+            print_location(&location, &padding);
             eprintln!(" {padding} {}", "|".magenta().bold());
             print_mishap_content(line, line_content, &padding);
 
             print_mishap_hint(&err, &padding);
         }
-        Location::List(_) => todo!(),
+        Location::List(_) => {
+            print_err_msg(&err, &String::new());
+            print_caused_by(caused_by.as_str());
+            print_mishap_hint(&err, &String::new());
+        },
     }
 }
 
-fn print_err_msg(err: &Mishap, padding: &String, location: &String) {
+fn print_caused_by(caused_by: &str) {
+    eprintln!(
+        "{} {caused_by}",
+        "Caused by:".magenta().bold(),
+    );
+}
+
+fn print_err_msg(err: &Mishap, padding: &String) {
     let error_label = "Error:".red().bold().to_string();
     let error_msg = err.error_message().bold().to_string();
 
     eprintln!("{error_label} {error_msg}");
+}
+
+fn print_location(location: &String, padding: &String) {
     eprintln!(" {padding} {} {location}", "@".magenta().bold());
 }
 
@@ -53,6 +72,8 @@ fn print_mishap_content(line: usize, line_content: &str, padding: &String) {
     );
     eprintln!(" {padding} {}", "|".magenta().bold());
 }
+
+//tf is this atrocity
 fn print_eval_mishap_content(pat_list: &[Rc<dyn Iota>], err_index: usize, pad_len: usize) {
     let err_pad_len = err_index.to_string().len();
     let padding = vec![" "; pad_len].concat();

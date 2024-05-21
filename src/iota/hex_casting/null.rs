@@ -1,3 +1,5 @@
+use serde_json::Map;
+
 use crate::iota::Iota;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -18,5 +20,12 @@ impl Iota for NullIota {
 
     fn serialize_to_nbt(&self) -> String {
         "{\"hexcasting:type\": \"hexcasting:null\", \"hexcasting:data\": {}}".to_string()
+    }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        let mut map = Map::new();
+        map.insert("iota_type".to_string(), serde_json::Value::String("null".to_string()));
+
+        serde_json::Value::Object(map)
     }
 }

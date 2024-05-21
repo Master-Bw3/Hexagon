@@ -1,5 +1,7 @@
 use std::{collections::HashMap, ops::Not, rc::Rc};
 
+use serde_json::Map;
+
 use crate::{
     interpreter::state::{Entity, EntityType},
     iota::Iota,
@@ -15,7 +17,6 @@ pub trait ListIotaExt {
         entity_type: Option<&EntityType>,
         entities: &HashMap<String, Entity>,
     ) -> bool;
-    
 }
 
 impl ListIotaExt for ListIota {
@@ -46,7 +47,7 @@ impl Iota for ListIota {
                 .join(", ")
         )
     }
-    
+
     fn display_type_name() -> String {
         "List".to_string()
     }
@@ -74,5 +75,18 @@ impl Iota for ListIota {
             .collect::<Vec<_>>()
             .join(", ");
         format!("{{\"hexcasting:type\": \"hexcasting:list\", \"hexcasting:data\": [{out}]}}")
+    }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        let iotas = self
+            .iter()
+            .map(|iota| iota.serialize_to_json())
+            .collect::<Vec<_>>();
+
+        let mut map = Map::new();
+        map.insert("iota_type".to_string(), serde_json::Value::String("list".to_string()));
+        map.insert("value".to_string(), serde_json::Value::Array(iotas));
+
+        serde_json::Value::Object(map)
     }
 }

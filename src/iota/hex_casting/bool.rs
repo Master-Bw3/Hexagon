@@ -1,3 +1,6 @@
+use serde::Serialize;
+use serde_json::Map;
+
 use crate::iota::Iota;
 
 pub type BooleanIota = bool;
@@ -23,4 +26,12 @@ impl Iota for BooleanIota {
 
         format!("{{\"hexcasting:type\": \"hexcasting:boolean\", \"hexcasting:data\": {byte}}}")
     }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
+        let mut map = Map::new();
+        map.insert("iota_type".to_string(), serde_json::Value::String("boolean".to_string()));
+        map.insert("value".to_string(), serde_json::Value::Bool(*self));
+
+        serde_json::Value::Object(map)  
+      }
 }

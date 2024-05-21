@@ -1,19 +1,18 @@
-use std::{collections::HashMap, default, ops::Deref, rc::Rc, sync::Arc};
+use std::{collections::HashMap, ops::Deref, rc::Rc};
 
-use im::{vector, Vector};
+use im::Vector;
 
 use crate::{
     iota::{
-        hex_casting::{continuation, pattern::Signature, vector::VectorIota, entity::EntityIota},
+        hex_casting::{entity::EntityIota, pattern::Signature, vector::VectorIota},
         Iota,
     },
-    parser::{AstNode, Macros, Location},
+    parser::{AstNode, Location, Macros},
     pattern_registry::PatternRegistry,
 };
 
 use super::{
     continuation::{ContinuationFrame, ContinuationFrameTrait, FrameEvaluate},
-    interpret_node,
     mishap::Mishap,
 };
 
@@ -101,7 +100,10 @@ impl StackExt for Stack {
     fn get_iota<T: Iota>(&self, index: usize, arg_count: usize) -> Result<Rc<T>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -109,13 +111,20 @@ impl StackExt for Stack {
 
         iota.clone()
             .downcast_rc::<T>()
-            .map_err(|_| Mishap::IncorrectIota(index, T::display_type_name(), iota.clone()))
+            .map_err(|_| Mishap::IncorrectIota {
+                index,
+                expected: T::display_type_name(),
+                received: iota.clone(),
+            })
     }
 
     fn get_any_iota(&self, index: usize, arg_count: usize) -> Result<Rc<dyn Iota>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -135,7 +144,10 @@ impl StackExt for Stack {
     ) -> Result<Either<Rc<T>, Rc<U>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -147,11 +159,11 @@ impl StackExt for Stack {
         match (left, right) {
             (Ok(l), Err(_)) => Ok(Either::L(l)),
             (Err(_), Ok(r)) => Ok(Either::R(r)),
-            (Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+            (Err(_), Err(_)) => Err(Mishap::IncorrectIota {
                 index,
-                format!("{} or {}", T::display_type_name(), U::display_type_name()),
-                iota.clone(),
-            )),
+                expected: format!("{} or {}", T::display_type_name(), U::display_type_name()),
+                received: iota.clone(),
+            }),
             _ => unreachable!(),
         }
     }
@@ -163,7 +175,10 @@ impl StackExt for Stack {
     ) -> Result<Either3<Rc<T>, Rc<U>, Rc<V>>, Mishap> {
         let iota = {
             if self.len() < arg_count {
-                Err(Mishap::NotEnoughIotas(arg_count, self.len()))?
+                Err(Mishap::NotEnoughIotas {
+                    arg_count,
+                    stack_height: self.len(),
+                })?
             } else {
                 self[(self.len() - arg_count) + index].to_owned()
             }
@@ -178,16 +193,16 @@ impl StackExt for Stack {
             (Ok(l), Err(_), Err(_)) => Ok(Either3::L(l)),
             (Err(_), Ok(m), Err(_)) => Ok(Either3::M(m)),
             (Err(_), Err(_), Ok(r)) => Ok(Either3::R(r)),
-            (Err(_), Err(_), Err(_)) => Err(Mishap::IncorrectIota(
+            (Err(_), Err(_), Err(_)) => Err(Mishap::IncorrectIota{
                 index,
-                format!(
-                    "{}, {} or {}",
+                expected: format!(
+                    "{}, {}, or {}",
                     T::display_type_name(),
                     U::display_type_name(),
                     V::display_type_name()
                 ),
-                iota.clone(),
-            )),
+                received: iota.clone(),
+        }),
             _ => unreachable!(),
         }
     }
@@ -241,7 +256,7 @@ impl Wisp {
         main_state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<Wisp, (Mishap, Location)> {
+    ) -> Result<Wisp, (Mishap, Location, String)> {
         let mut wisp_state = State {
             stack: self.stack.clone(),
             ravenmind: self.ravenmind.clone(),

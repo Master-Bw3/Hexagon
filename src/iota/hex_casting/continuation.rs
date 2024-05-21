@@ -21,9 +21,10 @@ impl Iota for ContinuationIota {
             Some(other) => {
                 self.value.len() == other.value.len()
                     && self
-                        .value.iter()
+                        .value
+                        .iter()
                         .zip(other.value.iter())
-                        .map(|(rhs, lhs)| false) //TODO: fix this
+                        .map(|(_rhs, _lhs)| false) //TODO: fix this
                         .collect::<im::Vector<bool>>()
                         .contains(&false)
                         .not()
@@ -33,6 +34,10 @@ impl Iota for ContinuationIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
+        todo!()
+    }
+    
+    fn serialize_to_json(&self) -> serde_json::Value {
         todo!()
     }
 }

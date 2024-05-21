@@ -1,5 +1,20 @@
 use im::{vector, Vector};
 
+use crate::{
+    iota::{
+        hex_casting::{
+            null::NullIota,
+            pattern::{PatternIota, SignatureExt},
+        },
+        Iota,
+    },
+    parser::{AstNode, Location, Macros, OpName, OpValue},
+    pattern_registry::PatternRegistry,
+};
+use std::{cell::RefCell, ops::Not, rc::Rc};
+
+use super::{interpret_node, mishap::Mishap, state::State};
+
 #[derive(Debug, Clone)]
 pub enum ContinuationFrame {
     Evaluate(FrameEvaluate),
@@ -15,7 +30,7 @@ impl ContinuationFrameTrait for ContinuationFrame {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         match self {
             ContinuationFrame::Evaluate(frame) => frame.evaluate(state, pattern_registry, macros),
             ContinuationFrame::EndEval(frame) => frame.evaluate(state, pattern_registry, macros),
@@ -36,26 +51,6 @@ impl ContinuationFrameTrait for ContinuationFrame {
     }
 }
 
-use crate::{
-    iota::{
-        hex_casting::{
-            null::NullIota,
-            pattern::{PatternIota, SignatureExt},
-        },
-        Iota,
-    },
-    parser::{AstNode, Macros, OpName, OpValue, Location},
-    pattern_registry::PatternRegistry,
-};
-use std::{
-    cell::RefCell,
-    collections::HashMap,
-    ops::{Not, Range},
-    rc::Rc,
-};
-
-use super::{interpret_node, mishap::Mishap, state::State};
-
 pub type Continuation = Vector<ContinuationFrame>;
 
 pub trait ContinuationFrameTrait: std::fmt::Debug {
@@ -64,7 +59,7 @@ pub trait ContinuationFrameTrait: std::fmt::Debug {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, Location)>;
+    ) -> Result<(), (Mishap, Location, String)>;
 
     fn break_out(&self, state: &mut State) -> bool;
 }
@@ -80,7 +75,7 @@ impl ContinuationFrameTrait for FrameEvaluate {
         state: &mut State,
         pattern_registry: &PatternRegistry,
         macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
         let mut new_frame = self.clone();
         let node = new_frame.nodes_queue.pop_front();
 
@@ -114,8 +109,8 @@ impl ContinuationFrameTrait for FrameEndEval {
         &self,
         state: &mut State,
         _: &PatternRegistry,
-        macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+        _macros: &Macros,
+    ) -> Result<(), (Mishap, Location, String)> {
         state.consider_next = false;
         Ok(())
     }
@@ -140,8 +135,8 @@ impl ContinuationFrameTrait for FrameForEach {
         &self,
         state: &mut State,
         _: &PatternRegistry,
-        macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+        _macros: &Macros,
+    ) -> Result<(), (Mishap, Location, String)> {
         let stack = match &self.base_stack {
             //thoth entry point
             None => state.stack.clone(),
@@ -201,11 +196,11 @@ pub struct FrameIterate {
     pub base_stack: Option<Vector<Rc<dyn Iota>>>,
     pub index: usize,
     pub collect: (usize, usize),
+    pub collect_single: bool,
     pub acc: ThothAcc,
-    pub prev: Rc<dyn Iota>,
+    pub initial_iota: Rc<dyn Iota>,
     pub gen_next_code: Vector<AstNode>,
     pub maps: Vector<Vector<AstNode>>,
-    pub collect_single: bool,
 }
 
 impl ContinuationFrameTrait for FrameIterate {
@@ -214,7 +209,21 @@ impl ContinuationFrameTrait for FrameIterate {
         state: &mut State,
         _pattern_registry: &PatternRegistry,
         _macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+    ) -> Result<(), (Mishap, Location, String)> {
+        let new_acc = Rc::clone(&self.acc);
+
+        if self.index <= self.collect.1 && self.index >= self.collect.0 {
+            //if index in collect range, push top of stack to accumulator
+            if self.base_stack.is_none() {
+                //on first just push the inital value
+                new_acc.borrow_mut().push_back(self.initial_iota.clone())
+            } else {
+                //else push top of stack (or null if stack is empty)
+                let stack_top = state.stack.last().cloned().unwrap_or(Rc::new(NullIota));
+                new_acc.borrow_mut().push_back(stack_top.clone())
+            }
+        }
+
         let base_stack = match &self.base_stack {
             //entry point
             None => state.stack.clone(),
@@ -223,21 +232,8 @@ impl ContinuationFrameTrait for FrameIterate {
             Some(base) => base.clone(),
         };
 
-        let new_acc = self.acc.clone();
-
-        if self.index <= self.collect.1 && self.index >= self.collect.0 {
-            //if index in collect range, push top of stack to accumulator
-            if self.base_stack.is_none() {
-                //on first just push the inital value
-                new_acc.borrow_mut().push_back(self.prev.clone())
-            } else {
-                let stack_top = state.stack.last().cloned().unwrap_or(Rc::new(NullIota));
-                new_acc.borrow_mut().push_back(stack_top.clone())
-            }
-        }
-
         if self.index >= self.collect.1 {
-            //if frame is last in range, apply map
+            //if frame is last in range, apply maps
             state.stack = vector![];
 
             if self.maps.clone().is_empty() {
@@ -267,7 +263,7 @@ impl ContinuationFrameTrait for FrameIterate {
         } else {
             //else push next frames
             let result: Rc<dyn Iota> = if self.base_stack.is_none() {
-                self.prev.clone()
+                self.initial_iota.clone()
             } else {
                 state.stack.last().cloned().unwrap_or(Rc::new(NullIota))
             };
@@ -281,7 +277,7 @@ impl ContinuationFrameTrait for FrameIterate {
                     base_stack: Some(base_stack),
                     index: self.index + 1,
                     acc: new_acc.clone(),
-                    prev: result,
+                    initial_iota: result,
                     ..self.clone()
                 }));
 
@@ -295,7 +291,7 @@ impl ContinuationFrameTrait for FrameIterate {
         }
     }
 
-    fn break_out(&self, state: &mut State) -> bool {
+    fn break_out(&self, _state: &mut State) -> bool {
         true
     }
 }
@@ -316,8 +312,8 @@ impl ContinuationFrameTrait for FrameMap {
         &self,
         state: &mut State,
         _: &PatternRegistry,
-        macros: &Macros,
-    ) -> Result<(), (Mishap, Location)> {
+        _macros: &Macros,
+    ) -> Result<(), (Mishap, Location, String)> {
         if self.init {
             let mut new_maps = self.maps.clone();
             let current_map = new_maps.pop_front().unwrap();
@@ -414,7 +410,7 @@ impl ContinuationFrameTrait for FrameMap {
         }
     }
 
-    fn break_out(&self, state: &mut State) -> bool {
+    fn break_out(&self, _state: &mut State) -> bool {
         true
     }
 }

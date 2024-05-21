@@ -55,7 +55,7 @@ pub fn index<'a>(
 ) -> Result<&'a mut State, Mishap> {
     let arg_count = 2;
     let iotas = (
-        (*state.stack.get_iota::<ListIota>(0, arg_count)?).clone(),
+        state.stack.get_iota::<ListIota>(0, arg_count)?,
         state.stack.get_iota::<NumberIota>(1, arg_count)?,
     );
     state.stack.remove_args(&arg_count);
@@ -273,7 +273,7 @@ pub fn deconstruct<'a>(
 #[cfg(test)]
 mod tests {
 
-    use crate::{pattern_registry::PatternRegistryExt, iota::Iota};
+    use crate::{iota::Iota, pattern_registry::PatternRegistryExt};
 
     use super::*;
 

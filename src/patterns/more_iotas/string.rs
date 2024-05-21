@@ -157,11 +157,11 @@ pub fn write<'a>(
     ) || iota.clone().downcast_rc::<StringIota>().is_ok()
     {
     } else {
-        Err(Mishap::IncorrectIota(
-            0,
-            "String or List of Strings".to_string(),
-            iota,
-        ))?
+        Err(Mishap::IncorrectIota {
+            index: 0,
+            expected: "String or List of Strings".to_string(),
+            received: iota,
+        })?
     }
 
     state.stack.remove_args(&arg_count);
@@ -184,7 +184,11 @@ pub fn set_prefix<'a>(
 
         Ok(state)
     } else {
-        Err(Mishap::IncorrectIota(0, "String or Null".to_string(), iota))
+        Err(Mishap::IncorrectIota {
+            index: 0,
+            expected: "String or Null".to_string(),
+            received: iota,
+        })
     }
 }
 

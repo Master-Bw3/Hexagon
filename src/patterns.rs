@@ -1,8 +1,8 @@
-pub mod hex_casting;
-pub mod more_iotas;
 pub mod constructors;
 pub mod five_dim_casting;
+pub mod hex_casting;
 pub mod hexal;
+pub mod more_iotas;
 
 use std::rc::Rc;
 

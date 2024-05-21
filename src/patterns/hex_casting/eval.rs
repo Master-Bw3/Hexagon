@@ -1,12 +1,12 @@
-use std::{rc::Rc, cell::RefCell};
+use std::{cell::RefCell, rc::Rc};
 
 use im::vector;
 
 use crate::{
     interpreter::{
         continuation::{
-            iota_list_to_ast_node_list, ContinuationFrame, FrameEndEval, FrameEvaluate,
-            FrameForEach, ContinuationFrameTrait,
+            iota_list_to_ast_node_list, ContinuationFrame, ContinuationFrameTrait, FrameEndEval,
+            FrameEvaluate, FrameForEach,
         },
         mishap::Mishap,
         state::{Either3, StackExt, State},
@@ -42,13 +42,15 @@ pub fn eval<'a>(
                 }));
         }
         Either3::M(pattern) => {
-            state.continuation.push_back(ContinuationFrame::Evaluate(FrameEvaluate {
-                nodes_queue: vector![AstNode::Action {
-                    location: Location::List(0),
-                    name: pattern.signature.as_str(),
-                    value: *pattern.value.clone(),
-                }],
-            }));
+            state
+                .continuation
+                .push_back(ContinuationFrame::Evaluate(FrameEvaluate {
+                    nodes_queue: vector![AstNode::Action {
+                        location: Location::List(0),
+                        name: pattern.signature.as_str(),
+                        value: *pattern.value.clone(),
+                    }],
+                }));
         }
         Either3::R(continuation) => state.continuation = continuation.value.clone(),
     };
@@ -75,12 +77,14 @@ pub fn for_each<'a>(state: &'a mut State, _: &PatternRegistry) -> Result<&'a mut
     let iota_list = state.stack.get_iota::<ListIota>(1, 2)?;
     state.stack.remove_args(&arg_count);
 
-    state.continuation.push_back(ContinuationFrame::ForEach(FrameForEach {
-        data: (*iota_list).clone(),
-        code: iota_list_to_ast_node_list(pattern_list),
-        base_stack: None,
-        acc: Rc::new(RefCell::new(vector![])),
-    }));
+    state
+        .continuation
+        .push_back(ContinuationFrame::ForEach(FrameForEach {
+            data: (*iota_list).clone(),
+            code: iota_list_to_ast_node_list(pattern_list),
+            base_stack: None,
+            acc: Rc::new(RefCell::new(vector![])),
+        }));
 
     Ok(state)
 }
