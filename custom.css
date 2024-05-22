@@ -1,0 +1,1 @@
+/* ./site/style.css */:root{--font-face:sans-serif;}:root.dark{--link-color:#d4a7e0;--bg-color:#171618;}.repo_banner,footer{background-color:#d4a7e0;}pre{margin-top:2rem;background-color:#0b0c0c !important;}pre>span{color:#f0f0f0 !important;}h2{margin-top:4rem;}.title{display:none;}.logo{margin-bottom:3rem;max-width:40rem;transform:translateX(-3.5rem);}
