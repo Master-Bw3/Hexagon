@@ -3,10 +3,12 @@
         "path_prefix": "Hexagon"
     },
     "styles": {
+        "theme": "dark",
         "additional_css": [
             "./site/style.css"
         ],
-        "logo": "./site/logo_text.png"
+        "logo": "./site/logo_text.png",
+        "favicon": "./site/favicon.ico"
     },
     "project": {
         "name": "Hexagon"
