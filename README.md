@@ -1,4 +1,4 @@
-<img class="oranda-hide" src="https://github.com/Master-Bw3/Hexagon/tree/master/site/logo_text.png?raw=true" alt="Hexagon" class="logo" width=400>
+<img class="oranda-hide" src="https://github.com/Master-Bw3/Hexagon/blob/master/site/logo_text.png?raw=true" alt="Hexagon" class="logo" width=400>
 
 # 
 
