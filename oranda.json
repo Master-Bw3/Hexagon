@@ -1,5 +1,13 @@
 {
     "build": {
         "path_prefix": "Hexagon"
+    },
+    "styles": {
+        "additional_css": [
+            "./style.css"
+        ]
+    },
+    "project": {
+        "name": "Hexagon"
     }
 }
