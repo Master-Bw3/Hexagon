@@ -223,29 +223,33 @@ fn compile_hex_node(
 }
 
 fn block_end<'a>(heap_len: usize, registry: &'a PatternRegistry) -> Vec<Rc<dyn Iota>> {
-    vec![
-        Rc::new(PatternIota::from_name(registry, "read/local", None, Location::Unknown).unwrap()),
-        Rc::new(
-            PatternIota::from_name(
-                registry,
-                "number",
-                Some(ActionValue::Iota(Rc::new(0.0))),
-                Location::Unknown,
-            )
-            .unwrap(),
-        ),
-        Rc::new(
-            PatternIota::from_name(
-                registry,
-                "number",
-                Some(ActionValue::Iota(Rc::new(heap_len as f64))),
-                Location::Unknown,
-            )
-            .unwrap(),
-        ),
-        Rc::new(PatternIota::from_name(registry, "slice", None, Location::Unknown).unwrap()),
-        Rc::new(PatternIota::from_name(registry, "write/local", None, Location::Unknown).unwrap()),
-    ]
+    if heap_len == 0 {
+        vec![]
+    } else {
+        vec![
+            Rc::new(PatternIota::from_name(registry, "read/local", None, Location::Unknown).unwrap()),
+            Rc::new(
+                PatternIota::from_name(
+                    registry,
+                    "number",
+                    Some(ActionValue::Iota(Rc::new(0.0))),
+                    Location::Unknown,
+                )
+                .unwrap(),
+            ),
+            Rc::new(
+                PatternIota::from_name(
+                    registry,
+                    "number",
+                    Some(ActionValue::Iota(Rc::new(heap_len as f64))),
+                    Location::Unknown,
+                )
+                .unwrap(),
+            ),
+            Rc::new(PatternIota::from_name(registry, "slice", None, Location::Unknown).unwrap()),
+            Rc::new(PatternIota::from_name(registry, "write/local", None, Location::Unknown).unwrap()),
+        ]
+    }
 }
 
 pub fn wrap_pattern(pat: PatternIota) -> Rc<dyn Iota> {
