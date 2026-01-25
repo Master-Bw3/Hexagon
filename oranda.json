@@ -12,5 +12,14 @@
     },
     "project": {
         "name": "Hexagon"
+    },
+    "components": {
+        "artifacts": {
+            "package_managers": {
+                "additional": {
+                    "nix flake": "nix profile install github:Master-Bw3/Hexagon"
+                }
+            }
+        }
     }
 }

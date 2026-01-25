@@ -69,6 +69,9 @@
               cargo-edit
               cargo-watch
               rust-analyzer
+              cargo-dist
+              oranda
+              rustup
             ];
 
             env = {
