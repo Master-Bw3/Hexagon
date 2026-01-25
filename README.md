@@ -208,4 +208,8 @@ uuid = "[I;542246046,714361767,-2088965103,2106423580]" //optional, defaults to 
 type = "Monster"
 item = "Focus" //optional, defaults to None
 iota = "1"     //optional, defaults to None
+
+//set great spell patterns (uses internal name of spell)
+[Great_Spells]
+flight = "eawwaeawawaa"
 ```
