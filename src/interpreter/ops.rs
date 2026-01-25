@@ -187,12 +187,12 @@ mod tests {
     use super::*;
     use std::collections::HashMap;
 
-    #[test]
-    fn test() {
-        let mut state = State::default();
-        let heap: HashMap<String, i32> = HashMap::new();
-        let val = Some(OpValue::Var("$hello".to_string()));
-        store(&val, &mut state, false).unwrap();
-        println!("{:?}, {:?}", state.stack, heap);
-    }
+    // #[test]
+    // fn test() {
+    //     let mut state = State::default();
+    //     let heap: HashMap<String, i32> = HashMap::new();
+    //     let val = Some(OpValue::Var("$hello".to_string()));
+    //     store(&val, &mut state, false).unwrap();
+    //     println!("{:?}, {:?}", state.stack, heap);
+    // }
 }

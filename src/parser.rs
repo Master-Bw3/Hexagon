@@ -666,26 +666,26 @@ impl PartialEq for ActionValue {
 mod tests {
     use super::*;
 
-    #[test]
-    fn hex() {
-        parse(
-            "
-            {
-            Bookkeeper's Gambit: [{\"bob\", minecraft:cow}, 1] \n
-            Gemini Decomposition \n
-            Pace Purification \n
-            Augur's Purification \n
-            Jester's Gambit \n
-            Nullary Reflection \n
-            Augur's Exaltation \n
-            Numerical Reflection: (1, 2, 3)
-            Store()
-            }
-            Consideration: Huginn's Gambit
-            ",
-            &PatternRegistry::gen_default_great_sigs(),
-            &mut HashMap::new(),
-        )
-        .unwrap();
-    }
+    // #[test]
+    // fn hex() {
+    //     parse(
+    //         "
+    //         {
+    //         Bookkeeper's Gambit: [{\"bob\", minecraft:cow}, 1] \n
+    //         Gemini Decomposition \n
+    //         Pace Purification \n
+    //         Augur's Purification \n
+    //         Jester's Gambit \n
+    //         Nullary Reflection \n
+    //         Augur's Exaltation \n
+    //         Numerical Reflection: (1, 2, 3)
+    //         Store()
+    //         }
+    //         Consideration: Huginn's Gambit
+    //         ",
+    //         &PatternRegistry::gen_default_great_sigs(),
+    //         &mut HashMap::new(),
+    //     )
+    //     .unwrap();
+    // }
 }

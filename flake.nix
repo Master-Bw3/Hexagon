@@ -49,6 +49,14 @@
           );
       };
 
+      packages = forEachSupportedSystem (
+        { pkgs }:
+        rec {
+          hexagon = pkgs.callPackage ./package.nix { };
+          default = hexagon;
+        }
+      );
+
       devShells = forEachSupportedSystem (
         { pkgs }:
         {

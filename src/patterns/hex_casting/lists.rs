@@ -295,6 +295,7 @@ mod tests {
             &PatternRegistry::construct(&PatternRegistry::gen_default_great_sigs()),
         )
         .unwrap();
-        assert!(result.stack.tolerates_other(&expected))
+
+        assert!(result.stack[0].tolerates_other(&expected))
     }
 }
