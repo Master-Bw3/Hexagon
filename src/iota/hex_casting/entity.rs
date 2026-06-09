@@ -46,7 +46,7 @@ impl Iota for EntityIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        format!("{{\"hexcasting:type\": \"hexcasting:entity\", \"hexcasting:data\": {{name: '{{\"text\":\"\"}}', uuid: {}}}}}", self.uuid)
+        format!("{{type: \"hexcasting:entity\", value: {{name: '{{\"text\":\"\"}}', uuid: {}}}}}", self.uuid)
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

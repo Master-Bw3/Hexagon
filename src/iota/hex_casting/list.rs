@@ -74,7 +74,7 @@ impl Iota for ListIota {
             .map(|x| x.serialize_to_nbt())
             .collect::<Vec<_>>()
             .join(", ");
-        format!("{{\"hexcasting:type\": \"hexcasting:list\", \"hexcasting:data\": [{out}]}}")
+        format!("{{type: \"hexcasting:list\", value: [{out}]}}")
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

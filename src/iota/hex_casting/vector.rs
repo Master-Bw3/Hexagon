@@ -27,7 +27,7 @@ impl Iota for VectorIota {
         let y = self.y.to_bits() as i64;
         let z = self.z.to_bits() as i64;
 
-        format!("{{\"hexcasting:type\": \"hexcasting:vec3\", \"hexcasting:data\": [L; {x}L, {y}L, {z}L]}}")
+        format!("{{type: \"hexcasting:vec3\", value: [L; {x}L, {y}L, {z}L]}}")
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

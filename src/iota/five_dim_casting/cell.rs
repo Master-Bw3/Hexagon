@@ -17,7 +17,7 @@ impl Iota for CellIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        "{\"hexcasting:type\": \"hexcasting:null\", \"hexcasting:data\": {}}".to_string()
+        "{type: \"hexcasting:null\", value: {}}".to_string()
     }
 
     fn display_type_name() -> String {

@@ -69,21 +69,21 @@ impl Iota for PatternIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        let bytelist = self
+        let angles = self
             .signature
             .iter()
             .map(|dir| match dir {
-                PatternSigDir::W => "0b",
-                PatternSigDir::E => "1b",
-                PatternSigDir::D => "2b",
-                PatternSigDir::S => "3b",
-                PatternSigDir::A => "4b",
-                PatternSigDir::Q => "5b",
+                PatternSigDir::W => "w",
+                PatternSigDir::E => "e",
+                PatternSigDir::D => "d",
+                PatternSigDir::S => "s",
+                PatternSigDir::A => "a",
+                PatternSigDir::Q => "q",
             })
             .collect::<Vec<_>>()
-            .join(", ");
+            .join("");
 
-        format!("{{\"hexcasting:type\": \"hexcasting:pattern\", \"hexcasting:data\": {{angles: [B;{bytelist}], start_dir: 1b}}}}")
+        format!("{{type: \"hexcasting:pattern\", value: {{angles: \"{angles}\", start_dir: \"NORTH_EAST\"}}}}")
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

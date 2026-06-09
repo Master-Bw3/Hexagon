@@ -19,7 +19,7 @@ impl Iota for NullIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        "{\"hexcasting:type\": \"hexcasting:null\", \"hexcasting:data\": {}}".to_string()
+        "{type: \"hexcasting:null\", value: {}}".to_string()
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

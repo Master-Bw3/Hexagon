@@ -19,7 +19,7 @@ impl Iota for GarbageIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        "{\"hexcasting:type\": \"hexcasting:garbage\", \"hexcasting:data\": {}}".to_string()
+        "{type: \"hexcasting:garbage\", value: {}}".to_string()
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

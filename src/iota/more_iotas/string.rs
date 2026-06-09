@@ -24,7 +24,7 @@ impl Iota for StringIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        format!("{{\"hexcasting:type\": \"moreiotas:string\", \"hexcasting:data\": \"{self}\"}}")
+        format!("{{type: \"moreiotas:string\", value: \"{self}\"}}")
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

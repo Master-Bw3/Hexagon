@@ -24,7 +24,7 @@ impl Iota for BooleanIota {
     fn serialize_to_nbt(&self) -> String {
         let byte = if *self { "1b" } else { "0b" };
 
-        format!("{{\"hexcasting:type\": \"hexcasting:boolean\", \"hexcasting:data\": {byte}}}")
+        format!("{{type: \"hexcasting:boolean\", value: {byte}}}")
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {

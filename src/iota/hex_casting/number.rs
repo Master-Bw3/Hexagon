@@ -82,7 +82,7 @@ impl Iota for NumberIota {
     }
 
     fn serialize_to_nbt(&self) -> String {
-        format!("{{\"hexcasting:type\": \"hexcasting:double\", \"hexcasting:data\": {self}d}}")
+        format!("{{type: \"hexcasting:double\", value: {self}d}}")
     }
 
     fn serialize_to_json(&self) -> serde_json::Value {

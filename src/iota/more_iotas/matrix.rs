@@ -67,7 +67,7 @@ impl Iota for MatrixIota {
             .join(", ");
         let out = format!("[{out}]");
 
-        format!("{{\"hexcasting:type\": \"moreiotas:matrix\", \"hexcasting:data\": {{mat: {out}, cols: {}, rows: {}}}}}", self.ncols(), self.nrows())
+        format!("{{type: \"moreiotas:matrix\", value: {{mat: {out}, cols: {}, rows: {}}}}}", self.ncols(), self.nrows())
     }
     
     fn serialize_to_json(&self) -> serde_json::Value {
